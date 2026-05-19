@@ -3820,6 +3820,51 @@ let aisRealMode     = false;// true = real AISStream data, false = simulation
 let aisRealVessels  = {};   // MMSI string → vessel object (real mode dedup)
 let aisReconnectN   = 0;    // reconnect attempt counter
 const AIS_API_KEY   = '23ef7da2627bc171e4bfdcbdc8d94f90d2a6f2ce';
+const AIS_CACHE_KEY = 'udc_ais_vessel_cache';
+const AIS_CACHE_TTL = 6 * 60 * 60 * 1000;  // 6 ชั่วโมง
+
+// ── Save vessel positions → localStorage ──────────────────────
+function saveAISCache() {
+    if (!aisRealMode || !Object.keys(aisRealVessels).length) return;
+    try {
+        localStorage.setItem(AIS_CACHE_KEY, JSON.stringify({
+            savedAt: Date.now(),
+            vessels: Object.values(aisRealVessels).map(v => ({
+                mmsi:v.mmsi, name:v.name, flag:v.flag,
+                type:v.type, typeCode:v.typeCode, color:v.color,
+                lat:v.lat, lng:v.lng, cog:v.cog, sog:v.sog, heading:v.heading,
+                length:v.length, imo:v.imo, dest:v.dest, status:v.status,
+                lastSeen:v.lastSeen
+            }))
+        }));
+    } catch(e) {}
+}
+
+// ── Load cached positions → populate map immediately ──────────
+function loadAISCache() {
+    try {
+        const raw = localStorage.getItem(AIS_CACHE_KEY);
+        if (!raw) return 0;
+        const cache = JSON.parse(raw);
+        if (!cache.vessels || !cache.savedAt) return 0;
+        if (Date.now() - cache.savedAt > AIS_CACHE_TTL) return 0;
+        const ageMin = Math.round((Date.now() - cache.savedAt) / 60000);
+        let count = 0;
+        cache.vessels.forEach(v => {
+            if (!v.mmsi || !v.lat || !v.lng) return;
+            if (aisRealVessels[v.mmsi]) return;  // already have live data
+            const nx = (v.lng - LNG_LEFT) / (LNG_RIGHT - LNG_LEFT);
+            const ny = (LAT_TOP - v.lat)  / (LAT_TOP  - LAT_BOT);
+            if (landMaskReady && nx>=0&&nx<=1&&ny>=0&&ny<=1 && isOnLand(nx,ny)) return;
+            v.fromCache = true;
+            v.cacheAgeMin = ageMin;
+            aisRealVessels[v.mmsi] = v;
+            aisVesselData.push(v);
+            count++;
+        });
+        return count;
+    } catch(e) { return 0; }
+}
 // ═══════════════════════════════════════════════════════════════
 //  MARITIME OVERLAY DATA — from แผนที่ทางทะเลไทย.kml (Thai Valuer group)
 //  Layers: TS 12NM · Straight Baseline · JDA · Bathymetric Contours
@@ -3872,9 +3917,11 @@ function makeAISIcon(v) {
 
     const c = v.color;
     const vecTipY = bowY - vec;
+    const cached  = !!v.fromCache;  // dim icon if position is from localStorage cache
 
     const svg = `<svg xmlns="http://www.w3.org/2000/svg"
-        width="${sz}" height="${sz}" viewBox="-${h} -${h} ${sz} ${sz}">
+        width="${sz}" height="${sz}" viewBox="-${h} -${h} ${sz} ${sz}"
+        opacity="${cached ? '0.45' : '1'}">
       <g transform="rotate(${v.cog})">
         <!-- COG speed vector + arrowhead -->
         <line x1="0" y1="${bowY}" x2="0" y2="${vecTipY}"
@@ -3884,7 +3931,7 @@ function makeAISIcon(v) {
         <!-- Ship hull plan-view (bow up, stern down) -->
         <path d="M0,${bowY} L${beamX},${sheerY} L${beamX},${sternY}
                  L${-beamX},${sternY} L${-beamX},${sheerY} Z"
-              fill="${c}aa" stroke="${c}" stroke-width="1.4" stroke-linejoin="round"/>
+              fill="${cached ? c+'44' : c+'aa'}" stroke="${c}" stroke-width="${cached ? '0.8' : '1.4'}" stroke-linejoin="round"/>
         <!-- Bridge / superstructure block -->
         <rect x="${midX}" y="${midY}" width="${midW}" height="${midH}"
               fill="rgba(2,10,25,0.78)" stroke="${c}44" stroke-width="0.8" rx="0.5"/>
@@ -3935,7 +3982,7 @@ function makeAISPopup(v) {
       </div>
       <div style="margin-top:7px;padding-top:5px;border-top:1px solid ${tc}20;
                   font-size:9px;color:rgba(255,255,255,.25);text-align:right;">
-          ${v.lastSeen ? '🟢 AISStream LIVE · ' : '🔵 SIM · '}Last: ${new Date().toLocaleTimeString('th-TH')}
+          ${v.fromCache ? `🟡 CACHE · ${v.cacheAgeMin} นาทีที่แล้ว` : v.lastSeen ? '🟢 AISStream LIVE' : '🔵 SIM'} · ${new Date().toLocaleTimeString('th-TH')}
       </div>
     </div>`;
 }
@@ -4046,7 +4093,17 @@ function connectAISStream() {
         btn.textContent = '📡 AIS LIVE ●';
         aisLayerGroup.addTo(map);
         addLog('[AIS] ✓ AISStream เชื่อมต่อสำเร็จ — Gulf of Thailand / Sattahip', '#64ffda');
-        addLog('[AIS] ⏳ รอรับ Position Report (เรืออาจยังไม่ส่งสัญญาณทันที)…', '#475569');
+        // โหลด cache ทันที → เรือปรากฏบนแผนที่ก่อนรอ live data
+        const cachedN = loadAISCache();
+        if (cachedN > 0) {
+            const ageMin = aisVesselData[0]?.cacheAgeMin || 0;
+            renderAISVessels();
+            const badge = document.getElementById('ais-live-count');
+            if (badge) badge.textContent = '●' + cachedN;
+            addLog(`[AIS] 📦 โหลด ${cachedN} ลำจาก cache (${ageMin} นาทีที่แล้ว) — รอ live update…`, '#f59e0b');
+        } else {
+            addLog('[AIS] ⏳ ไม่มี cache — รอรับ Position Report…', '#475569');
+        }
         // Stale cleanup: ลบเรือที่หายไป > 5 นาที ทุก 60 วินาที
         if (aisUpdateTimer) clearInterval(aisUpdateTimer);
         aisUpdateTimer = setInterval(cleanStaleAISVessels, 60000);
@@ -4171,9 +4228,15 @@ function processAISMessage(data) {
         v.cog     = cog;  v.sog     = sog;
         v.heading = heading;
         v.lastSeen = Date.now();
+        // ลบ cache flag เมื่อได้รับ live data แล้ว
+        if (v.fromCache) { v.fromCache = false; delete v.cacheAgeMin; }
     }
 
     renderAISVessels();
+    // Save ทุกครั้งที่มีเรือใหม่ หรือทุก 30 วินาที (throttle)
+    if (!saveAISCache._t || Date.now()-saveAISCache._t > 30000) {
+        saveAISCache(); saveAISCache._t = Date.now();
+    }
 }
 
 // ── Stale vessel cleanup: ลบเรือที่หายไป > 5 นาที ─────────────
@@ -4195,6 +4258,7 @@ function cleanStaleAISVessels() {
 
 // ── Disconnect ────────────────────────────────────────────────
 function disconnectAISStream() {
+    saveAISCache();   // บันทึกตำแหน่งล่าสุดก่อนปิด
     aisLiveActive = false;
     aisRealMode   = false;
     if (aisWS) {
