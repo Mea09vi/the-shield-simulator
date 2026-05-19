@@ -6684,6 +6684,95 @@ function drawCoastalAssets() {
 const FLS_RANGE_NY   = 0.030;   // ≈ 1500m (FLS active lock)
 const PASS_RANGE_NM  = 4.0;     // passive sonar display radius (nm)
 
+// ═════════════════════════════════════════════════════════════════
+//  PSR (Predicted Sonar Range) — Passive Sonar Equation
+//  ─────────────────────────────────────────────────────────────
+//  SE = SL − TL − (NL − DI) − DT     (passive sonar equation)
+//  Solving SE = 0 for TL_max → range where Pd = 50%
+//
+//  TL ≈ 20·log10(r)  (spherical spreading; ignore absorption < 10kHz)
+//  → r₅₀ = 10^(TL_max / 20)
+//
+//  Pd thresholds (from Gaussian detector ROC):
+//    Pd=90% → range ≈ 0.5 × r₅₀  (TL_max − 6 dB)
+//    Pd=50% → range = r₅₀         (nominal)
+//    Pd=10% → range ≈ 1.8 × r₅₀  (TL_max + 5 dB)
+//
+//  Calibrated for Sattahip / Gulf of Thailand shallow water (~30m).
+// ═════════════════════════════════════════════════════════════════
+function computeGuardianPSR(g) {
+    const ss = (typeof seaState === 'number') ? seaState : 1;
+    const NL = (SS_MODS && SS_MODS.noisedB && SS_MODS.noisedB[ss] != null)
+             ? SS_MODS.noisedB[ss] : 65;
+    // Sonar Equation parameters (calibrated, dB re 1μPa @ 1m)
+    const SL = 132;   // Target signature (Q-UUV ~10kHz battery prop)
+    const DI = 17;    // Guardian linear-array directivity index
+    const DT = 12;    // Detection threshold
+    const COAST_PEN = 8;   // shallow-water reverberation penalty
+    // Thermocline gradient penalty
+    const depth = g.depthBase || 30;
+    const inThermo = depth >= 28 && depth <= 42;
+    const THERMO_PEN = inThermo ? 5 : 0;
+    // SE = 0 → TL_max
+    const TL_max  = SL - NL + DI - DT - COAST_PEN - THERMO_PEN;
+    const range_m = Math.pow(10, TL_max / 20);
+    // Apply tide+environment combined modifier
+    const envMod   = (typeof effectiveMod !== 'undefined') ? effectiveMod : 1;
+    const r50_m    = range_m * envMod;
+    const M_PER_NM = 1852;
+    return {
+        nm90: (r50_m * 0.50) / M_PER_NM,
+        nm50:  r50_m         / M_PER_NM,
+        nm10: (r50_m * 1.80) / M_PER_NM,
+        m90:   r50_m * 0.50,
+        m50:   r50_m,
+        m10:   r50_m * 1.80,
+        TL_max, NL, depth, inThermo, envMod,
+        // Tactical decision parameters
+        params: { SL, DI, DT, COAST_PEN, THERMO_PEN }
+    };
+}
+
+// ═════════════════════════════════════════════════════════════════
+//  ROE Gate System — Rules of Engagement (NATO STANAG-style)
+//  ─────────────────────────────────────────────────────────────
+//  Escalation ladder for autonomous Guardian UUV engagement:
+//
+//   GATE 0  HOLD       — patrol normal, no contact
+//   GATE 1  DETECT     — sensor positive, classification underway
+//   GATE 2  TRACK      — REDIRECT, vector to intercept
+//   GATE 3  SPRINT     — Phase A, closing fast (>2nm to UDC)
+//   GATE 4  CHALLENGE  — Phase B, acoustic warning (0.5–2nm)
+//   GATE 5  ENGAGE     — authorized neutralization (kill criteria met)
+//   GATE Z  ABORT      — Phase C, handoff to inner defense (<0.5nm)
+// ═════════════════════════════════════════════════════════════════
+const ROE_GATES = {
+    0: { name:'HOLD',      color:'#22c55e', label:'🟢 HOLD',      verb:'PATROL' },
+    1: { name:'DETECT',    color:'#38bdf8', label:'🔵 DETECT',    verb:'CONTACT' },
+    2: { name:'TRACK',     color:'#06b6d4', label:'🔵 TRACK',     verb:'TRACKING' },
+    3: { name:'SPRINT',    color:'#3b82f6', label:'⚡ SPRINT',    verb:'CLOSING' },
+    4: { name:'CHALLENGE', color:'#fbbf24', label:'📡 CHALLENGE', verb:'WARNING' },
+    5: { name:'ENGAGE',    color:'#ef4444', label:'🔴 ENGAGE',    verb:'WEAPONS RELEASE' },
+    Z: { name:'ABORT',     color:'#94a3b8', label:'↩ ABORT',     verb:'HANDOFF' },
+};
+
+function getROEGate(g) {
+    if (!g) return ROE_GATES[0];
+    if (g.interceptPhase === 3)              return { ...ROE_GATES.Z, code:'Z' };
+    if (g.engageAuthorized)                  return { ...ROE_GATES[5], code:5 };
+    if (g.interceptPhase === 2)              return { ...ROE_GATES[4], code:4 };
+    if (g.interceptPhase === 1)              return { ...ROE_GATES[3], code:3 };
+    if (g.redirected && g.interceptMode)     return { ...ROE_GATES[2], code:2 };
+    if (g.redirected)                        return { ...ROE_GATES[1], code:1 };
+    return { ...ROE_GATES[0], code:0 };
+}
+
+// log gate transitions (called when g.roeGate changes)
+function logROEGateTransition(g, fromCode, toCode) {
+    const to = ROE_GATES[toCode] || ROE_GATES[0];
+    addLog(`[ROE] ${g.label} GATE ${fromCode}→${toCode} · ${to.label} · ${to.verb}`, to.color);
+}
+
 function drawGuardianUUVs() {
     // ── Patrol pattern outlines ──
     guardianUUVs.forEach(g=>{
@@ -6709,6 +6798,40 @@ function drawGuardianUUVs() {
             const wpPx=pn(wp.nx,wp.ny);
             angle=Math.atan2(wpPx.y-y,wpPx.x-x);
         }
+
+        // ── 0. PSR Rings — Sonar Equation predicted detection range ──
+        // 3 concentric rings: Pd=10% (outer faint) / 50% (mid) / 90% (inner bright)
+        const psr = computeGuardianPSR(g);
+        const r10 = _pxNm * psr.nm10;
+        const r50 = _pxNm * psr.nm50;
+        const r90 = _pxNm * psr.nm90;
+        // Pd=10% — marginal contact (outer)
+        ctx.save();
+        ctx.setLineDash([2, 8]);
+        ctx.strokeStyle = 'rgba(251,146,60,0.18)';
+        ctx.lineWidth   = 1;
+        ctx.beginPath(); ctx.arc(x, y, r10, 0, Math.PI*2); ctx.stroke();
+        // Pd=50% — nominal detection range
+        ctx.setLineDash([5, 4]);
+        ctx.strokeStyle = 'rgba(250,204,21,0.42)';
+        ctx.lineWidth   = 1.3;
+        ctx.beginPath(); ctx.arc(x, y, r50, 0, Math.PI*2); ctx.stroke();
+        // Pd=90% — high-confidence ring
+        ctx.setLineDash([]);
+        ctx.strokeStyle = psr.inThermo ? 'rgba(239,68,68,0.55)' : 'rgba(34,197,94,0.55)';
+        ctx.lineWidth   = 1.4;
+        ctx.beginPath(); ctx.arc(x, y, r90, 0, Math.PI*2); ctx.stroke();
+        // PSR label (NE quadrant)
+        ctx.font = '9px "Share Tech Mono"';
+        ctx.fillStyle = 'rgba(250,204,21,0.75)';
+        ctx.textAlign = 'left';
+        const labX = x + r50 * 0.71 + 4;
+        const labY = y - r50 * 0.71 - 2;
+        ctx.fillText(`PSR ${psr.nm50.toFixed(2)}nm`, labX, labY);
+        ctx.font = '8px "Share Tech Mono"';
+        ctx.fillStyle = 'rgba(250,204,21,0.45)';
+        ctx.fillText(`NL ${psr.NL}dB·TL ${psr.TL_max.toFixed(0)}`, labX, labY + 9);
+        ctx.restore();
 
         // ── 1. Passive Sonar — wide arc 270° (stern ±45° excluded) ──
         // ระยะปรับตาม effectiveMod (Tide A+B × Sea State)
@@ -6792,16 +6915,24 @@ function drawGuardianUUVs() {
         ctx.fillStyle = thermoclineAlert ? '#fbbf24' : 'rgba(0,212,255,0.60)';
         ctx.fillText(`▼${dep}m${thermoclineAlert?' ⚠THERMO':''}`, x, y+31);
 
-        // Phase badge (แสดงเฉพาะขณะ intercept)
-        if (g.interceptPhase===1) {
-            ctx.font='bold 10px "Share Tech Mono"'; ctx.fillStyle='#38bdf8';
-            ctx.textAlign='center'; ctx.fillText('⚡ SPRINT', x, y+42);
-        } else if (g.interceptPhase===2) {
-            const blink = Math.sin(frame*0.15)>0;
-            ctx.font='bold 10px "Share Tech Mono"';
-            ctx.fillStyle = blink ? '#ffd700' : 'rgba(255,215,0,0.4)';
-            ctx.textAlign='center'; ctx.fillText('📡 CHALLENGE', x, y+42);
+        // ── ROE Gate badge (always shown, color-coded by gate level) ───
+        const roe = getROEGate(g);
+        // Update g.roeGate field + log transitions
+        const prevGate = g._lastRoeGate;
+        if (prevGate !== undefined && prevGate !== roe.code) {
+            logROEGateTransition(g, prevGate, roe.code);
         }
+        g._lastRoeGate = roe.code;
+        g.roeGate      = roe;
+        // Pulse for active engagement gates (≥3)
+        const pulse = roe.code === 4 || roe.code === 5
+                    ? (Math.sin(frame*0.18)>0 ? 1 : 0.4) : 1;
+        ctx.font='bold 10px "Share Tech Mono"';
+        ctx.fillStyle = roe.color.startsWith('#')
+            ? roe.color + Math.round(pulse*255).toString(16).padStart(2,'0')
+            : roe.color;
+        ctx.textAlign='center';
+        ctx.fillText(`G${roe.code} ${roe.label.replace(/^[^\s]+\s/,'')}`, x, y+42);
 
         // ── TTI (Time-to-Intercept) — แสดงเมื่อ GUUV กำลังสกัดกั้น ──
         if (g.redirected && g.interceptTarget && g.interceptTarget.active) {
@@ -8809,37 +8940,39 @@ function updateUnderwaterPanel() {
         }
     }
 
-    // Per-GUUV sub-rows
+    // Per-GUUV sub-rows — ROE Gate + PSR + Depth + Target
     listEl.innerHTML = guardianUUVs.map(g => {
         const hc = g.color || '#00d4ff';
-
-        let stateLabel, sCol;
-        if (g.interceptMode && g.interceptPhase === 2) {
-            stateLabel = 'CHALLENGE'; sCol = '#ffd700';
-        } else if (g.interceptMode && g.interceptPhase === 1) {
-            stateLabel = 'SPRINT';    sCol = '#f97316';
-        } else if (g.redirected) {
-            stateLabel = 'REDIRECT';  sCol = '#fbbf24';
-        } else {
-            stateLabel = 'PATROL';    sCol = hc;
-        }
-
-        // Depth: use current waypoint depth when patrolling, base depth when intercepting
+        // ROE Gate
+        const roe = g.roeGate || getROEGate(g);
+        // PSR snapshot (cached per frame ก็ได้ แต่ recompute เพราะ env เปลี่ยน)
+        const psr = computeGuardianPSR(g);
+        // Depth
         const depthApprox = (!g.redirected && g.wpDepths)
             ? g.wpDepths[g.currentWP % g.wpDepths.length]
             : (g.depthBase || 35);
-
+        // Badges
         const flsBadge = g.flsTriggered
             ? `<span style="color:#ef4444;">⚡FLS</span>&nbsp;`
             : '';
         const tgtBadge = (g.interceptTarget && g.interceptTarget.label)
-            ? `<span style="color:#f97316;"> ▶ ${g.interceptTarget.label}</span>`
+            ? `<span style="color:#f97316;">▶${g.interceptTarget.label}</span>&nbsp;`
+            : '';
+        const thermoBadge = psr.inThermo
+            ? `<span style="color:#fbbf24;" title="ผ่าน thermocline — PSR ลด">⚠THERMO</span>&nbsp;`
             : '';
 
-        return `<div style="font-size:10px;color:#64748b;line-height:1.6;padding-left:4px;">
-            <span style="color:${hc};">▸ ${g.label}</span>
-            &nbsp;<span style="color:${sCol};">${stateLabel}</span>${tgtBadge}
-            &nbsp;${flsBadge}<span style="color:#38bdf8;opacity:.75;">↓${depthApprox}m</span>
+        return `<div style="font-size:10px;color:#64748b;line-height:1.5;padding-left:4px;margin-bottom:2px;">
+            <span style="color:${hc};font-weight:600;">▸ ${g.label}</span>
+            &nbsp;<span style="color:${roe.color};font-weight:700;" title="${roe.verb}">G${roe.code}·${roe.name}</span>
+            &nbsp;${tgtBadge}${flsBadge}${thermoBadge}<br>
+            <span style="padding-left:14px;color:#475569;">
+              <span style="color:#facc15;" title="Predicted Sonar Range @ Pd=50%">PSR ${psr.nm50.toFixed(2)}nm</span>
+              · <span style="color:#22c55e;" title="High-confidence ring">${psr.nm90.toFixed(2)}</span>
+              / <span style="color:#fb923c;" title="Marginal contact ring">${psr.nm10.toFixed(2)}</span>nm
+              · NL ${psr.NL}dB
+              · <span style="color:#38bdf8;">↓${depthApprox}m</span>
+            </span>
         </div>`;
     }).join('');
 }
