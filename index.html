@@ -245,6 +245,38 @@
             0%,100% { box-shadow: 0 0 8px  rgba(100,255,218,.28); }
             50%      { box-shadow: 0 0 20px rgba(100,255,218,.60); }
         }
+        /* SeaVision key button */
+        .sv-key-btn {
+            background: rgba(129,140,248,.10);
+            border: 1px solid rgba(129,140,248,.35);
+            color: #818cf8; font-size:11px; padding:4px 9px;
+            border-radius:4px; cursor:pointer; transition:all .25s;
+            font-family:'Sarabun',sans-serif; letter-spacing:.3px;
+        }
+        .sv-key-btn:hover { background:rgba(129,140,248,.22); }
+        .sv-key-btn.sv-active {
+            border-color:#818cf8; color:#a5b4fc;
+            box-shadow:0 0 10px rgba(129,140,248,.40);
+            animation: sv-pulse 2.5s ease-in-out infinite;
+        }
+        @keyframes sv-pulse {
+            0%,100% { box-shadow:0 0 6px  rgba(129,140,248,.30); }
+            50%      { box-shadow:0 0 16px rgba(129,140,248,.55); }
+        }
+        /* SeaVision key modal */
+        #svKeyModal {
+            display:none; position:fixed; top:50%; left:50%;
+            transform:translate(-50%,-50%);
+            background:#0a1a2e; border:1px solid #818cf8;
+            border-radius:10px; padding:22px; z-index:99999;
+            width:370px; color:#e2e8f0;
+            box-shadow:0 0 40px rgba(129,140,248,.45);
+            font-family:'Sarabun',sans-serif;
+        }
+        #svKeyOverlay {
+            display:none; position:fixed; inset:0;
+            background:rgba(0,0,0,.55); z-index:99998;
+        }
         .leaflet-control-zoom a {
             background:#081525 !important; color:var(--cyan) !important;
             border-color:#1a3a5c !important; font-size:16px !important;
@@ -1399,6 +1431,8 @@
                     onclick="toggleTideChart()">📈 Tide Chart</button>
             <button id="aisToggleBtn" class="ais-toggle-btn" title="AIS Live — เรือจริงจาก AISStream.io (Gulf of Thailand)"
                     onclick="toggleAISLive()">📡 AIS Live<span id="ais-live-count" style="margin-left:4px;font-size:9px;opacity:.8;"></span></button>
+            <button id="svKeyBtn" class="sv-key-btn" title="SeaVision API Key — snapshot เรือจาก US DOT Volpe"
+                    onclick="showSVKeyModal()">🛰 SV Key</button>
             <button id="bathyBtn" title="Bathymetry — เส้นชั้นความลึก (Isobath) 10/20/30/50 เมตร จากข้อมูลแผนที่ทางทะเลไทย"
                     onclick="toggleBathymetry()">🌊 Bathymetry</button>
             <button id="seaZonesBtn" title="Sea Zones — เส้นฐานตรง · ทะเลอาณาเขต 12 ไมล์ · เขต JDA ไทย-มาเลเซีย"
@@ -3823,6 +3857,24 @@ const AIS_API_KEY   = '23ef7da2627bc171e4bfdcbdc8d94f90d2a6f2ce';
 const AIS_CACHE_KEY = 'udc_ais_vessel_cache';
 const AIS_CACHE_TTL = 6 * 60 * 60 * 1000;  // 6 ชั่วโมง
 
+// ── SeaVision (US DOT Volpe) — REST snapshot provider ─────────
+const SV_KEY_STORAGE = 'udc_seavision_key';
+let   svApiKey       = localStorage.getItem(SV_KEY_STORAGE) || '';
+// อัปเดตสถานะปุ่มตาม key ที่บันทึกไว้
+function _updateSVBtn() {
+    const btn = document.getElementById('svKeyBtn');
+    if (!btn) return;
+    if (svApiKey) {
+        btn.classList.add('sv-active');
+        btn.title = '🛰 SeaVision พร้อมใช้งาน — คลิกเพื่อแก้ไข key';
+        btn.textContent = '🛰 SV ●';
+    } else {
+        btn.classList.remove('sv-active');
+        btn.title = 'SeaVision API Key — snapshot เรือจาก US DOT Volpe';
+        btn.textContent = '🛰 SV Key';
+    }
+}
+
 // ── Save vessel positions → localStorage ──────────────────────
 function saveAISCache() {
     if (!aisRealMode || !Object.keys(aisRealVessels).length) return;
@@ -3865,6 +3917,136 @@ function loadAISCache() {
         return count;
     } catch(e) { return 0; }
 }
+
+// ── SeaVision REST Snapshot ────────────────────────────────────
+// เรียก API เมื่อ key พร้อม → ได้ vessel list ทันที (ก่อน AISStream)
+// รองรับหลาย response format เพราะยังไม่ทราบ schema จริง
+async function fetchSeaVisionSnapshot() {
+    if (!svApiKey) return 0;
+    // Bounding box: Gulf of Thailand (minLon,minLat,maxLon,maxLat)
+    const bbox = '99.0,11.0,102.5,14.5';
+    // ลอง endpoint format ที่เป็นไปได้
+    const endpoints = [
+        `https://api.seavision.volpe.dot.gov/v1/vessels?bbox=${bbox}`,
+        `https://api.seavision.volpe.dot.gov/v1/vessels?minLon=99.0&minLat=11.0&maxLon=102.5&maxLat=14.5`,
+        `https://api.seavision.volpe.dot.gov/v1/ais/vessels?bbox=${bbox}`,
+    ];
+    addLog('[SeaVision] 🛰 ดึง snapshot อ่าวไทย…', '#818cf8');
+    for (const url of endpoints) {
+        try {
+            const res = await fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${svApiKey}`,
+                    'Accept':        'application/json',
+                    'X-API-Key':     svApiKey,   // fallback header
+                }
+            });
+            if (res.status === 401 || res.status === 403) {
+                addLog('[SeaVision] ✗ API key ไม่ถูกต้องหรือยังไม่ได้รับอนุมัติ', '#ef4444');
+                return 0;
+            }
+            if (!res.ok) continue;   // ลอง endpoint ถัดไป
+            const data = await res.json();
+            // ──  parse หลาย format ──
+            const list = Array.isArray(data) ? data
+                       : Array.isArray(data.vessels) ? data.vessels
+                       : Array.isArray(data.data)    ? data.data
+                       : Array.isArray(data.features)? data.features.map(f=>({...f.properties,...f.geometry}))
+                       : [];
+            let count = 0;
+            list.forEach(raw => {
+                const mmsi = String(raw.mmsi || raw.MMSI || raw.mmsiNumber || '');
+                const lat  = parseFloat(raw.lat  || raw.latitude  || raw.LAT  || raw.y || 0);
+                const lng  = parseFloat(raw.lon  || raw.longitude || raw.LON  || raw.lng || raw.x || 0);
+                if (!mmsi || !lat || !lng) return;
+                if (aisRealVessels[mmsi]) return;  // live data มีแล้ว
+                const tc   = parseInt(raw.shipType || raw.type || raw.SHIPTYPE || raw.typeOfShip || raw.ship_type || 0);
+                const name = raw.name || raw.vesselName || raw.SHIPNAME || raw.vessel_name || mmsi;
+                // Land filter
+                const nx = (lng - LNG_LEFT) / (LNG_RIGHT - LNG_LEFT);
+                const ny = (LAT_TOP - lat)  / (LAT_TOP   - LAT_BOT);
+                if (landMaskReady && nx>=0&&nx<=1&&ny>=0&&ny<=1 && isOnLand(nx,ny)) return;
+                const v = {
+                    mmsi, lat, lng,
+                    name,
+                    flag:     raw.flag || raw.country || raw.countryCode || _mmsiFlag(mmsi),
+                    type:     _aisTypeName(tc),
+                    typeCode: tc,
+                    cog:      parseFloat(raw.cog || raw.COG || raw.courseOverGround || 0),
+                    sog:      parseFloat(raw.sog || raw.SOG || raw.speedOverGround  || 0),
+                    heading:  parseFloat(raw.heading || raw.HDG || raw.trueHeading  || raw.cog || 0),
+                    length:   parseFloat(raw.length || raw.LENGTH || raw.shipLength || 120),
+                    imo:      raw.imo  || raw.IMO  || '',
+                    dest:     raw.destination || raw.DESTINATION || raw.dest || '',
+                    status:   _navStatus(parseInt(raw.navStatus || raw.status || 0)),
+                    color:    _aisTypeColor(tc),
+                    lastSeen: Date.now(),
+                    fromSeaVision: true,
+                };
+                aisRealVessels[mmsi] = v;
+                aisVesselData.push(v);
+                count++;
+            });
+            if (count > 0) {
+                renderAISVessels();
+                const badge = document.getElementById('ais-live-count');
+                if (badge) badge.textContent = '●' + (Object.keys(aisRealVessels).length);
+                addLog(`[SeaVision] ✅ snapshot ${count} ลำ — AISStream จะอัปเดตต่อเนื่อง`, '#818cf8');
+            } else {
+                addLog('[SeaVision] ℹ snapshot: ไม่พบเรือในพื้นที่ หรือ format ไม่รู้จัก', '#64748b');
+            }
+            return count;
+        } catch(e) {
+            if (e.message && e.message.includes('CORS') || e.name === 'TypeError') {
+                addLog('[SeaVision] ⚠ CORS blocked — API ไม่รองรับ browser direct call', '#f59e0b');
+                return 0;
+            }
+            // ลอง endpoint ถัดไป
+        }
+    }
+    addLog('[SeaVision] ✗ ไม่สามารถเชื่อมต่อ SeaVision API ได้', '#ef4444');
+    return 0;
+}
+
+// ── SeaVision Key Modal ────────────────────────────────────────
+function showSVKeyModal() {
+    const inp = document.getElementById('svKeyInput');
+    if (inp) inp.value = svApiKey;
+    document.getElementById('svKeyStatus').textContent = svApiKey
+        ? '✅ มี key บันทึกอยู่แล้ว'
+        : '⬜ ยังไม่ได้ตั้งค่า';
+    document.getElementById('svKeyOverlay').style.display = 'block';
+    document.getElementById('svKeyModal').style.display   = 'block';
+    setTimeout(() => { if (inp) inp.focus(); }, 80);
+}
+function closeSVKeyModal() {
+    document.getElementById('svKeyOverlay').style.display = 'none';
+    document.getElementById('svKeyModal').style.display   = 'none';
+}
+function saveSVKey() {
+    const val = (document.getElementById('svKeyInput').value || '').trim();
+    svApiKey = val;
+    if (val) {
+        localStorage.setItem(SV_KEY_STORAGE, val);
+        document.getElementById('svKeyStatus').textContent = '✅ บันทึกแล้ว';
+        addLog('[SeaVision] 🔑 บันทึก API key แล้ว — กด AIS Live เพื่อใช้งาน', '#818cf8');
+    } else {
+        localStorage.removeItem(SV_KEY_STORAGE);
+        document.getElementById('svKeyStatus').textContent = '⬜ ลบ key แล้ว';
+    }
+    _updateSVBtn();
+    setTimeout(closeSVKeyModal, 700);
+}
+function clearSVKey() {
+    svApiKey = '';
+    localStorage.removeItem(SV_KEY_STORAGE);
+    document.getElementById('svKeyInput').value = '';
+    document.getElementById('svKeyStatus').textContent = '🗑 ลบ key แล้ว';
+    _updateSVBtn();
+    addLog('[SeaVision] key ถูกลบออกแล้ว', '#64748b');
+    setTimeout(closeSVKeyModal, 500);
+}
+
 // ═══════════════════════════════════════════════════════════════
 //  MARITIME OVERLAY DATA — from แผนที่ทางทะเลไทย.kml (Thai Valuer group)
 //  Layers: TS 12NM · Straight Baseline · JDA · Bathymetric Contours
@@ -3915,9 +4097,10 @@ function makeAISIcon(v) {
     const midY   = -Math.round( 1 * ls);   // superstructure top
     const mastY  = -Math.round( 8 * ls);   // mast dot
 
-    const c = v.color;
+    const c       = v.color;
     const vecTipY = bowY - vec;
-    const cached  = !!v.fromCache;  // dim icon if position is from localStorage cache
+    const cached  = !!v.fromCache;      // dim icon if position is from localStorage cache
+    const fromSV  = !!v.fromSeaVision;  // SeaVision snapshot — purple outline ring
 
     const svg = `<svg xmlns="http://www.w3.org/2000/svg"
         width="${sz}" height="${sz}" viewBox="-${h} -${h} ${sz} ${sz}"
@@ -3937,6 +4120,9 @@ function makeAISIcon(v) {
               fill="rgba(2,10,25,0.78)" stroke="${c}44" stroke-width="0.8" rx="0.5"/>
         <!-- Bow mast dot -->
         <circle cx="0" cy="${mastY}" r="2.0" fill="${c}" opacity="0.90"/>
+        ${fromSV ? `<!-- SeaVision ring -->
+        <circle cx="0" cy="0" r="${Math.round(9*ls)}" fill="none"
+                stroke="#818cf8" stroke-width="0.9" opacity="0.55" stroke-dasharray="3,3"/>` : ''}
       </g>
     </svg>`;
 
@@ -3982,7 +4168,7 @@ function makeAISPopup(v) {
       </div>
       <div style="margin-top:7px;padding-top:5px;border-top:1px solid ${tc}20;
                   font-size:9px;color:rgba(255,255,255,.25);text-align:right;">
-          ${v.fromCache ? `🟡 CACHE · ${v.cacheAgeMin} นาทีที่แล้ว` : v.lastSeen ? '🟢 AISStream LIVE' : '🔵 SIM'} · ${new Date().toLocaleTimeString('th-TH')}
+          ${v.fromSeaVision ? '🟣 SeaVision SNAP' : v.fromCache ? `🟡 CACHE · ${v.cacheAgeMin} นาทีที่แล้ว` : v.lastSeen ? '🟢 AISStream LIVE' : '🔵 SIM'} · ${new Date().toLocaleTimeString('th-TH')}
       </div>
     </div>`;
 }
@@ -4093,6 +4279,8 @@ function connectAISStream() {
         btn.textContent = '📡 AIS LIVE ●';
         aisLayerGroup.addTo(map);
         addLog('[AIS] ✓ AISStream เชื่อมต่อสำเร็จ — Gulf of Thailand / Sattahip', '#64ffda');
+        // SeaVision snapshot ถ้ามี key → ดึงทันที (non-blocking)
+        if (svApiKey) fetchSeaVisionSnapshot();
         // โหลด cache ทันที → เรือปรากฏบนแผนที่ก่อนรอ live data
         const cachedN = loadAISCache();
         if (cachedN > 0) {
@@ -9002,6 +9190,38 @@ initGuardianUUVs();
 initPatrolVessels();
 // Initial tide update (before first animate frame)
 updateTide();
+// อัปเดตสถานะปุ่ม SeaVision ตาม key ที่บันทึกไว้
+_updateSVBtn();
 </script>
+
+<!-- ── SeaVision API Key Modal ─────────────────────────────── -->
+<div id="svKeyOverlay" onclick="closeSVKeyModal()"></div>
+<div id="svKeyModal">
+  <div style="font-size:16px;font-weight:700;color:#818cf8;margin-bottom:6px;">🛰 SeaVision API Key</div>
+  <div style="font-size:12px;color:#64748b;margin-bottom:14px;line-height:1.6;">
+    กรอก API Key จาก <span style="color:#818cf8;">api.seavision.volpe.dot.gov</span><br>
+    ใช้เป็น Bearer token — เก็บใน localStorage เครื่องนี้เท่านั้น<br>
+    เมื่อกด AIS Live → SeaVision snapshot จะโหลดก่อน AISStream
+  </div>
+  <div style="font-size:11px;color:#475569;margin-bottom:6px;">API Key / Bearer Token</div>
+  <input id="svKeyInput" type="password" placeholder="ว่างไว้ = ไม่ใช้ SeaVision"
+    style="width:100%;padding:9px 10px;background:#060f1c;border:1px solid #334155;
+    color:#e2e8f0;border-radius:5px;font-size:13px;box-sizing:border-box;outline:none;
+    font-family:'Sarabun',sans-serif;"
+    onfocus="this.style.borderColor='#818cf8'"
+    onblur="this.style.borderColor='#334155'"/>
+  <div id="svKeyStatus" style="font-size:11px;margin-top:6px;min-height:16px;color:#64748b;"></div>
+  <div style="margin-top:14px;display:flex;gap:8px;justify-content:flex-end;">
+    <button onclick="clearSVKey()"
+      style="padding:6px 13px;background:transparent;border:1px solid #374151;
+      color:#6b7280;border-radius:5px;cursor:pointer;font-size:12px;">ลบ Key</button>
+    <button onclick="closeSVKeyModal()"
+      style="padding:6px 13px;background:transparent;border:1px solid #374151;
+      color:#94a3b8;border-radius:5px;cursor:pointer;font-size:12px;">ยกเลิก</button>
+    <button onclick="saveSVKey()"
+      style="padding:6px 16px;background:rgba(129,140,248,.18);border:1px solid #818cf8;
+      color:#a5b4fc;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;">บันทึก</button>
+  </div>
+</div>
 </body>
 </html>
