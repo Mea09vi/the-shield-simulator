@@ -4671,9 +4671,9 @@ map.on('click', function(e) {
     const nx = (e.latlng.lng - LNG_LEFT)  / (LNG_RIGHT - LNG_LEFT);
     const ny = (LAT_TOP - e.latlng.lat)   / (LAT_TOP   - LAT_BOT);
 
-    // Keep within viewport bounds (5% margin)
-    if (nx < 0.05 || nx > 0.95 || ny < 0.05 || ny > 0.95) {
-        addLog('⚠️ วางเรือนอกขอบแผนที่ — เลือกตำแหน่งในทะเลครับ');
+    // Keep within viewport bounds (extended: -10% to 110% — allows long-range patrol)
+    if (nx < -0.10 || nx > 1.10 || ny < -0.10 || ny > 1.10) {
+        addLog('⚠️ วางเรือนอกขอบเขตที่อนุญาต — เลือกในรัศมีปฏิบัติการ');
         return;
     }
     const userPVs = patrolVessels.filter(v => v.userPlaced).length;
@@ -4738,7 +4738,7 @@ map.on('click', function(e) {
     if (!placeGUUVMode) return;
     const nx = (e.latlng.lng - LNG_LEFT) / (LNG_RIGHT - LNG_LEFT);
     const ny = (LAT_TOP - e.latlng.lat) / (LAT_TOP - LAT_BOT);
-    if (nx<0.03||nx>0.97||ny<0.03||ny>0.97) { addLog('⚠️ GUUV นอกขอบแผนที่'); return; }
+    if (nx<-0.10||nx>1.10||ny<-0.10||ny>1.10) { addLog('⚠️ GUUV นอกขอบเขตที่อนุญาต'); return; }
     if (guardianUUVs.filter(g=>g.userPlaced).length >= GUUV_MAX) {
         addLog(`⚠️ GUUV สูงสุด ${GUUV_MAX} ลำแล้ว — ลบลำเก่าก่อน (คลิกขวา)`, '#f59e0b');
         placeGUUVMode = false;
@@ -4777,7 +4777,7 @@ map.on('click', function(e) {
     if (!placeSurveyMode) return;
     const nx = (e.latlng.lng - LNG_LEFT) / (LNG_RIGHT - LNG_LEFT);
     const ny = (LAT_TOP - e.latlng.lat) / (LAT_TOP - LAT_BOT);
-    if (nx<0.03||nx>0.97||ny<0.03||ny>0.97) { addLog('⚠️ เรือสำรวจนอกขอบแผนที่'); return; }
+    if (nx<-0.10||nx>1.10||ny<-0.10||ny>1.10) { addLog('⚠️ เรือสำรวจนอกขอบเขตที่อนุญาต'); return; }
     svUserCount++;
     const label = 'HSV-' + svUserCount;
     // Survey pattern — 3× wider than patrol vessel
@@ -6416,6 +6416,123 @@ function drawCable2() {
 //  รูปแบบเส้นทาง: Lawnmower Pattern (กลับไปกลับมาขนานกัน)
 //  เพื่อให้ Swath ซ้อนทับกัน 20–30% → ไม่มี Gap ในข้อมูล
 // ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+//  SURFACE OBSTACLE AVOIDANCE — COLREGS-inspired
+//  ─────────────────────────────────────────────────────────────
+//  ตรวจสอบสิ่งกีดขวาง 2 แบบ ภายในระยะ 0.3 nm:
+//    1. ชายฝั่ง (landMask)
+//    2. เรืออื่น (patrolVessels, surveyVessels, AIS vessels)
+//
+//  เมื่อพบ:
+//    • ชะลอความเร็ว → 40% ของปกติ
+//    • เลี้ยวหลบ (COLREGS: turn starboard ก่อน)
+//    • เมื่อพ้นสิ่งกีดขวาง → resume navigation
+//
+//  Visual:  แสดง ⚠AVOID badge สีส้มข้างเรือ
+// ═══════════════════════════════════════════════════════════════
+const AVOID_RANGE_NM   = 0.3;
+const AVOID_FRONT_CONE = Math.PI / 3;    // ±60° forward cone
+const AVOID_TURN_RATE  = 0.03;            // rad to bias starboard
+const AVOID_SLOW_FACTOR = 0.40;
+const AVOID_VESSEL_NY   = 0.012;          // direct collision check
+
+// คำนวณ NM → ny units (depends on LAT_TOP/LAT_BOT existing)
+function _avoidRangeNY() {
+    if (typeof LAT_TOP === 'undefined' || typeof LAT_BOT === 'undefined') return 0.012;
+    return AVOID_RANGE_NM / ((LAT_TOP - LAT_BOT) * 60);
+}
+
+// ตรวจสอบสิ่งกีดขวางในเส้นทาง — คืน object ถ้าพบ
+function detectSurfaceObstacle(self, ownX, ownY, hdg) {
+    const look = _avoidRangeNY();
+    // ── 1. Land obstacle — sample 3 points along heading
+    if (typeof landMaskReady !== 'undefined' && landMaskReady && typeof isOnLand === 'function') {
+        for (let k = 0.35; k <= 1.0; k += 0.32) {
+            const tx = ownX + Math.cos(hdg) * look * k;
+            const ty = ownY + Math.sin(hdg) * look * k;
+            if (tx < -0.05 || tx > 1.05 || ty < -0.05 || ty > 1.05) continue;
+            if (isOnLand(tx, ty)) {
+                return { type:'land', distance: look*k, bearing: hdg };
+            }
+        }
+    }
+    // ── 2. Vessel obstacle — proximity to other surface assets
+    const fleet = [];
+    if (typeof patrolVessels !== 'undefined') patrolVessels.forEach(v => fleet.push(v));
+    if (typeof surveyVessels !== 'undefined') surveyVessels.forEach(v => fleet.push(v));
+    // (AIS vessels - skip, ตรวจในระดับ Leaflet, ไม่อยู่ใน ny coords)
+    for (const other of fleet) {
+        if (other === self) continue;
+        if (other.nx === undefined || other.ny === undefined) continue;
+        const dx = other.nx - ownX, dy = other.ny - ownY;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist > look || dist < 0.0001) continue;
+        // เช็คว่าอยู่ใน forward cone (±60°) ไหม
+        const bearing = Math.atan2(dy, dx);
+        let dHdg = bearing - hdg;
+        while (dHdg >  Math.PI) dHdg -= 2*Math.PI;
+        while (dHdg < -Math.PI) dHdg += 2*Math.PI;
+        if (Math.abs(dHdg) < AVOID_FRONT_CONE) {
+            return { type:'vessel', distance: dist, bearing, dHdg, otherLabel: other.label };
+        }
+    }
+    return null;
+}
+
+// คำนวณ heading หลบสิ่งกีดขวาง
+function computeAvoidanceHeading(self, obs) {
+    if (!obs) return null;
+    // For vessel: COLREGS turn starboard (right = positive in math convention)
+    if (obs.type === 'vessel') {
+        return self.heading + Math.PI/4;   // turn 45° starboard
+    }
+    // For land: sample left vs right, pick the one with open water
+    const look = _avoidRangeNY() * 0.7;
+    const testL = self.heading - 0.7;
+    const testR = self.heading + 0.7;
+    const lx = self.nx + Math.cos(testL) * look;
+    const ly = self.ny + Math.sin(testL) * look;
+    const rx = self.nx + Math.cos(testR) * look;
+    const ry = self.ny + Math.sin(testR) * look;
+    const leftBlocked  = (typeof isOnLand === 'function' && isOnLand(lx, ly));
+    const rightBlocked = (typeof isOnLand === 'function' && isOnLand(rx, ry));
+    if (leftBlocked && !rightBlocked) return testR;
+    if (rightBlocked && !leftBlocked) return testL;
+    // ทั้งสองด้านเปิด/ปิด — เลี้ยวขวาตาม COLREGS
+    return testR;
+}
+
+// อัปเดต state การหลบของเรือ — เรียกในการเคลื่อนที่ทุก frame
+// return: { speedFactor, targetHdg } — overrides ถ้ากำลังหลบ
+function applyObstacleAvoidance(v, baseTargetHdg) {
+    const obs = detectSurfaceObstacle(v, v.nx, v.ny, v.heading);
+    if (obs) {
+        if (!v._avoidingObstacle) {
+            // เริ่ม avoid mode
+            v._avoidingObstacle = obs.type;
+            v._avoidStart = (typeof frame !== 'undefined') ? frame : 0;
+            const lbl = obs.type === 'vessel' ? `เรือ ${obs.otherLabel}` : 'ชายฝั่ง';
+            if (typeof addLog === 'function')
+                addLog(`⚠️ ${v.label} หลบ${lbl} — slow + turn starboard`, '#f59e0b');
+        }
+        return {
+            speedFactor: AVOID_SLOW_FACTOR,
+            targetHdg:   computeAvoidanceHeading(v, obs),
+            avoiding:    true,
+            obsType:     obs.type,
+        };
+    } else {
+        if (v._avoidingObstacle) {
+            // resume — log เพียงครั้งเดียว
+            if (typeof addLog === 'function')
+                addLog(`✓ ${v.label} resume navigation — สิ่งกีดขวางพ้น`, '#22c55e');
+            v._avoidingObstacle = null;
+            v._avoidStart = null;
+        }
+        return { speedFactor: 1.0, targetHdg: baseTargetHdg, avoiding: false };
+    }
+}
+
 function drawSurveyVessels() {
     surveyVessels.forEach(v => {
         const C = v.color || '#67e8f9';
@@ -6641,6 +6758,16 @@ function drawSurveyVessels() {
         if (v.ctdCast && v.ctdCast.active) active.push('▼');
         ctx.font='9px "Share Tech Mono"'; ctx.fillStyle='rgba(103,232,249,0.65)';
         ctx.fillText('▐' + active.join(' ') + '▌', x, y+39);
+
+        // ── Obstacle Avoidance badge (blinking) ──
+        if (v._avoidingObstacle) {
+            const blink = Math.sin(frame*0.18) > 0;
+            ctx.font='bold 10px "Share Tech Mono"';
+            ctx.fillStyle = blink ? '#f59e0b' : 'rgba(245,158,11,0.4)';
+            ctx.textAlign='center';
+            const lbl = v._avoidingObstacle === 'land' ? '⚠AVOID·LAND' : '⚠AVOID·VESSEL';
+            ctx.fillText(lbl, x, y-22);
+        }
     });
 }
 
@@ -7595,6 +7722,14 @@ function drawPatrolVessels() {
         ctx.font='10px "Share Tech Mono"';
         ctx.fillStyle=stateCol;
         ctx.fillText(v.state,x,y+40);
+        // ── Obstacle Avoidance badge (blinking) ──
+        if (v._avoidingObstacle) {
+            const blink = Math.sin(frame*0.18) > 0;
+            ctx.font='bold 10px "Share Tech Mono"';
+            ctx.fillStyle = blink ? '#f59e0b' : 'rgba(245,158,11,0.4)';
+            const lbl = v._avoidingObstacle === 'land' ? '⚠AVOID·LAND' : '⚠AVOID·VESSEL';
+            ctx.fillText(lbl, x, y-22);
+        }
         // ── fuel bar (mini, under label) ──
         const fbW=30,fbH=3,fbX=x-fbW/2,fbY=y+44;
         ctx.fillStyle='rgba(255,255,255,0.12)'; ctx.fillRect(fbX,fbY,fbW,fbH);
@@ -8163,13 +8298,52 @@ function animate() {
         }
     });
 
-    // Move Survey Vessels
+    // Move Survey Vessels (with obstacle avoidance + heading interpolation)
+    const HSV_MAX_TURN = 0.06;   // gentler than PV — survey vessels keep steady
     surveyVessels.forEach(v=>{
-        const wp=v.waypoints[v.currentWP];
-        const dx=wp.nx-v.nx,dy=wp.ny-v.ny,d=Math.sqrt(dx*dx+dy*dy);
-        if (d<0.012) v.currentWP=(v.currentWP+1)%v.waypoints.length;
-        else{v.nx+=(dx/d)*v.speed;v.ny+=(dy/d)*v.speed;}
-        v.scanLine=(v.scanLine||0)+1;
+        // Skip WP that's on land
+        let _sg = 0;
+        while (_sg++ < v.waypoints.length &&
+               typeof isOnLand === 'function' && landMaskReady &&
+               isOnLand(v.waypoints[v.currentWP].nx, v.waypoints[v.currentWP].ny)) {
+            v.currentWP = (v.currentWP + 1) % v.waypoints.length;
+        }
+        const wp = v.waypoints[v.currentWP];
+        const dx = wp.nx - v.nx, dy = wp.ny - v.ny;
+        const d  = Math.sqrt(dx*dx + dy*dy);
+        if (d < 0.012) {
+            v.currentWP = (v.currentWP+1) % v.waypoints.length;
+            v.scanLine = (v.scanLine||0)+1;
+            return;
+        }
+        // Target heading toward waypoint
+        let targetHdg = Math.atan2(dy, dx);
+        if (v.heading === undefined) v.heading = targetHdg;
+        // Obstacle avoidance override
+        const av = applyObstacleAvoidance(v, targetHdg);
+        if (av.avoiding) targetHdg = av.targetHdg;
+        // Smooth heading interpolation
+        let dHdg = targetHdg - v.heading;
+        while (dHdg >  Math.PI) dHdg -= 2*Math.PI;
+        while (dHdg < -Math.PI) dHdg += 2*Math.PI;
+        v.heading += Math.sign(dHdg) * Math.min(Math.abs(dHdg), HSV_MAX_TURN);
+        // Effective speed = base × avoidance factor × turn slowdown
+        const turnSlow = Math.abs(dHdg) > 0.8 ? 0.5 : 1.0;
+        const eff = v.speed * av.speedFactor * turnSlow;
+        // Move only if next position is not land
+        const nx = v.nx + Math.cos(v.heading) * eff;
+        const ny = v.ny + Math.sin(v.heading) * eff;
+        if (!landMaskReady || !isOnLand(nx, ny)) {
+            v.nx = nx; v.ny = ny;
+            v._landStuck = 0;
+        } else {
+            v._landStuck = (v._landStuck||0) + 1;
+            if (v._landStuck > 300) {
+                v._landStuck = 0;
+                v.currentWP = (v.currentWP+1) % v.waypoints.length;
+            }
+        }
+        v.scanLine = (v.scanLine||0)+1;
     });
 
     // ── Move Patrol Vessels + MEZ Engagement State Machine ───────
@@ -8308,19 +8482,26 @@ function animate() {
             }
         }
 
+        // 4ax. ── Obstacle Avoidance — override targetHdg ถ้าพบสิ่งกีดขวาง ──
+        const avoidance = applyObstacleAvoidance(v, targetHdg);
+        if (avoidance.avoiding) {
+            targetHdg = avoidance.targetHdg;
+        }
+
         // 4b. Smooth heading update (single MAX_TURN)
         let dHdg = targetHdg - v.heading;
         while (dHdg >  Math.PI) dHdg -= 2*Math.PI;
         while (dHdg < -Math.PI) dHdg += 2*Math.PI;
         v.heading += Math.sign(dHdg) * Math.min(Math.abs(dHdg), MAX_TURN);
 
-        // 4c. ชะลอความเร็วเมื่อต้องเลี้ยวแหลม (ลด overshoot + realistic)
+        // 4c. ชะลอความเร็วเมื่อต้องเลี้ยวแหลม + เมื่อ avoiding
         //     turn_radius = eff_speed / MAX_TURN  →  ต้อง < WP spacing
         const absDHdg     = Math.abs(dHdg);
         const turnSpeedMod = absDHdg > 0.8 ? 0.30     // เลี้ยว >46° → 30% speed
                            : absDHdg > 0.3 ? 0.60     // เลี้ยว 17-46° → 60% speed
                            :                 1.00;    // ตรง → full speed
-        const effSpd = moveSpd * turnSpeedMod;
+        // Avoidance multiplier — slow further when avoiding obstacle
+        const effSpd = moveSpd * turnSpeedMod * avoidance.speedFactor;
 
         // 4d. เคลื่อนที่ — ถ้าชนฝั่ง ไม่เคลื่อน (heading หมุนหาทางออกตาม WP)
         const pvNextX = v.nx + Math.cos(v.heading) * effSpd * pvSpdFactor;
