@@ -1433,6 +1433,11 @@
                     onclick="toggleAISLive()">📡 AIS Live<span id="ais-live-count" style="margin-left:4px;font-size:9px;opacity:.8;"></span></button>
             <button id="svKeyBtn" class="sv-key-btn" title="SeaVision API Key — snapshot เรือจาก US DOT Volpe"
                     onclick="showSVKeyModal()">🛰 SV Key</button>
+            <button id="svImportBtn" class="sv-key-btn" title="Import ไฟล์ JSON ที่ export จาก SeaVision (bypass CORS)"
+                    onclick="document.getElementById('svImportInput').click()">📂 SV Import</button>
+            <input type="file" id="svImportInput" accept=".json,application/json"
+                   style="display:none"
+                   onchange="if(this.files[0]){importSVExport(this.files[0]);this.value='';}"/>
             <button id="bathyBtn" title="Bathymetry — เส้นชั้นความลึก (Isobath) 10/20/30/50 เมตร จากข้อมูลแผนที่ทางทะเลไทย"
                     onclick="toggleBathymetry()">🌊 Bathymetry</button>
             <button id="seaZonesBtn" title="Sea Zones — เส้นฐานตรง · ทะเลอาณาเขต 12 ไมล์ · เขต JDA ไทย-มาเลเซีย"
@@ -4047,6 +4052,105 @@ function clearSVKey() {
     setTimeout(closeSVKeyModal, 500);
 }
 
+// ── SeaVision JSON Export Import (bypass CORS) ─────────────────
+// อ่านไฟล์ search results ที่ download จาก SeaVision portal
+// Format: [{vesselName,mmsi,lat,lon,shipType,timeOfFix,age,...}, ...]
+function importSVExport(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            const list = Array.isArray(data) ? data
+                       : Array.isArray(data.vessels) ? data.vessels
+                       : Array.isArray(data.results) ? data.results
+                       : Array.isArray(data.data)    ? data.data : [];
+            if (!list.length) {
+                addLog('[SV-Import] ✗ ไฟล์ว่าง — ไม่พบเรือ', '#ef4444');
+                return;
+            }
+            // เปิด AIS layer ถ้ายังไม่ active
+            if (!aisLiveActive) {
+                aisLiveActive = true;
+                aisRealMode   = true;
+                aisLayerGroup.addTo(map);
+                const btn = document.getElementById('aisToggleBtn');
+                btn.classList.add('ais-live');
+                btn.textContent = '📡 AIS LIVE ●';
+            }
+            let count = 0, skipped = 0, replaced = 0;
+            list.forEach(raw => {
+                const mmsi = String(raw.mmsi || raw.MMSI || '').trim();
+                const lat  = parseFloat(raw.lat || raw.latitude  || 0);
+                const lng  = parseFloat(raw.lon || raw.longitude || raw.lng || 0);
+                if (!mmsi || !lat || !lng) { skipped++; return; }
+                // Land filter
+                const nx = (lng - LNG_LEFT) / (LNG_RIGHT - LNG_LEFT);
+                const ny = (LAT_TOP - lat)  / (LAT_TOP   - LAT_BOT);
+                if (landMaskReady && nx>=0&&nx<=1&&ny>=0&&ny<=1 && isOnLand(nx,ny)) { skipped++; return; }
+                // Parse "30-Fishing" → 30
+                const stM = String(raw.shipType || '').match(/^(\d+)/);
+                const tc  = stM ? parseInt(stM[1]) : 0;
+                const nsM = String(raw.navigationStatus || '').match(/^(\d+)/);
+                const ns  = nsM ? parseInt(nsM[1]) : 0;
+                const wasReplaced = !!aisRealVessels[mmsi];
+                if (wasReplaced) replaced++;
+                const v = {
+                    mmsi, lat, lng,
+                    name:     raw.vesselName || raw.name || mmsi,
+                    flag:     raw.flag || _mmsiFlag(mmsi),
+                    callsign: raw.callSign || '',
+                    type:     _aisTypeName(tc),
+                    typeCode: tc,
+                    cog:      parseFloat(raw.cog || raw.COG || 0),
+                    sog:      parseFloat(raw.sog || raw.SOG || 0),
+                    heading:  parseFloat(raw.heading || raw.HDG || 0),
+                    length:   _shipLengthByType(tc),
+                    imo:      raw.imo || '',
+                    dest:     raw.destination || '',
+                    status:   _navStatus(ns),
+                    color:    _aisTypeColor(tc),
+                    age:      raw.age || '',
+                    timeOfFix:raw.timeOfFix || '',
+                    lastSeen: raw.timeOfFix ? new Date(raw.timeOfFix).getTime() : Date.now(),
+                    fromSVExport: true,
+                    fromSeaVision: true,  // ให้ icon มี ring ม่วง
+                };
+                aisRealVessels[mmsi] = v;
+                count++;
+            });
+            // refresh aisVesselData ให้ตรงกับ realVessels (dedupe ในตัว)
+            aisVesselData = Object.values(aisRealVessels);
+            renderAISVessels();
+            const badge = document.getElementById('ais-live-count');
+            if (badge) badge.textContent = '●' + Object.keys(aisRealVessels).length;
+            addLog(`[SV-Import] ✅ โหลด ${count} ลำ (skip ${skipped}, แทนที่ ${replaced}) จาก ${file.name}`, '#818cf8');
+            // บันทึก cache → คงอยู่ข้าม session
+            saveAISCache();
+        } catch(err) {
+            addLog(`[SV-Import] ✗ parse error: ${err.message}`, '#ef4444');
+        }
+    };
+    reader.onerror = function() {
+        addLog('[SV-Import] ✗ อ่านไฟล์ไม่สำเร็จ', '#ef4444');
+    };
+    reader.readAsText(file);
+}
+
+// เดาความยาวเรือจาก typeCode (ใช้เมื่อ SeaVision ไม่ส่ง length มา)
+function _shipLengthByType(tc) {
+    if (tc >= 80 && tc <= 89) return 180;  // Tanker
+    if (tc >= 70 && tc <= 79) return 200;  // Cargo
+    if (tc >= 60 && tc <= 69) return 80;   // Passenger
+    if (tc === 30) return 25;              // Fishing
+    if (tc === 31 || tc === 32) return 40; // Tow
+    if (tc === 52) return 30;              // Tug
+    if (tc >= 35 && tc <= 36) return 100;  // Naval/Govt
+    if (tc === 37) return 30;              // Pleasure craft
+    if (tc === 50) return 30;              // Pilot
+    if (tc === 51) return 45;              // SAR
+    return 50;
+}
+
 // ═══════════════════════════════════════════════════════════════
 //  MARITIME OVERLAY DATA — from แผนที่ทางทะเลไทย.kml (Thai Valuer group)
 //  Layers: TS 12NM · Straight Baseline · JDA · Bathymetric Contours
@@ -4168,7 +4272,7 @@ function makeAISPopup(v) {
       </div>
       <div style="margin-top:7px;padding-top:5px;border-top:1px solid ${tc}20;
                   font-size:9px;color:rgba(255,255,255,.25);text-align:right;">
-          ${v.fromSeaVision ? '🟣 SeaVision SNAP' : v.fromCache ? `🟡 CACHE · ${v.cacheAgeMin} นาทีที่แล้ว` : v.lastSeen ? '🟢 AISStream LIVE' : '🔵 SIM'} · ${new Date().toLocaleTimeString('th-TH')}
+          ${v.fromSVExport ? `🟣 SeaVision EXPORT · ${v.age||''}` : v.fromSeaVision ? '🟣 SeaVision SNAP' : v.fromCache ? `🟡 CACHE · ${v.cacheAgeMin} นาทีที่แล้ว` : v.lastSeen ? '🟢 AISStream LIVE' : '🔵 SIM'} · ${new Date().toLocaleTimeString('th-TH')}
       </div>
     </div>`;
 }
