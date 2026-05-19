@@ -4779,7 +4779,7 @@ map.on('click', function(e) {
     const ny = (LAT_TOP - e.latlng.lat) / (LAT_TOP - LAT_BOT);
     if (nx<0.03||nx>0.97||ny<0.03||ny>0.97) { addLog('⚠️ เรือสำรวจนอกขอบแผนที่'); return; }
     svUserCount++;
-    const label = 'SV-' + svUserCount;
+    const label = 'HSV-' + svUserCount;
     // Survey pattern — 3× wider than patrol vessel
     const rw=0.165, rh=0.120;
     const wps = [
@@ -4787,12 +4787,31 @@ map.on('click', function(e) {
         {nx:nx+rw,ny:ny+rh},{nx:nx-rw,ny:ny+rh},
     ];
     surveyVessels.push({
-        label, color:'#fbbf24', speed:0.00033,   // slow survey speed
+        label, color:'#67e8f9', speed:0.00033,   // slow survey speed (~6 kn)
         nx:wps[0].nx, ny:wps[0].ny, waypoints:wps,
         currentWP:0, heading:0, redirected:false, redirectTarget:null, userPlaced:true,
-        scanLine: 0,   // for multibeam sweep visualisation
+        scanLine: 0,
+        // ── 8 Hydrographic sensors ──
+        sensors: {
+            mbes:  true,   // Multibeam Echo Sounder (always on)
+            sss:   true,   // Side Scan Sonar
+            mag:   true,   // Magnetometer
+            usbl:  false,  // UUV positioning (off by default)
+            adcp:  true,   // Acoustic Doppler Current Profiler
+            sbp:   false,  // Sub-bottom Profiler (off by default)
+            ctd:   false,  // CTD cast (event, not continuous)
+            cable: false,  // Cable Inspect mode
+        },
+        // ── Mission state ──
+        ctdCast:         null,        // {progress, depth, t, s, c}
+        cableInspection: { kpInspected: [], lastReport: '' },
+        coveredCells:    new Set(),   // surveyed grid cells (50×50)
+        magContacts:     [],          // detected non-acoustic contacts
+        lastSVPCast:     0,           // timestamp of last CTD complete
+        coveragePct:     0,
+        currentMode:     'MBES Survey',
     });
-    addLog(`🔬 วาง ${label} (Multibeam) ที่ ${e.latlng.lat.toFixed(3)}°N ${e.latlng.lng.toFixed(3)}°E`);
+    addLog(`🛰 วาง ${label} (Hydrographic Survey) ที่ ${e.latlng.lat.toFixed(3)}°N ${e.latlng.lng.toFixed(3)}°E`,'#67e8f9');
 });
 
 // ── Canvas right-click → remove nearest user vessel ──
@@ -6399,47 +6418,388 @@ function drawCable2() {
 // ═══════════════════════════════════════════════════════════════
 function drawSurveyVessels() {
     surveyVessels.forEach(v => {
-        // Wide survey pattern box
+        const C = v.color || '#67e8f9';
+        // ── Survey pattern outline ──
         ctx.save(); ctx.setLineDash([4,6]);
-        ctx.strokeStyle='rgba(251,191,36,0.18)'; ctx.lineWidth=1.5;
+        ctx.strokeStyle='rgba(103,232,249,0.15)'; ctx.lineWidth=1.2;
         const wp0=pn(v.waypoints[0].nx,v.waypoints[0].ny);
         ctx.beginPath(); ctx.moveTo(wp0.x,wp0.y);
         v.waypoints.forEach(wp=>{ const p=pn(wp.nx,wp.ny); ctx.lineTo(p.x,p.y); });
         ctx.closePath(); ctx.stroke(); ctx.setLineDash([]); ctx.restore();
 
-        // Multibeam fan (forward-looking sonar wedge)
         const {x,y}=pn(v.nx,v.ny);
         const wp=v.waypoints[v.currentWP];
         const wpPx=pn(wp.nx,wp.ny);
-        const angle=Math.atan2(wpPx.y-y,wpPx.x-x)+Math.PI/2;
-        const fanW=Math.PI*0.65, fanR=42;
-        ctx.save();
-        const fanGrad=ctx.createRadialGradient(x,y,0,x,y,fanR);
-        fanGrad.addColorStop(0,'rgba(251,191,36,0.22)');
-        fanGrad.addColorStop(1,'rgba(251,191,36,0)');
-        ctx.beginPath();
-        ctx.moveTo(x,y);
-        ctx.arc(x,y,fanR,angle-fanW/2,angle+fanW/2);
-        ctx.closePath();
-        ctx.fillStyle=fanGrad; ctx.fill();
-        ctx.strokeStyle='rgba(251,191,36,0.45)'; ctx.lineWidth=1; ctx.stroke();
+        // Bearing toward next WP (heading direction)
+        const hdg = Math.atan2(wpPx.y-y, wpPx.x-x);
+        const s   = v.sensors || {};
 
-        // Vessel body
-        ctx.translate(x,y); ctx.rotate(angle);
+        // ── 1. USBL Range Ring (4 nm friendly UUV tracking) ──
+        if (s.usbl) {
+            const usblR = _pxNm * 4.0;
+            ctx.save();
+            ctx.setLineDash([2,6]);
+            ctx.strokeStyle='rgba(34,197,94,0.18)'; ctx.lineWidth=1;
+            ctx.beginPath(); ctx.arc(x,y,usblR,0,Math.PI*2); ctx.stroke();
+            ctx.setLineDash([]);
+            // small "USBL" label NE quadrant
+            ctx.font='8px "Share Tech Mono"'; ctx.fillStyle='rgba(34,197,94,0.55)';
+            ctx.textAlign='left';
+            ctx.fillText('USBL 4nm', x+usblR*0.71+3, y-usblR*0.71);
+            ctx.restore();
+            // Highlight friendly Guardian UUVs within range
+            if (typeof guardianUUVs !== 'undefined') {
+                guardianUUVs.forEach(g=>{
+                    const gp = pn(g.nx, g.ny);
+                    const dx = gp.x - x, dy = gp.y - y;
+                    const d  = Math.sqrt(dx*dx + dy*dy);
+                    if (d < usblR) {
+                        ctx.save();
+                        ctx.strokeStyle = 'rgba(34,197,94,0.50)';
+                        ctx.lineWidth = 0.8; ctx.setLineDash([3,3]);
+                        ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(gp.x,gp.y); ctx.stroke();
+                        ctx.restore();
+                    }
+                });
+            }
+        }
+
+        // ── 2. MAG range ring + contacts ──
+        if (s.mag) {
+            const magR = _pxNm * 0.3;
+            ctx.save();
+            ctx.strokeStyle='rgba(168,85,247,0.30)'; ctx.lineWidth=1;
+            ctx.setLineDash([6,3]);
+            ctx.beginPath(); ctx.arc(x,y,magR,0,Math.PI*2); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.font='8px "Share Tech Mono"'; ctx.fillStyle='rgba(168,85,247,0.55)';
+            ctx.textAlign='left'; ctx.fillText('MAG', x+magR+2, y);
+            // Display MAG contacts (markers)
+            (v.magContacts || []).forEach(mc=>{
+                if (frame - mc.frame > 360) return;  // 6 sec fade
+                const mp = pn(mc.nx, mc.ny);
+                const alpha = 1 - (frame-mc.frame)/360;
+                ctx.fillStyle = `rgba(168,85,247,${alpha*0.8})`;
+                ctx.beginPath(); ctx.arc(mp.x, mp.y, 4, 0, Math.PI*2); ctx.fill();
+                ctx.strokeStyle = `rgba(168,85,247,${alpha})`;
+                ctx.lineWidth=1; ctx.stroke();
+                ctx.font='8px "Share Tech Mono"';
+                ctx.fillText('Δ', mp.x-2, mp.y-6);
+            });
+            ctx.restore();
+        }
+
+        // ── 3. MBES Swath (downward cone, ±60° below vessel) ──
+        if (s.mbes) {
+            const mbR = _pxNm * 0.20;
+            const halfA = Math.PI/3;   // 60° each side
+            // Swath sweeps along heading direction, downward beam
+            const dpr = hdg + Math.PI/2;  // perpendicular = downward beam axis
+            ctx.save();
+            const grad=ctx.createRadialGradient(x,y,0,x,y,mbR);
+            grad.addColorStop(0,'rgba(103,232,249,0.22)');
+            grad.addColorStop(1,'rgba(103,232,249,0)');
+            ctx.beginPath();
+            ctx.moveTo(x,y);
+            ctx.arc(x,y,mbR, dpr-halfA, dpr+halfA);
+            ctx.closePath();
+            ctx.fillStyle=grad; ctx.fill();
+            ctx.strokeStyle='rgba(103,232,249,0.50)'; ctx.lineWidth=1;
+            ctx.stroke();
+            // Animated scan line (perpendicular sweep)
+            const sweepA = dpr + Math.sin(frame*0.08) * halfA;
+            ctx.beginPath();
+            ctx.moveTo(x,y);
+            ctx.lineTo(x + mbR*Math.cos(sweepA), y + mbR*Math.sin(sweepA));
+            ctx.strokeStyle='rgba(103,232,249,0.65)'; ctx.lineWidth=1.5;
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // ── 4. SSS Strips (left + right, perpendicular to heading) ──
+        if (s.sss) {
+            const sssR = _pxNm * 0.15;
+            const sssW = 6;     // strip half-width
+            const portA = hdg - Math.PI/2;
+            const stbdA = hdg + Math.PI/2;
+            ctx.save();
+            // Port strip
+            const px1 = x + sssW * Math.cos(hdg);
+            const py1 = y + sssW * Math.sin(hdg);
+            ctx.fillStyle = 'rgba(56,189,248,0.15)';
+            ctx.strokeStyle = 'rgba(56,189,248,0.40)';
+            ctx.lineWidth = 0.8; ctx.setLineDash([4,3]);
+            // Port (left) rectangle
+            ctx.beginPath();
+            ctx.moveTo(x-sssW*Math.cos(hdg), y-sssW*Math.sin(hdg));
+            ctx.lineTo(x-sssW*Math.cos(hdg) + sssR*Math.cos(portA), y-sssW*Math.sin(hdg) + sssR*Math.sin(portA));
+            ctx.lineTo(x+sssW*Math.cos(hdg) + sssR*Math.cos(portA), y+sssW*Math.sin(hdg) + sssR*Math.sin(portA));
+            ctx.lineTo(x+sssW*Math.cos(hdg), y+sssW*Math.sin(hdg));
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+            // Starboard (right)
+            ctx.beginPath();
+            ctx.moveTo(x-sssW*Math.cos(hdg), y-sssW*Math.sin(hdg));
+            ctx.lineTo(x-sssW*Math.cos(hdg) + sssR*Math.cos(stbdA), y-sssW*Math.sin(hdg) + sssR*Math.sin(stbdA));
+            ctx.lineTo(x+sssW*Math.cos(hdg) + sssR*Math.cos(stbdA), y+sssW*Math.sin(hdg) + sssR*Math.sin(stbdA));
+            ctx.lineTo(x+sssW*Math.cos(hdg), y+sssW*Math.sin(hdg));
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.restore();
+        }
+
+        // ── 5. CTD Cast Visualization (drop animation) ──
+        if (v.ctdCast && v.ctdCast.active) {
+            const c = v.ctdCast;
+            const dropY = y + 30 + (c.progress * 80);
+            ctx.save();
+            // Tether line
+            ctx.strokeStyle='rgba(250,204,21,0.6)'; ctx.lineWidth=1;
+            ctx.setLineDash([2,3]);
+            ctx.beginPath(); ctx.moveTo(x, y+10); ctx.lineTo(x, dropY); ctx.stroke();
+            ctx.setLineDash([]);
+            // CTD probe
+            ctx.fillStyle='#facc15';
+            ctx.beginPath(); ctx.arc(x, dropY, 4, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle='#fef3c7'; ctx.lineWidth=1; ctx.stroke();
+            // Progress label
+            ctx.font='9px "Share Tech Mono"'; ctx.fillStyle='#facc15';
+            ctx.textAlign='left';
+            ctx.fillText(`▼ CTD ${Math.round(c.progress*100)}%·${Math.round(c.depth)}m`, x+8, dropY);
+            ctx.restore();
+        }
+
+        // ── 6. Cable Inspect Mode (connecting line to nearest cable point) ──
+        if (s.cable && typeof CABLE_NX !== 'undefined') {
+            // Draw inspection ray to fiber cable (assume cable is at y midline)
+            ctx.save();
+            ctx.strokeStyle='rgba(251,146,60,0.40)'; ctx.lineWidth=1.5;
+            ctx.setLineDash([3,4]);
+            // For simplicity, draw a horizontal ray to nearest "cable" — visualization only
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + 50, y + 30);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            // Label
+            ctx.font='9px "Share Tech Mono"'; ctx.fillStyle='#fb923c';
+            ctx.textAlign='left'; ctx.fillText('🔗 CABLE INSPECT', x+10, y-8);
+            ctx.restore();
+        }
+
+        // ── 7. ADCP indicator (small arrows showing current) ──
+        if (s.adcp) {
+            ctx.save();
+            ctx.font='12px "Share Tech Mono"'; ctx.fillStyle='rgba(34,211,238,0.55)';
+            ctx.textAlign='center';
+            ctx.fillText('↟', x-22, y-5);   // current arrow
+            ctx.font='7px "Share Tech Mono"';
+            ctx.fillText('ADCP', x-22, y+5);
+            ctx.restore();
+        }
+
+        // ── 8. SBP indicator (sub-bottom penetration triangle) ──
+        if (s.sbp) {
+            ctx.save();
+            ctx.font='12px "Share Tech Mono"'; ctx.fillStyle='rgba(192,132,252,0.55)';
+            ctx.textAlign='center';
+            ctx.fillText('▽', x+22, y-5);
+            ctx.font='7px "Share Tech Mono"';
+            ctx.fillText('SBP', x+22, y+5);
+            ctx.restore();
+        }
+
+        // ── Hull (rotated) ──
+        ctx.save();
+        ctx.translate(x,y); ctx.rotate(hdg+Math.PI/2);
         const S=16;
         ctx.beginPath();
         ctx.moveTo(0,-S); ctx.lineTo(S*0.55,S*0.7);
         ctx.lineTo(0,S*0.3); ctx.lineTo(-S*0.55,S*0.7);
         ctx.closePath();
-        ctx.fillStyle='#fbbf24'; ctx.fill();
-        ctx.strokeStyle='rgba(251,191,36,0.7)'; ctx.lineWidth=1.5; ctx.stroke();
+        ctx.fillStyle=C; ctx.fill();
+        ctx.strokeStyle='rgba(103,232,249,0.85)'; ctx.lineWidth=1.5; ctx.stroke();
+        // Mast antenna dot
+        ctx.beginPath(); ctx.arc(0,-S*0.5,1.6,0,Math.PI*2);
+        ctx.fillStyle='#e0f2fe'; ctx.fill();
         ctx.restore();
 
-        // Label
-        ctx.font='10px "Share Tech Mono"'; ctx.fillStyle='#fbbf24';
+        // ── Label + mode ──
+        ctx.font='10px "Share Tech Mono"'; ctx.fillStyle=C;
         ctx.textAlign='center';
-        ctx.fillText(v.label+' ▐Multibeam▌',x,y+30);
+        ctx.fillText(v.label, x, y+28);
+        // Active sensor letters (compact)
+        const active = [];
+        if (s.mbes) active.push('M');
+        if (s.sss)  active.push('S');
+        if (s.mag)  active.push('Δ');
+        if (s.usbl) active.push('U');
+        if (s.adcp) active.push('↟');
+        if (s.sbp)  active.push('▽');
+        if (s.cable)active.push('🔗');
+        if (v.ctdCast && v.ctdCast.active) active.push('▼');
+        ctx.font='9px "Share Tech Mono"'; ctx.fillStyle='rgba(103,232,249,0.65)';
+        ctx.fillText('▐' + active.join(' ') + '▌', x, y+39);
     });
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  HSV — Hydrographic Survey Vessel Logic (Tier 1+2 features)
+// ───────────────────────────────────────────────────────────────
+//  CTD Cast → SVP update → Recompute PSR for all Guardian UUVs
+//  Cable Inspect → DAS sensor health report
+//  MAG sweep → Non-acoustic UUV detection
+//  Coverage tracking → grid cells surveyed
+// ═══════════════════════════════════════════════════════════════
+const HSV_CTD_DURATION_FRAMES = 600;        // ~10 sec @ 60fps
+const HSV_CTD_MAX_DEPTH       = 45;          // meters
+const HSV_MAG_RANGE_NM        = 0.30;
+const HSV_MAG_DETECTION_PD    = 0.65;        // 65% per check
+const HSV_SVP_SHARE_DURATION  = 30 * 60;     // 30 sec PSR boost
+
+// Global SVP modifier (updated by CTD casts) — read by computeGuardianPSR via effectiveMod
+let hsvSvpBoost     = 0;          // +/- dB modifier to TL_max
+let hsvSvpBoostEnd  = 0;          // frame when boost expires
+let hsvCableHealth  = 1.0;        // 0–1, modulates DAS sensitivity
+
+// ── Trigger CTD cast on first HSV ──────────────────────────────
+function startCTDCast(idx) {
+    const v = surveyVessels[idx !== undefined ? idx : 0];
+    if (!v) { addLog('[HSV] ✗ ไม่มีเรือสำรวจ — ลองวาง HSV ก่อน', '#ef4444'); return; }
+    if (v.ctdCast && v.ctdCast.active) {
+        addLog(`[HSV] ⏳ ${v.label} CTD cast กำลังดำเนินการอยู่`, '#fbbf24');
+        return;
+    }
+    v.ctdCast = { active:true, progress:0, depth:0, startFrame:frame };
+    v.sensors.ctd = true;
+    addLog(`[HSV] 🛰 ${v.label} เริ่ม CTD cast — วัด T·S·D → c(z) profile`, '#67e8f9');
+    sfxSonarPing();   // launch sound
+}
+
+function updateCTDCasts() {
+    surveyVessels.forEach(v => {
+        if (!v.ctdCast || !v.ctdCast.active) return;
+        const c = v.ctdCast;
+        const elapsed = frame - c.startFrame;
+        c.progress = Math.min(1, elapsed / HSV_CTD_DURATION_FRAMES);
+        c.depth    = c.progress * HSV_CTD_MAX_DEPTH;
+        // Cast complete
+        if (c.progress >= 1) {
+            completeCTDCast(v);
+        }
+    });
+}
+
+function completeCTDCast(v) {
+    v.ctdCast.active = false;
+    v.sensors.ctd    = false;
+    v.lastSVPCast    = frame;
+    // Generate sample SVP (calibrated to existing tide + temp model)
+    const surfaceT = 28.5 + Math.random()*0.8;       // 28.5–29.3°C
+    const deepT    = surfaceT - 4 - Math.random()*2; // ~4–6°C ลดลง
+    const salinity = 32.0 + Math.random()*0.5;       // ~32 psu
+    // Sound speed (Mackenzie at surface vs 30m)
+    const cSurface = 1448.96 + 4.591*surfaceT - 5.304e-2*surfaceT*surfaceT
+                   + 1.340*(salinity-35);
+    const cDeep    = 1448.96 + 4.591*deepT - 5.304e-2*deepT*deepT
+                   + 1.340*(salinity-35) + 1.630e-2*30;
+    v.ctdCast = {
+        active: false, completed: true,
+        surfaceT: surfaceT.toFixed(1),
+        deepT:    deepT.toFixed(1),
+        salinity: salinity.toFixed(1),
+        cSurface: cSurface.toFixed(1),
+        cDeep:    cDeep.toFixed(1),
+        thermoclineDepth: 12 + Math.floor(Math.random()*8),  // 12–20m
+    };
+    // Apply SVP boost (calmer profile → +2 dB TL_max for 30 sec)
+    hsvSvpBoost    = 2;
+    hsvSvpBoostEnd = frame + HSV_SVP_SHARE_DURATION;
+    addLog(`[HSV] ✅ ${v.label} CTD complete — c=${cSurface.toFixed(0)}/${cDeep.toFixed(0)} m/s · thermo ${v.ctdCast.thermoclineDepth}m`, '#67e8f9');
+    addLog(`[HSV] 📊 SVP shared → PSR ของ Guardian UUV เพิ่ม +2dB เป็นเวลา 30 วินาที`, '#22c55e');
+    sfxCapture();   // completion ping
+}
+
+// ── Cable Inspect Mode (HSV slowly traverses along cable route) ──
+function toggleCableInspect(idx) {
+    const v = surveyVessels[idx !== undefined ? idx : 0];
+    if (!v) { addLog('[HSV] ✗ ไม่มีเรือสำรวจ', '#ef4444'); return; }
+    v.sensors.cable = !v.sensors.cable;
+    if (v.sensors.cable) {
+        // Simulate cable health survey
+        const health = 0.85 + Math.random()*0.13;  // 85–98%
+        hsvCableHealth = health;
+        v.cableInspection.lastReport = `Health ${(health*100).toFixed(1)}% · OTDR nominal`;
+        addLog(`[HSV] 🔗 ${v.label} CABLE INSPECT ON — health ${(health*100).toFixed(1)}%`, '#fb923c');
+        addLog(`[HSV] DAS sensitivity ${health < 0.92 ? 'reduced — recommend service' : 'nominal'}`, health < 0.92 ? '#fbbf24' : '#22c55e');
+    } else {
+        addLog(`[HSV] 🔗 ${v.label} CABLE INSPECT OFF`, '#64748b');
+    }
+}
+
+// ── MAG Sweep — non-acoustic UUV detection ─────────────────────
+// Called from main update loop. Checks if any threat is within MAG range.
+function updateMAGDetection() {
+    if (typeof threats === 'undefined') return;
+    surveyVessels.forEach(v => {
+        if (!v.sensors.mag) return;
+        threats.forEach(t => {
+            if (!t.active || t.classified) return;
+            const dx = (t.nx - v.nx);
+            const dy = (t.ny - v.ny);
+            const distNm = Math.sqrt(dx*dx + dy*dy) * 27;   // rough nx→nm
+            if (distNm > HSV_MAG_RANGE_NM) return;
+            // Probabilistic detection per frame
+            if (Math.random() < HSV_MAG_DETECTION_PD / 60) {
+                t.classified = true;
+                v.magContacts.push({ nx:t.nx, ny:t.ny, frame, label:t.label });
+                addLog(`[HSV] 🧲 ${v.label} MAG contact — ${t.label || 'UUV'} @ ${distNm.toFixed(2)}nm (non-acoustic)`, '#a855f7');
+                sfxThreatDetect();
+                if (typeof setDomain === 'function') setDomain('underwater','warn');
+            }
+        });
+    });
+}
+
+// ── Toggle individual sensor ───────────────────────────────────
+function toggleHSVSensor(idx, key) {
+    const v = surveyVessels[idx];
+    if (!v || !v.sensors || !(key in v.sensors)) return;
+    v.sensors[key] = !v.sensors[key];
+    addLog(`[HSV] ${v.label} ${key.toUpperCase()} ${v.sensors[key]?'ON':'OFF'}`, '#67e8f9');
+}
+
+// ── HSV Panel update (called from updateUnderwaterPanel) ───────
+function buildHSVPanelHTML() {
+    if (!surveyVessels.length) return '';
+    return surveyVessels.map((v, i) => {
+        const s = v.sensors;
+        const c = v.ctdCast;
+        const ctdInfo = (c && c.completed) ? `c ${c.cSurface}/${c.cDeep} m/s` : (c && c.active ? `${Math.round(c.progress*100)}%` : 'idle');
+        const cableInfo = s.cable ? (v.cableInspection.lastReport || 'scanning…') : 'off';
+        const magN = v.magContacts.filter(m => frame - m.frame < 600).length;
+        const surveyCells = v.coveredCells ? v.coveredCells.size : 0;
+        return `<div style="font-size:10px;color:#64748b;line-height:1.5;padding-left:4px;margin-top:4px;border-top:1px solid rgba(103,232,249,0.15);padding-top:3px;">
+            <div><span style="color:#67e8f9;font-weight:600;">🛰 ${v.label}</span>
+                <span style="float:right;color:#94a3b8;">${v.currentMode}</span></div>
+            <div style="padding-left:6px;color:#475569;">
+                <span style="cursor:pointer;color:${s.mbes?'#67e8f9':'#334155'};" onclick="toggleHSVSensor(${i},'mbes')" title="Multibeam Echo Sounder">M·</span>
+                <span style="cursor:pointer;color:${s.sss ?'#38bdf8':'#334155'};" onclick="toggleHSVSensor(${i},'sss')"  title="Side Scan Sonar">S·</span>
+                <span style="cursor:pointer;color:${s.mag ?'#a855f7':'#334155'};" onclick="toggleHSVSensor(${i},'mag')"  title="Magnetometer">Δ·</span>
+                <span style="cursor:pointer;color:${s.usbl?'#22c55e':'#334155'};" onclick="toggleHSVSensor(${i},'usbl')" title="USBL Tracking">U·</span>
+                <span style="cursor:pointer;color:${s.adcp?'#22d3ee':'#334155'};" onclick="toggleHSVSensor(${i},'adcp')" title="ADCP Current">↟·</span>
+                <span style="cursor:pointer;color:${s.sbp ?'#c084fc':'#334155'};" onclick="toggleHSVSensor(${i},'sbp')"  title="Sub-bottom Profiler">▽·</span>
+                <span style="cursor:pointer;color:${s.cable?'#fb923c':'#334155'};" onclick="toggleCableInspect(${i})" title="Cable Inspect">🔗</span>
+                <button onclick="startCTDCast(${i})" style="margin-left:6px;font-size:9px;padding:1px 6px;background:rgba(250,204,21,.12);color:#facc15;border:1px solid rgba(250,204,21,.35);border-radius:3px;cursor:pointer;">▼ CTD</button>
+            </div>
+            <div style="padding-left:6px;color:#475569;font-size:9px;">
+                CTD: <span style="color:#facc15;">${ctdInfo}</span>
+                · Cable: <span style="color:#fb923c;">${cableInfo}</span>
+                · MAG: <span style="color:#a855f7;">${magN}</span>
+            </div>
+        </div>`;
+    }).join('');
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -6727,8 +7087,11 @@ function computeGuardianPSR(g) {
     const depth = g.depthBase || 30;
     const inThermo = depth >= 28 && depth <= 42;
     const THERMO_PEN = inThermo ? 5 : 0;
+    // HSV CTD boost — fresh SVP data from hydrographic survey
+    const ctdActive = (typeof hsvSvpBoostEnd !== 'undefined' && hsvSvpBoostEnd > (typeof frame !== 'undefined' ? frame : 0));
+    const SVP_BOOST = ctdActive ? hsvSvpBoost : 0;
     // SE = 0 → TL_max
-    const TL_max  = SL - NL + DI - DT - COAST_PEN - THERMO_PEN;
+    const TL_max  = SL - NL + DI - DT - COAST_PEN - THERMO_PEN + SVP_BOOST;
     const range_m = Math.pow(10, TL_max / 20);
     // Apply tide+environment combined modifier
     const envMod   = (typeof effectiveMod !== 'undefined') ? effectiveMod : 1;
@@ -8217,6 +8580,10 @@ function animate() {
     // V06: อัปเดต Threat Vector Timeline ทุก frame
     updateThreatTimeline();
 
+    // HSV — Hydrographic Survey Vessel updates
+    if (typeof updateCTDCasts    === 'function') updateCTDCasts();
+    if (typeof updateMAGDetection === 'function' && frame % 6 === 0) updateMAGDetection();
+
     // Thermal/PUE telemetry (update every 90 frames ≈ 1.5 s)
     if (frame % 90 === 0) updateThermalTelemetry();
     if (frame % 30 === 0) updateAirSurfacePanel();
@@ -9135,8 +9502,8 @@ function updateUnderwaterPanel() {
         }
     }
 
-    // Per-GUUV sub-rows — ROE Gate + PSR + Depth + Target
-    listEl.innerHTML = guardianUUVs.map(g => {
+    // Per-GUUV sub-rows + HSV section
+    const guuvHTML = guardianUUVs.map(g => {
         const hc = g.color || '#00d4ff';
         // ROE Gate
         const roe = g.roeGate || getROEGate(g);
@@ -9170,6 +9537,9 @@ function updateUnderwaterPanel() {
             </span>
         </div>`;
     }).join('');
+    // Combine GUUV + HSV sections
+    const hsvHTML = typeof buildHSVPanelHTML === 'function' ? buildHSVPanelHTML() : '';
+    listEl.innerHTML = guuvHTML + hsvHTML;
 }
 
 function updateThermalTelemetry() {
