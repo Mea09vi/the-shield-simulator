@@ -261,6 +261,17 @@
             color: #f87171;
         }
         .sv-reset-btn:hover { background:rgba(239,68,68,.18); }
+        /* Audio toggle button (สีม่วง) */
+        .audio-btn {
+            background: rgba(167,139,250,.08);
+            border-color: rgba(167,139,250,.35);
+            color: #a78bfa;
+        }
+        .audio-btn:hover { background:rgba(167,139,250,.22); }
+        .audio-btn.audio-on {
+            border-color:#a78bfa; color:#c4b5fd;
+            box-shadow:0 0 10px rgba(167,139,250,.40);
+        }
         .leaflet-control-zoom a {
             background:#081525 !important; color:var(--cyan) !important;
             border-color:#1a3a5c !important; font-size:16px !important;
@@ -1419,6 +1430,8 @@
                     onclick="document.getElementById('svImportInput').click()">📂 SV Import</button>
             <button id="svResetBtn" class="sv-key-btn sv-reset-btn" title="ล้างข้อมูล SeaVision JSON ที่นำเข้าทั้งหมด"
                     onclick="resetSVImport()">🗑 SV Reset</button>
+            <button id="audioBtn" class="sv-key-btn audio-btn" title="เปิด/ปิดเสียง SFX (sonar/DAS/ROE/explosion)"
+                    onclick="toggleAudio()">🔇 SFX</button>
             <input type="file" id="svImportInput" accept=".json,application/json"
                    style="display:none"
                    onchange="if(this.files[0]){importSVExport(this.files[0]);this.value='';}"/>
@@ -5277,6 +5290,7 @@ function checkDAS() {
         setDomain('underwater','warn');
         setSensor('uw-hydro','DAS ALERT !!','s-alert');
         updateStatus(`[DAS] ⚡ ตรวจพบ Acoustic signature บนสายเคเบิล!<br>[OTDR] Intrusion${kpStr}<br>[C2] กำลังแจ้ง UW-COPER`,'#f97316');
+        sfxDASAlarm();
     }
     if (!newState && dasPrevState) {
         // Falling edge
@@ -6771,6 +6785,8 @@ function getROEGate(g) {
 function logROEGateTransition(g, fromCode, toCode) {
     const to = ROE_GATES[toCode] || ROE_GATES[0];
     addLog(`[ROE] ${g.label} GATE ${fromCode}→${toCode} · ${to.label} · ${to.verb}`, to.color);
+    // Play escalation sound (or descent for ABORT)
+    if (typeof sfxROEGate === 'function') sfxROEGate(toCode);
 }
 
 function drawGuardianUUVs() {
@@ -7383,9 +7399,186 @@ function drawEffects() {
 }
 function addExplosion(nx,ny,color) {
     [5,15,28].forEach(r0=>effects.push({nx,ny,r:r0,alpha:1.0,color}));
+    sfxExplosion();
 }
 function addCaptureEffect(nx,ny) {
     [5,12,20].forEach((r0,i)=>effects.push({nx,ny,r:r0,alpha:.9-i*.2,color:'#39ff14'}));
+    sfxCapture();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  AUDIO ENGINE — Web Audio API procedural SFX
+//  ─────────────────────────────────────────────────────────────
+//  ไม่ใช้ไฟล์เสียง — สังเคราะห์ทุกเสียงด้วย oscillator + noise + filter
+//  ทำงาน offline, free, real-time controllable
+//  Browser autoplay policy: AudioContext ต้องเริ่มจาก user gesture
+// ═══════════════════════════════════════════════════════════════
+let audioCtx     = null;
+let masterGain   = null;
+let reverbDelay  = null;
+let reverbFB     = null;
+let audioEnabled = localStorage.getItem('udc_audio') === '1';
+let _lastSfxTime = {};   // throttle map
+
+function _initAudio() {
+    if (audioCtx) return audioCtx;
+    try {
+        audioCtx   = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = 0.28;       // master at 28%
+        masterGain.connect(audioCtx.destination);
+        // Simple feedback delay = pseudo-reverb (sonar tail)
+        reverbDelay = audioCtx.createDelay(2);
+        reverbDelay.delayTime.value = 0.18;
+        reverbFB    = audioCtx.createGain();
+        reverbFB.gain.value = 0.45;
+        const reverbWet = audioCtx.createGain();
+        reverbWet.gain.value = 0.35;
+        reverbDelay.connect(reverbFB);
+        reverbFB.connect(reverbDelay);
+        reverbDelay.connect(reverbWet);
+        reverbWet.connect(masterGain);
+    } catch(e) { return null; }
+    return audioCtx;
+}
+
+// throttle: คืน true ถ้าผ่าน cool-down — false ถ้าเร็วเกินไป
+function _sfxThrottle(key, ms) {
+    const now = performance.now();
+    if (_lastSfxTime[key] && now - _lastSfxTime[key] < ms) return false;
+    _lastSfxTime[key] = now;
+    return true;
+}
+
+// Generic tone with ADSR envelope + optional reverb send
+function _playTone(freq, dur, type, vol, withReverb) {
+    if (!audioEnabled || !audioCtx) return;
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.value = freq;
+    const now = audioCtx.currentTime;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(vol, now + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0008, now + dur);
+    osc.connect(gain);
+    gain.connect(masterGain);
+    if (withReverb && reverbDelay) gain.connect(reverbDelay);
+    osc.start(now);
+    osc.stop(now + dur + 0.05);
+}
+
+// Frequency sweep (chirp) — for sonar pings, alarms
+function _playSweep(f0, f1, dur, type, vol, withReverb) {
+    if (!audioEnabled || !audioCtx) return;
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type || 'sine';
+    const now = audioCtx.currentTime;
+    osc.frequency.setValueAtTime(f0, now);
+    osc.frequency.exponentialRampToValueAtTime(f1, now + dur);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(vol, now + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0008, now + dur);
+    osc.connect(gain);
+    gain.connect(masterGain);
+    if (withReverb && reverbDelay) gain.connect(reverbDelay);
+    osc.start(now);
+    osc.stop(now + dur + 0.05);
+}
+
+// Filtered noise burst — explosions, DAS impact
+function _playNoise(dur, filterFreq, q, vol) {
+    if (!audioEnabled || !audioCtx) return;
+    const bufSize = Math.floor(audioCtx.sampleRate * dur);
+    const buffer  = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+    const data    = buffer.getChannelData(0);
+    for (let i=0; i<bufSize; i++) data[i] = Math.random()*2 - 1;
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = filterFreq;
+    filter.Q.value = q;
+    const gain = audioCtx.createGain();
+    const now  = audioCtx.currentTime;
+    gain.gain.setValueAtTime(vol, now);
+    gain.gain.exponentialRampToValueAtTime(0.0008, now + dur);
+    noise.connect(filter); filter.connect(gain); gain.connect(masterGain);
+    noise.start(now); noise.stop(now + dur);
+}
+
+// ── SFX library ──────────────────────────────────────────────
+function sfxSonarPing() {        // Active sonar — submarine movie ping
+    if (!_sfxThrottle('ping', 1200)) return;
+    _playSweep(3400, 2600, 0.28, 'sine', 0.42, true);
+}
+function sfxFLSLock() {           // Forward-Looking Sonar locked-on
+    if (!_sfxThrottle('fls', 600)) return;
+    _playTone(2400, 0.06, 'sine', 0.30);
+    setTimeout(() => _playTone(2800, 0.06, 'sine', 0.30), 80);
+}
+function sfxDASAlarm() {           // DAS Tripwire — staccato alarm
+    if (!_sfxThrottle('das', 800)) return;
+    _playTone(880, 0.08, 'square', 0.32);
+    setTimeout(() => _playTone(1100, 0.08, 'square', 0.32), 120);
+    setTimeout(() => _playTone(880, 0.08, 'square', 0.32), 240);
+}
+function sfxThreatDetect() {       // Rising alert chirp
+    if (!_sfxThrottle('threat', 1500)) return;
+    _playSweep(400, 1100, 0.22, 'sawtooth', 0.30);
+}
+function sfxROEGate(code) {        // ROE Gate escalation tones
+    if (!_sfxThrottle('roe-'+code, 250)) return;
+    const freqs = { 0:262, 1:330, 2:392, 3:523, 4:660, 5:880 };  // C4-A5
+    if (code === 'Z') { _playSweep(660, 220, 0.45, 'sawtooth', 0.32); return; }
+    const f = freqs[code] || 440;
+    _playTone(f, 0.14, 'triangle', 0.30, true);
+    if (code >= 4) setTimeout(() => _playTone(f*1.5, 0.10, 'triangle', 0.25, true), 150);
+}
+function sfxExplosion() {           // Boom — filtered noise + low thump
+    _playNoise(0.55, 220, 1.2, 0.45);
+    _playTone(55, 0.30, 'sine', 0.50);
+    setTimeout(() => _playNoise(0.25, 800, 2, 0.18), 60);
+}
+function sfxCapture() {              // Quick zap — successful capture
+    _playSweep(220, 880, 0.18, 'sine', 0.30);
+}
+function sfxMissionSuccess() {       // Rising arpeggio C5→E5→G5→C6
+    [523, 659, 784, 1047].forEach((f,i) =>
+        setTimeout(() => _playTone(f, i===3?0.4:0.12, 'sine', 0.36, i===3), i*110));
+}
+function sfxMissionFail() {          // Falling siren
+    _playSweep(880, 180, 1.4, 'sawtooth', 0.42, true);
+    setTimeout(() => _playTone(140, 0.6, 'sine', 0.35), 300);
+}
+function sfxROEResolve() {            // ROE complete — vessel released (mid chime)
+    _playTone(659, 0.10, 'sine', 0.28);
+    setTimeout(() => _playTone(880, 0.20, 'sine', 0.32, true), 110);
+}
+
+// ── Toggle button handler ────────────────────────────────────
+function toggleAudio() {
+    if (!audioCtx) _initAudio();
+    audioEnabled = !audioEnabled;
+    if (audioEnabled && audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+    localStorage.setItem('udc_audio', audioEnabled ? '1' : '0');
+    _updateAudioBtn();
+    if (audioEnabled) {
+        _playTone(880, 0.08, 'sine', 0.25);
+        setTimeout(() => _playTone(1320, 0.12, 'sine', 0.30, true), 90);
+        addLog('[AUDIO] 🔊 เสียง SFX เปิด — sonar/DAS/ROE/explosion', '#a78bfa');
+    } else {
+        addLog('[AUDIO] 🔇 เสียง SFX ปิด', '#475569');
+    }
+}
+function _updateAudioBtn() {
+    const btn = document.getElementById('audioBtn');
+    if (!btn) return;
+    btn.textContent = audioEnabled ? '🔊 SFX' : '🔇 SFX';
+    btn.classList.toggle('audio-on', audioEnabled);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -7974,6 +8167,8 @@ function animate() {
                                        nyToLat(t.ny),nxToLng(t.nx)).toFixed(1);
             setDomain('underwater','crit'); setDomain('command','warn');
             setSensor('uw-sonar','PASSIVE LOCK','s-alert'); setSensor('uw-uuv','INTERCEPT','s-warn');
+            sfxFLSLock();           // 🔊 FLS lock-on beep
+            sfxThreatDetect();      // 🔊 rising chirp
             showFLSWarning(g, t, distNm);
         });
     });
@@ -9126,6 +9321,18 @@ function showOutcome(data) {
     const ackBtn  = document.getElementById('outcomeAckBtn');
     if (!popup || !content) return;
 
+    // ── Play outcome SFX based on result text ───────────────────
+    if (typeof sfxMissionSuccess === 'function') {
+        const r = (data.result || '').toUpperCase();
+        if (r.includes('FAIL') || r.includes('BREACHED')) {
+            sfxMissionFail();
+        } else if (r.includes('ROE COMPLETE') || r.includes('RELEASED')) {
+            sfxROEResolve();
+        } else if (r.includes('SUCCESS') || r.includes('SECURE') || r.includes('ELIMINATED') || r.includes('DESTROYED') || r.includes('SHIELD HOLDS')) {
+            sfxMissionSuccess();
+        }
+    }
+
     // ── ล็อก Leaflet map ไม่ให้ลากหรือ zoom ขณะ mission ended ──
     if (map) {
         map.dragging.disable();
@@ -9294,6 +9501,8 @@ initGuardianUUVs();
 initPatrolVessels();
 // Initial tide update (before first animate frame)
 updateTide();
+// อัปเดตสถานะปุ่ม Audio
+_updateAudioBtn();
 </script>
 </body>
 </html>
