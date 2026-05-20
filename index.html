@@ -6479,58 +6479,117 @@ function detectSurfaceObstacle(self, ownX, ownY, hdg) {
     return null;
 }
 
-// คำนวณ heading หลบสิ่งกีดขวาง
+// คำนวณ heading หลบสิ่งกีดขวาง (multi-angle sampling — หาทิศที่โล่งจริง)
 function computeAvoidanceHeading(self, obs) {
     if (!obs) return null;
-    // For vessel: COLREGS turn starboard (right = positive in math convention)
+    // Vessel: COLREGS — เลี้ยวขวา 45°
     if (obs.type === 'vessel') {
-        return self.heading + Math.PI/4;   // turn 45° starboard
+        return self.heading + Math.PI/4;
     }
-    // For land: sample left vs right, pick the one with open water
-    const look = _avoidRangeNY() * 0.7;
-    const testL = self.heading - 0.7;
-    const testR = self.heading + 0.7;
-    const lx = self.nx + Math.cos(testL) * look;
-    const ly = self.ny + Math.sin(testL) * look;
-    const rx = self.nx + Math.cos(testR) * look;
-    const ry = self.ny + Math.sin(testR) * look;
-    const leftBlocked  = (typeof isOnLand === 'function' && isOnLand(lx, ly));
-    const rightBlocked = (typeof isOnLand === 'function' && isOnLand(rx, ry));
-    if (leftBlocked && !rightBlocked) return testR;
-    if (rightBlocked && !leftBlocked) return testL;
-    // ทั้งสองด้านเปิด/ปิด — เลี้ยวขวาตาม COLREGS
-    return testR;
+    // Land: ลอง 8 มุมหลบไล่จากน้อย→มาก สลับซ้ายขวา → หา open water
+    const look = _avoidRangeNY() * 0.85;
+    const angles = [0.6, -0.6, 1.0, -1.0, 1.4, -1.4, Math.PI/2, -Math.PI/2];
+    for (const dh of angles) {
+        const testHdg = self.heading + dh;
+        let clear = true;
+        // sample 2 จุดตามทิศที่ทดสอบ
+        for (let k = 0.45; k <= 1.0; k += 0.55) {
+            const tx = self.nx + Math.cos(testHdg) * look * k;
+            const ty = self.ny + Math.sin(testHdg) * look * k;
+            if (typeof isOnLand === 'function' && landMaskReady && isOnLand(tx, ty)) {
+                clear = false; break;
+            }
+        }
+        if (clear) return testHdg;
+    }
+    // Fallback: ถอย 180°
+    return self.heading + Math.PI;
 }
 
-// อัปเดต state การหลบของเรือ — เรียกในการเคลื่อนที่ทุก frame
-// return: { speedFactor, targetHdg } — overrides ถ้ากำลังหลบ
+// ── Hysteresis constants — ป้องกัน log spam + oscillation ──
+const AVOID_HOLD_FRAMES     = 90;   // ~1.5 วินาที minimum avoid duration
+const AVOID_CLEAR_FRAMES    = 25;   // ต้อง clear 25 frame ติดต่อกันก่อน resume
+const AVOID_COOLDOWN_FRAMES = 60;   // ~1 วินาที cooldown ก่อน re-enter avoid ได้
+const AVOID_LOG_THROTTLE_MS = 4000; // log แต่ละ vessel อย่างน้อย 4 วินาทีต่อครั้ง
+
+// helper: ทดสอบ throttle log (return true ถ้าควร log)
+function _avoidShouldLog(v, key) {
+    const now = performance.now();
+    const k = '_avoidLog_' + key;
+    if (v[k] && now - v[k] < AVOID_LOG_THROTTLE_MS) return false;
+    v[k] = now;
+    return true;
+}
+
+// อัปเดต state การหลบ — มี hysteresis + cooldown + log throttle
 function applyObstacleAvoidance(v, baseTargetHdg) {
+    const now = (typeof frame !== 'undefined') ? frame : 0;
     const obs = detectSurfaceObstacle(v, v.nx, v.ny, v.heading);
+
+    // ── A. ปัจจุบันกำลังหลบอยู่ ─────────────────────────────────
+    if (v._avoidingObstacle) {
+        if (obs) {
+            // ยังพบ → reset clear counter, อัปเดต avoidance heading
+            v._avoidClearCount = 0;
+            v._avoidObstacleType = obs.type;
+            v._avoidLastHdg = computeAvoidanceHeading(v, obs);
+            return {
+                speedFactor: AVOID_SLOW_FACTOR,
+                targetHdg:   v._avoidLastHdg,
+                avoiding:    true,
+                obsType:     obs.type,
+            };
+        }
+        // ไม่พบ → นับ clear frames
+        v._avoidClearCount = (v._avoidClearCount || 0) + 1;
+        const heldEnough  = (now - (v._avoidStart || 0)) >= AVOID_HOLD_FRAMES;
+        const clearedEnough = v._avoidClearCount >= AVOID_CLEAR_FRAMES;
+        if (heldEnough && clearedEnough) {
+            // RESUME — log แค่ครั้งเดียวที่ระดับ throttle
+            if (typeof addLog === 'function' && _avoidShouldLog(v, 'resume')) {
+                addLog(`✓ ${v.label} resume navigation`, '#22c55e');
+            }
+            v._avoidingObstacle  = null;
+            v._avoidStart        = null;
+            v._avoidClearCount   = 0;
+            v._avoidLastHdg      = null;
+            v._avoidObstacleType = null;
+            v._avoidCooldownEnd  = now + AVOID_COOLDOWN_FRAMES;
+            return { speedFactor: 1.0, targetHdg: baseTargetHdg, avoiding: false };
+        }
+        // ยังคงต้อง hold — ใช้ avoidance heading เดิม
+        return {
+            speedFactor: AVOID_SLOW_FACTOR,
+            targetHdg:   v._avoidLastHdg || baseTargetHdg,
+            avoiding:    true,
+            obsType:     v._avoidObstacleType || 'land',
+        };
+    }
+
+    // ── B. ยังไม่หลบ ────────────────────────────────────────────
     if (obs) {
-        if (!v._avoidingObstacle) {
-            // เริ่ม avoid mode
-            v._avoidingObstacle = obs.type;
-            v._avoidStart = (typeof frame !== 'undefined') ? frame : 0;
-            const lbl = obs.type === 'vessel' ? `เรือ ${obs.otherLabel}` : 'ชายฝั่ง';
-            if (typeof addLog === 'function')
-                addLog(`⚠️ ${v.label} หลบ${lbl} — slow + turn starboard`, '#f59e0b');
+        // เคารพ cooldown — ไม่เริ่ม avoid ใหม่ทันที (กัน oscillation)
+        if (v._avoidCooldownEnd && now < v._avoidCooldownEnd) {
+            return { speedFactor: 1.0, targetHdg: baseTargetHdg, avoiding: false };
+        }
+        // ENTER avoid mode — log throttled
+        v._avoidingObstacle  = obs.type;
+        v._avoidObstacleType = obs.type;
+        v._avoidStart        = now;
+        v._avoidClearCount   = 0;
+        v._avoidLastHdg      = computeAvoidanceHeading(v, obs);
+        if (typeof addLog === 'function' && _avoidShouldLog(v, 'enter')) {
+            const lbl = obs.type === 'vessel' ? `เรือ ${obs.otherLabel||''}` : 'ชายฝั่ง';
+            addLog(`⚠️ ${v.label} หลบ${lbl}`, '#f59e0b');
         }
         return {
             speedFactor: AVOID_SLOW_FACTOR,
-            targetHdg:   computeAvoidanceHeading(v, obs),
+            targetHdg:   v._avoidLastHdg,
             avoiding:    true,
             obsType:     obs.type,
         };
-    } else {
-        if (v._avoidingObstacle) {
-            // resume — log เพียงครั้งเดียว
-            if (typeof addLog === 'function')
-                addLog(`✓ ${v.label} resume navigation — สิ่งกีดขวางพ้น`, '#22c55e');
-            v._avoidingObstacle = null;
-            v._avoidStart = null;
-        }
-        return { speedFactor: 1.0, targetHdg: baseTargetHdg, avoiding: false };
     }
+    return { speedFactor: 1.0, targetHdg: baseTargetHdg, avoiding: false };
 }
 
 function drawSurveyVessels() {
@@ -6759,11 +6818,11 @@ function drawSurveyVessels() {
         ctx.font='9px "Share Tech Mono"'; ctx.fillStyle='rgba(103,232,249,0.65)';
         ctx.fillText('▐' + active.join(' ') + '▌', x, y+39);
 
-        // ── Obstacle Avoidance badge (blinking) ──
+        // ── Obstacle Avoidance badge (gentle pulse, ไม่กระพริบรัว) ──
         if (v._avoidingObstacle) {
-            const blink = Math.sin(frame*0.18) > 0;
+            const pulse = 0.7 + Math.sin(frame*0.05) * 0.25;   // ช้าๆ 0.45-0.95
             ctx.font='bold 10px "Share Tech Mono"';
-            ctx.fillStyle = blink ? '#f59e0b' : 'rgba(245,158,11,0.4)';
+            ctx.fillStyle = `rgba(245,158,11,${pulse})`;
             ctx.textAlign='center';
             const lbl = v._avoidingObstacle === 'land' ? '⚠AVOID·LAND' : '⚠AVOID·VESSEL';
             ctx.fillText(lbl, x, y-22);
@@ -7722,11 +7781,11 @@ function drawPatrolVessels() {
         ctx.font='10px "Share Tech Mono"';
         ctx.fillStyle=stateCol;
         ctx.fillText(v.state,x,y+40);
-        // ── Obstacle Avoidance badge (blinking) ──
+        // ── Obstacle Avoidance badge (gentle pulse, ไม่กระพริบรัว) ──
         if (v._avoidingObstacle) {
-            const blink = Math.sin(frame*0.18) > 0;
+            const pulse = 0.7 + Math.sin(frame*0.05) * 0.25;   // ช้าๆ 0.45-0.95
             ctx.font='bold 10px "Share Tech Mono"';
-            ctx.fillStyle = blink ? '#f59e0b' : 'rgba(245,158,11,0.4)';
+            ctx.fillStyle = `rgba(245,158,11,${pulse})`;
             const lbl = v._avoidingObstacle === 'land' ? '⚠AVOID·LAND' : '⚠AVOID·VESSEL';
             ctx.fillText(lbl, x, y-22);
         }
