@@ -581,7 +581,7 @@
             box-sizing: border-box;
             clear: both;
         }
-        /* ทุกปุ่มในแถบ — กว้างเท่ากัน + ตัดข้อความเกินด้วย ellipsis */
+        /* ทุกปุ่ม — กว้างเท่ากัน + สีเทากลาง (ลดความลายตา) */
         .leaflet-top.leaflet-right button {
             width: 100% !important;
             box-sizing: border-box;
@@ -591,6 +591,28 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            border-color: rgba(100,116,139,.40) !important;
+            color: #9aa8bd !important;
+            background: rgba(8,21,37,.92) !important;
+            box-shadow: none !important;
+        }
+        .leaflet-top.leaflet-right button:hover {
+            border-color: rgba(148,163,184,.75) !important;
+            background: rgba(30,44,68,.95) !important;
+            color: #cdd6e3 !important;
+        }
+        /* DEPLOY (วางกำลัง) — สีตามชนิดกำลัง = มีนัยยะ */
+        #placePatrolBtn { border-color:rgba(100,255,218,.6)!important; color:#64ffda!important; }
+        #placeGUUVBtn   { border-color:rgba(34,211,238,.6)!important;  color:#22d3ee!important; }
+        #placeSurveyBtn { border-color:rgba(251,191,36,.6)!important;  color:#fbbf24!important; }
+        /* CLEAR (ล้าง) — แดงจาง = destructive */
+        #clearPatrolBtn, #clearGUUVBtn, #clearSurveyBtn {
+            border-color:rgba(239,68,68,.42)!important; color:#e8918c!important;
+        }
+        /* active (place mode) — เรืองแสงเบาๆ */
+        .leaflet-top.leaflet-right button.active {
+            box-shadow: 0 0 12px rgba(100,255,218,.45) !important;
+            background: rgba(30,44,68,.95) !important;
         }
         .leaflet-top.leaflet-right .patrol-hint {
             width: 100%; box-sizing: border-box;
@@ -4153,6 +4175,7 @@ placePatrolBtn.addTo(map);
 const clearPatrolBtn = L.control({ position: 'topright' });
 clearPatrolBtn.onAdd = function() {
     const btn = L.DomUtil.create('button', 'place-patrol-btn');
+    btn.id = 'clearPatrolBtn';
     btn.innerHTML = '🗑 ล้างเรือที่วางไว้';
     btn.style.borderColor = 'rgba(255,65,54,.55)';
     btn.style.color = '#ff7a74';
@@ -4198,6 +4221,7 @@ placeGUUVBtn.addTo(map);
 const clearGUUVBtn = L.control({ position: 'topright' });
 clearGUUVBtn.onAdd = function() {
     const btn = L.DomUtil.create('button', 'place-guuv-btn');
+    btn.id = 'clearGUUVBtn';
     btn.innerHTML = '🗑 ล้าง GUUV';
     btn.style.cssText = 'border-color:rgba(255,65,54,.5);color:#ff7a74;';
     btn.onclick = function() {
@@ -4238,6 +4262,7 @@ placeSurveyBtn.addTo(map);
 const clearSurveyBtn = L.control({ position: 'topright' });
 clearSurveyBtn.onAdd = function() {
     const btn = L.DomUtil.create('button', 'place-survey-btn');
+    btn.id = 'clearSurveyBtn';
     btn.innerHTML = '🗑 ล้างเรือสำรวจ';
     btn.style.cssText = 'border-color:rgba(255,65,54,.5);color:#ff7a74;';
     btn.onclick = function() {
