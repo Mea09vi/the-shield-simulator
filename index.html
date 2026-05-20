@@ -1962,6 +1962,11 @@
             <button class="btn btn-uuv" style="background:rgba(168,85,247,.10);border-color:rgba(168,85,247,.45);color:#a855f7;" onclick="launchScenario('sdv')"><span class="btn-dot" style="background:#a855f7;box-shadow:0 0 5px #a855f7;"></span> SDV (Swimmer Delivery Vehicle)</button>
             <button class="btn btn-uuv" style="background:rgba(220,38,38,.10);border-color:rgba(220,38,38,.45);color:#dc2626;" onclick="launchScenario('midget')"><span class="btn-dot" style="background:#dc2626;box-shadow:0 0 5px #dc2626;"></span> Midget Submarine (Yono-class)</button>
             <button class="btn btn-uuv" style="background:rgba(127,29,29,.20);border-color:rgba(127,29,29,.55);color:#fca5a5;" onclick="launchScenario('ssk')"><span class="btn-dot" style="background:#7f1d1d;box-shadow:0 0 5px #7f1d1d;"></span> SSK (Conventional Sub)</button>
+            <!-- Manual SCRAMBLE controls -->
+            <div style="display:flex;gap:4px;margin-top:3px;">
+                <button class="btn" style="flex:1;background:rgba(245,158,11,.15);border-color:#f59e0b;color:#fcd34d;font-size:10px;padding:5px;" onclick="manualScrambleHelo()">🚁 SCRAMBLE NOW</button>
+                <button class="btn" style="flex:1;background:rgba(34,211,238,.10);border-color:#22d3ee;color:#67e8f9;font-size:10px;padding:5px;" onclick="manualCAPHelo()">✈ AIRBORNE CAP</button>
+            </div>
             <button class="btn btn-reset" onclick="resetAll()" style="margin-top:4px;">⟳ RESET ALL SYSTEMS</button>
         </div>
     </div>
@@ -5017,18 +5022,18 @@ function initASWHelicopter() {
 }
 
 // ── ASW Helicopter Constants ─────────────────────────────────
-const HELO_SCRAMBLE_FRAMES = 300;   // 5 sec demo (~5 min real-time)
-const HELO_CRUISE_SPD      = 0.0028; // ny/frame ≈ 150 kn
-const HELO_LOITER_SPD      = 0.0009; // ny/frame ≈ 50 kn (slow loiter)
+const HELO_SCRAMBLE_FRAMES = 180;   // 3 sec demo (เร็วกว่าเดิม)
+const HELO_CRUISE_SPD      = 0.0045; // ny/frame — เร็วขึ้น (~150 kn sim scale)
+const HELO_LOITER_SPD      = 0.0014; // ny/frame
 const HELO_FUEL_RATE       = 0.00008;
-const HELO_TORPEDO_RANGE_NY = 0.04;  // ~0.8nm drop distance to target
-const SONOBUOY_RANGE_NY    = 0.018;  // ~0.4 nm passive detection
-const SONOBUOY_LIFETIME    = 3600;   // 60 sec frames
-const TORPEDO_SPEED_NY     = 0.0009; // ny/frame ≈ 45 kn
-const TORPEDO_FUEL_DECAY   = 0.0028; // ~ 6 sec fuel
-const TORPEDO_SEEK_RANGE_NY = 0.018; // 0.4 nm acoustic homing
-const TORPEDO_KILL_RANGE_NY = 0.005; // 0.1 nm proximity kill
-const TTE_THRESHOLD_NY     = 0.20;   // threats within 0.20 ny shown for TTE
+const HELO_TORPEDO_RANGE_NY = 0.060; // 0.6 → 1.6 nm — ระยะ drop กว้างขึ้น
+const SONOBUOY_RANGE_NY    = 0.030;  // 0.018 → 0.030 — ตรวจจับไกลขึ้น
+const SONOBUOY_LIFETIME    = 3600;
+const TORPEDO_SPEED_NY     = 0.0014; // เร็วขึ้น (~70 kn สมัย Mk46 SW)
+const TORPEDO_FUEL_DECAY   = 0.0020; // ระยะวิ่งยาวขึ้น
+const TORPEDO_SEEK_RANGE_NY = 0.025; // ขยายระยะ acoustic homing
+const TORPEDO_KILL_RANGE_NY = 0.008; // 0.005 → 0.008
+const TTE_THRESHOLD_NY     = 0.20;
 
 // ═════════════════════════════════════════════════════════════
 //  SUBMARINE SUB-CLASSES (v08 — applied to UUV threats)
@@ -5110,6 +5115,56 @@ function _heloSetState(h, newState) {
     _heloLog(h, `${prev} → ${newState}`, colors[newState] || '#22d3ee');
 }
 
+// ── Manual scramble (user button) — find nearest sub threat ────
+function manualScrambleHelo() {
+    if (!aswHelo) { addLog('[ASW] ✗ Helicopter not initialized', '#ef4444'); return; }
+    if (aswHelo.state !== 'STANDBY') {
+        addLog(`[ASW] ⚠ ${aswHelo.callsign} already deployed (${aswHelo.state})`, '#fbbf24');
+        return;
+    }
+    // Find nearest active sub threat
+    let nearest = null, nearestD = Infinity;
+    if (typeof threats !== 'undefined') {
+        for (const t of threats) {
+            if (!t.active || t.frozen) continue;
+            if (t.type !== 'uuv' && !t.isSubmarine) continue;
+            const d = haversineNm(nyToLat(t.ny), nxToLng(t.nx), UDC_LAT, UDC_LNG);
+            if (d < nearestD) { nearestD = d; nearest = t; }
+        }
+    }
+    if (!nearest) {
+        addLog('[ASW] ⚠ ไม่พบ submarine threat — ใช้ AIRBORNE CAP เพื่อบินขึ้นรอ', '#fbbf24');
+        return;
+    }
+    // Force classify + scramble
+    nearest.classified = true;
+    scrambleASWHelicopter(nearest);
+    addLog(`[ASW] ⚡ MANUAL SCRAMBLE — vectoring to ${nearest.label} @ ${nearestD.toFixed(1)} nm`, '#f59e0b');
+}
+
+// ── Airborne CAP — launch helicopter to loiter near UDC waiting for threats ──
+function manualCAPHelo() {
+    if (!aswHelo) return;
+    if (aswHelo.state !== 'STANDBY') {
+        addLog(`[ASW] ⚠ ${aswHelo.callsign} already airborne (${aswHelo.state})`, '#fbbf24');
+        return;
+    }
+    // Create a "phantom target" near UDC to fly toward, then we'll switch as soon as a real threat appears
+    aswHelo.target = {
+        nx: UDC.nx + 0.05,
+        ny: UDC.ny + 0.10,
+        label: 'CAP-STATION',
+        active: true,
+        isPhantom: true,
+    };
+    aswHelo.scrambleStart = frame;
+    aswHelo.fuel = 1.0;
+    _heloSetState(aswHelo, 'SCRAMBLE');
+    _heloLog(aswHelo, '✈ AIRBORNE CAP — loitering at 5nm south of UDC, ready to engage', '#22d3ee');
+    if (typeof sfxHeloScramble === 'function') sfxHeloScramble();
+    heloAlertActive = true;
+}
+
 // ── Scramble ASW Helicopter (called when sub threat detected) ──
 function scrambleASWHelicopter(targetThreat) {
     if (!aswHelo) return;
@@ -5135,17 +5190,34 @@ function updateASWHelicopter() {
         sfxHeloRotor();
     }
 
-    // Auto-scramble check (look for sub-class threats inside detect zone)
+    // Auto-scramble check — fire เร็วที่สุด เมื่อ classified sub พบ
+    // (ไม่รอ threat ใกล้ UDC; ASW doctrine = engage early)
     if (h.state === 'STANDBY' && typeof threats !== 'undefined') {
         for (const t of threats) {
             if (!t.active || t.frozen) continue;
             if (t.type !== 'uuv' && !t.isSubmarine) continue;
             if (!t.classified) continue;     // need classified contact
-            const dUDC = haversineNm(nyToLat(t.ny), nxToLng(t.nx), UDC_LAT, UDC_LNG);
-            if (dUDC <= 8.0) {                // threat within 8nm of UDC
-                scrambleASWHelicopter(t);
-                break;
-            }
+            // No distance gate — scramble immediately on any classified sub
+            scrambleASWHelicopter(t);
+            break;
+        }
+    }
+
+    // ── CAP mode: switch from phantom CAP-STATION to real sub threat ──
+    if ((h.state === 'TRANSIT' || h.state === 'LOITER') &&
+        h.target && h.target.isPhantom && typeof threats !== 'undefined') {
+        for (const t of threats) {
+            if (!t.active || t.frozen) continue;
+            if (t.type !== 'uuv' && !t.isSubmarine) continue;
+            // Auto-classify CAP contacts (helicopter has visual + sonobuoy)
+            t.classified = true;
+            h.target = t;
+            if (h.state === 'LOITER') h.loiterCenter = { nx: t.nx, ny: t.ny };
+            _heloLog(h, `🎯 CAP CONTACT — vectoring to ${t.label}`, '#ef4444');
+            if (typeof sfxThreatDetect === 'function') sfxThreatDetect();
+            // re-transition if at loiter to commit fast
+            if (h.state === 'LOITER') _heloSetState(h, 'TRANSIT');
+            break;
         }
     }
 
@@ -5193,10 +5265,17 @@ function updateASWHelicopter() {
             break;
         }
         case 'LOITER': {
-            // Orbit around loiterCenter, deploy sonobuoys every 120 frames
+            // Orbit around target — track moving threat (drift loiterCenter slowly)
             h.altFt = 300;
             h.speedKn = 60;
-            const orbitR = 0.022;  // ~0.5 nm orbit
+            // ── อัปเดต loiter center ตามตำแหน่ง target (ค่อยๆ track) ──
+            if (h.target && h.target.active && h.loiterCenter) {
+                const tx = h.target.nx, ty = h.target.ny;
+                // drift loiter center 10% ต่อ frame ไปยัง target
+                h.loiterCenter.nx += (tx - h.loiterCenter.nx) * 0.10;
+                h.loiterCenter.ny += (ty - h.loiterCenter.ny) * 0.10;
+            }
+            const orbitR = 0.022;
             const ang = frame * 0.018;
             const cx = h.loiterCenter ? h.loiterCenter.nx : h.nx;
             const cy = h.loiterCenter ? h.loiterCenter.ny : h.ny;
@@ -5208,6 +5287,17 @@ function updateASWHelicopter() {
                 h.heading = Math.atan2(dy, dx);
                 h.nx += (dx/d) * HELO_LOITER_SPD;
                 h.ny += (dy/d) * HELO_LOITER_SPD;
+            }
+            // ── ถ้า target หลุดออกจาก loiter zone ไปไกล → กลับ TRANSIT ──
+            if (h.target && h.target.active && h.loiterCenter) {
+                const dTC = Math.sqrt(
+                    (h.target.nx - h.loiterCenter.nx)**2 +
+                    (h.target.ny - h.loiterCenter.ny)**2
+                );
+                if (dTC > 0.08) {   // 1.8 nm — target หนีไกลเกินไป
+                    _heloSetState(h, 'TRANSIT');
+                    _heloLog(h, '⚠ Target drifted — re-vectoring', '#fbbf24');
+                }
             }
             // Drop sonobuoys (every 90 frames, up to 6 buoys)
             h.sonobuoyDropTimer++;
