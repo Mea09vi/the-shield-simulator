@@ -1957,6 +1957,11 @@
             <button class="btn btn-surf"  onclick="launchScenario('surface')"><span class="btn-dot" style="background:var(--yellow);box-shadow:0 0 5px var(--yellow);"></span> เรือผิวน้ำบุกรุก (ROE)</button>
             <button class="btn btn-drone" onclick="launchScenario('drone')"><span class="btn-dot" style="background:var(--cyan);box-shadow:0 0 5px var(--cyan);"></span> อากาศยานไร้คนขับ (Drone)</button>
             <button class="btn btn-combo" onclick="launchScenario('combined')"><span class="btn-dot" style="background:var(--purple);box-shadow:0 0 5px var(--purple);"></span> ภัยคุกคามรวม (Combined)</button>
+            <!-- v08: ASW specific scenarios -->
+            <div style="margin-top:4px;border-top:1px solid rgba(100,255,218,.10);padding-top:4px;font-size:9px;color:#67e8f9;">▾ ASW SUB-CLASS TEST</div>
+            <button class="btn btn-uuv" style="background:rgba(168,85,247,.10);border-color:rgba(168,85,247,.45);color:#a855f7;" onclick="launchScenario('sdv')"><span class="btn-dot" style="background:#a855f7;box-shadow:0 0 5px #a855f7;"></span> SDV (Swimmer Delivery Vehicle)</button>
+            <button class="btn btn-uuv" style="background:rgba(220,38,38,.10);border-color:rgba(220,38,38,.45);color:#dc2626;" onclick="launchScenario('midget')"><span class="btn-dot" style="background:#dc2626;box-shadow:0 0 5px #dc2626;"></span> Midget Submarine (Yono-class)</button>
+            <button class="btn btn-uuv" style="background:rgba(127,29,29,.20);border-color:rgba(127,29,29,.55);color:#fca5a5;" onclick="launchScenario('ssk')"><span class="btn-dot" style="background:#7f1d1d;box-shadow:0 0 5px #7f1d1d;"></span> SSK (Conventional Sub)</button>
             <button class="btn btn-reset" onclick="resetAll()" style="margin-top:4px;">⟳ RESET ALL SYSTEMS</button>
         </div>
     </div>
@@ -9827,6 +9832,53 @@ function launchScenario(type) {
     else if (type==='surface')  scenarioSurface();
     else if (type==='drone')    scenarioDrone();
     else if (type==='combined') scenarioCombined();
+    // v08: specific submarine sub-classes
+    else if (type==='sdv')      scenarioSubClass('SDV');
+    else if (type==='midget')   scenarioSubClass('MIDGET');
+    else if (type==='ssk')      scenarioSubClass('SSK');
+}
+
+// ── v08: Spawn specific submarine sub-class ──────────────────
+function scenarioSubClass(className) {
+    const cls = SUB_CLASSES[className];
+    if (!cls) return;
+    // Spawn position varies by class:
+    //   SDV: very close (4-6nm)         — shallow water infiltration
+    //   MIDGET: medium (6-9nm)          — typical approach
+    //   SSK: distant (9-12nm)           — stand-off
+    let entryLat, entryLng;
+    if (className === 'SDV') {
+        entryLat = 12.42 + Math.random()*0.06;     // close & shallow
+        entryLng = 100.75 + Math.random()*0.18;
+    } else if (className === 'MIDGET') {
+        entryLat = 12.32 + Math.random()*0.10;
+        entryLng = 100.68 + Math.random()*0.24;
+    } else {
+        entryLat = 12.20 + Math.random()*0.12;     // far
+        entryLng = 100.55 + Math.random()*0.40;
+    }
+    const eNx = (entryLng - LNG_LEFT) / (LNG_RIGHT - LNG_LEFT);
+    const eNy = (LAT_TOP  - entryLat) / (LAT_TOP  - LAT_BOT);
+    const dxH = UDC.nx - eNx, dyH = UDC.ny - eNy;
+    const hdg = Math.round((Math.atan2(dxH, -dyH) * 180 / Math.PI + 360) % 360);
+    const t = {
+        type:'uuv', nx:eNx, ny:eNy, tnx:UDC.nx, tny:UDC.ny,
+        color:'#ff4136', speed:0.00040, active:true, frozen:false,
+        classified:false, label:'HOSTILE-UUV-1',
+        spd:8, hdg, dep:cls.depth, trail:[],
+    };
+    applySubClass(t, className);
+    threats.push(t);
+    // Pre-classify after 2s (to trigger helicopter scramble fast)
+    setTimeout(() => {
+        if (t.active) {
+            t.classified = true;
+            addLog(`[CLASSIFY] ${t.label} confirmed — alerting ASW helicopter`, '#ef4444');
+            if (typeof setDomain === 'function') setDomain('underwater','crit');
+        }
+    }, 2000);
+    addLog(`🎯 [SCENARIO] ${cls.label} threat spawned — depth ${cls.depth}m, stealth ${(cls.stealth*100).toFixed(0)}%`, cls.color);
+    if (typeof sfxThreatDetect === 'function') sfxThreatDetect();
 }
 
 // ── Scenario UUV ─────────────────────────────────────────────────
