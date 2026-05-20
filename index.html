@@ -1812,29 +1812,30 @@
 
                 <div class="pvs-grid">
 
-                    <!-- Knox FF -->
-                    <div class="pvs-card pvs-selected" id="pvsc_knox" onclick="selectShipCard('knox')">
+                    <!-- Naresuan FFG -->
+                    <div class="pvs-card pvs-selected" id="pvsc_naresuan" onclick="selectShipCard('naresuan')">
                         <span class="pvs-sel-badge">✓ SELECTED</span>
                         <div class="pvs-card-hdr">
-                            <span class="pvs-tier-badge pvs-tier-1">TIER 1 · ASW+SURFACE</span>
-                            <span class="pvs-ship-name">Knox-class FF</span>
-                            <span class="pvs-ship-local">ชั้นน็อกซ์</span>
+                            <span class="pvs-tier-badge pvs-tier-1">TIER 1 · ASW FRIGATE</span>
+                            <span class="pvs-ship-name">Naresuan-class FFG</span>
+                            <span class="pvs-ship-local">ชั้นนเรศวร</span>
                         </div>
                         <div class="pvs-sil-wrap">
-                            <canvas id="pvSil_knox" width="312" height="76"></canvas>
+                            <canvas id="pvSil_naresuan" width="312" height="76"></canvas>
                         </div>
                         <div class="pvs-card-body">
                             <div class="pvs-specs">
-                                <span class="sv">ตัวอย่าง:</span> ร.ล.ตากสิน (FF-471)<br>
-                                <span class="sv">ความเร็ว:</span> 27 kts<br>
+                                <span class="sv">ตัวอย่าง:</span> ร.ล.นเรศวร (FFG-421)<br>
+                                <span class="sv">ความเร็ว:</span> 32 kts<br>
                                 <span class="sv">เรดาร์:</span> 24 nm<br>
-                                <span class="sv">โซนาร์:</span> Atlas DSQS-24C (8 nm)
+                                <span class="sv">โซนาร์:</span> Atlas DSQS-21 (8 nm)
                             </div>
                             <div class="pvs-wep-list">
-                                <span class="pvs-wep-tag wt-asw">ASROC (9 nm)</span>
-                                <span class="pvs-wep-tag wt-asw">Mk.46 Torp (5 nm)</span>
-                                <span class="pvs-wep-tag wt-gun">5"/54 Mk.42 (8.5 nm)</span>
-                                <span class="pvs-wep-tag wt-gun">20mm (1.8 nm)</span>
+                                <span class="pvs-wep-tag wt-asw">Mk.46 Torpedo (6 nm)</span>
+                                <span class="pvs-wep-tag wt-ssm">Harpoon SSM (19 nm)</span>
+                                <span class="pvs-wep-tag wt-ssm">ESSM SAM (14 nm)</span>
+                                <span class="pvs-wep-tag wt-gun">5"/54 Mk.45 (12 nm)</span>
+                                <span class="pvs-wep-tag wt-gun">30mm DS30M (2.5 nm)</span>
                             </div>
                         </div>
                     </div>
@@ -1843,7 +1844,7 @@
                     <div class="pvs-card" id="pvsc_krabi" onclick="selectShipCard('krabi')">
                         <span class="pvs-sel-badge">✓ SELECTED</span>
                         <div class="pvs-card-hdr">
-                            <span class="pvs-tier-badge pvs-tier-2">TIER 2 · SURFACE OPV</span>
+                            <span class="pvs-tier-badge pvs-tier-2">TIER 2 · OFFSHORE OPV</span>
                             <span class="pvs-ship-name">Krabi-class OPV</span>
                             <span class="pvs-ship-local">ชั้นกระบี่</span>
                         </div>
@@ -1853,49 +1854,24 @@
                         <div class="pvs-card-body">
                             <div class="pvs-specs">
                                 <span class="sv">ตัวอย่าง:</span> ร.ล.กระบี่ (OPV-551)<br>
-                                <span class="sv">ความเร็ว:</span> 20 kts<br>
+                                <span class="sv">ความเร็ว:</span> 25 kts<br>
                                 <span class="sv">เรดาร์:</span> 20 nm<br>
                                 <span class="sv">โซนาร์:</span> ไม่มี
                             </div>
                             <div class="pvs-wep-list">
-                                <span class="pvs-wep-tag wt-gun">OTO 76/62mm (8 nm)</span>
-                                <span class="pvs-wep-tag wt-gun">20mm Oerlikon (2 nm)</span>
+                                <span class="pvs-wep-tag wt-gun">OTO 76mm Super Rapid (8 nm)</span>
+                                <span class="pvs-wep-tag wt-gun">2× 30mm MSI (2.5 nm)</span>
+                                <span class="pvs-wep-tag wt-gun">2× 12.7mm MG (0.8 nm)</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Ratcharit FAC -->
-                    <div class="pvs-card" id="pvsc_ratcharit" onclick="selectShipCard('ratcharit')">
-                        <span class="pvs-sel-badge">✓ SELECTED</span>
-                        <div class="pvs-card-hdr">
-                            <span class="pvs-tier-badge pvs-tier-3">TIER 3 · FAST ATTACK</span>
-                            <span class="pvs-ship-name">Ratcharit FAC(M)</span>
-                            <span class="pvs-ship-local">ชั้นราชฤทธิ์</span>
-                        </div>
-                        <div class="pvs-sil-wrap">
-                            <canvas id="pvSil_ratcharit" width="312" height="76"></canvas>
-                        </div>
-                        <div class="pvs-card-body">
-                            <div class="pvs-specs">
-                                <span class="sv">ตัวอย่าง:</span> ร.ล.ราชฤทธิ์ (FACM-456)<br>
-                                <span class="sv">ความเร็ว:</span> 36 kts<br>
-                                <span class="sv">เรดาร์:</span> 12 nm<br>
-                                <span class="sv">โซนาร์:</span> ไม่มี
-                            </div>
-                            <div class="pvs-wep-list">
-                                <span class="pvs-wep-tag wt-ssm">MM-38 Exocet (19 nm)</span>
-                                <span class="pvs-wep-tag wt-gun">57mm Bofors (5 nm)</span>
-                                <span class="pvs-wep-tag wt-gun">40mm L/70 (2.5 nm)</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Khamronsin PC -->
+                    <!-- Khamronsin ASW Corvette -->
                     <div class="pvs-card" id="pvsc_khamronsin" onclick="selectShipCard('khamronsin')">
                         <span class="pvs-sel-badge">✓ SELECTED</span>
                         <div class="pvs-card-hdr">
-                            <span class="pvs-tier-badge pvs-tier-3">TIER 3 · COASTAL PC</span>
-                            <span class="pvs-ship-name">Khamronsin-class PC</span>
+                            <span class="pvs-tier-badge pvs-tier-2">TIER 2 · ASW CORVETTE</span>
+                            <span class="pvs-ship-name">Khamronsin-class</span>
                             <span class="pvs-ship-local">ชั้นคำรณสินธุ์</span>
                         </div>
                         <div class="pvs-sil-wrap">
@@ -1903,15 +1879,68 @@
                         </div>
                         <div class="pvs-card-body">
                             <div class="pvs-specs">
-                                <span class="sv">ตัวอย่าง:</span> ร.ล.คำรณสินธุ์ (PC-731)<br>
+                                <span class="sv">ตัวอย่าง:</span> ร.ล.คำรณสินธุ์ (FS-531)<br>
                                 <span class="sv">ความเร็ว:</span> 25 kts<br>
-                                <span class="sv">เรดาร์:</span> 10 nm<br>
+                                <span class="sv">เรดาร์:</span> 14 nm<br>
+                                <span class="sv">โซนาร์:</span> Atlas DSQS-21C (6 nm)
+                            </div>
+                            <div class="pvs-wep-list">
+                                <span class="pvs-wep-tag wt-asw">Sting Ray Torpedo (5.9 nm)</span>
+                                <span class="pvs-wep-tag wt-gun">OTO 76mm/62 (8.6 nm)</span>
+                                <span class="pvs-wep-tag wt-gun">2× 30mm Breda (2.5 nm)</span>
+                                <span class="pvs-wep-tag wt-gun">2× 12.7mm MG (0.8 nm)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chon Buri FAC -->
+                    <div class="pvs-card" id="pvsc_chonburi" onclick="selectShipCard('chonburi')">
+                        <span class="pvs-sel-badge">✓ SELECTED</span>
+                        <div class="pvs-card-hdr">
+                            <span class="pvs-tier-badge pvs-tier-3">TIER 3 · FAST ATTACK GUN</span>
+                            <span class="pvs-ship-name">Chon Buri-class FAC</span>
+                            <span class="pvs-ship-local">ชั้นชลบุรี</span>
+                        </div>
+                        <div class="pvs-sil-wrap">
+                            <canvas id="pvSil_chonburi" width="312" height="76"></canvas>
+                        </div>
+                        <div class="pvs-card-body">
+                            <div class="pvs-specs">
+                                <span class="sv">ตัวอย่าง:</span> ร.ล.ชลบุรี (FACG-331)<br>
+                                <span class="sv">ความเร็ว:</span> 30 kts<br>
+                                <span class="sv">เรดาร์:</span> 14 nm<br>
                                 <span class="sv">โซนาร์:</span> ไม่มี
                             </div>
                             <div class="pvs-wep-list">
-                                <span class="pvs-wep-tag wt-gun">76mm/50 (6 nm)</span>
-                                <span class="pvs-wep-tag wt-gun">40mm/60 (2.5 nm)</span>
-                                <span class="pvs-wep-tag wt-gun">12.7mm GPMG (0.8 nm)</span>
+                                <span class="pvs-wep-tag wt-gun">2× OTO 76mm/62 (8.6 nm)</span>
+                                <span class="pvs-wep-tag wt-gun">2× Breda 40mm/70 (2.5 nm)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sattahip PG -->
+                    <div class="pvs-card" id="pvsc_sattahip" onclick="selectShipCard('sattahip')">
+                        <span class="pvs-sel-badge">✓ SELECTED</span>
+                        <div class="pvs-card-hdr">
+                            <span class="pvs-tier-badge pvs-tier-3">TIER 3 · PATROL GUNBOAT</span>
+                            <span class="pvs-ship-name">Sattahip-class PG</span>
+                            <span class="pvs-ship-local">ชั้นสัตหีบ · ประจำฐานสัตหีบ</span>
+                        </div>
+                        <div class="pvs-sil-wrap">
+                            <canvas id="pvSil_sattahip" width="312" height="76"></canvas>
+                        </div>
+                        <div class="pvs-card-body">
+                            <div class="pvs-specs">
+                                <span class="sv">ตัวอย่าง:</span> ร.ล.สัตหีบ (PG-521)<br>
+                                <span class="sv">ความเร็ว:</span> 22 kts<br>
+                                <span class="sv">เรดาร์:</span> 12 nm<br>
+                                <span class="sv">โซนาร์:</span> ไม่มี
+                            </div>
+                            <div class="pvs-wep-list">
+                                <span class="pvs-wep-tag wt-gun">OTO 76mm/62 (8 nm)</span>
+                                <span class="pvs-wep-tag wt-gun">Bofors 40mm/70 (2.5 nm)</span>
+                                <span class="pvs-wep-tag wt-gun">2× GAM-B01 20mm (2 nm)</span>
+                                <span class="pvs-wep-tag wt-gun">2× 12.7mm MG (0.8 nm)</span>
                             </div>
                         </div>
                     </div>
@@ -3380,74 +3409,102 @@ function closePVPatternModal() {
 // ═══════════════════════════════════════════════════════════════
 // PV Ship Type Catalog — Royal Thai Navy realistic parameters
 // ═══════════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
+//  PV Ship Catalog — สเปกตาม Jane's Fighting Ships 2020-2021
+//  (Thailand section, pages 783-799). Speed scale: 1 kn ≈ 0.00008333 ny/frame
+// ─────────────────────────────────────────────────────────────
 const PV_SHIP_CATALOG = {
-    knox: {
-        id:'knox', tier:1, role:'ASW+SURFACE',
-        name:'Knox-class FF', nameLocal:'เรือฟริเกต ชั้นน็อกซ์',
-        example:'ร.ล.ตากสิน (FF-471)',
-        speed:0.00225, radarNm:24, flirNm:6,
-        sonarType:'Atlas DSQS-24C', sonarNm:8, hasASW:true,
+    naresuan: {
+        id:'naresuan', tier:1, role:'ASW FRIGATE',
+        name:'Naresuan-class FFG', nameLocal:'เรือฟริเกต ชั้นนเรศวร',
+        example:'ร.ล.นเรศวร (FFG-421)',
+        // Jane's: 3,026t · 120m · 32kn · CODOG · complement 150
+        speed:0.00267, radarNm:24, flirNm:7,
+        sonarType:'Atlas DSQS-21 (hull)', sonarNm:8, hasASW:true,
         color:'#64ffda',
         weapons:{
-            asroc:        {rangeNm:9.0, pk:0.55, cooldown:0, label:'ASROC',        domain:['uuv']},
-            torpedo_mk46: {rangeNm:5.0, pk:0.62, cooldown:0, label:'Mk.46 Torp.',  domain:['uuv']},
-            cannon127mm:  {rangeNm:8.5, pk:0.42, cooldown:0, label:'5"/54 Mk.42',  domain:['surface','drone']},
-            cannon20mm:   {rangeNm:1.8, pk:0.28, cooldown:0, label:'20mm Oerlikon',domain:['surface','drone']},
+            torpedo_mk46: {rangeNm:6.0,  pk:0.60, cooldown:0, label:'Mk.46 Torpedo (6 tube)', domain:['uuv']},
+            ssm_harpoon:  {rangeNm:19.0, pk:0.66, cooldown:0, label:'Harpoon Block II SSM',   domain:['surface']},
+            sam_essm:     {rangeNm:14.0, pk:0.58, cooldown:0, label:'ESSM SAM (Mk.41 VLS)',   domain:['drone']},
+            cannon127mm:  {rangeNm:12.0, pk:0.46, cooldown:0, label:'5"/54 Mk.45',            domain:['surface','drone']},
+            cannon30mm:   {rangeNm:2.5,  pk:0.30, cooldown:0, label:'30mm DS30M',             domain:['surface','drone']},
         },
         fuelRate:0.000006,
     },
     krabi: {
-        id:'krabi', tier:2, role:'SURFACE OPV',
+        id:'krabi', tier:2, role:'OFFSHORE OPV',
         name:'Krabi-class OPV', nameLocal:'เรือตรวจการณ์ไกลฝั่ง ชั้นกระบี่',
         example:'ร.ล.กระบี่ (OPV-551)',
-        speed:0.00167, radarNm:20, flirNm:5,
+        // Jane's: 2,540t · 90.5m · 25kn · range 3,500nm@15kt
+        speed:0.00208, radarNm:20, flirNm:6,
         sonarType:null, sonarNm:0, hasASW:false,
         color:'#f59e0b',
         weapons:{
-            cannon76mm: {rangeNm:8.0, pk:0.40, cooldown:0, label:'OTO 76/62mm',   domain:['surface','drone']},
-            cannon20mm: {rangeNm:2.0, pk:0.30, cooldown:0, label:'20mm Oerlikon', domain:['surface','drone']},
+            cannon76mm: {rangeNm:8.0, pk:0.42, cooldown:0, label:'OTO 76mm Super Rapid', domain:['surface','drone']},
+            cannon30mm: {rangeNm:2.5, pk:0.30, cooldown:0, label:'2× 30mm MSI',          domain:['surface','drone']},
+            gpmg:       {rangeNm:0.8, pk:0.12, cooldown:0, label:'2× 12.7mm MG',         domain:['surface','drone']},
         },
         fuelRate:0.000008,
     },
-    ratcharit: {
-        id:'ratcharit', tier:3, role:'FAST ATTACK',
-        name:'Ratcharit FAC(M)', nameLocal:'เรือเร็วโจมตีขีปนาวุธ ชั้นราชฤทธิ์',
-        example:'ร.ล.ราชฤทธิ์ (FACM-456)',
-        speed:0.00300, radarNm:12, flirNm:3,
+    khamronsin: {
+        id:'khamronsin', tier:2, role:'ASW CORVETTE',
+        name:'Khamronsin-class corvette', nameLocal:'เรือคอร์เวต ชั้นคำรณสินธุ์',
+        example:'ร.ล.คำรณสินธุ์ (FS-531)',
+        // Jane's: 640t · 62m · 25kn · 6× Sting Ray torpedo · DSQS-21C sonar
+        speed:0.00208, radarNm:14, flirNm:4,
+        sonarType:'Atlas DSQS-21C (hull)', sonarNm:6, hasASW:true,
+        color:'#00d4ff',
+        weapons:{
+            torpedo_stingray: {rangeNm:5.9, pk:0.56, cooldown:0, label:'Sting Ray Torpedo (6 tube)', domain:['uuv']},
+            cannon76mm:       {rangeNm:8.6, pk:0.40, cooldown:0, label:'OTO 76mm/62 Mod 7',          domain:['surface','drone']},
+            cannon30mm:       {rangeNm:2.5, pk:0.28, cooldown:0, label:'2× Breda 30mm',              domain:['surface','drone']},
+            gpmg:             {rangeNm:0.8, pk:0.12, cooldown:0, label:'2× 12.7mm MG',               domain:['surface','drone']},
+        },
+        fuelRate:0.000009,
+    },
+    chonburi: {
+        id:'chonburi', tier:3, role:'FAST ATTACK GUN',
+        name:'Chon Buri-class FAC', nameLocal:'เรือเร็วโจมตีปืน ชั้นชลบุรี',
+        example:'ร.ล.ชลบุรี (FACG-331)',
+        // Jane's: 457t · 60.4m · 30kn · 2×76mm + 2×40mm · 3 shafts
+        speed:0.00250, radarNm:14, flirNm:4,
         sonarType:null, sonarNm:0, hasASW:false,
         color:'#ef4444',
         weapons:{
-            ssm_mm38:   {rangeNm:19.0, pk:0.65, cooldown:0, label:'MM-38 Exocet', domain:['surface']},
-            cannon57mm: {rangeNm:5.0,  pk:0.35, cooldown:0, label:'57mm Bofors',  domain:['surface','drone']},
-            cannon40mm: {rangeNm:2.5,  pk:0.22, cooldown:0, label:'40mm L/70',    domain:['surface','drone']},
+            cannon76mm: {rangeNm:8.6, pk:0.44, cooldown:0, label:'2× OTO 76mm/62', domain:['surface','drone']},
+            cannon40mm: {rangeNm:2.5, pk:0.24, cooldown:0, label:'2× Breda 40mm/70', domain:['surface','drone']},
         },
-        fuelRate:0.000012,
+        fuelRate:0.000011,
     },
-    khamronsin: {
-        id:'khamronsin', tier:3, role:'COASTAL PC',
-        name:'Khamronsin-class PC', nameLocal:'เรือตรวจการณ์ชายฝั่ง ชั้นคำรณสินธุ์',
-        example:'ร.ล.คำรณสินธุ์ (PC-731)',
-        speed:0.00208, radarNm:10, flirNm:2,
+    sattahip: {
+        id:'sattahip', tier:3, role:'PATROL GUNBOAT',
+        name:'Sattahip-class PG', nameLocal:'เรือตรวจการณ์ปืน ชั้นสัตหีบ',
+        example:'ร.ล.สัตหีบ (PG-521)',
+        // Jane's: 305t · 50.1m · 22kn · ประจำการ ฐานทัพเรือสัตหีบ
+        speed:0.00183, radarNm:12, flirNm:4,
         sonarType:null, sonarNm:0, hasASW:false,
-        color:'#00d4ff',
+        color:'#fbbf24',
         weapons:{
-            cannon76mm: {rangeNm:6.0, pk:0.35, cooldown:0, label:'76mm/50',      domain:['surface','drone']},
-            cannon40mm: {rangeNm:2.5, pk:0.20, cooldown:0, label:'40mm/60',      domain:['surface','drone']},
-            gpmg:       {rangeNm:0.8, pk:0.12, cooldown:0, label:'12.7mm GPMG',  domain:['surface','drone']},
+            cannon76mm: {rangeNm:8.0, pk:0.38, cooldown:0, label:'OTO 76mm/62',       domain:['surface','drone']},
+            cannon40mm: {rangeNm:2.5, pk:0.22, cooldown:0, label:'Bofors 40mm/70',    domain:['surface','drone']},
+            cannon20mm: {rangeNm:2.0, pk:0.26, cooldown:0, label:'2× GAM-B01 20mm',   domain:['surface','drone']},
+            gpmg:       {rangeNm:0.8, pk:0.12, cooldown:0, label:'2× 12.7mm MG',      domain:['surface','drone']},
         },
         fuelRate:0.000010,
     },
 };
-let pvSelectedShip = 'knox';
+let pvSelectedShip = 'naresuan';
 
 // ── Ship Modal controls ──────────────────────────────────────────
 function showPVShipModal() {
     document.getElementById('pvShipModal').classList.add('pvs-show');
     setTimeout(() => {
-        drawKnoxSilhouette('pvSil_knox');
+        // Naresuan = frigate hull · Chon Buri/Sattahip = small-craft hull
+        drawKnoxSilhouette('pvSil_naresuan');
         drawKrabiSilhouette('pvSil_krabi');
-        drawRatcharitSilhouette('pvSil_ratcharit');
         drawKhamronsinSilhouette('pvSil_khamronsin');
+        drawRatcharitSilhouette('pvSil_chonburi');
+        drawRatcharitSilhouette('pvSil_sattahip');
     }, 50);
 }
 function closePVShipModal() {
@@ -5006,7 +5063,7 @@ map.on('click', function(e) {
     pvUserCount++;
     const label = 'PV-U' + pvUserCount;
     // sonarType มาจาก ship catalog ที่ผู้ใช้เลือก (DSQS-24C ตามเอกสาร ร.ล.ตากสิน จริง)
-    const shipCfg  = PV_SHIP_CATALOG[pvSelectedShip] || PV_SHIP_CATALOG['knox'];
+    const shipCfg  = PV_SHIP_CATALOG[pvSelectedShip] || PV_SHIP_CATALOG['naresuan'];
     const sonarType = shipCfg.sonarType || '—';
 
     // ── Generate waypoints from selected search pattern ──────────
@@ -9631,7 +9688,7 @@ function animate() {
                 if (!t.active || t.frozen) return;
                 // TIGHT = classified only; FREE = ทุก contact
                 if (roeLevel === 'TIGHT' && !t.classified) return;
-                // UUV (underwater): ยิงได้เฉพาะเรือที่มีอาวุธ ASW (Knox FF)
+                // UUV (underwater): ยิงได้เฉพาะเรือที่มีอาวุธ ASW (Naresuan / Khamronsin)
                 if (t.type === 'uuv' && !v.hasASW) return;
                 const distNm = haversineNm(nyToLat(t.ny),nxToLng(t.nx),nyToLat(v.ny),nxToLng(v.nx));
                 const distUDC = haversineNm(nyToLat(t.ny),nxToLng(t.nx),UDC_LAT,UDC_LNG);
@@ -9972,32 +10029,32 @@ function animate() {
         });
     });
 
-    // ── Knox FF Active Sonar Detection ───────────────────────────
-    // Knox-class (hasASW=true, sonarNm=8) ตรวจจับ UUV ในระยะ sonar ที่ปรับด้วย SVP+SS
+    // ── ASW Hull-Sonar Detection (Naresuan FFG / Khamronsin corvette) ──
+    // เรือที่ hasASW=true + sonarNm>0 ตรวจจับ UUV ในระยะ sonar ปรับด้วย SVP+SS
     // ทำงานทุก 15 frame (~4 ครั้ง/วินาที) เพื่อไม่ spam detection
     if (frame % 15 === 0 && !simPaused) {
         patrolVessels.forEach(function(v) {
             if (!v.hasASW || v.sonarNm <= 0) return;
-            // Knox effective sonar range (nm): sonarNm × svpMod × SS degradation
-            const knoxEffNm = v.sonarNm * svpMod * SS_MODS.sonarRange[seaState];
+            // Effective sonar range (nm): sonarNm × svpMod × SS degradation
+            const sonarEffNm = v.sonarNm * svpMod * SS_MODS.sonarRange[seaState];
             // Convert to normalised ny-units
-            const knoxEffNY = knoxEffNm / ((LAT_TOP - LAT_BOT) * 60);
+            const sonarEffNY = sonarEffNm / ((LAT_TOP - LAT_BOT) * 60);
             threats.forEach(function(t) {
                 if (!t.active || t.frozen || t.type !== 'uuv') return;
-                if (t.knoxDetected) return;  // already handled this contact
+                if (t.pvSonarDetected) return;  // already handled this contact
                 const dx = t.nx - v.nx, dy = t.ny - v.ny;
                 const dist = Math.sqrt(dx*dx + dy*dy);
-                if (dist > knoxEffNY) return;
-                // ✓ Knox sonar contact
-                t.knoxDetected = true;
-                t.classified   = true;
+                if (dist > sonarEffNY) return;
+                // ✓ Hull-sonar contact
+                t.pvSonarDetected = true;
+                t.classified      = true;
                 const distNm = haversineNm(nyToLat(v.ny), nxToLng(v.nx),
                                            nyToLat(t.ny),  nxToLng(t.nx)).toFixed(1);
                 const bearing = Math.round(((Math.atan2(t.nx - v.nx, -(t.ny - v.ny))
                                 * 180 / Math.PI) + 360) % 360);
                 addLog(`🔊 [SONAR] ${v.label} — ACTIVE CONTACT: ${t.label} ` +
-                       `BRG ${bearing}° DIST ${distNm}nm (Knox sonar ${knoxEffNm.toFixed(1)}nm)`, '#a78bfa');
-                // If Knox is currently patrolling, divert to intercept
+                       `BRG ${bearing}° DIST ${distNm}nm (hull sonar ${sonarEffNm.toFixed(1)}nm)`, '#a78bfa');
+                // If the ASW vessel is patrolling, divert to intercept
                 if (v.state === 'PATROL' || v.state === 'TRANSIT') {
                     v.state      = 'INTERCEPT';
                     v.engTarget  = t;
@@ -10182,7 +10239,7 @@ function resetAll() {
     }
     flsSessionTriggered = false;
     guardianUUVs.forEach(g=>{g.interceptMode=false; g.flsTriggered=false; g.interceptTarget=null; g.interceptPhase=0; g.challengeLogged=false;});
-    threats.forEach(t => { t.knoxDetected = false; });
+    threats.forEach(t => { t.pvSonarDetected = false; });
     patrolVessels.forEach(v => { if (v.hasASW && v.state==='INTERCEPT') { v.state='PATROL'; v.redirected=false; v.engTarget=null; }});
 }
 
@@ -10248,7 +10305,7 @@ function launchScenario(type) {
     flsSessionTriggered = false;
     guardianUUVs.forEach(g=>{g.interceptMode=false; g.flsTriggered=false; g.interceptTarget=null; g.interceptPhase=0; g.challengeLogged=false;});
     // Reset Knox sonar contacts for new scenario
-    threats.forEach(t => { t.knoxDetected = false; });
+    threats.forEach(t => { t.pvSonarDetected = false; });
     patrolVessels.forEach(v => { if (v.hasASW && v.state==='INTERCEPT') { v.state='PATROL'; v.redirected=false; v.engTarget=null; }});
     addLog(`--- Scenario: ${type.toUpperCase()} initiated ---`,'var(--yellow)');
     showBriefing(type);
