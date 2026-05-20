@@ -94,6 +94,127 @@
         }
         #fsBtn:hover { background: rgba(100,255,218,.14); border-color: var(--teal); box-shadow: 0 0 10px rgba(100,255,218,.3); }
         #fsBtn.active { background: rgba(100,255,218,.18); border-color: var(--teal); color: #fff; }
+
+        /* ═══ TIER 1 — Credibility Markers ═══════════════════════ */
+        /* Classification banner — top & bottom */
+        .classification-banner {
+            flex-shrink: 0;
+            text-align: center;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            padding: 2px 0;
+            color: #d4f8d4;
+            background: repeating-linear-gradient(
+                45deg, #1d4d1d, #1d4d1d 10px, #235c23 10px, #235c23 20px);
+            border-top: 1px solid #2d6d2d;
+            border-bottom: 1px solid #2d6d2d;
+            user-select: none;
+        }
+        .classification-banner.bottom {
+            display: flex; justify-content: space-between;
+            padding: 2px 14px;
+        }
+        /* DTG clock cluster */
+        #dtgCluster {
+            display: flex; flex-direction: column; align-items: flex-end;
+            font-family: 'Share Tech Mono', monospace; line-height: 1.25;
+        }
+        #dtgZulu  { font-size: 14px; color: var(--teal); letter-spacing: 1px;
+            text-shadow: 0 0 8px rgba(100,255,218,.4); }
+        #dtgLocal { font-size: 9px; color: var(--text-muted); letter-spacing: .5px; }
+        /* System status pill in header */
+        .sys-status-pill {
+            display: flex; align-items: center; gap: 5px;
+            background: rgba(57,255,20,.08); border: 1px solid rgba(57,255,20,.4);
+            border-radius: 12px; padding: 2px 10px;
+            font-family: 'Share Tech Mono', monospace; font-size: 9px;
+            color: var(--green); letter-spacing: 1px;
+        }
+        .sys-status-pill .dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--green); box-shadow: 0 0 6px var(--green);
+            animation: blink 2s ease-in-out infinite;
+        }
+        /* Boot / Initialization screen */
+        #bootScreen {
+            position: fixed; inset: 0; z-index: 999999;
+            background: radial-gradient(ellipse at center,#04162b 0%,#010810 100%);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            font-family: 'Share Tech Mono', monospace;
+            transition: opacity .6s ease;
+        }
+        #bootScreen.done { opacity: 0; pointer-events: none; }
+        .boot-crest {
+            font-size: 54px; margin-bottom: 6px;
+            filter: drop-shadow(0 0 22px rgba(0,212,255,.6));
+            animation: bootPulse 2.2s ease-in-out infinite;
+        }
+        @keyframes bootPulse { 50% { filter: drop-shadow(0 0 34px rgba(0,212,255,.95)); } }
+        .boot-title {
+            font-size: 26px; font-weight: 700; color: var(--cyan);
+            letter-spacing: 6px; text-shadow: 0 0 16px rgba(0,212,255,.6);
+        }
+        .boot-subtitle {
+            font-size: 10px; color: var(--text-muted);
+            letter-spacing: 3px; margin: 4px 0 22px;
+        }
+        .boot-console {
+            width: 420px; max-width: 80vw; min-height: 150px;
+            background: rgba(2,12,24,.85); border: 1px solid #1a3a5c;
+            border-radius: 6px; padding: 12px 16px;
+            font-size: 11px; line-height: 1.9;
+        }
+        .boot-line { color: var(--text-muted); opacity: 0; }
+        .boot-line.show { opacity: 1; }
+        .boot-line .ok   { color: var(--green); float: right; }
+        .boot-line .wait { color: var(--amber); float: right; }
+        .boot-bar-track {
+            width: 420px; max-width: 80vw; height: 3px;
+            background: #0d2238; border-radius: 2px; margin-top: 16px; overflow: hidden;
+        }
+        .boot-bar-fill {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg,#0ea5e9,#64ffda);
+            box-shadow: 0 0 10px rgba(100,255,218,.6);
+            transition: width .3s ease;
+        }
+        .boot-foot {
+            font-size: 9px; color: #3b5275; letter-spacing: 2px;
+            margin-top: 18px;
+        }
+
+        /* ═══ TIER 2 — Visual Polish ═════════════════════════════ */
+        /* Glassmorphism panels */
+        .panel {
+            background: linear-gradient(160deg, rgba(13,28,48,.92), rgba(6,16,30,.96)) !important;
+            backdrop-filter: blur(2px);
+            box-shadow: inset 0 1px 0 rgba(120,170,230,.06),
+                        0 2px 8px rgba(0,0,0,.35);
+        }
+        .panel-title {
+            border-left: 2px solid currentColor;
+            padding-left: 6px;
+        }
+        /* Compass rose on map */
+        #compassRose {
+            position: absolute; top: 12px; right: 12px; z-index: 620;
+            width: 58px; height: 58px; pointer-events: none;
+            opacity: .82;
+        }
+        /* Live coordinate readout */
+        #coordReadout {
+            position: absolute; bottom: 10px; left: 10px; z-index: 620;
+            background: rgba(2,12,24,.86); border: 1px solid #1a3a5c;
+            border-radius: 5px; padding: 4px 9px;
+            font-family: 'Share Tech Mono', monospace; font-size: 9.5px;
+            color: var(--teal); line-height: 1.5; pointer-events: none;
+            letter-spacing: .5px;
+        }
+        #coordReadout .cr-label { color: #4a6585; }
+        #coordReadout .cr-val   { color: var(--teal); }
         .layout {
             display: grid; grid-template-columns:210px 1fr 210px;
             grid-template-rows: 1fr 70px;
@@ -1233,15 +1354,40 @@
 </head>
 <body>
 
+<!-- ── Boot / Initialization Screen ───────────────────────────── -->
+<div id="bootScreen">
+    <div class="boot-crest">⚓</div>
+    <div class="boot-title">THE SHIELD 1.0</div>
+    <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v08 ASW EDITION</div>
+    <div class="boot-console" id="bootConsole">
+        <div class="boot-line" data-ok="OK">▸ Initializing GIS subsystem<span class="ok">OK</span></div>
+        <div class="boot-line" data-ok="OK">▸ Loading bathymetry database<span class="ok">OK</span></div>
+        <div class="boot-line" data-ok="OK">▸ DAS fiber-optic tripwire<span class="ok">ARMED</span></div>
+        <div class="boot-line" data-ok="OK">▸ Guardian UUV network<span class="ok">ONLINE</span></div>
+        <div class="boot-line" data-ok="OK">▸ Hydrographic survey assets<span class="ok">READY</span></div>
+        <div class="boot-line" data-ok="OK">▸ ASW QRA — ROYAL DRAGON 1<span class="ok">STANDBY</span></div>
+        <div class="boot-line" data-ok="OK">▸ AISStream.io data link<span class="ok">CONNECTED</span></div>
+        <div class="boot-line" data-ok="SECURE">▸ Sonar prediction engine (PSR)<span class="ok">CALIBRATED</span></div>
+    </div>
+    <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
+    <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
+</div>
+
+<!-- ── Classification Banner — TOP ────────────────────────────── -->
+<div class="classification-banner">UNCLASSIFIED // FOR TRAINING USE ONLY</div>
+
 <header>
     <div>
-        <div class="title">⚓ THE SHIELD 1.0 — UDC GIS Defense Simulator <span style="color:var(--purple);font-size:13px;">v07</span></div>
-        <div class="subtitle">Leaflet.js GIS · CartoDB Dark Matter · DAS Fiber Tripwire · Real-time nm · Sea State · Tide Detection · AIS Live</div>
+        <div class="title">⚓ THE SHIELD 1.0 — UDC GIS Defense Simulator <span style="color:var(--purple);font-size:13px;">v08</span></div>
+        <div class="subtitle">Underwater Data Centre Defence · ASW Edition · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live</div>
     </div>
     <div style="display:flex;gap:10px;align-items:center;">
-        <span class="badge-v4">v07 — AIS · Bathy · Sea Zones · Swept Path · WEZ · DataLink</span>
-        <span class="badge">UNCLASSIFIED (SIMULATION)</span>
-        <div id="clock">--:--:--</div>
+        <span class="sys-status-pill"><span class="dot"></span>SYSTEM OPERATIONAL</span>
+        <span class="badge-v4">v08 — ASW · Helo QRA · Mk46 · Sonobuoy · PSR · ROE</span>
+        <div id="dtgCluster">
+            <div id="dtgZulu">------Z --- --</div>
+            <div id="dtgLocal">LOCAL --:--:-- +07</div>
+        </div>
         <button id="fsBtn" onclick="toggleFullscreen()" title="Full Screen (F11)">⛶</button>
     </div>
 </header>
@@ -1452,6 +1598,43 @@
             <!-- Map interaction blocker — เปิดเมื่อ mission ended เพื่อกัน drag/zoom -->
             <div id="mapLockOverlay"></div>
             <div id="dasAlert">⚡ DAS TRIPWIRE TRIGGERED — ACOUSTIC INTRUSION ON FIBER CABLE</div>
+
+            <!-- ── Compass Rose (TIER 2) ──────────────────────── -->
+            <svg id="compassRose" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="46" fill="rgba(2,12,24,.55)"
+                        stroke="#1a3a5c" stroke-width="1.5"/>
+                <circle cx="50" cy="50" r="38" fill="none"
+                        stroke="rgba(100,255,218,.20)" stroke-width="1"/>
+                <!-- cardinal ticks -->
+                <g stroke="#64ffda" stroke-width="1.5">
+                    <line x1="50" y1="6"  x2="50" y2="16"/>
+                    <line x1="50" y1="94" x2="50" y2="84"/>
+                    <line x1="6"  y1="50" x2="16" y2="50"/>
+                    <line x1="94" y1="50" x2="84" y2="50"/>
+                </g>
+                <!-- N arrow -->
+                <polygon points="50,12 45,52 50,44 55,52"
+                         fill="#ff4136" stroke="#ff6b6b" stroke-width=".5"/>
+                <polygon points="50,88 45,48 50,56 55,48"
+                         fill="#0a2540" stroke="#64ffda" stroke-width=".5"/>
+                <!-- cardinal letters -->
+                <text x="50" y="27" fill="#ff6b6b" font-size="11"
+                      font-family="Share Tech Mono" text-anchor="middle" font-weight="bold">N</text>
+                <text x="50" y="79" fill="#64ffda" font-size="8"
+                      font-family="Share Tech Mono" text-anchor="middle">S</text>
+                <text x="78" y="53" fill="#64ffda" font-size="8"
+                      font-family="Share Tech Mono" text-anchor="middle">E</text>
+                <text x="22" y="53" fill="#64ffda" font-size="8"
+                      font-family="Share Tech Mono" text-anchor="middle">W</text>
+                <circle cx="50" cy="50" r="2.5" fill="#64ffda"/>
+            </svg>
+
+            <!-- ── Live Coordinate Readout (TIER 2) ───────────── -->
+            <div id="coordReadout">
+                <div><span class="cr-label">LAT </span><span class="cr-val" id="crLat">--°--'--"N</span></div>
+                <div><span class="cr-label">LON </span><span class="cr-val" id="crLng">---°--'--"E</span></div>
+                <div><span class="cr-label">GRID</span> <span class="cr-val" id="crGrid">CHONBURI 47P</span></div>
+            </div>
 
             <!-- ── Scenario Outcome Popup (floating bottom-right of map) ── -->
             <div id="outcomePopup">
@@ -2054,6 +2237,13 @@
 
 </div>
 
+<!-- ── Classification Banner — BOTTOM ─────────────────────────── -->
+<div class="classification-banner bottom">
+    <span>UNCLASSIFIED // FOR TRAINING USE ONLY</span>
+    <span style="color:#7da77d;">THE SHIELD 1.0 · UDC TACTICAL SIMULATOR v08</span>
+    <span>UNCLASSIFIED // FOR TRAINING USE ONLY</span>
+</div>
+
 <script>
 // ═══════════════════════════════════════════════════════════════
 //  [ส่วนที่ 1] การตั้งค่าแผนที่ Leaflet — ฉากหลัง CartoDB Dark Matter
@@ -2079,6 +2269,22 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     maxZoom: 16,
     minZoom: 9,
 }).addTo(map);
+
+// ── Live coordinate readout — DMS format (TIER 2) ─────────────
+function _toDMS(deg, isLat) {
+    const hemi = isLat ? (deg >= 0 ? 'N' : 'S') : (deg >= 0 ? 'E' : 'W');
+    const a = Math.abs(deg);
+    const d = Math.floor(a);
+    const m = Math.floor((a - d) * 60);
+    const s = Math.round(((a - d) * 60 - m) * 60);
+    return `${d}°${String(m).padStart(2,'0')}'${String(s).padStart(2,'0')}"${hemi}`;
+}
+map.on('mousemove', function(e) {
+    const latEl = document.getElementById('crLat');
+    const lngEl = document.getElementById('crLng');
+    if (latEl) latEl.textContent = _toDMS(e.latlng.lat, true);
+    if (lngEl) lngEl.textContent = _toDMS(e.latlng.lng, false);
+});
 
 // เกาะคราม label
 L.marker([12.718, 100.779], {
@@ -11040,12 +11246,60 @@ function toggleFullscreen() {
 // ═══════════════════════════════════════════════════════════════
 //  CLOCK + STARTUP
 // ═══════════════════════════════════════════════════════════════
+// ── DTG (Date-Time Group) — military time display ─────────────
+const _DTG_MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN',
+                     'JUL','AUG','SEP','OCT','NOV','DEC'];
 function updateClock() {
-    document.getElementById('clock').textContent=
-        [new Date().getHours(),new Date().getMinutes(),new Date().getSeconds()]
-        .map(n=>String(n).padStart(2,'0')).join(':')+' ICT';
+    const now = new Date();
+    const p2  = n => String(n).padStart(2,'0');
+    // Zulu (UTC) DTG: DDHHMMZ MON YY
+    const zEl = document.getElementById('dtgZulu');
+    if (zEl) {
+        zEl.textContent =
+            p2(now.getUTCDate()) + p2(now.getUTCHours()) + p2(now.getUTCMinutes())
+            + 'Z ' + _DTG_MONTHS[now.getUTCMonth()] + ' '
+            + String(now.getUTCFullYear()).slice(-2);
+    }
+    // Local (ICT, +07)
+    const lEl = document.getElementById('dtgLocal');
+    if (lEl) {
+        lEl.textContent = 'LOCAL ' +
+            [now.getHours(), now.getMinutes(), now.getSeconds()].map(p2).join(':')
+            + ' +07';
+    }
 }
 setInterval(updateClock,1000); updateClock();
+
+// ── Boot / Initialization sequence ────────────────────────────
+function runBootSequence() {
+    const screen = document.getElementById('bootScreen');
+    const lines  = document.querySelectorAll('#bootConsole .boot-line');
+    const bar    = document.getElementById('bootBar');
+    if (!screen || !lines.length) return;
+    let i = 0;
+    const total = lines.length;
+    const step = () => {
+        if (i < total) {
+            lines[i].classList.add('show');
+            if (bar) bar.style.width = Math.round(((i+1)/total)*100) + '%';
+            i++;
+            setTimeout(step, 230 + Math.random()*160);
+        } else {
+            // Hold briefly then fade out
+            setTimeout(() => {
+                screen.classList.add('done');
+                setTimeout(() => { if (screen.parentNode) screen.style.display='none'; }, 700);
+            }, 550);
+        }
+    };
+    setTimeout(step, 350);
+}
+// Skip boot screen on click (for impatient users)
+document.getElementById('bootScreen')?.addEventListener('click', function() {
+    this.classList.add('done');
+    setTimeout(() => { this.style.display='none'; }, 700);
+});
+runBootSequence();
 
 // ═══════════════════════════════════════════════════════════════
 //  [ส่วนที่ 29] Initialization — เริ่มต้นระบบเมื่อโหลดหน้าเว็บ
