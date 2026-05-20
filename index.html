@@ -559,28 +559,42 @@
             background:rgba(0,212,255,.22); border-color:#00d4ff; color:#fff;
             box-shadow:0 0 16px rgba(0,212,255,.65); animation:placePulse 1.2s ease-in-out infinite;
         }
-        /* ── DEPLOY group — จัดกลุ่มปุ่มวางกำลังมุมขวาบนแผนที่ ── */
+        /* ── DEPLOY group — ปุ่มมุมขวาบนแผนที่ ทุกปุ่มกว้างเท่ากัน ── */
         .leaflet-top.leaflet-right {
             background: rgba(2,12,24,0.62);
             border: 1px solid rgba(34,211,238,0.22);
             border-radius: 7px;
-            padding: 2px 5px 5px;
+            padding: 2px 6px 6px;
+            width: 178px;
         }
         .leaflet-top.leaflet-right::before {
             content: '▾ DEPLOY BLUE FORCE';
             display: block;
             font-family: 'Share Tech Mono', monospace;
             font-size: 8px; color: #5b7290; letter-spacing: 1px;
-            text-align: center; padding: 3px 0 2px;
+            text-align: center; padding: 3px 0 3px;
         }
         .leaflet-top.leaflet-right .leaflet-control {
             margin: 3px 0 0 0 !important;
             float: none !important;
+            width: 100% !important;
+            box-sizing: border-box;
+            clear: both;
         }
-        .leaflet-top.leaflet-right .place-patrol-btn,
-        .leaflet-top.leaflet-right .place-guuv-btn,
-        .leaflet-top.leaflet-right .place-survey-btn {
-            width: 100%; font-size: 11px; padding: 4px 8px;
+        /* ทุกปุ่มในแถบ — กว้างเท่ากัน + ตัดข้อความเกินด้วย ellipsis */
+        .leaflet-top.leaflet-right button {
+            width: 100% !important;
+            box-sizing: border-box;
+            font-size: 11px !important;
+            padding: 5px 8px !important;
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .leaflet-top.leaflet-right .patrol-hint {
+            width: 100%; box-sizing: border-box;
+            white-space: normal; font-size: 9px; margin-top: 3px;
         }
         /* ── Submarine Cable Toggles ── */
         .cable-toggle-btn {
@@ -2791,7 +2805,7 @@ let fleetZoneVisible = true;
 const fleetZoneToggleBtn = L.control({ position: 'topright' });
 fleetZoneToggleBtn.onAdd = function() {
     const btn = L.DomUtil.create('button', 'safety-zone-toggle-btn');
-    btn.innerHTML = '🟠 พื้นที่กองเรือยุทธการ';
+    btn.innerHTML = '🟠 พื้นที่กองเรือฯ';
     btn.title = 'แสดง/ซ่อน พื้นที่กองเรือยุทธการ (กองทัพเรือ)';
     btn.style.borderColor = 'rgba(249,115,22,0.65)';
     btn.style.color = '#f97316';
@@ -2848,7 +2862,7 @@ let das2Visible = true;
 const das2ToggleBtn = L.control({ position: 'topright' });
 das2ToggleBtn.onAdd = function() {
     const btn = L.DomUtil.create('button', 'safety-zone-toggle-btn');
-    btn.innerHTML = '🔵 DAS สาย 2 (กองเรือยุทธการ)';
+    btn.innerHTML = '🔵 DAS สาย 2';
     btn.title = 'แสดง/ซ่อน DAS Cable สาย 2 → กองเรือยุทธการ';
     btn.style.borderColor = 'rgba(56,189,248,0.65)';
     btn.style.color = '#38bdf8';
@@ -3025,7 +3039,7 @@ let cableBVisible = false;
 cableBBtn.onAdd = function() {
     const btn = L.DomUtil.create('button', 'cable-toggle-btn');
     btn.id = 'cableBBtn';
-    btn.innerHTML = '〰 เส้นทางเคเบิ้ล ⚠ประมาณ';
+    btn.innerHTML = '〰 เส้นทางเคเบิ้ล';
     L.DomEvent.disableClickPropagation(btn);
     btn.onclick = function() {
         cableBVisible = !cableBVisible;
@@ -3097,7 +3111,7 @@ let slocVisible = false;
 slocBtn.onAdd = function() {
     const btn = L.DomUtil.create('button', 'sloc-toggle-btn');
     btn.id = 'slocBtn';
-    btn.innerHTML = '⚓ เส้นทางเดินเรือ (SLOC)';
+    btn.innerHTML = '⚓ เส้นทางเดินเรือ';
     L.DomEvent.disableClickPropagation(btn);
     btn.onclick = function() {
         slocVisible = !slocVisible;
