@@ -449,6 +449,12 @@
             border-color:#a78bfa; color:#c4b5fd;
             box-shadow:0 0 10px rgba(167,139,250,.40);
         }
+        /* Mine warfare — controlled minefield button active */
+        #mineFieldBtn.mine-active {
+            background:rgba(34,197,94,.22) !important;
+            border-color:#4ade80 !important; color:#bbf7d0 !important;
+            box-shadow:0 0 10px rgba(34,197,94,.40);
+        }
         .leaflet-control-zoom a {
             background:#081525 !important; color:var(--cyan) !important;
             border-color:#1a3a5c !important; font-size:16px !important;
@@ -2237,11 +2243,13 @@
             <button class="btn btn-uuv" style="background:rgba(168,85,247,.10);border-color:rgba(168,85,247,.45);color:#a855f7;" onclick="launchScenario('sdv')"><span class="btn-dot" style="background:#a855f7;box-shadow:0 0 5px #a855f7;"></span> SDV (Swimmer Delivery Vehicle)</button>
             <button class="btn btn-uuv" style="background:rgba(220,38,38,.10);border-color:rgba(220,38,38,.45);color:#dc2626;" onclick="launchScenario('midget')"><span class="btn-dot" style="background:#dc2626;box-shadow:0 0 5px #dc2626;"></span> Midget Submarine (Yono-class)</button>
             <button class="btn btn-uuv" style="background:rgba(127,29,29,.20);border-color:rgba(127,29,29,.55);color:#fca5a5;" onclick="launchScenario('ssk')"><span class="btn-dot" style="background:#7f1d1d;box-shadow:0 0 5px #7f1d1d;"></span> SSK (Conventional Sub)</button>
+            <button class="btn btn-uuv" style="background:rgba(255,107,53,.12);border-color:rgba(255,107,53,.5);color:#ff8c5a;" onclick="launchScenario('mining')"><span class="btn-dot" style="background:#ff6b35;box-shadow:0 0 5px #ff6b35;"></span> 💣 Covert Mining (SDV)</button>
             <!-- Manual SCRAMBLE controls -->
             <div style="display:flex;gap:4px;margin-top:3px;">
                 <button class="btn" style="flex:1;background:rgba(245,158,11,.15);border-color:#f59e0b;color:#fcd34d;font-size:10px;padding:5px;" onclick="manualScrambleHelo()">🚁 SCRAMBLE NOW</button>
                 <button class="btn" style="flex:1;background:rgba(34,211,238,.10);border-color:#22d3ee;color:#67e8f9;font-size:10px;padding:5px;" onclick="manualCAPHelo()">✈ AIRBORNE CAP</button>
             </div>
+            <button id="mineFieldBtn" class="btn" style="background:rgba(34,197,94,.10);border-color:#22c55e;color:#4ade80;font-size:10px;padding:5px;margin-top:3px;" onclick="layControlledMinefield()">💣 Lay Minefield</button>
             <button class="btn btn-reset" onclick="resetAll()" style="margin-top:4px;">⟳ RESET ALL SYSTEMS</button>
         </div>
     </div>
@@ -6179,6 +6187,294 @@ function drawUTapaoBase() {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  MINE WARFARE SYSTEM (v08) — Offensive / MCM / Defensive
+//  ─────────────────────────────────────────────────────────────
+//  ทุ่นระเบิด bottom influence mine — เหมาะกับน้ำตื้นอ่าวไทย
+//    • Hostile mine : ข้าศึกวาง (SDV) — ซ่อนจนกว่า MCM จะตรวจพบ
+//                     เป็นภัยต่อเรือฝ่ายเรา (influence trigger)
+//    • Controlled   : ฝ่ายเราวาง — สั่งระเบิดเมื่อภัยผ่าน (command-detonated)
+//  MCM: HSV magnetometer ตรวจพบ → Guardian UUV / ROV ทำลาย
+// ═══════════════════════════════════════════════════════════════
+let seaMines  = [];          // all mines on the field
+let mineFieldLaid = false;   // controlled minefield deployed flag
+
+const MINE_DETECT_NM     = 0.55;  // MCM sensor detection range
+const MINE_TRIGGER_NM    = 0.22;  // influence trigger radius
+const MINE_NEUTRALIZE_NM = 0.40;  // neutralisation reach
+const _NM_PER_NY         = (typeof LAT_TOP!=='undefined')
+                         ? (LAT_TOP-LAT_BOT)*60 : 27;
+
+function _nmToNY(nm) { return nm / _NM_PER_NY; }
+
+// ── Lay a single mine ────────────────────────────────────────
+function layMine(nx, ny, hostile, controlled) {
+    seaMines.push({
+        nx, ny,
+        hostile:    !!hostile,
+        controlled: !!controlled,
+        state:      'ARMED',     // ARMED → DETECTED → NEUTRALIZED / DETONATED
+        laidFrame:  (typeof frame!=='undefined') ? frame : 0,
+        neutProgress: 0,
+        pulse:      Math.random()*6.28,
+    });
+}
+
+// ── Covert Mining scenario — SDV lays hostile minefield ──────
+function scenarioMining() {
+    // SDV minelayer เข้าจากทิศใต้
+    const sdvLat = 12.40 + Math.random()*0.05;
+    const sdvLng = 100.80 + Math.random()*0.12;
+    const sNx = (sdvLng - LNG_LEFT)/(LNG_RIGHT-LNG_LEFT);
+    const sNy = (LAT_TOP - sdvLat)/(LAT_TOP-LAT_BOT);
+    const sdv = {
+        type:'uuv', nx:sNx, ny:sNy, tnx:UDC.nx, tny:UDC.ny,
+        color:'#a855f7', speed:0.00020, active:true, frozen:false,
+        classified:false, label:'HOSTILE-SDV (MINELAYER)',
+        spd:4, hdg:0, dep:8, trail:[], isSubmarine:true,
+        isMinelayer:true,
+    };
+    if (typeof applySubClass === 'function') applySubClass(sdv, 'SDV');
+    sdv.label = 'HOSTILE-SDV (MINELAYER)';
+    threats.push(sdv);
+
+    // วางทุ่น hostile 5 ลูก — ดักช่องทางเข้า UDC + แนวสายเคเบิล
+    const minePts = [
+        { nx: UDC.nx-0.04, ny: UDC.ny+0.13 },   // ช่องทางเข้าใต้
+        { nx: UDC.nx+0.02, ny: UDC.ny+0.15 },
+        { nx: UDC.nx-0.10, ny: UDC.ny+0.06 },   // แนวเข้าด้านตะวันตก
+        { nx: UDC.nx+0.09, ny: UDC.ny+0.04 },   // แนวเข้าด้านตะวันออก
+        { nx: UDC.nx-0.01, ny: UDC.ny+0.07 },   // ใกล้สายเคเบิล
+    ];
+    // ทยอยวาง (จำลอง SDV ค่อยๆ แล่นวาง)
+    minePts.forEach((p, i) => {
+        T(2000 + i*1800, () => {
+            layMine(p.nx, p.ny, true, false);
+            addLog(`[MIW] 💣 ตรวจพบความผิดปกติใต้น้ำ — สงสัยการวางทุ่นระเบิด (sector ${i+1})`, '#f59e0b');
+            if (typeof sfxThreatDetect === 'function') sfxThreatDetect();
+        });
+    });
+    T(2000 + minePts.length*1800 + 500, () => {
+        addLog(`[MIW] ⚠ HOSTILE MINEFIELD SUSPECTED — สั่ง HSV ตรวจค้นด้วย Magnetometer`, '#ef4444');
+        if (typeof setDomain === 'function') setDomain('underwater','crit');
+        if (typeof updateStatus === 'function')
+            updateStatus('💣 [MINE WARFARE] สงสัยข้าศึกวางทุ่นระเบิดดักทางเข้า UDC<br>'+
+                '[MCM] HSV Magnetometer ค้นหา → Guardian UUV/ROV ทำลาย<br>'+
+                '[WARNING] เรือผิวน้ำห้ามแล่นผ่านพื้นที่ต้องสงสัย','#ef4444');
+    });
+}
+
+// ── Lay friendly Controlled Minefield (defensive barrier) ────
+function layControlledMinefield() {
+    if (mineFieldLaid) {
+        addLog('[MIW] ⚠ Controlled minefield ถูกวางแล้ว', '#fbbf24');
+        return;
+    }
+    // วางแนวโค้ง 7 ลูก ขวางช่องทางเข้าด้านใต้ของ UDC
+    const N = 7, spread = 0.26;
+    for (let i = 0; i < N; i++) {
+        const t  = (i/(N-1) - 0.5) * spread;
+        const nx = UDC.nx + t;
+        const ny = UDC.ny + 0.17 - Math.abs(t)*0.25;   // โค้งเล็กน้อย
+        layMine(nx, ny, false, true);
+    }
+    mineFieldLaid = true;
+    addLog(`[MIW] 🛡 Controlled minefield วางแล้ว ${N} ลูก — barrier ช่องทางเข้าใต้ UDC`, '#22c55e');
+    addLog(`[MIW] ทุ่น command-detonated — จะระเบิดเมื่อภัยคุกคามแล่นผ่าน`, '#64748b');
+    if (typeof sfxSonobuoyDeploy === 'function') sfxSonobuoyDeploy();
+    const btn = document.getElementById('mineFieldBtn');
+    if (btn) { btn.classList.add('mine-active'); btn.textContent = '💣 MINEFIELD ●'; }
+}
+
+// ── Detonate a mine ──────────────────────────────────────────
+function _detonateMine(m, victimLabel) {
+    m.state = 'DETONATED';
+    if (typeof addExplosion === 'function') addExplosion(m.nx, m.ny, '#ff6b35');
+    if (typeof sfxExplosion === 'function') sfxExplosion();
+}
+
+// ── Update mines — detection / trigger / neutralisation ──────
+function updateSeaMines() {
+    if (!seaMines.length) return;
+    const detR   = _nmToNY(MINE_DETECT_NM);
+    const trigR  = _nmToNY(MINE_TRIGGER_NM);
+    const neutR  = _nmToNY(MINE_NEUTRALIZE_NM);
+
+    for (const m of seaMines) {
+        if (m.state === 'DETONATED' || m.state === 'NEUTRALIZED') continue;
+        m.pulse += 0.05;
+
+        // ── HOSTILE mine logic ──────────────────────────────
+        if (m.hostile) {
+            // (1) MCM detection — HSV magnetometer + Guardian UUV
+            if (m.state === 'ARMED') {
+                let detected = false, detector = '';
+                if (typeof surveyVessels !== 'undefined') {
+                    for (const v of surveyVessels) {
+                        if (!v.sensors || !v.sensors.mag) continue;
+                        const d = Math.hypot(v.nx-m.nx, v.ny-m.ny);
+                        if (d < detR) { detected = true; detector = v.label; break; }
+                    }
+                }
+                if (!detected && typeof guardianUUVs !== 'undefined') {
+                    for (const g of guardianUUVs) {
+                        const d = Math.hypot(g.nx-m.nx, g.ny-m.ny);
+                        if (d < detR*0.7) { detected = true; detector = g.label; break; }
+                    }
+                }
+                if (detected) {
+                    m.state = 'DETECTED';
+                    addLog(`[MCM] 🧲 ${detector} ตรวจพบทุ่นระเบิด — MINE-LIKE CONTACT (MILCO)`, '#f59e0b');
+                    if (typeof sfxFLSLock === 'function') sfxFLSLock();
+                }
+            }
+            // (2) Influence trigger — friendly vessel transits over ARMED mine
+            if (m.state === 'ARMED') {
+                const fleet = [];
+                if (typeof patrolVessels !== 'undefined') patrolVessels.forEach(v=>fleet.push(v));
+                if (typeof surveyVessels !== 'undefined') surveyVessels.forEach(v=>fleet.push(v));
+                for (const v of fleet) {
+                    if (v.mineHit) continue;
+                    if (Math.hypot(v.nx-m.nx, v.ny-m.ny) < trigR) {
+                        _detonateMine(m, v.label);
+                        v.mineHit = true;
+                        v.state = 'DAMAGED';
+                        v.speed = (v.speed||0.002) * 0.15;   // mobility kill
+                        addLog(`[MIW] 💥 ${v.label} โดนทุ่นระเบิด — MOBILITY KILL · เสียหายหนัก`, '#ef4444');
+                        if (typeof setDomain === 'function') setDomain('command','crit');
+                        break;
+                    }
+                }
+            }
+            // (3) Neutralisation — Guardian UUV / ROV on a DETECTED mine
+            if (m.state === 'DETECTED') {
+                let onTask = false;
+                if (typeof guardianUUVs !== 'undefined') {
+                    for (const g of guardianUUVs) {
+                        if (Math.hypot(g.nx-m.nx, g.ny-m.ny) < neutR) { onTask = true; break; }
+                    }
+                }
+                if (!onTask && typeof rovs !== 'undefined') {
+                    for (const r of rovs) {
+                        if (r.nx!=null && Math.hypot(r.nx-m.nx, r.ny-m.ny) < neutR) { onTask = true; break; }
+                    }
+                }
+                if (onTask) {
+                    m.neutProgress += 1/240;   // ~4 วินาที
+                    if (m.neutProgress >= 1) {
+                        m.state = 'NEUTRALIZED';
+                        addLog(`[MCM] ✓ ทุ่นระเบิดถูกทำลาย — EOD COMPLETE · พื้นที่ปลอดภัย`, '#22c55e');
+                        if (typeof addCaptureEffect === 'function') addCaptureEffect(m.nx, m.ny);
+                    }
+                }
+            }
+        }
+        // ── CONTROLLED (friendly) mine — detonate on hostile ─
+        else if (m.controlled && m.state === 'ARMED') {
+            if (typeof threats !== 'undefined') {
+                for (const t of threats) {
+                    if (!t.active || t.frozen) continue;
+                    if (Math.hypot(t.nx-m.nx, t.ny-m.ny) < trigR) {
+                        _detonateMine(m, t.label);
+                        t.active = false; t.frozen = true;
+                        addLog(`[MIW] 💥 Controlled mine ระเบิด — ${t.label} ถูกทำลาย`, '#22c55e');
+                        if (typeof setDomain === 'function') setDomain('underwater','ok');
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    // cleanup detonated mines after explosion settles
+    if (frame % 120 === 0) {
+        seaMines = seaMines.filter(m =>
+            m.state !== 'DETONATED' || (frame - m.laidFrame) < 100000);
+    }
+}
+
+// ── Draw mines ───────────────────────────────────────────────
+function drawSeaMines() {
+    if (!seaMines.length) return;
+    const detR = _nmToNY(MINE_DETECT_NM) * _pxNm * _NM_PER_NY;
+    for (const m of seaMines) {
+        if (m.state === 'DETONATED') continue;
+        const {x, y} = pn(m.nx, m.ny);
+
+        // Hostile ARMED + undetected → ซ่อน (ไม่วาด) — ต้องใช้ MCM หา
+        if (m.hostile && m.state === 'ARMED') continue;
+
+        if (m.state === 'NEUTRALIZED') {
+            // gray X
+            ctx.save();
+            ctx.strokeStyle = 'rgba(100,116,139,0.7)';
+            ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            ctx.moveTo(x-5,y-5); ctx.lineTo(x+5,y+5);
+            ctx.moveTo(x+5,y-5); ctx.lineTo(x-5,y+5);
+            ctx.stroke();
+            ctx.font = '7px "Share Tech Mono"';
+            ctx.fillStyle = 'rgba(100,116,139,0.8)';
+            ctx.textAlign = 'center';
+            ctx.fillText('SAFE', x, y+14);
+            ctx.restore();
+            continue;
+        }
+
+        const hostileCol = '#ef4444', friendlyCol = '#22c55e';
+        const col = m.hostile ? hostileCol : friendlyCol;
+
+        // Detection / arming ring
+        ctx.save();
+        if (m.hostile && m.state === 'DETECTED') {
+            const pr = 9 + Math.sin(m.pulse)*3;
+            ctx.strokeStyle = `rgba(239,68,68,${0.4+Math.sin(m.pulse)*0.2})`;
+            ctx.lineWidth = 1.2;
+            ctx.setLineDash([3,3]);
+            ctx.beginPath(); ctx.arc(x,y,pr,0,Math.PI*2); ctx.stroke();
+            ctx.setLineDash([]);
+        } else if (!m.hostile) {
+            // friendly controlled — show trigger radius faintly
+            const tr = _nmToNY(MINE_TRIGGER_NM)*_pxNm*_NM_PER_NY;
+            ctx.strokeStyle = 'rgba(34,197,94,0.16)';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.arc(x,y,tr,0,Math.PI*2); ctx.stroke();
+        }
+        // Mine body — spherical contact-mine silhouette
+        ctx.fillStyle = m.hostile ? 'rgba(40,8,8,0.95)' : 'rgba(6,28,14,0.95)';
+        ctx.strokeStyle = col;
+        ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2);
+        ctx.fill(); ctx.stroke();
+        // Hertz horns
+        ctx.strokeStyle = col;
+        ctx.lineWidth = 1;
+        for (let a=0; a<Math.PI*2; a+=Math.PI/3) {
+            ctx.beginPath();
+            ctx.moveTo(x+Math.cos(a)*5, y+Math.sin(a)*5);
+            ctx.lineTo(x+Math.cos(a)*8, y+Math.sin(a)*8);
+            ctx.stroke();
+        }
+        // mooring cable hint
+        ctx.strokeStyle = `${col}66`;
+        ctx.beginPath(); ctx.moveTo(x,y+5); ctx.lineTo(x,y+11); ctx.stroke();
+
+        // Neutralisation progress arc
+        if (m.hostile && m.state === 'DETECTED' && m.neutProgress > 0) {
+            ctx.strokeStyle = '#22c55e';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x,y,11,-Math.PI/2,-Math.PI/2 + m.neutProgress*Math.PI*2);
+            ctx.stroke();
+        }
+        // Label
+        ctx.font = 'bold 7px "Share Tech Mono"';
+        ctx.fillStyle = col;
+        ctx.textAlign = 'center';
+        ctx.fillText(m.hostile ? '💣 MINE' : '🛡 CTRL', x, y+19);
+        ctx.restore();
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  [ส่วนที่ 12] การจำลองน้ำขึ้น-ลง + ตัวปรับ Detection (A+B รวม)
 // ───────────────────────────────────────────────────────────────
 //  หลักการทางอุทกศาสตร์ (Hydrographic Principle):
@@ -9507,6 +9803,7 @@ function animate() {
     drawROVs();
     drawADCP();
     drawUDCCapsule();
+    drawSeaMines();     // mine warfare — hostile + controlled mines
     drawSonobuoys();    // sonobuoy field (under threats)
     drawTorpedoes();    // active Mk46 torpedoes
     drawHelicopterTacticalLine();
@@ -10081,6 +10378,8 @@ function animate() {
     if (typeof updateASWHelicopter === 'function') updateASWHelicopter();
     if (typeof updateTorpedoes     === 'function') updateTorpedoes();
     if (typeof updateSonobuoys     === 'function') updateSonobuoys();
+    // Mine warfare (v08)
+    if (typeof updateSeaMines      === 'function') updateSeaMines();
 
     // Thermal/PUE telemetry (update every 90 frames ≈ 1.5 s)
     if (frame % 90 === 0) updateThermalTelemetry();
@@ -10204,6 +10503,13 @@ function resetAll() {
     activeTorpedoes = [];
     sonobuoys = [];
     heloAlertActive = false;
+    // v08: ล้าง mine warfare
+    seaMines = [];
+    mineFieldLaid = false;
+    {
+        const mb = document.getElementById('mineFieldBtn');
+        if (mb) { mb.classList.remove('mine-active'); mb.textContent = '💣 Lay Minefield'; }
+    }
     document.getElementById('dasAlert').style.display='none';
     document.getElementById('missionFailOverlay').style.display='none';
     // ── ปลดล็อก Leaflet map เมื่อ reset ──
@@ -10287,6 +10593,13 @@ function launchScenario(type) {
     sonobuoys = [];
     heloAlertActive = false;
     initASWHelicopter();
+    // v08: ล้าง mine warfare (controlled minefield จะถูกล้างด้วย)
+    seaMines = [];
+    mineFieldLaid = false;
+    {
+        const mb = document.getElementById('mineFieldBtn');
+        if (mb) { mb.classList.remove('mine-active'); mb.textContent = '💣 Lay Minefield'; }
+    }
     document.getElementById('dasAlert').style.display='none';
     document.getElementById('missionFailOverlay').style.display='none';
     guardianUUVs.forEach(g=>{g.redirected=false;g.redirectTarget=null;});
@@ -10317,6 +10630,7 @@ function launchScenario(type) {
     else if (type==='sdv')      scenarioSubClass('SDV');
     else if (type==='midget')   scenarioSubClass('MIDGET');
     else if (type==='ssk')      scenarioSubClass('SSK');
+    else if (type==='mining')   scenarioMining();
 }
 
 // ── v08: Spawn specific submarine sub-class ──────────────────
