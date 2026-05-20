@@ -215,6 +215,56 @@
         }
         #coordReadout .cr-label { color: #4a6585; }
         #coordReadout .cr-val   { color: var(--teal); }
+
+        /* ═══ TIER 3 — Status Bar + Alert Ribbon ═════════════════ */
+        #statusBar {
+            flex-shrink: 0; display: flex; align-items: stretch;
+            background: linear-gradient(180deg,#04111f,#020a14);
+            border-top: 1px solid #1a3a5c;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px; height: 25px;
+        }
+        .sb-seg {
+            display: flex; align-items: center; gap: 6px;
+            padding: 0 11px; white-space: nowrap;
+            border-right: 1px solid rgba(26,58,92,.55);
+        }
+        .sb-seg .sb-label { color: #4a6585; letter-spacing: 1px; }
+        .sb-seg .sb-value { color: var(--teal); font-weight: 700; letter-spacing: .5px; }
+        .sb-spacer { flex: 1; }
+        .sb-seg.sb-brand { color: #3b5275; border-right: none;
+            border-left: 1px solid rgba(26,58,92,.55); letter-spacing: 1px; }
+        .sb-cond-green { color: var(--green) !important; }
+        .sb-cond-amber { color: var(--amber) !important; }
+        .sb-cond-red   { color: var(--red)   !important; animation: blink 1s infinite; }
+        @media (max-width: 1100px) { .sb-seg.sb-hideable { display:none; } }
+
+        /* Alert Ribbon — slides down over map when threat active */
+        #alertRibbon {
+            position: absolute; top: 0; left: 0; right: 0; z-index: 680;
+            transform: translateY(-110%); transition: transform .35s ease;
+            background: linear-gradient(180deg,rgba(40,8,8,.97),rgba(22,4,4,.97));
+            border-bottom: 2px solid #ef4444;
+            padding: 6px 16px; display: flex; align-items: center;
+            justify-content: center; gap: 16px;
+            font-family: 'Share Tech Mono', monospace; pointer-events: none;
+            box-shadow: 0 4px 18px rgba(239,68,68,.35);
+        }
+        #alertRibbon.show { transform: translateY(0); }
+        #alertRibbon.amber {
+            background: linear-gradient(180deg,rgba(40,28,4,.97),rgba(22,16,2,.97));
+            border-bottom-color: #f59e0b;
+            box-shadow: 0 4px 18px rgba(245,158,11,.30);
+        }
+        #alertRibbon .ar-chev {
+            font-size: 13px; animation: blink .6s infinite; color: #ef4444;
+        }
+        #alertRibbon.amber .ar-chev { color: #f59e0b; }
+        #alertRibbon .ar-text {
+            font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: #fca5a5;
+        }
+        #alertRibbon.amber .ar-text { color: #fcd34d; }
+        #alertRibbon .ar-text .ar-hi { color: #fff; }
         .layout {
             display: grid; grid-template-columns:210px 1fr 210px;
             grid-template-rows: 1fr 70px;
@@ -1599,6 +1649,13 @@
             <div id="mapLockOverlay"></div>
             <div id="dasAlert">⚡ DAS TRIPWIRE TRIGGERED — ACOUSTIC INTRUSION ON FIBER CABLE</div>
 
+            <!-- ── TIER 3: Threat Alert Ribbon ────────────────── -->
+            <div id="alertRibbon">
+                <span class="ar-chev">⚠</span>
+                <span class="ar-text" id="alertRibbonText">THREAT INBOUND</span>
+                <span class="ar-chev">⚠</span>
+            </div>
+
             <!-- ── Compass Rose (TIER 2) ──────────────────────── -->
             <svg id="compassRose" viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="46" fill="rgba(2,12,24,.55)"
@@ -2235,6 +2292,44 @@
 
     </div>
 
+</div>
+
+<!-- ── TIER 3: System Status Bar ──────────────────────────────── -->
+<div id="statusBar">
+    <div class="sb-seg">
+        <span class="sb-label">CONDITION</span>
+        <span class="sb-value sb-cond-green" id="sbCondition">SECURE</span>
+    </div>
+    <div class="sb-seg">
+        <span class="sb-label">POSTURE</span>
+        <span class="sb-value" id="sbPosture">ROUTINE</span>
+    </div>
+    <div class="sb-seg">
+        <span class="sb-label">SEA</span>
+        <span class="sb-value" id="sbSeaState">SS1</span>
+    </div>
+    <div class="sb-seg sb-hideable">
+        <span class="sb-label">TIDE</span>
+        <span class="sb-value" id="sbTide">+0.0m</span>
+    </div>
+    <div class="sb-seg">
+        <span class="sb-label">THREATS</span>
+        <span class="sb-value" id="sbThreats">0</span>
+    </div>
+    <div class="sb-seg sb-hideable">
+        <span class="sb-label">ASW HELO</span>
+        <span class="sb-value" id="sbHelo">STANDBY</span>
+    </div>
+    <div class="sb-spacer"></div>
+    <div class="sb-seg sb-hideable">
+        <span class="sb-label">AO</span>
+        <span class="sb-value">SATTAHIP · GULF OF THAILAND</span>
+    </div>
+    <div class="sb-seg">
+        <span class="sb-label">DTG</span>
+        <span class="sb-value" id="sbDtg">------Z</span>
+    </div>
+    <div class="sb-seg sb-brand">THE SHIELD 1.0</div>
 </div>
 
 <!-- ── Classification Banner — BOTTOM ─────────────────────────── -->
@@ -9934,6 +10029,9 @@ function animate() {
     if (frame % 90 === 0) updateThermalTelemetry();
     if (frame % 30 === 0) updateAirSurfacePanel();
     if (frame % 30 === 0) updateUnderwaterPanel();
+    // TIER 3 — status bar + alert ribbon
+    if (frame % 20 === 0 && typeof updateStatusBar   === 'function') updateStatusBar();
+    if (frame % 20 === 0 && typeof updateAlertRibbon === 'function') updateAlertRibbon();
 
     frame++;
     if (!simPaused) requestAnimationFrame(animate);
@@ -11269,6 +11367,65 @@ function updateClock() {
     }
 }
 setInterval(updateClock,1000); updateClock();
+
+// ── TIER 3: Status Bar + Alert Ribbon ─────────────────────────
+function updateStatusBar() {
+    // นับ active threats
+    const activeT = (typeof threats !== 'undefined')
+        ? threats.filter(t => t.active && !t.frozen) : [];
+    const n = activeT.length;
+    const set = (id, v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
+
+    // Condition + Posture ตามจำนวนภัย
+    const condEl = document.getElementById('sbCondition');
+    if (condEl) {
+        let cond, post, cls;
+        if (n === 0)      { cond='SECURE';   post='ROUTINE';    cls='sb-cond-green'; }
+        else if (n === 1) { cond='ALERT';    post='HEIGHTENED'; cls='sb-cond-amber'; }
+        else              { cond='CRITICAL'; post='IMMINENT';   cls='sb-cond-red';   }
+        condEl.textContent = cond;
+        condEl.className   = 'sb-value ' + cls;
+        set('sbPosture', post);
+    }
+    set('sbThreats', n);
+    if (typeof seaState  !== 'undefined') set('sbSeaState', 'SS' + seaState);
+    if (typeof tideLevel !== 'undefined')
+        set('sbTide', (tideLevel>=0?'+':'') + tideLevel.toFixed(1) + 'm');
+    if (typeof aswHelo !== 'undefined' && aswHelo) set('sbHelo', aswHelo.state);
+    // DTG short
+    const now = new Date(), p2 = x => String(x).padStart(2,'0');
+    set('sbDtg', p2(now.getUTCDate())+p2(now.getUTCHours())+p2(now.getUTCMinutes())+'Z');
+}
+
+function updateAlertRibbon() {
+    const ribbon = document.getElementById('alertRibbon');
+    const txt    = document.getElementById('alertRibbonText');
+    if (!ribbon || !txt) return;
+    // หาภัยที่จำแนกแล้ว ใกล้ UDC ที่สุด
+    let threat = null, nearestD = Infinity;
+    if (typeof threats !== 'undefined') {
+        for (const t of threats) {
+            if (!t.active || t.frozen || !t.classified) continue;
+            const d = haversineNm(nyToLat(t.ny), nxToLng(t.nx), UDC_LAT, UDC_LNG);
+            if (d < nearestD) { nearestD = d; threat = t; }
+        }
+    }
+    if (threat) {
+        // bearing จาก UDC → threat (compass)
+        const dx = threat.nx - UDC.nx;
+        const dy = threat.ny - UDC.ny;
+        let brg = Math.round((Math.atan2(dx, -dy) * 180/Math.PI + 360) % 360);
+        const typeLabel = threat.label || (threat.type||'UNKNOWN').toUpperCase();
+        txt.innerHTML = `THREAT INBOUND — <span class="ar-hi">${typeLabel}</span>` +
+            ` · BRG <span class="ar-hi">${String(brg).padStart(3,'0')}°</span>` +
+            ` · RNG <span class="ar-hi">${nearestD.toFixed(1)} NM</span>`;
+        ribbon.classList.add('show');
+        // สี: ใกล้ < 3nm = แดง, ไกลกว่า = amber
+        ribbon.classList.toggle('amber', nearestD >= 3.0);
+    } else {
+        ribbon.classList.remove('show');
+    }
+}
 
 // ── Boot / Initialization sequence ────────────────────────────
 function runBootSequence() {
