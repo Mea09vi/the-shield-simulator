@@ -18,7 +18,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE SHIELD 1.0 | UDC GIS Simulator v07</title>
+    <title>THE SHIELD 1.0 | UDC GIS Simulator v08 — ASW Edition</title>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
       Leaflet.js คือไลบรารีแผนที่แบบ Open-Source ที่ใช้กันอย่างแพร่หลายใน
@@ -4959,6 +4959,752 @@ let guuvUserCount = 0, svUserCount = 0;
 let placeGUUVMode = false, placeSurveyMode = false;
 
 // ═══════════════════════════════════════════════════════════════
+//  [ส่วนที่ 12B] ASW Helicopter System (v08)
+//  ─────────────────────────────────────────────────────────────
+//  Royal Thai Navy MH-60S Knighthawk × 1 (callsign ROYAL DRAGON 1)
+//  Base: U-Tapao International Airport (12.6797°N, 101.0050°E)
+//
+//  ขีดความสามารถ:
+//    • Cruise: 150 kn  •  Combat radius: 250 nm
+//    • Weapons: Mk46 Mod 5A SW torpedo × 2 (active sonar, 45 kn, 4 nm)
+//    • Sensors: AN/AQS-22 sonobuoy launcher (40 sonobuoys)
+//    • Endurance: ~3.5 hours on station
+//    • Crew: 4 (pilot, co-pilot, sensor operator, gunner)
+//
+//  State Machine:
+//    STANDBY → SCRAMBLE → TRANSIT → LOITER → DIP → ENGAGE → RTB
+// ═══════════════════════════════════════════════════════════════
+const UTAPAO_LAT = 12.6797;
+const UTAPAO_LNG = 101.0050;
+
+let aswHelo = null;           // single instance
+let activeTorpedoes = [];     // active Mk46 torpedoes
+let sonobuoys = [];           // deployed sonobuoy field
+let heloAlertActive = false;  // QRA alert triggered
+
+// Initialise helicopter at U-Tapao (called in init sequence)
+function initASWHelicopter() {
+    const nx = (UTAPAO_LNG - LNG_LEFT) / (LNG_RIGHT - LNG_LEFT);
+    const ny = (LAT_TOP - UTAPAO_LAT) / (LAT_TOP - LAT_BOT);
+    aswHelo = {
+        label:    'ROYAL DRAGON 1',
+        callsign: 'RD-1',
+        type:     'MH-60S Knighthawk',
+        nx, ny,
+        homeNx:   nx,
+        homeNy:   ny,
+        heading:  Math.PI,    // facing west at start
+        state:    'STANDBY',  // STANDBY|SCRAMBLE|TRANSIT|LOITER|DIP|ENGAGE|RTB
+        target:   null,
+        fuel:     1.0,
+        speedKn:  0,
+        altFt:    0,          // altitude (visual)
+        rotorPhase: 0,
+        scrambleStart: 0,
+        loiterCenter: null,
+        torpedoesRemain: 2,
+        sonobuoysRemain: 40,
+        sonobuoyDropTimer: 0,
+        lastDipFrame: 0,
+        engageTimer: 0,
+        rtbReason: null,
+    };
+}
+
+// ── ASW Helicopter Constants ─────────────────────────────────
+const HELO_SCRAMBLE_FRAMES = 300;   // 5 sec demo (~5 min real-time)
+const HELO_CRUISE_SPD      = 0.0028; // ny/frame ≈ 150 kn
+const HELO_LOITER_SPD      = 0.0009; // ny/frame ≈ 50 kn (slow loiter)
+const HELO_FUEL_RATE       = 0.00008;
+const HELO_TORPEDO_RANGE_NY = 0.04;  // ~0.8nm drop distance to target
+const SONOBUOY_RANGE_NY    = 0.018;  // ~0.4 nm passive detection
+const SONOBUOY_LIFETIME    = 3600;   // 60 sec frames
+const TORPEDO_SPEED_NY     = 0.0009; // ny/frame ≈ 45 kn
+const TORPEDO_FUEL_DECAY   = 0.0028; // ~ 6 sec fuel
+const TORPEDO_SEEK_RANGE_NY = 0.018; // 0.4 nm acoustic homing
+const TORPEDO_KILL_RANGE_NY = 0.005; // 0.1 nm proximity kill
+const TTE_THRESHOLD_NY     = 0.20;   // threats within 0.20 ny shown for TTE
+
+// ═════════════════════════════════════════════════════════════
+//  SUBMARINE SUB-CLASSES (v08 — applied to UUV threats)
+//  ─────────────────────────────────────────────────────────
+//  SDV:    small, slow, very stealthy, can enter shallow (8m+)
+//  MIDGET: medium, faster, deeper (15m+), can launch SDV
+//  SSK:    full sub, deepest (30m+), highest signature
+// ═════════════════════════════════════════════════════════════
+const SUB_CLASSES = {
+    SDV: {
+        name:     'SDV',
+        label:    'SDV',
+        speedMul: 0.50,    // slow
+        depth:    8,
+        stealth:  0.70,    // 70% sonar miss
+        color:    '#a855f7', // purple
+        radius:   3,
+    },
+    MIDGET: {
+        name:     'MIDGET',
+        label:    'MIDGET-SUB',
+        speedMul: 0.75,
+        depth:    15,
+        stealth:  0.50,
+        color:    '#dc2626', // red
+        radius:   5,
+    },
+    SSK: {
+        name:     'SSK',
+        label:    'SSK',
+        speedMul: 1.20,    // faster cruise
+        depth:    35,
+        stealth:  0.30,
+        color:    '#7f1d1d', // dark red
+        radius:   7,
+    },
+};
+
+// Apply sub-class to a UUV threat (mutates threat object)
+function applySubClass(threat, className) {
+    const cls = SUB_CLASSES[className];
+    if (!cls || !threat) return;
+    threat.subClass = className;
+    threat.subClassMeta = cls;
+    threat.speed = (threat.baseSpeed || threat.speed) * cls.speedMul;
+    threat.baseSpeed = threat.baseSpeed || (threat.speed / cls.speedMul);
+    threat.dep = cls.depth;
+    threat.label = (threat.label || 'HOSTILE-UUV-1').replace(/HOSTILE-UUV-\d+/, `HOSTILE-${cls.label}`);
+    threat.color = cls.color;
+    threat.isSubmarine = true;
+    threat.stealthFactor = cls.stealth;
+}
+
+// Pick random sub-class for incoming threats
+function _pickSubClass() {
+    const r = Math.random();
+    if (r < 0.45) return 'SDV';
+    if (r < 0.85) return 'MIDGET';
+    return 'SSK';
+}
+
+// ── State transition log helper ──────────────────────────────
+function _heloLog(h, msg, col) {
+    if (typeof addLog === 'function') addLog(`[${h.callsign}] ${msg}`, col || '#22d3ee');
+}
+function _heloSetState(h, newState) {
+    if (h.state === newState) return;
+    const prev = h.state;
+    h.state = newState;
+    const colors = {
+        STANDBY:  '#94a3b8',
+        SCRAMBLE: '#f59e0b',
+        TRANSIT:  '#22d3ee',
+        LOITER:   '#06b6d4',
+        DIP:      '#0ea5e9',
+        ENGAGE:   '#ef4444',
+        RTB:      '#a78bfa',
+    };
+    _heloLog(h, `${prev} → ${newState}`, colors[newState] || '#22d3ee');
+}
+
+// ── Scramble ASW Helicopter (called when sub threat detected) ──
+function scrambleASWHelicopter(targetThreat) {
+    if (!aswHelo) return;
+    if (aswHelo.state !== 'STANDBY' && aswHelo.state !== 'RTB') {
+        return; // already deployed
+    }
+    aswHelo.target = targetThreat;
+    aswHelo.scrambleStart = frame;
+    aswHelo.fuel = 1.0;
+    _heloSetState(aswHelo, 'SCRAMBLE');
+    _heloLog(aswHelo, `🚨 SCRAMBLE ALERT — target ${targetThreat?.label || 'UNKNOWN'} @ ${targetThreat ? haversineNm(nyToLat(targetThreat.ny), nxToLng(targetThreat.nx), nyToLat(aswHelo.ny), nxToLng(aswHelo.nx)).toFixed(1) : '?'} nm`, '#f59e0b');
+    if (typeof sfxHeloScramble === 'function') sfxHeloScramble();
+    heloAlertActive = true;
+}
+
+// ── Update helicopter every frame ────────────────────────────
+function updateASWHelicopter() {
+    if (!aswHelo) return;
+    const h = aswHelo;
+    h.rotorPhase += 0.6;    // visual rotor spin
+    // Rotor sound when airborne
+    if (h.state !== 'STANDBY' && typeof sfxHeloRotor === 'function') {
+        sfxHeloRotor();
+    }
+
+    // Auto-scramble check (look for sub-class threats inside detect zone)
+    if (h.state === 'STANDBY' && typeof threats !== 'undefined') {
+        for (const t of threats) {
+            if (!t.active || t.frozen) continue;
+            if (t.type !== 'uuv' && !t.isSubmarine) continue;
+            if (!t.classified) continue;     // need classified contact
+            const dUDC = haversineNm(nyToLat(t.ny), nxToLng(t.nx), UDC_LAT, UDC_LNG);
+            if (dUDC <= 8.0) {                // threat within 8nm of UDC
+                scrambleASWHelicopter(t);
+                break;
+            }
+        }
+    }
+
+    // STATE HANDLERS ───────────────────────────────────────────
+    switch (h.state) {
+        case 'STANDBY':
+            // hold at U-Tapao, slow rotor, full fuel
+            h.speedKn = 0; h.altFt = 0;
+            break;
+        case 'SCRAMBLE': {
+            const t = frame - h.scrambleStart;
+            h.altFt = (t / HELO_SCRAMBLE_FRAMES) * 200;   // climb to 200ft
+            h.speedKn = 30 * (t / HELO_SCRAMBLE_FRAMES);
+            h.fuel = Math.max(0, h.fuel - HELO_FUEL_RATE*0.5);
+            if (t >= HELO_SCRAMBLE_FRAMES) {
+                _heloSetState(h, 'TRANSIT');
+                _heloLog(h, '🚁 Take-off — vectoring to target', '#22d3ee');
+            }
+            break;
+        }
+        case 'TRANSIT': {
+            if (!h.target || !h.target.active) {
+                // target gone — RTB
+                _heloSetState(h, 'RTB');
+                h.rtbReason = 'TARGET LOST';
+                _heloLog(h, '🛬 Target lost — RTB', '#a78bfa');
+                break;
+            }
+            h.altFt = 500;
+            h.speedKn = 150;
+            // Move toward target
+            const dx = h.target.nx - h.nx;
+            const dy = h.target.ny - h.ny;
+            const d = Math.sqrt(dx*dx + dy*dy);
+            if (d < 0.025) {
+                _heloSetState(h, 'LOITER');
+                h.loiterCenter = { nx: h.target.nx, ny: h.target.ny };
+                _heloLog(h, '📡 On station — deploying sonobuoys', '#06b6d4');
+            } else {
+                h.heading = Math.atan2(dy, dx);
+                h.nx += (dx/d) * HELO_CRUISE_SPD;
+                h.ny += (dy/d) * HELO_CRUISE_SPD;
+            }
+            h.fuel = Math.max(0, h.fuel - HELO_FUEL_RATE);
+            break;
+        }
+        case 'LOITER': {
+            // Orbit around loiterCenter, deploy sonobuoys every 120 frames
+            h.altFt = 300;
+            h.speedKn = 60;
+            const orbitR = 0.022;  // ~0.5 nm orbit
+            const ang = frame * 0.018;
+            const cx = h.loiterCenter ? h.loiterCenter.nx : h.nx;
+            const cy = h.loiterCenter ? h.loiterCenter.ny : h.ny;
+            const targetX = cx + Math.cos(ang) * orbitR;
+            const targetY = cy + Math.sin(ang) * orbitR;
+            const dx = targetX - h.nx, dy = targetY - h.ny;
+            const d  = Math.sqrt(dx*dx + dy*dy);
+            if (d > 0.001) {
+                h.heading = Math.atan2(dy, dx);
+                h.nx += (dx/d) * HELO_LOITER_SPD;
+                h.ny += (dy/d) * HELO_LOITER_SPD;
+            }
+            // Drop sonobuoys (every 90 frames, up to 6 buoys)
+            h.sonobuoyDropTimer++;
+            const buoyCount = sonobuoys.filter(b => b.heloId === h.callsign && b.active).length;
+            if (h.sonobuoyDropTimer >= 60 && buoyCount < 6 && h.sonobuoysRemain > 0) {
+                sonobuoys.push({
+                    nx: h.nx, ny: h.ny,
+                    t0: frame, lifetime: SONOBUOY_LIFETIME,
+                    range: SONOBUOY_RANGE_NY,
+                    active: true,
+                    heloId: h.callsign,
+                    detectedTarget: null,
+                });
+                h.sonobuoysRemain--;
+                h.sonobuoyDropTimer = 0;
+                if (typeof sfxSonobuoyDeploy === 'function') sfxSonobuoyDeploy();
+                _heloLog(h, `🟡 Sonobuoy ${40 - h.sonobuoysRemain}/40 deployed`, '#fbbf24');
+            }
+            // ── Detection via sonobuoy pattern ──
+            // If any active sonobuoy has target in range → transition to ENGAGE
+            if (h.target && h.target.active) {
+                let detected = false;
+                for (const b of sonobuoys) {
+                    if (!b.active || b.heloId !== h.callsign) continue;
+                    const dxB = h.target.nx - b.nx;
+                    const dyB = h.target.ny - b.ny;
+                    const dB  = Math.sqrt(dxB*dxB + dyB*dyB);
+                    if (dB < b.range) {
+                        b.detectedTarget = h.target;
+                        detected = true;
+                    }
+                }
+                if (detected && h.torpedoesRemain > 0) {
+                    // Approach for engagement
+                    const dT = Math.sqrt(
+                        (h.target.nx-h.nx)*(h.target.nx-h.nx) +
+                        (h.target.ny-h.ny)*(h.target.ny-h.ny)
+                    );
+                    if (dT < HELO_TORPEDO_RANGE_NY) {
+                        _heloSetState(h, 'ENGAGE');
+                        h.engageTimer = 0;
+                    }
+                }
+            }
+            // Out of buoys + no detection → RTB
+            if (h.sonobuoysRemain <= 0 && !sonobuoys.some(b => b.detectedTarget && b.active && b.heloId === h.callsign)) {
+                _heloSetState(h, 'RTB');
+                h.rtbReason = 'NO BUOYS';
+                _heloLog(h, '🛬 Sonobuoys depleted — RTB', '#a78bfa');
+            }
+            h.fuel = Math.max(0, h.fuel - HELO_FUEL_RATE*0.8);
+            break;
+        }
+        case 'ENGAGE': {
+            h.altFt = 200;
+            h.speedKn = 40;
+            h.engageTimer++;
+            if (h.engageTimer === 30) {
+                // Drop torpedo
+                if (h.target && h.target.active && h.torpedoesRemain > 0) {
+                    const tNum = 2 - h.torpedoesRemain + 1;
+                    activeTorpedoes.push({
+                        label: `MK46-${tNum}`,
+                        nx: h.nx, ny: h.ny,
+                        targetThreat: h.target,
+                        heading: Math.atan2(h.target.ny-h.ny, h.target.nx-h.nx),
+                        speed: TORPEDO_SPEED_NY,
+                        fuel: 1.0,
+                        phase: 'AIR',    // AIR → SPLASH → SEEK → IMPACT
+                        airTime: 0,
+                        launchFrame: frame,
+                        color: '#fbbf24',
+                    });
+                    h.torpedoesRemain--;
+                    _heloLog(h, `🚀 TORPEDO AWAY — Mk46-${tNum} → ${h.target.label}`, '#ef4444');
+                    if (typeof sfxTorpedoLaunch === 'function') sfxTorpedoLaunch();
+                    if (typeof setDomain === 'function') setDomain('air','warn');
+                }
+            }
+            if (h.engageTimer > 90) {
+                // After engagement, go back to LOITER for BDA or RTB
+                if (h.torpedoesRemain > 0 && h.target && h.target.active) {
+                    _heloSetState(h, 'LOITER');
+                } else {
+                    _heloSetState(h, 'RTB');
+                    h.rtbReason = h.torpedoesRemain <= 0 ? 'WPN EXPENDED' : 'TGT NEUTRALIZED';
+                }
+            }
+            h.fuel = Math.max(0, h.fuel - HELO_FUEL_RATE);
+            break;
+        }
+        case 'RTB': {
+            h.altFt = 500;
+            h.speedKn = 130;
+            const dx = h.homeNx - h.nx;
+            const dy = h.homeNy - h.ny;
+            const d  = Math.sqrt(dx*dx + dy*dy);
+            if (d < 0.008) {
+                _heloSetState(h, 'STANDBY');
+                h.altFt = 0;
+                h.speedKn = 0;
+                h.target = null;
+                h.loiterCenter = null;
+                h.torpedoesRemain = 2;
+                h.sonobuoysRemain = 40;
+                h.fuel = 1.0;
+                heloAlertActive = false;
+                _heloLog(h, `✓ Returned to base — ${h.rtbReason||''} · refueled · rearmed`, '#22c55e');
+                // Clear lingering sonobuoys
+                sonobuoys = sonobuoys.filter(b => b.heloId !== h.callsign);
+            } else {
+                h.heading = Math.atan2(dy, dx);
+                h.nx += (dx/d) * HELO_CRUISE_SPD;
+                h.ny += (dy/d) * HELO_CRUISE_SPD;
+                h.fuel = Math.max(0, h.fuel - HELO_FUEL_RATE);
+            }
+            break;
+        }
+    }
+
+    // Bingo fuel check
+    if (h.fuel < 0.15 && h.state !== 'RTB' && h.state !== 'STANDBY') {
+        _heloSetState(h, 'RTB');
+        h.rtbReason = 'BINGO FUEL';
+        _heloLog(h, '⛽ BINGO FUEL — RTB', '#ef4444');
+    }
+}
+
+// ── Update sonobuoys (lifetime, fade) ────────────────────────
+function updateSonobuoys() {
+    for (const b of sonobuoys) {
+        if (!b.active) continue;
+        const age = frame - b.t0;
+        if (age > b.lifetime) b.active = false;
+    }
+    // Cleanup
+    if (frame % 300 === 0) {
+        sonobuoys = sonobuoys.filter(b => b.active || (frame - b.t0) < b.lifetime + 60);
+    }
+}
+
+// ── Update torpedoes (AIR → SPLASH → SEEK → IMPACT) ──────────
+function updateTorpedoes() {
+    for (const t of activeTorpedoes) {
+        if (t.dead) continue;
+        switch (t.phase) {
+            case 'AIR': {
+                t.airTime++;
+                if (t.airTime >= 30) {
+                    // hit water — splash
+                    t.phase = 'SEEK';
+                    if (typeof sfxTorpedoSplash === 'function') sfxTorpedoSplash();
+                    if (typeof addLog === 'function')
+                        addLog(`💧 ${t.label} SPLASH @ ${nyToLat(t.ny).toFixed(3)}°N — acoustic seeker armed`, '#22d3ee');
+                }
+                break;
+            }
+            case 'SEEK': {
+                // Acoustic homing toward target
+                if (!t.targetThreat || !t.targetThreat.active) {
+                    t.fuel -= TORPEDO_FUEL_DECAY * 2;
+                    // Run straight
+                    t.nx += Math.cos(t.heading) * t.speed;
+                    t.ny += Math.sin(t.heading) * t.speed;
+                } else {
+                    const dx = t.targetThreat.nx - t.nx;
+                    const dy = t.targetThreat.ny - t.ny;
+                    const d = Math.sqrt(dx*dx + dy*dy);
+                    // Terminal homing
+                    if (d < TORPEDO_SEEK_RANGE_NY) {
+                        t.heading = Math.atan2(dy, dx);
+                    }
+                    // Kill check
+                    if (d < TORPEDO_KILL_RANGE_NY) {
+                        // HIT
+                        if (typeof addExplosion === 'function')
+                            addExplosion(t.targetThreat.nx, t.targetThreat.ny, '#ff4136');
+                        t.targetThreat.active = false;
+                        t.targetThreat.frozen = true;
+                        t.phase = 'IMPACT';
+                        t.dead = true;
+                        if (typeof addLog === 'function')
+                            addLog(`💥 ${t.label} HIT — ${t.targetThreat.label} NEUTRALIZED`, '#22c55e');
+                        if (typeof setDomain === 'function') {
+                            setDomain('underwater','ok');
+                            setDomain('command','ok');
+                        }
+                        break;
+                    }
+                    // Continue toward target
+                    t.nx += Math.cos(t.heading) * t.speed;
+                    t.ny += Math.sin(t.heading) * t.speed;
+                    // Active sonar ping during run
+                    if (typeof sfxTorpedoRun === 'function') sfxTorpedoRun();
+                }
+                t.fuel -= TORPEDO_FUEL_DECAY;
+                if (t.fuel <= 0) {
+                    // Self-destruct (run out of fuel)
+                    t.dead = true;
+                    if (typeof addLog === 'function')
+                        addLog(`✗ ${t.label} MISS — fuel depleted`, '#f59e0b');
+                }
+                break;
+            }
+        }
+    }
+    // Cleanup dead torpedoes after a moment
+    if (frame % 60 === 0) {
+        activeTorpedoes = activeTorpedoes.filter(t => !t.dead || (frame - t.launchFrame) < 600);
+    }
+}
+
+// ── Draw ASW Helicopter (side-view sprite) ───────────────────
+function drawASWHelicopter() {
+    if (!aswHelo) return;
+    const h = aswHelo;
+    const {x, y} = pn(h.nx, h.ny);
+    // Heading direction → flip body if facing west
+    const facingRight = Math.cos(h.heading) >= 0;
+    const flip = facingRight ? 1 : -1;
+    const cInd = h.state === 'ENGAGE'  ? '#ef4444'
+              : h.state === 'SCRAMBLE'? '#f59e0b'
+              : h.state === 'TRANSIT' ? '#22d3ee'
+              : h.state === 'LOITER'  ? '#06b6d4'
+              : h.state === 'RTB'     ? '#a78bfa'
+              :                          '#94a3b8';
+    // Glow aura
+    ctx.save();
+    const glowR = h.state === 'STANDBY' ? 14 : 20;
+    const glowCol = h.state === 'ENGAGE' ? '239,68,68' : '34,211,238';
+    const glow = ctx.createRadialGradient(x, y, 0, x, y, glowR);
+    glow.addColorStop(0, `rgba(${glowCol},0.30)`);
+    glow.addColorStop(1, `rgba(${glowCol},0)`);
+    ctx.beginPath(); ctx.arc(x, y, glowR, 0, Math.PI*2);
+    ctx.fillStyle = glow; ctx.fill();
+    ctx.restore();
+    // Body silhouette (side-view) — drawn around (x,y)
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(flip, 1);
+    // Tail boom
+    ctx.fillStyle = '#1e3a5f';
+    ctx.strokeStyle = cInd;
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(-2, -1); ctx.lineTo(-18, -0.5);
+    ctx.lineTo(-18, 1.5); ctx.lineTo(-2, 3);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    // Tail rotor (small vertical bar at end)
+    ctx.strokeStyle = cInd;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    const tailRotPhase = h.rotorPhase * 2;
+    ctx.moveTo(-19, -2 + Math.sin(tailRotPhase)*3);
+    ctx.lineTo(-19,  2 + Math.cos(tailRotPhase)*3);
+    ctx.stroke();
+    // Main body (rounded rectangle)
+    ctx.fillStyle = '#1e3a5f';
+    ctx.beginPath();
+    ctx.moveTo(-3, -3.5);
+    ctx.lineTo(7, -4); ctx.lineTo(11, -3); ctx.lineTo(11, 4);
+    ctx.lineTo(-2, 5); ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = cInd;
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+    // Cockpit window
+    ctx.fillStyle = 'rgba(56,189,248,0.7)';
+    ctx.beginPath();
+    ctx.moveTo(6, -3); ctx.lineTo(10, -1.5); ctx.lineTo(10, 1.5); ctx.lineTo(6, 1);
+    ctx.closePath();
+    ctx.fill();
+    // Skids
+    ctx.strokeStyle = cInd;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(-1, 5); ctx.lineTo(-1, 7); ctx.lineTo(7, 7); ctx.lineTo(7, 5);
+    ctx.stroke();
+    // Pylons + torpedoes (if any)
+    if (h.torpedoesRemain > 0 && h.state !== 'STANDBY') {
+        ctx.fillStyle = '#fbbf24';
+        for (let i = 0; i < h.torpedoesRemain; i++) {
+            const py = i === 0 ? -1 : 4;
+            ctx.fillRect(2, py, 6, 1.4);
+        }
+    }
+    // Main rotor (top, animated)
+    ctx.strokeStyle = h.state === 'STANDBY' ? 'rgba(34,211,238,0.4)' : 'rgba(34,211,238,0.85)';
+    ctx.lineWidth  = h.state === 'STANDBY' ? 1.2 : 1.8;
+    const rotorLen = 14;
+    ctx.beginPath();
+    const rotA = h.rotorPhase * (h.state === 'STANDBY' ? 0.3 : 1);
+    ctx.moveTo(3 - Math.cos(rotA)*rotorLen, -5);
+    ctx.lineTo(3 + Math.cos(rotA)*rotorLen, -5);
+    ctx.stroke();
+    // Second blade
+    ctx.beginPath();
+    ctx.moveTo(3 - Math.sin(rotA)*rotorLen, -5);
+    ctx.lineTo(3 + Math.sin(rotA)*rotorLen, -5);
+    ctx.stroke();
+    // Rotor disc (subtle)
+    if (h.state !== 'STANDBY') {
+        ctx.beginPath();
+        ctx.arc(3, -5, rotorLen, 0, Math.PI*2);
+        ctx.strokeStyle = 'rgba(34,211,238,0.10)';
+        ctx.lineWidth = 0.6;
+        ctx.stroke();
+    }
+    ctx.restore();
+    // Label + state + fuel bar
+    ctx.font = 'bold 10px "Share Tech Mono"';
+    ctx.fillStyle = cInd;
+    ctx.textAlign = 'center';
+    ctx.fillText(h.callsign, x, y + 22);
+    ctx.font = '9px "Share Tech Mono"';
+    ctx.fillText(h.state, x, y + 33);
+    if (h.state !== 'STANDBY') {
+        const fbW = 30, fbH = 3, fbX = x - fbW/2, fbY = y + 36;
+        ctx.fillStyle = 'rgba(255,255,255,0.10)';
+        ctx.fillRect(fbX, fbY, fbW, fbH);
+        const fuelCol = h.fuel > 0.4 ? '#22c55e' : h.fuel > 0.15 ? '#f59e0b' : '#ef4444';
+        ctx.fillStyle = fuelCol;
+        ctx.fillRect(fbX, fbY, fbW * h.fuel, fbH);
+    }
+    // Alert pulse when SCRAMBLE or ENGAGE
+    if (h.state === 'SCRAMBLE' || h.state === 'ENGAGE') {
+        const pulse = 0.4 + Math.sin(frame * 0.18) * 0.4;
+        ctx.save();
+        ctx.strokeStyle = `rgba(239,68,68,${pulse})`;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(x, y, 22, 0, Math.PI*2);
+        ctx.stroke();
+        ctx.restore();
+    }
+}
+
+// ── Draw Sonobuoys ───────────────────────────────────────────
+function drawSonobuoys() {
+    for (const b of sonobuoys) {
+        if (!b.active) continue;
+        const {x, y} = pn(b.nx, b.ny);
+        const age = frame - b.t0;
+        const remaining = Math.max(0, 1 - age/b.lifetime);
+        // Detection ring (passive)
+        const rPx = b.range * _pxNm * (LAT_TOP - LAT_BOT) * 60;
+        ctx.save();
+        ctx.strokeStyle = b.detectedTarget
+            ? `rgba(239,68,68,${0.4 + Math.sin(frame*0.2)*0.2})`
+            : `rgba(250,204,21,${0.35 * remaining})`;
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 4]);
+        ctx.beginPath();
+        ctx.arc(x, y, rPx, 0, Math.PI*2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        // Buoy marker
+        ctx.fillStyle = `rgba(250,204,21,${remaining})`;
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, Math.PI*2);
+        ctx.fill();
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        // Antenna line
+        ctx.strokeStyle = `rgba(250,204,21,${remaining*0.8})`;
+        ctx.beginPath();
+        ctx.moveTo(x, y - 3); ctx.lineTo(x, y - 7);
+        ctx.stroke();
+        ctx.restore();
+    }
+}
+
+// ── Draw Torpedoes (Mk46) ────────────────────────────────────
+function drawTorpedoes() {
+    for (const t of activeTorpedoes) {
+        if (t.dead) continue;
+        const {x, y} = pn(t.nx, t.ny);
+        ctx.save();
+        // Phase-dependent visualization
+        if (t.phase === 'AIR') {
+            // Falling torpedo (yellow streak from helo with parachute hint)
+            ctx.fillStyle = '#fbbf24';
+            ctx.translate(x, y);
+            ctx.rotate(Math.PI/4);   // 45° falling angle
+            ctx.fillRect(-6, -1, 12, 2);
+            ctx.fillStyle = '#fef3c7';
+            ctx.fillRect(4, -2, 2, 4);  // nose
+            ctx.restore();
+            // Drag trail
+            ctx.strokeStyle = 'rgba(251,191,36,0.5)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(x, y - 8);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.save();
+            ctx.font = '8px "Share Tech Mono"';
+            ctx.fillStyle = '#fbbf24';
+            ctx.textAlign = 'left';
+            ctx.fillText(t.label + ' ▼', x + 8, y - 4);
+            ctx.restore();
+        } else if (t.phase === 'SEEK') {
+            // Underwater run — bright yellow oval + wake
+            ctx.translate(x, y);
+            ctx.rotate(t.heading);
+            // Wake trail
+            ctx.strokeStyle = `rgba(251,191,36,${0.4 + Math.sin(frame*0.4)*0.2})`;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-12, 0); ctx.lineTo(-4, 0);
+            ctx.stroke();
+            // Torpedo body
+            ctx.fillStyle = '#facc15';
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 5, 1.4, 0, 0, Math.PI*2);
+            ctx.fill();
+            ctx.strokeStyle = '#fef3c7';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            // Sonar pulse rings (every 30 frames)
+            const pulse = frame % 30;
+            if (pulse < 15) {
+                const pr = pulse * 1.5;
+                ctx.strokeStyle = `rgba(251,191,36,${(1 - pulse/15)*0.5})`;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(0, 0, pr, 0, Math.PI*2);
+                ctx.stroke();
+            }
+            ctx.restore();
+            // Label
+            ctx.save();
+            ctx.font = '8px "Share Tech Mono"';
+            ctx.fillStyle = '#facc15';
+            ctx.textAlign = 'center';
+            ctx.fillText(t.label, x, y - 8);
+            ctx.restore();
+        }
+        ctx.restore();
+    }
+}
+
+// ── Threat-helicopter line + TTE (Time-To-Engage) ────────────
+function drawHelicopterTacticalLine() {
+    if (!aswHelo || !aswHelo.target) return;
+    const h = aswHelo;
+    if (h.state === 'STANDBY' || h.state === 'RTB') return;
+    const {x: hx, y: hy} = pn(h.nx, h.ny);
+    if (!h.target.active) return;
+    const {x: tx, y: ty} = pn(h.target.nx, h.target.ny);
+    ctx.save();
+    ctx.setLineDash([5, 4]);
+    ctx.strokeStyle = 'rgba(239,68,68,0.50)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(hx, hy); ctx.lineTo(tx, ty);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    // TTE label
+    const distNm = haversineNm(nyToLat(h.ny), nxToLng(h.nx),
+                               nyToLat(h.target.ny), nxToLng(h.target.nx));
+    const speedKn = h.state === 'TRANSIT' ? 150 : h.state === 'LOITER' ? 50 : 100;
+    const etaSec = (distNm / speedKn) * 3600;
+    const mx = (hx + tx) / 2;
+    const my = (hy + ty) / 2;
+    ctx.font = 'bold 10px "Share Tech Mono"';
+    ctx.fillStyle = '#ef4444';
+    ctx.textAlign = 'center';
+    ctx.fillText(`TTE ${Math.round(etaSec)}s · ${distNm.toFixed(1)}nm`, mx, my - 4);
+    ctx.restore();
+}
+
+// ── U-Tapao base marker ───────────────────────────────────────
+function drawUTapaoBase() {
+    if (!aswHelo) return;
+    const {x, y} = pn(aswHelo.homeNx, aswHelo.homeNy);
+    ctx.save();
+    // Helipad cross
+    ctx.strokeStyle = 'rgba(34,211,238,0.6)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(x, y, 9, 0, Math.PI*2);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(34,211,238,0.20)';
+    ctx.fill();
+    // H letter
+    ctx.fillStyle = '#22d3ee';
+    ctx.font = 'bold 10px "Share Tech Mono"';
+    ctx.textAlign = 'center';
+    ctx.fillText('H', x, y + 4);
+    // Label below
+    ctx.font = '9px "Share Tech Mono"';
+    ctx.fillStyle = 'rgba(34,211,238,0.85)';
+    ctx.fillText('U-TAPAO', x, y + 20);
+    ctx.font = '7px "Share Tech Mono"';
+    ctx.fillStyle = 'rgba(34,211,238,0.55)';
+    ctx.fillText('ASW QRA', x, y + 28);
+    ctx.restore();
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  [ส่วนที่ 12] การจำลองน้ำขึ้น-ลง + ตัวปรับ Detection (A+B รวม)
 // ───────────────────────────────────────────────────────────────
 //  หลักการทางอุทกศาสตร์ (Hydrographic Principle):
@@ -7272,8 +8018,10 @@ function computeGuardianPSR(g) {
     // HSV CTD boost — fresh SVP data from hydrographic survey
     const ctdActive = (typeof hsvSvpBoostEnd !== 'undefined' && hsvSvpBoostEnd > (typeof frame !== 'undefined' ? frame : 0));
     const SVP_BOOST = ctdActive ? hsvSvpBoost : 0;
+    // v08: Shallow water reverb penalty if GUUV depth < 20m (multipath)
+    const SHALLOW_PEN = depth < 20 ? 4 : 0;
     // SE = 0 → TL_max
-    const TL_max  = SL - NL + DI - DT - COAST_PEN - THERMO_PEN + SVP_BOOST;
+    const TL_max  = SL - NL + DI - DT - COAST_PEN - THERMO_PEN + SVP_BOOST - SHALLOW_PEN;
     const range_m = Math.pow(10, TL_max / 20);
     // Apply tide+environment combined modifier
     const envMod   = (typeof effectiveMod !== 'undefined') ? effectiveMod : 1;
@@ -8109,6 +8857,34 @@ function sfxROEResolve() {            // ROE complete — vessel released (mid c
     _playTone(659, 0.10, 'sine', 0.28);
     setTimeout(() => _playTone(880, 0.20, 'sine', 0.32, true), 110);
 }
+// ── ASW Helicopter / Torpedo SFX (v08) ──────────────────────
+function sfxHeloRotor() {              // Rotor "whup-whup-whup" loop tick
+    if (!_sfxThrottle('rotor', 250)) return;
+    _playTone(110, 0.07, 'square', 0.15, false);
+    _playTone(220, 0.05, 'sine',   0.10, false);
+}
+function sfxHeloScramble() {            // Klaxon — 3-pulse alert
+    _playSweep(440, 880, 0.18, 'sawtooth', 0.45, true);
+    setTimeout(()=> _playSweep(440, 880, 0.18, 'sawtooth', 0.45, true), 220);
+    setTimeout(()=> _playSweep(440, 880, 0.18, 'sawtooth', 0.45, true), 440);
+}
+function sfxTorpedoLaunch() {           // Whoosh — rocket-assisted drop
+    if (!_sfxThrottle('torpedo-launch', 800)) return;
+    _playSweep(900, 200, 0.6, 'sawtooth', 0.50, false);
+    _playNoise(0.30, 1500, 0.8, 0.30);
+}
+function sfxTorpedoSplash() {           // Splash on water entry
+    _playNoise(0.35, 600, 1.2, 0.40);
+    _playTone(150, 0.20, 'sine', 0.35);
+}
+function sfxTorpedoRun() {              // High-pitched ping (per tick)
+    if (!_sfxThrottle('torpedo-run', 90)) return;
+    _playTone(1800 + Math.random()*200, 0.04, 'sine', 0.12);
+}
+function sfxSonobuoyDeploy() {           // Quick splash + tone
+    _playTone(420, 0.10, 'sine', 0.25);
+    _playNoise(0.12, 800, 1, 0.18);
+}
 
 // ── Toggle button handler ────────────────────────────────────
 function toggleAudio() {
@@ -8250,12 +9026,17 @@ function animate() {
     checkDAS();
     drawDASKPLabel();   // ← OTDR KP position label
     drawCoastalAssets();
+    drawUTapaoBase();   // U-Tapao base marker (under helo)
     drawGuardianUUVs();
     drawPatrolVessels();
     drawSurveyVessels();
     drawROVs();
     drawADCP();
     drawUDCCapsule();
+    drawSonobuoys();    // sonobuoy field (under threats)
+    drawTorpedoes();    // active Mk46 torpedoes
+    drawHelicopterTacticalLine();
+    drawASWHelicopter();
     drawThreats();
     drawEffects();
     drawScaleBar();
@@ -8822,6 +9603,11 @@ function animate() {
     if (typeof updateCTDCasts    === 'function') updateCTDCasts();
     if (typeof updateMAGDetection === 'function' && frame % 6 === 0) updateMAGDetection();
 
+    // ASW Helicopter + torpedoes + sonobuoys (v08)
+    if (typeof updateASWHelicopter === 'function') updateASWHelicopter();
+    if (typeof updateTorpedoes     === 'function') updateTorpedoes();
+    if (typeof updateSonobuoys     === 'function') updateSonobuoys();
+
     // Thermal/PUE telemetry (update every 90 frames ≈ 1.5 s)
     if (frame % 90 === 0) updateThermalTelemetry();
     if (frame % 30 === 0) updateAirSurfacePanel();
@@ -8950,7 +9736,7 @@ function resetAll() {
     }
     const lockOv = document.getElementById('mapLockOverlay');
     if (lockOv) lockOv.classList.remove('locked');
-    initCoastalAssets(); initGuardianUUVs(); initPatrolVessels();
+    initCoastalAssets(); initGuardianUUVs(); initPatrolVessels(); initASWHelicopter();
     ['coastal','underwater','air','command'].forEach(d=>setDomain(d,'ok'));
     setSensor('cs-radar','ACTIVE','s-ok');    setSensor('cs-optical','STANDBY','s-ok');
     setSensor('cs-hydro','ONLINE','s-ok');    setSensor('cs-guard','READY','s-ok');
@@ -9070,6 +9856,7 @@ function scenarioUUV() {
         classified:false, label:'HOSTILE-UUV-1',
         spd:8, hdg, dep, trail:[]
     };
+    applySubClass(t, _pickSubClass());   // v08: assign SDV/MIDGET/SSK
     threats.push(t);
 
     // ── Timeline (ปรับให้สอดคล้องกับระยะทางจากทิศใต้) ──
@@ -9252,6 +10039,7 @@ function scenarioCombined() {
     const tUUV={type:'uuv', nx:uuvNx, ny:uuvNy, tnx:UDC.nx, tny:UDC.ny,
         color:'#ff4136', speed:0.00040, active:true, frozen:false,          // speed ตรงกับ scenarioUUV (8kt)
         classified:false, label:'HOSTILE-UUV-1', spd:8, hdg:uuvHdg, dep:uuvDep, trail:[]};
+    applySubClass(tUUV, _pickSubClass());   // v08: SDV/MIDGET/SSK
     const sp2 = randomSurfaceSpawn();
     const tSurf={type:'surface', nx:sp2.nx, ny:sp2.ny, tnx:UDC.nx+0.05, tny:UDC.ny-0.1,
         color:'#ffd700', speed:0.0009, active:true, frozen:false,
@@ -10107,6 +10895,7 @@ initCoastalAssets();
 initRadarStations();
 initGuardianUUVs();
 initPatrolVessels();
+initASWHelicopter();   // v08 — ROYAL DRAGON 1 standby at U-Tapao
 // Initial tide update (before first animate frame)
 updateTide();
 // อัปเดตสถานะปุ่ม Audio
