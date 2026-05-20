@@ -198,10 +198,10 @@
             border-left: 2px solid currentColor;
             padding-left: 6px;
         }
-        /* Compass rose on map */
+        /* Compass rose — bottom-left nav cluster (เหนือ coord readout) */
         #compassRose {
-            position: absolute; top: 12px; right: 12px; z-index: 620;
-            width: 58px; height: 58px; pointer-events: none;
+            position: absolute; bottom: 96px; left: 12px; z-index: 620;
+            width: 52px; height: 52px; pointer-events: none;
             opacity: .82;
         }
         /* Live coordinate readout — เหนือ scale bar (scale bar อยู่ ~24px จากล่าง) */
@@ -298,11 +298,23 @@
             display:flex; flex-direction:column; overflow:hidden;
         }
         .map-hdr {
-            background:#04111f; padding:6px 14px; display:flex;
+            background:#04111f; padding:5px 12px; display:flex;
             justify-content:space-between; align-items:center;
             border-bottom:1px solid #1a3a5c; flex-shrink:0;
             font-family:'Share Tech Mono',monospace; font-size:10px;
-            position:relative; z-index:600;
+            position:relative; z-index:600; gap:8px;
+        }
+        .map-hdr-title { color:var(--teal); white-space:nowrap;
+            overflow:hidden; text-overflow:ellipsis; flex-shrink:1; }
+        .map-hdr-tools { display:flex; align-items:center; gap:5px;
+            flex-shrink:0; }
+        .mh-group-label {
+            font-size:8px; color:#4a6585; letter-spacing:1px;
+            font-weight:700; padding-right:1px;
+        }
+        .mh-divider {
+            width:1px; height:18px; background:rgba(26,58,92,.9);
+            margin:0 3px;
         }
         #mapContainer { flex:1; min-height:0; position:relative; }
         #overlayCanvas {
@@ -353,6 +365,25 @@
         .btn-reset { background:rgba(100,255,218,.08); border-color:#64ffda; color:#64ffda; justify-content:center; }
         .btn-reset:hover { background:rgba(100,255,218,.2); }
         .btn-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+        /* ── Control group layout (RED/BLUE panels) ── */
+        .ctrl-grp {
+            font-size:9px; color:#64748b; letter-spacing:1px;
+            margin-top:6px; margin-bottom:1px; font-weight:700;
+            text-transform:uppercase;
+        }
+        .ctrl-grp:first-of-type { margin-top:3px; }
+        .ctrl-row { display:flex; gap:4px; }
+        .ctrl-row .btn {
+            flex:1; width:auto; padding:5px 4px; font-size:10px;
+            justify-content:center; gap:3px;
+        }
+        .ctrl-hint {
+            font-size:9px; color:#5b7290; line-height:1.45;
+            margin:5px 0 3px; padding:4px 6px;
+            background:rgba(34,211,238,.06);
+            border-left:2px solid rgba(34,211,238,.4);
+            border-radius:3px;
+        }
         .domain-strip { grid-column:1/-1; display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
         .domain-card { background:var(--bg-panel); border-radius:8px; border:1px solid #1a3a5c; padding:10px 14px; }
         .domain-card-title { font-size:10px; font-weight:700; letter-spacing:1px; margin-bottom:4px; }
@@ -527,6 +558,29 @@
         .place-guuv-btn.active {
             background:rgba(0,212,255,.22); border-color:#00d4ff; color:#fff;
             box-shadow:0 0 16px rgba(0,212,255,.65); animation:placePulse 1.2s ease-in-out infinite;
+        }
+        /* ── DEPLOY group — จัดกลุ่มปุ่มวางกำลังมุมขวาบนแผนที่ ── */
+        .leaflet-top.leaflet-right {
+            background: rgba(2,12,24,0.62);
+            border: 1px solid rgba(34,211,238,0.22);
+            border-radius: 7px;
+            padding: 2px 5px 5px;
+        }
+        .leaflet-top.leaflet-right::before {
+            content: '▾ DEPLOY BLUE FORCE';
+            display: block;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 8px; color: #5b7290; letter-spacing: 1px;
+            text-align: center; padding: 3px 0 2px;
+        }
+        .leaflet-top.leaflet-right .leaflet-control {
+            margin: 3px 0 0 0 !important;
+            float: none !important;
+        }
+        .leaflet-top.leaflet-right .place-patrol-btn,
+        .leaflet-top.leaflet-right .place-guuv-btn,
+        .leaflet-top.leaflet-right .place-survey-btn {
+            width: 100%; font-size: 11px; padding: 4px 8px;
         }
         /* ── Submarine Cable Toggles ── */
         .cable-toggle-btn {
@@ -1628,25 +1682,30 @@
     <!-- CENTER: GIS Map -->
     <div class="map-wrap">
         <div class="map-hdr">
-            <span style="color:var(--teal);">🗺 TACTICAL GIS — เกาะคราม 12.7°N 100.8°E | Leaflet + CartoDB Dark Matter</span>
-            <span style="color:var(--text-muted);">DAS Tripwire · Real-time nm · Geographic Zones</span>
-            <button id="chartToggleBtn" title="แสดง/ซ่อน กราฟ Tide vs Detection Modifier แบบ Real-time"
-                    onclick="toggleTideChart()">📈 Tide Chart</button>
-            <button id="aisToggleBtn" class="ais-toggle-btn" title="AIS Live — เรือจริงจาก AISStream.io (Gulf of Thailand)"
-                    onclick="toggleAISLive()">📡 AIS Live<span id="ais-live-count" style="margin-left:4px;font-size:9px;opacity:.8;"></span></button>
-            <button id="svImportBtn" class="sv-key-btn" title="Import ไฟล์ JSON ที่ export จาก SeaVision"
-                    onclick="document.getElementById('svImportInput').click()">📂 SV Import</button>
-            <button id="svResetBtn" class="sv-key-btn sv-reset-btn" title="ล้างข้อมูล SeaVision JSON ที่นำเข้าทั้งหมด"
-                    onclick="resetSVImport()">🗑 SV Reset</button>
-            <button id="audioBtn" class="sv-key-btn audio-btn" title="เปิด/ปิดเสียง SFX (sonar/DAS/ROE/explosion)"
-                    onclick="toggleAudio()">🔇 SFX</button>
+            <span class="map-hdr-title">🗺 TACTICAL GIS — เกาะคราม 12.7°N 100.8°E · DAS Tripwire · Geographic Zones</span>
+            <div class="map-hdr-tools">
+                <span class="mh-group-label">LAYERS</span>
+                <button id="bathyBtn" title="Bathymetry — เส้นชั้นความลึก (Isobath) 10/20/30/50 เมตร"
+                        onclick="toggleBathymetry()">🌊 Bathy</button>
+                <button id="seaZonesBtn" title="Sea Zones — เส้นฐานตรง · ทะเลอาณาเขต 12 ไมล์ · เขต JDA"
+                        onclick="toggleSeaZones()">⚓ Zones</button>
+                <button id="chartToggleBtn" title="กราฟ Tide vs Detection Modifier แบบ Real-time"
+                        onclick="toggleTideChart()">📈 Tide</button>
+                <span class="mh-divider"></span>
+                <span class="mh-group-label">AIS DATA</span>
+                <button id="aisToggleBtn" class="ais-toggle-btn" title="AIS Live — เรือจริงจาก AISStream.io"
+                        onclick="toggleAISLive()">📡 Live<span id="ais-live-count" style="margin-left:4px;font-size:9px;opacity:.8;"></span></button>
+                <button id="svImportBtn" class="sv-key-btn" title="Import ไฟล์ JSON ที่ export จาก SeaVision"
+                        onclick="document.getElementById('svImportInput').click()">📂 Import</button>
+                <button id="svResetBtn" class="sv-key-btn sv-reset-btn" title="ล้างข้อมูล SeaVision JSON ที่นำเข้าทั้งหมด"
+                        onclick="resetSVImport()">🗑 Reset</button>
+                <span class="mh-divider"></span>
+                <button id="audioBtn" class="sv-key-btn audio-btn" title="เปิด/ปิดเสียง SFX (sonar/DAS/ROE/explosion)"
+                        onclick="toggleAudio()">🔇 SFX</button>
+            </div>
             <input type="file" id="svImportInput" accept=".json,application/json"
                    style="display:none"
                    onchange="if(this.files[0]){importSVExport(this.files[0]);this.value='';}"/>
-            <button id="bathyBtn" title="Bathymetry — เส้นชั้นความลึก (Isobath) 10/20/30/50 เมตร จากข้อมูลแผนที่ทางทะเลไทย"
-                    onclick="toggleBathymetry()">🌊 Bathymetry</button>
-            <button id="seaZonesBtn" title="Sea Zones — เส้นฐานตรง · ทะเลอาณาเขต 12 ไมล์ · เขต JDA ไทย-มาเลเซีย"
-                    onclick="toggleSeaZones()">⚓ Sea Zones</button>
         </div>
         <div id="mapContainer">
             <!-- Mission Fail red-pulse overlay -->
@@ -2232,25 +2291,42 @@
             </div>
         </div>
 
-        <div class="panel">
-            <div class="panel-title" style="color:var(--text-muted);margin-bottom:2px;">🎯 Scenario Controls</div>
-            <button class="btn btn-uuv"   onclick="launchScenario('uuv')"><span class="btn-dot" style="background:var(--red);box-shadow:0 0 5px var(--red);"></span> ภัยคุกคามใต้น้ำ (UUV)</button>
-            <button class="btn btn-surf"  onclick="launchScenario('surface')"><span class="btn-dot" style="background:var(--yellow);box-shadow:0 0 5px var(--yellow);"></span> เรือผิวน้ำบุกรุก (ROE)</button>
-            <button class="btn btn-drone" onclick="launchScenario('drone')"><span class="btn-dot" style="background:var(--cyan);box-shadow:0 0 5px var(--cyan);"></span> อากาศยานไร้คนขับ (Drone)</button>
-            <button class="btn btn-combo" onclick="launchScenario('combined')"><span class="btn-dot" style="background:var(--purple);box-shadow:0 0 5px var(--purple);"></span> ภัยคุกคามรวม (Combined)</button>
-            <!-- v08: ASW specific scenarios -->
-            <div style="margin-top:4px;border-top:1px solid rgba(100,255,218,.10);padding-top:4px;font-size:9px;color:#67e8f9;">▾ ASW SUB-CLASS TEST</div>
-            <button class="btn btn-uuv" style="background:rgba(168,85,247,.10);border-color:rgba(168,85,247,.45);color:#a855f7;" onclick="launchScenario('sdv')"><span class="btn-dot" style="background:#a855f7;box-shadow:0 0 5px #a855f7;"></span> SDV (Swimmer Delivery Vehicle)</button>
-            <button class="btn btn-uuv" style="background:rgba(220,38,38,.10);border-color:rgba(220,38,38,.45);color:#dc2626;" onclick="launchScenario('midget')"><span class="btn-dot" style="background:#dc2626;box-shadow:0 0 5px #dc2626;"></span> Midget Submarine (Yono-class)</button>
-            <button class="btn btn-uuv" style="background:rgba(127,29,29,.20);border-color:rgba(127,29,29,.55);color:#fca5a5;" onclick="launchScenario('ssk')"><span class="btn-dot" style="background:#7f1d1d;box-shadow:0 0 5px #7f1d1d;"></span> SSK (Conventional Sub)</button>
-            <button class="btn btn-uuv" style="background:rgba(255,107,53,.12);border-color:rgba(255,107,53,.5);color:#ff8c5a;" onclick="launchScenario('mining')"><span class="btn-dot" style="background:#ff6b35;box-shadow:0 0 5px #ff6b35;"></span> 💣 Covert Mining (SDV)</button>
-            <!-- Manual SCRAMBLE controls -->
-            <div style="display:flex;gap:4px;margin-top:3px;">
-                <button class="btn" style="flex:1;background:rgba(245,158,11,.15);border-color:#f59e0b;color:#fcd34d;font-size:10px;padding:5px;" onclick="manualScrambleHelo()">🚁 SCRAMBLE NOW</button>
-                <button class="btn" style="flex:1;background:rgba(34,211,238,.10);border-color:#22d3ee;color:#67e8f9;font-size:10px;padding:5px;" onclick="manualCAPHelo()">✈ AIRBORNE CAP</button>
+        <!-- 🔴 RED FORCE — Threat Injection -->
+        <div class="panel" style="border-color:#ef4444;">
+            <div class="panel-title" style="color:#ef4444;">🔴 Threat Injection</div>
+            <div class="panel-sub" style="color:#ef4444;">จำลองภัยข้าศึก — RED FORCE</div>
+            <div class="ctrl-grp">▾ ภัยพื้นฐาน</div>
+            <div class="ctrl-row">
+                <button class="btn btn-uuv"   onclick="launchScenario('uuv')">🔴 UUV</button>
+                <button class="btn btn-surf"  onclick="launchScenario('surface')">🟡 Surface</button>
             </div>
-            <button id="mineFieldBtn" class="btn" style="background:rgba(34,197,94,.10);border-color:#22c55e;color:#4ade80;font-size:10px;padding:5px;margin-top:3px;" onclick="layControlledMinefield()">💣 Lay Minefield</button>
-            <button class="btn btn-reset" onclick="resetAll()" style="margin-top:4px;">⟳ RESET ALL SYSTEMS</button>
+            <div class="ctrl-row">
+                <button class="btn btn-drone" onclick="launchScenario('drone')">🔵 Drone</button>
+                <button class="btn btn-combo" onclick="launchScenario('combined')">🟣 Combined</button>
+            </div>
+            <div class="ctrl-grp">▾ เรือดำน้ำ (ASW)</div>
+            <div class="ctrl-row">
+                <button class="btn btn-uuv" style="background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.5);color:#c084fc;" onclick="launchScenario('sdv')">SDV</button>
+                <button class="btn btn-uuv" style="background:rgba(220,38,38,.12);border-color:rgba(220,38,38,.5);color:#f87171;" onclick="launchScenario('midget')">Midget</button>
+                <button class="btn btn-uuv" style="background:rgba(127,29,29,.25);border-color:rgba(127,29,29,.6);color:#fca5a5;" onclick="launchScenario('ssk')">SSK</button>
+            </div>
+            <div class="ctrl-grp">▾ ทุ่นระเบิด</div>
+            <button class="btn btn-uuv" style="background:rgba(255,107,53,.12);border-color:rgba(255,107,53,.5);color:#ff8c5a;justify-content:center;" onclick="launchScenario('mining')">💣 Covert Mining (SDV)</button>
+        </div>
+
+        <!-- 🔵 BLUE FORCE — Command Actions -->
+        <div class="panel" style="border-color:#22d3ee;">
+            <div class="panel-title" style="color:#22d3ee;">🔵 Blue Force Command</div>
+            <div class="panel-sub" style="color:#22d3ee;">สั่งการกำลังฝ่ายเรา</div>
+            <div class="ctrl-grp">▾ ASW Helicopter</div>
+            <div class="ctrl-row">
+                <button class="btn" style="background:rgba(245,158,11,.15);border-color:#f59e0b;color:#fcd34d;" onclick="manualScrambleHelo()">🚁 Scramble</button>
+                <button class="btn" style="background:rgba(34,211,238,.12);border-color:#22d3ee;color:#67e8f9;" onclick="manualCAPHelo()">✈ Airborne CAP</button>
+            </div>
+            <div class="ctrl-grp">▾ Mine Warfare</div>
+            <button id="mineFieldBtn" class="btn" style="background:rgba(34,197,94,.10);border-color:#22c55e;color:#4ade80;justify-content:center;" onclick="layControlledMinefield()">💣 Lay Minefield</button>
+            <div class="ctrl-hint">💡 วางกำลัง PV · GUUV · HSV — ใช้ปุ่มชุด DEPLOY มุมขวาบนของแผนที่</div>
+            <button class="btn btn-reset" onclick="resetAll()">⟳ RESET ALL SYSTEMS</button>
         </div>
     </div>
 
