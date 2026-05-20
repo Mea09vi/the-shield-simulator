@@ -5113,6 +5113,14 @@ function _heloSetState(h, newState) {
         RTB:      '#a78bfa',
     };
     _heloLog(h, `${prev} → ${newState}`, colors[newState] || '#22d3ee');
+    // อัปเดต panel sensor as-helo
+    if (typeof setSensor === 'function') {
+        const cls = newState === 'STANDBY' ? 's-ok'
+                  : newState === 'ENGAGE'  ? 's-alert'
+                  : newState === 'SCRAMBLE'? 's-warn'
+                  :                          's-warn';
+        setSensor('as-helo', newState, cls);
+    }
 }
 
 // ── Manual scramble (user button) — find nearest sub threat ────
@@ -5268,6 +5276,13 @@ function updateASWHelicopter() {
             // Orbit around target — track moving threat (drift loiterCenter slowly)
             h.altFt = 300;
             h.speedKn = 60;
+            // ── ถ้า target ถูกทำลายโดยหน่วยอื่น (GUUV/PV/torpedo) → RTB ──
+            if (h.target && !h.target.isPhantom && (!h.target.active || h.target.frozen)) {
+                _heloSetState(h, 'RTB');
+                h.rtbReason = 'TGT NEUTRALIZED (other unit)';
+                _heloLog(h, '🛬 Target neutralized by other asset — RTB', '#a78bfa');
+                break;
+            }
             // ── อัปเดต loiter center ตามตำแหน่ง target (ค่อยๆ track) ──
             if (h.target && h.target.active && h.loiterCenter) {
                 const tx = h.target.nx, ty = h.target.ny;
@@ -9818,6 +9833,10 @@ function resetAll() {
     threats=[]; effects=[]; cablePhotons=[];
     dasTriggered=false; dasPrevState=false; dasKPnm=null; dasKPsegIdx=-1;
     missionEnded=false;
+    // v08: ล้าง ASW assets — torpedoes, sonobuoys, helicopter alert
+    activeTorpedoes = [];
+    sonobuoys = [];
+    heloAlertActive = false;
     document.getElementById('dasAlert').style.display='none';
     document.getElementById('missionFailOverlay').style.display='none';
     // ── ปลดล็อก Leaflet map เมื่อ reset ──
@@ -9839,7 +9858,7 @@ function resetAll() {
     setSensor('uw-uuv','PATROL','s-ok');      setSensor('uw-udc','SECURE','s-ok');
     setSensor('as-patrol','ON PATROL','s-ok');setSensor('as-helo','STANDBY','s-ok');
     setSensor('as-radar','SCANNING','s-ok');  setSensor('as-ad','ARMED','s-ok');
-    updateStatus('[SYSTEM] THE SHIELD 1.0 v07 Online...<br>[GIS] Leaflet Map Active · Tide + Sea State Reset<br>[DAS] Fiber Tripwire Armed · AIS Live Ready.','#64ffda');
+    updateStatus('[SYSTEM] THE SHIELD 1.0 v08 ASW Edition Online...<br>[GIS] Leaflet Map Active · Tide + Sea State Reset<br>[DAS] Fiber Tripwire Armed · ROYAL DRAGON 1 standby @ U-Tapao.','#64ffda');
     addLog('--- SYSTEM RESET ---','var(--teal)');
     // V06: รีเซ็ต timeline + outcome
     scenarioStartTime = 0;
@@ -9896,6 +9915,11 @@ function launchScenario(type) {
     threats=[]; effects=[]; cablePhotons=[];
     dasTriggered=false; dasPrevState=false; dasKPnm=null; dasKPsegIdx=-1;
     missionEnded=false;
+    // v08: ล้าง ASW assets + reset helicopter เป็น STANDBY @ U-Tapao
+    activeTorpedoes = [];
+    sonobuoys = [];
+    heloAlertActive = false;
+    initASWHelicopter();
     document.getElementById('dasAlert').style.display='none';
     document.getElementById('missionFailOverlay').style.display='none';
     guardianUUVs.forEach(g=>{g.redirected=false;g.redirectTarget=null;});
