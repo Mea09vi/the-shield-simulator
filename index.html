@@ -6430,11 +6430,12 @@ function drawCable2() {
 //    • PV/HSV ฝ่ายเดียวกัน (omnidirectional)
 //    • AIS vessels — Stream/SV Import/Cache (omnidirectional)
 // ═══════════════════════════════════════════════════════════════
-const AVOID_RANGE_NM    = 0.3;
-const AVOID_SLOW_FACTOR = 0.40;
-const PF_LAND_K         = 6.0;   // gain ของแรงผลักจากชายฝั่ง
-const PF_VESSEL_K       = 4.0;   // gain ของแรงผลักจากเรือ
-const PF_TRIGGER_TOTAL  = 0.6;   // threshold รวม intensity → เข้าโหมด avoid
+const AVOID_RANGE_NM    = 0.5;   // ระยะตรวจ obstacle (ขยายจาก 0.3 → 0.5 nm)
+const AVOID_SLOW_FACTOR = 0.50;   // ความเร็วต่ำสุดตอนหลบ (ขยายจาก 0.40 → 0.50 ให้โค้งกว้างขึ้น)
+const PF_LAND_K         = 11.0;   // gain ของแรงผลักจากชายฝั่ง (เพิ่มจาก 6 → 11)
+const PF_VESSEL_K       = 9.0;    // gain ของแรงผลักจากเรือ (เพิ่มจาก 4 → 9)
+const PF_TRIGGER_TOTAL  = 0.8;    // threshold avoid (intensity รวม)
+const PF_TURN_MULT      = 0.50;   // ลด MAX_TURN ตอนหลบ → รัศมีโค้งกว้างขึ้น 2 เท่า
 
 function _avoidRangeNY() {
     if (typeof LAT_TOP === 'undefined' || typeof LAT_BOT === 'undefined') return 0.012;
@@ -6460,7 +6461,8 @@ function computePotentialField(self, baseTargetHdg) {
                 if (sx < -0.05 || sx > 1.05 || sy < -0.05 || sy > 1.05) continue;
                 if (isOnLand(sx, sy)) {
                     const d = range * r;
-                    const intensity = PF_LAND_K * Math.pow(1 - d/range, 2);
+                    // Linear falloff (ขยายผล mid-distance): K × (1-d/r)
+                    const intensity = PF_LAND_K * (1 - d/range);
                     fx -= Math.cos(dir) * intensity;
                     fy -= Math.sin(dir) * intensity;
                     landR += intensity;
@@ -6470,13 +6472,14 @@ function computePotentialField(self, baseTargetHdg) {
         }
     }
 
-    // ── 2. Vessel repulsion — omnidirectional ──
+    // ── 2. Vessel repulsion — omnidirectional, linear falloff ──
     const repelFrom = (ox, oy, label) => {
         const dx = self.nx - ox;
         const dy = self.ny - oy;
         const dist = Math.sqrt(dx*dx + dy*dy);
         if (dist > range || dist < 0.0001) return;
-        const intensity = PF_VESSEL_K * Math.pow(1 - dist/range, 2);
+        // Linear falloff: K × (1 - d/r) — แรง mid-range ชัดเจน
+        const intensity = PF_VESSEL_K * (1 - dist/range);
         fx += (dx/dist) * intensity;
         fy += (dy/dist) * intensity;
         vesselR += intensity;
@@ -6571,15 +6574,17 @@ function applyObstacleAvoidance(v, baseTargetHdg) {
         }
     }
 
-    // Speed factor: smooth lerp ตาม intensity (1.0 → 0.40)
-    const sf = Math.max(AVOID_SLOW_FACTOR, 1.0 - 0.18 * pf.totalR);
+    // Speed factor: smooth lerp ตาม intensity
+    // intensity ~10 (ใกล้สุด) → 0.50; intensity 0 → 1.0
+    const sf = Math.max(AVOID_SLOW_FACTOR, 1.0 - 0.05 * pf.totalR);
 
     return {
         speedFactor: sf,
-        targetHdg:   pf.targetHdg,      // PF heading — ใช้ตลอด (เลี้ยวโค้ง)
+        targetHdg:   pf.targetHdg,
         avoiding:    !!v._avoidingObstacle,
         obsType:     v._avoidingObstacle,
         totalR:      pf.totalR,
+        turnMult:    !!v._avoidingObstacle ? PF_TURN_MULT : 1.0,  // wider turn radius
     };
 }
 
@@ -8369,14 +8374,15 @@ function animate() {
         // Target heading toward waypoint
         let targetHdg = Math.atan2(dy, dx);
         if (v.heading === undefined) v.heading = targetHdg;
-        // Obstacle avoidance override
+        // Potential Field — ใช้ heading จาก PF ตลอด (ไม่ snap)
         const av = applyObstacleAvoidance(v, targetHdg);
-        if (av.avoiding) targetHdg = av.targetHdg;
-        // Smooth heading interpolation
+        targetHdg = av.targetHdg;
+        const effHsvMaxTurn = HSV_MAX_TURN * (av.turnMult || 1.0);
+        // Smooth heading interpolation (with avoid turn multiplier)
         let dHdg = targetHdg - v.heading;
         while (dHdg >  Math.PI) dHdg -= 2*Math.PI;
         while (dHdg < -Math.PI) dHdg += 2*Math.PI;
-        v.heading += Math.sign(dHdg) * Math.min(Math.abs(dHdg), HSV_MAX_TURN);
+        v.heading += Math.sign(dHdg) * Math.min(Math.abs(dHdg), effHsvMaxTurn);
         // Effective speed = base × avoidance factor × turn slowdown
         const turnSlow = Math.abs(dHdg) > 0.8 ? 0.5 : 1.0;
         const eff = v.speed * av.speedFactor * turnSlow;
@@ -8532,17 +8538,18 @@ function animate() {
             }
         }
 
-        // 4ax. ── Obstacle Avoidance — override targetHdg ถ้าพบสิ่งกีดขวาง ──
+        // 4ax. ── Obstacle Avoidance — PF heading + reduced turn rate ──
         const avoidance = applyObstacleAvoidance(v, targetHdg);
-        if (avoidance.avoiding) {
-            targetHdg = avoidance.targetHdg;
-        }
+        // ใช้ PF heading ตลอด (ค่อยๆ blend; ไม่ใช่แค่ตอน avoiding)
+        targetHdg = avoidance.targetHdg;
+        // ลด turn rate ตอน avoid → รัศมีโค้งกว้างขึ้น
+        const effMaxTurn = MAX_TURN * (avoidance.turnMult || 1.0);
 
-        // 4b. Smooth heading update (single MAX_TURN)
+        // 4b. Smooth heading update (single MAX_TURN with avoid multiplier)
         let dHdg = targetHdg - v.heading;
         while (dHdg >  Math.PI) dHdg -= 2*Math.PI;
         while (dHdg < -Math.PI) dHdg += 2*Math.PI;
-        v.heading += Math.sign(dHdg) * Math.min(Math.abs(dHdg), MAX_TURN);
+        v.heading += Math.sign(dHdg) * Math.min(Math.abs(dHdg), effMaxTurn);
 
         // 4c. ชะลอความเร็วเมื่อต้องเลี้ยวแหลม + เมื่อ avoiding
         //     turn_radius = eff_speed / MAX_TURN  →  ต้อง < WP spacing
