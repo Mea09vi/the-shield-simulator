@@ -6417,129 +6417,113 @@ function drawCable2() {
 //  เพื่อให้ Swath ซ้อนทับกัน 20–30% → ไม่มี Gap ในข้อมูล
 // ═══════════════════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════════════════
-//  SURFACE OBSTACLE AVOIDANCE — COLREGS-inspired
+//  POTENTIAL FIELD OBSTACLE AVOIDANCE
 //  ─────────────────────────────────────────────────────────────
-//  ตรวจสอบสิ่งกีดขวาง 2 แบบ ภายในระยะ 0.3 nm:
-//    1. ชายฝั่ง (landMask)
-//    2. เรืออื่น (patrolVessels, surveyVessels, AIS vessels)
+//  แนวคิด: รวม "แรงดึงดูด" (Attractive) จาก waypoint + "แรงผลัก"
+//  (Repulsive) จากสิ่งกีดขวาง → vector sum = heading จริง
 //
-//  เมื่อพบ:
-//    • ชะลอความเร็ว → 40% ของปกติ
-//    • เลี้ยวหลบ (COLREGS: turn starboard ก่อน)
-//    • เมื่อพ้นสิ่งกีดขวาง → resume navigation
+//  ผลลัพธ์: เรือเลี้ยวโค้งหลบ แล้วโค้งกลับเข้า path อย่างนุ่มนวล
+//  (ไม่มี snap heading กลับเป็นเส้นตรงเหมือนระบบ rule-based)
 //
-//  Visual:  แสดง ⚠AVOID badge สีส้มข้างเรือ
+//  สิ่งกีดขวางที่ตรวจสอบ:
+//    • ชายฝั่ง (forward arc ±90°)
+//    • PV/HSV ฝ่ายเดียวกัน (omnidirectional)
+//    • AIS vessels — Stream/SV Import/Cache (omnidirectional)
 // ═══════════════════════════════════════════════════════════════
-const AVOID_RANGE_NM   = 0.3;
-const AVOID_FRONT_CONE = Math.PI / 3;    // ±60° forward cone
-const AVOID_TURN_RATE  = 0.03;            // rad to bias starboard
+const AVOID_RANGE_NM    = 0.3;
 const AVOID_SLOW_FACTOR = 0.40;
-const AVOID_VESSEL_NY   = 0.012;          // direct collision check
+const PF_LAND_K         = 6.0;   // gain ของแรงผลักจากชายฝั่ง
+const PF_VESSEL_K       = 4.0;   // gain ของแรงผลักจากเรือ
+const PF_TRIGGER_TOTAL  = 0.6;   // threshold รวม intensity → เข้าโหมด avoid
 
-// คำนวณ NM → ny units (depends on LAT_TOP/LAT_BOT existing)
 function _avoidRangeNY() {
     if (typeof LAT_TOP === 'undefined' || typeof LAT_BOT === 'undefined') return 0.012;
     return AVOID_RANGE_NM / ((LAT_TOP - LAT_BOT) * 60);
 }
 
-// ตรวจสอบสิ่งกีดขวางในเส้นทาง — คืน object ถ้าพบ
-function detectSurfaceObstacle(self, ownX, ownY, hdg) {
-    const look = _avoidRangeNY();
-    // ── 1. Land obstacle — sample 3 points along heading
+// ── คำนวณ Potential Field — return heading + repulsion magnitudes ──
+function computePotentialField(self, baseTargetHdg) {
+    // F = F_attract (unit vec toward base target)
+    let fx = Math.cos(baseTargetHdg);
+    let fy = Math.sin(baseTargetHdg);
+    const range = _avoidRangeNY();
+    let landR = 0, vesselR = 0;
+    let nearest = null, nearestD = Infinity;
+
+    // ── 1. Land repulsion — forward 180° arc, multi-distance sampling ──
     if (typeof landMaskReady !== 'undefined' && landMaskReady && typeof isOnLand === 'function') {
-        for (let k = 0.35; k <= 1.0; k += 0.32) {
-            const tx = ownX + Math.cos(hdg) * look * k;
-            const ty = ownY + Math.sin(hdg) * look * k;
-            if (tx < -0.05 || tx > 1.05 || ty < -0.05 || ty > 1.05) continue;
-            if (isOnLand(tx, ty)) {
-                return { type:'land', distance: look*k, bearing: hdg };
+        for (let ang = -Math.PI/2; ang <= Math.PI/2; ang += Math.PI/9) {
+            for (let r = 0.35; r <= 1.0; r += 0.32) {
+                const dir = self.heading + ang;
+                const sx = self.nx + Math.cos(dir) * range * r;
+                const sy = self.ny + Math.sin(dir) * range * r;
+                if (sx < -0.05 || sx > 1.05 || sy < -0.05 || sy > 1.05) continue;
+                if (isOnLand(sx, sy)) {
+                    const d = range * r;
+                    const intensity = PF_LAND_K * Math.pow(1 - d/range, 2);
+                    fx -= Math.cos(dir) * intensity;
+                    fy -= Math.sin(dir) * intensity;
+                    landR += intensity;
+                    break;  // 1 hit per direction
+                }
             }
         }
     }
-    // ── 2. Vessel obstacle — proximity to other surface assets
-    // 2a. PV + HSV (เก็บใน nx/ny อยู่แล้ว)
-    const fleet = [];
-    if (typeof patrolVessels !== 'undefined') patrolVessels.forEach(v => fleet.push(v));
-    if (typeof surveyVessels !== 'undefined') surveyVessels.forEach(v => fleet.push(v));
-    for (const other of fleet) {
-        if (other === self) continue;
-        if (other.nx === undefined || other.ny === undefined) continue;
-        const dx = other.nx - ownX, dy = other.ny - ownY;
+
+    // ── 2. Vessel repulsion — omnidirectional ──
+    const repelFrom = (ox, oy, label) => {
+        const dx = self.nx - ox;
+        const dy = self.ny - oy;
         const dist = Math.sqrt(dx*dx + dy*dy);
-        if (dist > look || dist < 0.0001) continue;
-        const bearing = Math.atan2(dy, dx);
-        let dHdg = bearing - hdg;
-        while (dHdg >  Math.PI) dHdg -= 2*Math.PI;
-        while (dHdg < -Math.PI) dHdg += 2*Math.PI;
-        if (Math.abs(dHdg) < AVOID_FRONT_CONE) {
-            return { type:'vessel', distance: dist, bearing, dHdg, otherLabel: other.label };
+        if (dist > range || dist < 0.0001) return;
+        const intensity = PF_VESSEL_K * Math.pow(1 - dist/range, 2);
+        fx += (dx/dist) * intensity;
+        fy += (dy/dist) * intensity;
+        vesselR += intensity;
+        if (dist < nearestD) { nearestD = dist; nearest = { label, dist }; }
+    };
+    if (typeof patrolVessels !== 'undefined') {
+        for (const v of patrolVessels) {
+            if (v === self || v.nx == null) continue;
+            repelFrom(v.nx, v.ny, v.label);
         }
     }
-    // 2b. AIS vessels (เก็บใน lat/lng — แปลงเป็น nx/ny on-the-fly)
-    //     ครอบคลุมเรือจาก AISStream LIVE + SV JSON Import + Cache
+    if (typeof surveyVessels !== 'undefined') {
+        for (const v of surveyVessels) {
+            if (v === self || v.nx == null) continue;
+            repelFrom(v.nx, v.ny, v.label);
+        }
+    }
     if (typeof aisVesselData !== 'undefined' && aisVesselData.length &&
         typeof LAT_TOP !== 'undefined' && typeof LNG_LEFT !== 'undefined') {
         const lngSpan = LNG_RIGHT - LNG_LEFT;
         const latSpan = LAT_TOP   - LAT_BOT;
         for (const ais of aisVesselData) {
-            if (!ais || ais.lat === undefined || ais.lng === undefined) continue;
+            if (!ais || ais.lat == null || ais.lng == null) continue;
             const ax = (ais.lng - LNG_LEFT) / lngSpan;
             const ay = (LAT_TOP - ais.lat)  / latSpan;
-            // Quick reject: นอก viewport เกิน ±20% → ข้าม
             if (ax < -0.20 || ax > 1.20 || ay < -0.20 || ay > 1.20) continue;
-            const dx = ax - ownX, dy = ay - ownY;
-            const dist = Math.sqrt(dx*dx + dy*dy);
-            if (dist > look || dist < 0.0001) continue;
-            const bearing = Math.atan2(dy, dx);
-            let dHdg = bearing - hdg;
-            while (dHdg >  Math.PI) dHdg -= 2*Math.PI;
-            while (dHdg < -Math.PI) dHdg += 2*Math.PI;
-            if (Math.abs(dHdg) < AVOID_FRONT_CONE) {
-                const tag = ais.fromSVExport ? 'SV·' : ais.fromSeaVision ? 'SV·' : ais.fromCache ? 'AIS·' : 'AIS·';
-                return {
-                    type:'vessel', distance: dist, bearing, dHdg,
-                    otherLabel: tag + (ais.name || ais.mmsi || 'unknown')
-                };
-            }
+            const tag = (ais.fromSVExport || ais.fromSeaVision) ? 'SV·' : 'AIS·';
+            repelFrom(ax, ay, tag + (ais.name || ais.mmsi || 'unknown'));
         }
     }
-    return null;
+
+    return {
+        targetHdg: Math.atan2(fy, fx),
+        landR, vesselR,
+        totalR: landR + vesselR,
+        nearest,
+        dominant: landR >= vesselR ? (landR > 0 ? 'land' : null)
+                                   : (vesselR > 0 ? 'vessel' : null),
+    };
 }
 
-// คำนวณ heading หลบสิ่งกีดขวาง (multi-angle sampling — หาทิศที่โล่งจริง)
-function computeAvoidanceHeading(self, obs) {
-    if (!obs) return null;
-    // Vessel: COLREGS — เลี้ยวขวา 45°
-    if (obs.type === 'vessel') {
-        return self.heading + Math.PI/4;
-    }
-    // Land: ลอง 8 มุมหลบไล่จากน้อย→มาก สลับซ้ายขวา → หา open water
-    const look = _avoidRangeNY() * 0.85;
-    const angles = [0.6, -0.6, 1.0, -1.0, 1.4, -1.4, Math.PI/2, -Math.PI/2];
-    for (const dh of angles) {
-        const testHdg = self.heading + dh;
-        let clear = true;
-        // sample 2 จุดตามทิศที่ทดสอบ
-        for (let k = 0.45; k <= 1.0; k += 0.55) {
-            const tx = self.nx + Math.cos(testHdg) * look * k;
-            const ty = self.ny + Math.sin(testHdg) * look * k;
-            if (typeof isOnLand === 'function' && landMaskReady && isOnLand(tx, ty)) {
-                clear = false; break;
-            }
-        }
-        if (clear) return testHdg;
-    }
-    // Fallback: ถอย 180°
-    return self.heading + Math.PI;
-}
+// ── Hysteresis constants (สำหรับ UI badge + log) ──
+const AVOID_HOLD_FRAMES     = 90;
+const AVOID_CLEAR_FRAMES    = 25;
+const AVOID_COOLDOWN_FRAMES = 60;
+const AVOID_LOG_THROTTLE_MS = 4000;
 
-// ── Hysteresis constants — ป้องกัน log spam + oscillation ──
-const AVOID_HOLD_FRAMES     = 90;   // ~1.5 วินาที minimum avoid duration
-const AVOID_CLEAR_FRAMES    = 25;   // ต้อง clear 25 frame ติดต่อกันก่อน resume
-const AVOID_COOLDOWN_FRAMES = 60;   // ~1 วินาที cooldown ก่อน re-enter avoid ได้
-const AVOID_LOG_THROTTLE_MS = 4000; // log แต่ละ vessel อย่างน้อย 4 วินาทีต่อครั้ง
-
-// helper: ทดสอบ throttle log (return true ถ้าควร log)
 function _avoidShouldLog(v, key) {
     const now = performance.now();
     const k = '_avoidLog_' + key;
@@ -6548,75 +6532,55 @@ function _avoidShouldLog(v, key) {
     return true;
 }
 
-// อัปเดต state การหลบ — มี hysteresis + cooldown + log throttle
+// ── apply: คืน heading จาก potential field + flag avoiding สำหรับ UI ──
 function applyObstacleAvoidance(v, baseTargetHdg) {
     const now = (typeof frame !== 'undefined') ? frame : 0;
-    const obs = detectSurfaceObstacle(v, v.nx, v.ny, v.heading);
+    const pf  = computePotentialField(v, baseTargetHdg);
+    const inField = pf.totalR > PF_TRIGGER_TOTAL;
 
-    // ── A. ปัจจุบันกำลังหลบอยู่ ─────────────────────────────────
+    // ── State machine (UI/log only — heading ใช้จาก PF ตลอด) ──
     if (v._avoidingObstacle) {
-        if (obs) {
-            // ยังพบ → reset clear counter, อัปเดต avoidance heading
+        if (inField) {
             v._avoidClearCount = 0;
-            v._avoidObstacleType = obs.type;
-            v._avoidLastHdg = computeAvoidanceHeading(v, obs);
-            return {
-                speedFactor: AVOID_SLOW_FACTOR,
-                targetHdg:   v._avoidLastHdg,
-                avoiding:    true,
-                obsType:     obs.type,
-            };
-        }
-        // ไม่พบ → นับ clear frames
-        v._avoidClearCount = (v._avoidClearCount || 0) + 1;
-        const heldEnough  = (now - (v._avoidStart || 0)) >= AVOID_HOLD_FRAMES;
-        const clearedEnough = v._avoidClearCount >= AVOID_CLEAR_FRAMES;
-        if (heldEnough && clearedEnough) {
-            // RESUME — log แค่ครั้งเดียวที่ระดับ throttle
-            if (typeof addLog === 'function' && _avoidShouldLog(v, 'resume')) {
-                addLog(`✓ ${v.label} resume navigation`, '#22c55e');
+            if (pf.dominant) v._avoidingObstacle = pf.dominant;
+        } else {
+            v._avoidClearCount = (v._avoidClearCount || 0) + 1;
+            const heldEnough    = (now - (v._avoidStart||0)) >= AVOID_HOLD_FRAMES;
+            const clearedEnough = v._avoidClearCount >= AVOID_CLEAR_FRAMES;
+            if (heldEnough && clearedEnough) {
+                if (typeof addLog === 'function' && _avoidShouldLog(v, 'resume')) {
+                    addLog(`✓ ${v.label} resume navigation (PF)`, '#22c55e');
+                }
+                v._avoidingObstacle = null;
+                v._avoidStart        = null;
+                v._avoidClearCount   = 0;
+                v._avoidCooldownEnd  = now + AVOID_COOLDOWN_FRAMES;
             }
-            v._avoidingObstacle  = null;
-            v._avoidStart        = null;
-            v._avoidClearCount   = 0;
-            v._avoidLastHdg      = null;
-            v._avoidObstacleType = null;
-            v._avoidCooldownEnd  = now + AVOID_COOLDOWN_FRAMES;
-            return { speedFactor: 1.0, targetHdg: baseTargetHdg, avoiding: false };
         }
-        // ยังคงต้อง hold — ใช้ avoidance heading เดิม
-        return {
-            speedFactor: AVOID_SLOW_FACTOR,
-            targetHdg:   v._avoidLastHdg || baseTargetHdg,
-            avoiding:    true,
-            obsType:     v._avoidObstacleType || 'land',
-        };
+    } else if (inField) {
+        if (!v._avoidCooldownEnd || now >= v._avoidCooldownEnd) {
+            v._avoidingObstacle = pf.dominant || 'vessel';
+            v._avoidStart       = now;
+            v._avoidClearCount  = 0;
+            if (typeof addLog === 'function' && _avoidShouldLog(v, 'enter')) {
+                const lbl = v._avoidingObstacle === 'vessel'
+                    ? `เรือ ${pf.nearest?.label || ''}`
+                    : 'ชายฝั่ง';
+                addLog(`⚠️ ${v.label} หลบ${lbl} (PF)`, '#f59e0b');
+            }
+        }
     }
 
-    // ── B. ยังไม่หลบ ────────────────────────────────────────────
-    if (obs) {
-        // เคารพ cooldown — ไม่เริ่ม avoid ใหม่ทันที (กัน oscillation)
-        if (v._avoidCooldownEnd && now < v._avoidCooldownEnd) {
-            return { speedFactor: 1.0, targetHdg: baseTargetHdg, avoiding: false };
-        }
-        // ENTER avoid mode — log throttled
-        v._avoidingObstacle  = obs.type;
-        v._avoidObstacleType = obs.type;
-        v._avoidStart        = now;
-        v._avoidClearCount   = 0;
-        v._avoidLastHdg      = computeAvoidanceHeading(v, obs);
-        if (typeof addLog === 'function' && _avoidShouldLog(v, 'enter')) {
-            const lbl = obs.type === 'vessel' ? `เรือ ${obs.otherLabel||''}` : 'ชายฝั่ง';
-            addLog(`⚠️ ${v.label} หลบ${lbl}`, '#f59e0b');
-        }
-        return {
-            speedFactor: AVOID_SLOW_FACTOR,
-            targetHdg:   v._avoidLastHdg,
-            avoiding:    true,
-            obsType:     obs.type,
-        };
-    }
-    return { speedFactor: 1.0, targetHdg: baseTargetHdg, avoiding: false };
+    // Speed factor: smooth lerp ตาม intensity (1.0 → 0.40)
+    const sf = Math.max(AVOID_SLOW_FACTOR, 1.0 - 0.18 * pf.totalR);
+
+    return {
+        speedFactor: sf,
+        targetHdg:   pf.targetHdg,      // PF heading — ใช้ตลอด (เลี้ยวโค้ง)
+        avoiding:    !!v._avoidingObstacle,
+        obsType:     v._avoidingObstacle,
+        totalR:      pf.totalR,
+    };
 }
 
 function drawSurveyVessels() {
