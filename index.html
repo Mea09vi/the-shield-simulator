@@ -6457,23 +6457,50 @@ function detectSurfaceObstacle(self, ownX, ownY, hdg) {
         }
     }
     // ── 2. Vessel obstacle — proximity to other surface assets
+    // 2a. PV + HSV (เก็บใน nx/ny อยู่แล้ว)
     const fleet = [];
     if (typeof patrolVessels !== 'undefined') patrolVessels.forEach(v => fleet.push(v));
     if (typeof surveyVessels !== 'undefined') surveyVessels.forEach(v => fleet.push(v));
-    // (AIS vessels - skip, ตรวจในระดับ Leaflet, ไม่อยู่ใน ny coords)
     for (const other of fleet) {
         if (other === self) continue;
         if (other.nx === undefined || other.ny === undefined) continue;
         const dx = other.nx - ownX, dy = other.ny - ownY;
         const dist = Math.sqrt(dx*dx + dy*dy);
         if (dist > look || dist < 0.0001) continue;
-        // เช็คว่าอยู่ใน forward cone (±60°) ไหม
         const bearing = Math.atan2(dy, dx);
         let dHdg = bearing - hdg;
         while (dHdg >  Math.PI) dHdg -= 2*Math.PI;
         while (dHdg < -Math.PI) dHdg += 2*Math.PI;
         if (Math.abs(dHdg) < AVOID_FRONT_CONE) {
             return { type:'vessel', distance: dist, bearing, dHdg, otherLabel: other.label };
+        }
+    }
+    // 2b. AIS vessels (เก็บใน lat/lng — แปลงเป็น nx/ny on-the-fly)
+    //     ครอบคลุมเรือจาก AISStream LIVE + SV JSON Import + Cache
+    if (typeof aisVesselData !== 'undefined' && aisVesselData.length &&
+        typeof LAT_TOP !== 'undefined' && typeof LNG_LEFT !== 'undefined') {
+        const lngSpan = LNG_RIGHT - LNG_LEFT;
+        const latSpan = LAT_TOP   - LAT_BOT;
+        for (const ais of aisVesselData) {
+            if (!ais || ais.lat === undefined || ais.lng === undefined) continue;
+            const ax = (ais.lng - LNG_LEFT) / lngSpan;
+            const ay = (LAT_TOP - ais.lat)  / latSpan;
+            // Quick reject: นอก viewport เกิน ±20% → ข้าม
+            if (ax < -0.20 || ax > 1.20 || ay < -0.20 || ay > 1.20) continue;
+            const dx = ax - ownX, dy = ay - ownY;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist > look || dist < 0.0001) continue;
+            const bearing = Math.atan2(dy, dx);
+            let dHdg = bearing - hdg;
+            while (dHdg >  Math.PI) dHdg -= 2*Math.PI;
+            while (dHdg < -Math.PI) dHdg += 2*Math.PI;
+            if (Math.abs(dHdg) < AVOID_FRONT_CONE) {
+                const tag = ais.fromSVExport ? 'SV·' : ais.fromSeaVision ? 'SV·' : ais.fromCache ? 'AIS·' : 'AIS·';
+                return {
+                    type:'vessel', distance: dist, bearing, dHdg,
+                    otherLabel: tag + (ais.name || ais.mmsi || 'unknown')
+                };
+            }
         }
     }
     return null;
