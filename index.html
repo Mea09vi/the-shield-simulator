@@ -10090,6 +10090,7 @@ function init3D() {
     // ── UDC capsule + steel jacket + cables (static) ──
     buildUDC3D();
     buildCables3D();
+    buildDepthGauge();
     // ── cinematic atmosphere: god rays + marine snow ──
     buildGodRays();
     buildMarineSnow();
@@ -10371,6 +10372,62 @@ function _d3halo(radius, color) {
             opacity:0.6, blending:THREE.AdditiveBlending, depthWrite:false }));
     ring.rotation.x = Math.PI/2;   // วางแนวนอน
     return ring;
+}
+
+// ── Text sprite — ป้ายข้อความหันหน้าหากล้องเสมอ ──
+function _d3textSprite(text, color) {
+    const cv = document.createElement('canvas');
+    cv.width = 160; cv.height = 64;
+    const cx = cv.getContext('2d');
+    cx.font = 'bold 38px "Share Tech Mono", monospace';
+    cx.fillStyle = color || '#cdd6e3';
+    cx.textAlign = 'center'; cx.textBaseline = 'middle';
+    cx.fillText(text, 80, 34);
+    const tex = new THREE.CanvasTexture(cv);
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({
+        map:tex, transparent:true, depthTest:false }));
+    sp.scale.set(26, 10.4, 1);
+    return sp;
+}
+
+// ── Depth Gauge — มาตรวัดความลึกแนวดิ่ง จาก UDC → ผิวน้ำ ──
+function buildDepthGauge() {
+    if (typeof UDC === 'undefined') return;
+    const grp = new THREE.Group();
+    const ux=_d3x(UDC.nx), uz=_d3z(UDC.ny);
+    const topY=2, botY=d3_seabedY;
+    // เส้นแนวดิ่งหลัก
+    const line = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.55,0.55, topY-botY, 6),
+        new THREE.MeshBasicMaterial({ color:0x67ffe6, transparent:true, opacity:0.55 }));
+    line.position.set(ux, (topY+botY)/2, uz);
+    grp.add(line);
+    // ปลายลูกศรที่ผิวน้ำ
+    const arrow = new THREE.Mesh(new THREE.ConeGeometry(2.6,6,8),
+        new THREE.MeshBasicMaterial({ color:0x67ffe6 }));
+    arrow.position.set(ux, topY+3, uz);
+    grp.add(arrow);
+    // ขีดบอกระดับ + ป้าย ทุก 10 m
+    for (let d=0; d<=50; d+=10){
+        const y=_d3y(d);
+        const major=(d%20===0);
+        const tick = new THREE.Mesh(
+            new THREE.BoxGeometry(major?11:7, 0.7, 0.7),
+            new THREE.MeshBasicMaterial({ color:0x67ffe6,
+                transparent:true, opacity:major?0.9:0.6 }));
+        tick.position.set(ux+(major?5.5:3.5), y, uz);
+        grp.add(tick);
+        const lbl=_d3textSprite((d===0?'0 m · ผิวน้ำ':d+' m'),
+            d===0?'#9affe9':'#67ffe6');
+        lbl.position.set(ux+22, y, uz);
+        grp.add(lbl);
+    }
+    // ป้าย UDC ที่ก้นเส้น
+    const udcLbl=_d3textSprite('UDC '+D3_SEABED+' m','#64ffda');
+    udcLbl.position.set(ux+24, botY, uz);
+    grp.add(udcLbl);
+    grp.name='depth-gauge';
+    d3_scene.add(grp);
 }
 
 // ── Search Pattern path guide — เส้นทาง waypoint + จุด ──
