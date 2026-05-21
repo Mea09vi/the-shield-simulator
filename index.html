@@ -35,6 +35,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <!-- Three.js r128 — 3D Underwater Dive View (v09) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Three.js postprocessing — Bloom (v09 Tier A) -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <!--
       ── CSS Stylesheet ────────────────────────────────────────────
@@ -9985,6 +9992,7 @@ let d3_active = false, d3_initDone = false;
 let d3_scene, d3_camera, d3_renderer, d3_dynGroup, d3_surface;
 let d3_fish = [], d3_seabedY = 0;
 let d3_godrays = [], d3_snow = null, d3_bubbles = null;
+let d3_composer = null;   // bloom post-processing
 let d3_raf = null;
 let d3_cam  = { theta: 0.9, phi: 0.95, radius: 470, target: null };
 let d3_drag = { on:false, x:0, y:0 };
@@ -10078,6 +10086,20 @@ function init3D() {
     d3_dynGroup = new THREE.Group();
     d3_scene.add(d3_dynGroup);
 
+    // ── Bloom post-processing (Tier A) ──
+    if (typeof THREE.EffectComposer !== 'undefined' &&
+        typeof THREE.UnrealBloomPass !== 'undefined') {
+        d3_composer = new THREE.EffectComposer(d3_renderer);
+        d3_composer.addPass(new THREE.RenderPass(d3_scene, d3_camera));
+        const bloom = new THREE.UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            0.95,   // strength — ความเข้มเรืองแสง
+            0.55,   // radius — ระยะฟุ้ง
+            0.22);  // threshold — เฉพาะส่วนสว่างจึงเรือง
+        d3_composer.addPass(bloom);
+        if (typeof addLog==='function') addLog('[3D] ✨ Bloom post-processing พร้อม','#22d3ee');
+    }
+
     d3_cam.target = new THREE.Vector3(
         _d3x(typeof UDC!=='undefined'?UDC.nx:0.5), _d3y(28),
         _d3z(typeof UDC!=='undefined'?UDC.ny:0.5));
@@ -10101,6 +10123,7 @@ function init3D() {
         d3_camera.aspect = window.innerWidth/window.innerHeight;
         d3_camera.updateProjectionMatrix();
         d3_renderer.setSize(window.innerWidth, window.innerHeight);
+        if(d3_composer) d3_composer.setSize(window.innerWidth, window.innerHeight);
     });
     d3_initDone = true;
 }
@@ -10587,7 +10610,9 @@ function render3DLoop() {
         t.y + d3_cam.radius*Math.cos(d3_cam.phi),
         t.z + d3_cam.radius*Math.sin(d3_cam.phi)*Math.sin(d3_cam.theta));
     d3_camera.lookAt(t);
-    d3_renderer.render(d3_scene, d3_camera);
+    // render ผ่าน bloom composer (fallback เป็น renderer ปกติ)
+    if (d3_composer) d3_composer.render();
+    else d3_renderer.render(d3_scene, d3_camera);
 }
 
 function toggle3DView() {
@@ -10603,6 +10628,7 @@ function toggle3DView() {
         d3_camera.aspect = window.innerWidth/window.innerHeight;
         d3_camera.updateProjectionMatrix();
         d3_renderer.setSize(window.innerWidth, window.innerHeight);
+        if(d3_composer) d3_composer.setSize(window.innerWidth, window.innerHeight);
         ov.classList.add('active');
         if(btn) btn.style.background='rgba(34,211,238,.32)';
         if(typeof addLog==='function') addLog('[3D] 🌐 เข้าสู่ 3D Underwater Dive View','#22d3ee');
