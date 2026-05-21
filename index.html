@@ -10390,41 +10390,21 @@ function _d3textSprite(text, color) {
     return sp;
 }
 
-// ── Depth Gauge — มาตรวัดความลึกแนวดิ่ง จาก UDC → ผิวน้ำ ──
+// ── Depth Gauge — แสดงเฉพาะตัวเลขความลึกแนวดิ่ง (ไม่มีเส้น) ──
 function buildDepthGauge() {
     if (typeof UDC === 'undefined') return;
     const grp = new THREE.Group();
     const ux=_d3x(UDC.nx), uz=_d3z(UDC.ny);
-    const topY=2, botY=d3_seabedY;
-    // เส้นแนวดิ่งหลัก
-    const line = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.55,0.55, topY-botY, 6),
-        new THREE.MeshBasicMaterial({ color:0x67ffe6, transparent:true, opacity:0.55 }));
-    line.position.set(ux, (topY+botY)/2, uz);
-    grp.add(line);
-    // ปลายลูกศรที่ผิวน้ำ
-    const arrow = new THREE.Mesh(new THREE.ConeGeometry(2.6,6,8),
-        new THREE.MeshBasicMaterial({ color:0x67ffe6 }));
-    arrow.position.set(ux, topY+3, uz);
-    grp.add(arrow);
-    // ขีดบอกระดับ + ป้าย ทุก 10 m
+    // แสดงเฉพาะตัวเลขความลึก ลอยเป็นแนวดิ่ง
     for (let d=0; d<=50; d+=10){
-        const y=_d3y(d);
-        const major=(d%20===0);
-        const tick = new THREE.Mesh(
-            new THREE.BoxGeometry(major?11:7, 0.7, 0.7),
-            new THREE.MeshBasicMaterial({ color:0x67ffe6,
-                transparent:true, opacity:major?0.9:0.6 }));
-        tick.position.set(ux+(major?5.5:3.5), y, uz);
-        grp.add(tick);
         const lbl=_d3textSprite((d===0?'0 m · ผิวน้ำ':d+' m'),
             d===0?'#9affe9':'#67ffe6');
-        lbl.position.set(ux+22, y, uz);
+        lbl.position.set(ux+20, _d3y(d), uz);
         grp.add(lbl);
     }
-    // ป้าย UDC ที่ก้นเส้น
+    // ป้าย UDC ที่ระดับพื้นทะเล
     const udcLbl=_d3textSprite('UDC '+D3_SEABED+' m','#64ffda');
-    udcLbl.position.set(ux+24, botY, uz);
+    udcLbl.position.set(ux+22, d3_seabedY, uz);
     grp.add(udcLbl);
     grp.name='depth-gauge';
     d3_scene.add(grp);
