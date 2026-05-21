@@ -18,7 +18,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE SHIELD 1.0 | UDC GIS Simulator v08 — ASW Edition</title>
+    <title>THE SHIELD 1.0 | UDC GIS Simulator v09 — 3D Dive Edition</title>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
       Leaflet.js คือไลบรารีแผนที่แบบ Open-Source ที่ใช้กันอย่างแพร่หลายใน
@@ -33,6 +33,8 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- Chart.js — Real-time telemetry graph (Tide Level vs Detection Modifier) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <!-- Three.js r128 — 3D Underwater Dive View (v09) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <!--
       ── CSS Stylesheet ────────────────────────────────────────────
@@ -316,6 +318,54 @@
             width:1px; height:18px; background:rgba(26,58,92,.9);
             margin:0 3px;
         }
+        /* ── 3D Dive View overlay (v09) ── */
+        #dive3d {
+            display:none; position:fixed; inset:0; z-index:9000;
+            background:#020912;
+        }
+        #dive3d.active { display:block; }
+        #dive3dCanvas { width:100%; height:100%; display:block; }
+        #dive3dClose {
+            position:absolute; top:14px; right:16px; z-index:9020;
+            background:rgba(8,21,37,.92); border:1px solid #ef4444;
+            color:#f87171; font-family:'Share Tech Mono',monospace;
+            font-size:12px; padding:7px 14px; border-radius:6px; cursor:pointer;
+        }
+        #dive3dClose:hover { background:rgba(239,68,68,.18); }
+        #dive3dHud {
+            position:absolute; top:14px; left:16px; z-index:9020;
+            background:rgba(2,12,24,.82); border:1px solid #1a3a5c;
+            border-radius:7px; padding:9px 13px;
+            font-family:'Share Tech Mono',monospace; color:#67e8f9;
+            font-size:11px; line-height:1.65; pointer-events:none;
+        }
+        #dive3dHud .d3-title { color:#22d3ee; font-weight:700;
+            font-size:12px; letter-spacing:1px; }
+        #dive3dHud .d3-k { color:#4a6585; }
+        #dive3dLegend {
+            position:absolute; bottom:14px; left:16px; z-index:9020;
+            background:rgba(2,12,24,.82); border:1px solid #1a3a5c;
+            border-radius:7px; padding:8px 12px;
+            font-family:'Share Tech Mono',monospace; font-size:10px;
+            color:#94a3b8; line-height:1.7; pointer-events:none;
+        }
+        #dive3dLegend .lg-dot { display:inline-block; width:9px; height:9px;
+            border-radius:50%; margin-right:5px; vertical-align:middle; }
+        #dive3dHint {
+            position:absolute; bottom:14px; right:16px; z-index:9020;
+            background:rgba(2,12,24,.82); border:1px solid #1a3a5c;
+            border-radius:7px; padding:7px 12px;
+            font-family:'Share Tech Mono',monospace; font-size:9px;
+            color:#5b7290; pointer-events:none;
+        }
+        .dive3d-btn {
+            background:rgba(34,211,238,.10); border:1px solid #22d3ee;
+            border-radius:6px; color:#67e8f9;
+            font-family:'Share Tech Mono',monospace; font-size:10px;
+            padding:5px 10px; cursor:pointer; letter-spacing:.5px;
+        }
+        .dive3d-btn:hover { background:rgba(34,211,238,.22);
+            box-shadow:0 0 10px rgba(34,211,238,.4); }
         #mapContainer { flex:1; min-height:0; position:relative; }
         #overlayCanvas {
             position:absolute; top:0; left:0;
@@ -1736,6 +1786,8 @@
                 <button id="svResetBtn" class="sv-key-btn sv-reset-btn" title="ล้างข้อมูล SeaVision JSON ที่นำเข้าทั้งหมด"
                         onclick="resetSVImport()">🗑 Reset</button>
                 <span class="mh-divider"></span>
+                <button id="dive3dBtn" class="dive3d-btn" title="3D Underwater Dive View — มุมมองใต้น้ำ 3 มิติ"
+                        onclick="toggle3DView()">🌐 3D DIVE</button>
                 <button id="audioBtn" class="sv-key-btn audio-btn" title="เปิด/ปิดเสียง SFX (sonar/DAS/ROE/explosion)"
                         onclick="toggleAudio()">🔇 SFX</button>
             </div>
@@ -2484,8 +2536,30 @@
 <!-- ── Classification Banner — BOTTOM ─────────────────────────── -->
 <div class="classification-banner bottom">
     <span>UNCLASSIFIED // FOR TRAINING USE ONLY</span>
-    <span style="color:#7da77d;">THE SHIELD 1.0 · UDC TACTICAL SIMULATOR v08</span>
+    <span style="color:#7da77d;">THE SHIELD 1.0 · UDC TACTICAL SIMULATOR v09</span>
     <span>UNCLASSIFIED // FOR TRAINING USE ONLY</span>
+</div>
+
+<!-- ── 3D Underwater Dive View (v09) ──────────────────────────── -->
+<div id="dive3d">
+    <canvas id="dive3dCanvas"></canvas>
+    <button id="dive3dClose" onclick="toggle3DView()">✕ ปิด 3D · กลับ 2D</button>
+    <div id="dive3dHud">
+        <div class="d3-title">🌐 3D UNDERWATER DIVE VIEW</div>
+        <span class="d3-k">DEPTH SCALE</span> exaggerated ×3<br>
+        <span class="d3-k">GUUV</span> <span id="d3-guuv">0</span> ·
+        <span class="d3-k">THREATS</span> <span id="d3-threats">0</span><br>
+        <span class="d3-k">THERMOCLINE</span> ~20 m
+    </div>
+    <div id="dive3dLegend">
+        <span class="lg-dot" style="background:#22d3ee;"></span>Guardian UUV &nbsp;
+        <span class="lg-dot" style="background:#ff4136;"></span>Threat<br>
+        <span class="lg-dot" style="background:#64ffda;"></span>UDC Capsule &nbsp;
+        <span class="lg-dot" style="background:#f59e0b;"></span>Surface Vessel<br>
+        <span class="lg-dot" style="background:rgba(56,189,248,.5);"></span>Thermocline &nbsp;
+        <span class="lg-dot" style="background:#9aa8bd;"></span>Seabed
+    </div>
+    <div id="dive3dHint">🖱 ลาก: หมุนกล้อง · Scroll: ซูม</div>
 </div>
 
 <script>
@@ -5342,6 +5416,8 @@ window.addEventListener('contextmenu', function(e) {
 // ── Esc key to exit place mode ──
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
+        // v09: ปิด 3D Dive View ด้วย Esc
+        if (typeof d3_active !== 'undefined' && d3_active) { toggle3DView(); return; }
         if (placePatrolMode)  { placePatrolMode=false;  document.getElementById('placePatrolBtn')?.classList.remove('active'); document.getElementById('placePatrolHint').style.display='none'; }
         if (placeGUUVMode)    { placeGUUVMode=false;    document.getElementById('placeGUUVBtn')?.classList.remove('active'); }
         if (placeSurveyMode)  { placeSurveyMode=false;  document.getElementById('placeSurveyBtn')?.classList.remove('active'); }
@@ -9771,6 +9847,105 @@ function sfxSonobuoyDeploy() {           // Quick splash + tone
     _playNoise(0.12, 800, 1, 0.18);
 }
 
+// ═══════════════════════════════════════════════════════════════
+//  [v09] AMBIENT SOUND SYSTEM — ocean · waves · vehicles · warning
+// ═══════════════════════════════════════════════════════════════
+let ambienceNodes = null;     // ocean ambience graph
+let uuvHumNodes   = null;     // UUV/sub motor hum
+
+// ── Ocean ambience: brown-noise rumble + wave-swell LFO ──
+function startOceanAmbience() {
+    if (!audioEnabled) return;
+    if (!audioCtx) _initAudio();
+    if (!audioCtx || ambienceNodes) return;
+    const now = audioCtx.currentTime;
+    // brown-noise buffer (4 s, looped) — ocean rumble
+    const dur = 4;
+    const buf = audioCtx.createBuffer(1, Math.floor(audioCtx.sampleRate*dur), audioCtx.sampleRate);
+    const data = buf.getChannelData(0);
+    let last = 0;
+    for (let i=0;i<data.length;i++){
+        const w = Math.random()*2-1;
+        last = (last + 0.02*w) / 1.02;
+        data[i] = last * 3.4;
+    }
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buf; noise.loop = true;
+    // low-pass → deep ocean tone
+    const lp = audioCtx.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.value = 360; lp.Q.value = 0.6;
+    // wave-swell — LFO modulates gain (~12 s period)
+    const swell = audioCtx.createGain();
+    swell.gain.value = 0.55;
+    const lfo = audioCtx.createOscillator();
+    lfo.type = 'sine'; lfo.frequency.value = 0.085;
+    const lfoG = audioCtx.createGain();
+    lfoG.gain.value = 0.4;
+    lfo.connect(lfoG); lfoG.connect(swell.gain);
+    // master ambience gain — fade in
+    const amb = audioCtx.createGain();
+    amb.gain.setValueAtTime(0, now);
+    amb.gain.linearRampToValueAtTime(0.20, now + 2.5);
+    noise.connect(lp); lp.connect(swell); swell.connect(amb); amb.connect(masterGain);
+    noise.start(now); lfo.start(now);
+    ambienceNodes = { noise, lfo, amb };
+    addLog('[AUDIO] 🌊 Ocean ambience เปิด', '#38bdf8');
+}
+function stopOceanAmbience() {
+    if (!ambienceNodes || !audioCtx) return;
+    const now = audioCtx.currentTime;
+    const n = ambienceNodes;
+    n.amb.gain.cancelScheduledValues(now);
+    n.amb.gain.linearRampToValueAtTime(0, now + 1.4);
+    setTimeout(()=>{ try{ n.noise.stop(); n.lfo.stop(); }catch(e){} }, 1600);
+    ambienceNodes = null;
+}
+
+// ── UUV / submarine motor hum — เปิดเมื่อมีภัยใต้น้ำ ──
+function startUUVHum() {
+    if (!audioEnabled || !audioCtx || uuvHumNodes) return;
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    osc.type = 'sawtooth'; osc.frequency.value = 72;
+    const lp = audioCtx.createBiquadFilter();
+    lp.type='lowpass'; lp.frequency.value = 180;
+    const g = audioCtx.createGain();
+    g.gain.setValueAtTime(0, now);
+    g.gain.linearRampToValueAtTime(0.06, now + 1.5);
+    // slow cavitation throb
+    const lfo = audioCtx.createOscillator();
+    lfo.type='sine'; lfo.frequency.value = 4.5;
+    const lfoG = audioCtx.createGain(); lfoG.gain.value = 0.03;
+    lfo.connect(lfoG); lfoG.connect(g.gain);
+    osc.connect(lp); lp.connect(g); g.connect(masterGain);
+    osc.start(now); lfo.start(now);
+    uuvHumNodes = { osc, lfo, g };
+}
+function stopUUVHum() {
+    if (!uuvHumNodes || !audioCtx) return;
+    const now = audioCtx.currentTime;
+    const n = uuvHumNodes;
+    n.g.gain.cancelScheduledValues(now);
+    n.g.gain.linearRampToValueAtTime(0, now + 1.0);
+    setTimeout(()=>{ try{ n.osc.stop(); n.lfo.stop(); }catch(e){} }, 1200);
+    uuvHumNodes = null;
+}
+// เรียกทุกเฟรม — เปิด/ปิด hum ตามภัยใต้น้ำ
+function updateAmbientAudio() {
+    if (!audioEnabled) { if(uuvHumNodes) stopUUVHum(); return; }
+    const subActive = (typeof threats!=='undefined') &&
+        threats.some(t=>t.active && !t.frozen && (t.type==='uuv'||t.isSubmarine));
+    if (subActive && !uuvHumNodes)  startUUVHum();
+    if (!subActive && uuvHumNodes)  stopUUVHum();
+}
+
+// ── Warning tone — สัญญาณเตือนภัย 2 จังหวะ (naval alarm) ──
+function sfxWarningTone() {
+    if (!_sfxThrottle('warntone', 2500)) return;
+    _playTone(720, 0.22, 'square', 0.30);
+    setTimeout(()=> _playTone(560, 0.26, 'square', 0.30), 260);
+}
+
 // ── Toggle button handler ────────────────────────────────────
 function toggleAudio() {
     if (!audioCtx) _initAudio();
@@ -9783,9 +9958,12 @@ function toggleAudio() {
     if (audioEnabled) {
         _playTone(880, 0.08, 'sine', 0.25);
         setTimeout(() => _playTone(1320, 0.12, 'sine', 0.30, true), 90);
-        addLog('[AUDIO] 🔊 เสียง SFX เปิด — sonar/DAS/ROE/explosion', '#a78bfa');
+        addLog('[AUDIO] 🔊 เสียง SFX + ambient เปิด', '#a78bfa');
+        startOceanAmbience();
     } else {
         addLog('[AUDIO] 🔇 เสียง SFX ปิด', '#475569');
+        stopOceanAmbience();
+        stopUUVHum();
     }
 }
 function _updateAudioBtn() {
@@ -9793,6 +9971,273 @@ function _updateAudioBtn() {
     if (!btn) return;
     btn.textContent = audioEnabled ? '🔊 SFX' : '🔇 SFX';
     btn.classList.toggle('audio-on', audioEnabled);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  [v09] 3D UNDERWATER DIVE VIEW — Three.js r128
+//  ─────────────────────────────────────────────────────────────
+//  มุมมองใต้น้ำ 3 มิติ — แสดงมิติความลึกที่ 2D map แสดงไม่ได้
+//  • water surface · thermocline · seabed terrain
+//  • UDC capsule · Guardian UUV + PSR volume · submarine threats
+//  • depth exaggerated ×3.2 เพื่อให้เห็นชั้นความลึกชัด
+// ═══════════════════════════════════════════════════════════════
+let d3_active = false, d3_initDone = false;
+let d3_scene, d3_camera, d3_renderer, d3_dynGroup, d3_surface;
+let d3_raf = null;
+let d3_cam  = { theta: 0.9, phi: 0.95, radius: 470, target: null };
+let d3_drag = { on:false, x:0, y:0 };
+
+const D3_W      = 420;   // world span สำหรับ nx/ny 0..1
+const D3_DEPTH  = 3.2;   // depth exaggeration: 1 m → 3.2 units
+const D3_SEABED = 50;    // ความลึกพื้นทะเลอ้างอิง (m)
+
+function _d3x(nx) { return (nx - 0.5) * D3_W; }
+function _d3z(ny) { return (ny - 0.5) * D3_W; }
+function _d3y(m)  { return -m * D3_DEPTH; }       // surface = 0, ลึก = ลบ
+
+function init3D() {
+    if (d3_initDone) return;
+    const canvas = document.getElementById('dive3dCanvas');
+    d3_renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+    d3_renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    d3_renderer.setSize(window.innerWidth, window.innerHeight);
+
+    d3_scene = new THREE.Scene();
+    d3_scene.background = new THREE.Color(0x031018);
+    d3_scene.fog = new THREE.FogExp2(0x05161f, 0.0013);
+
+    d3_camera = new THREE.PerspectiveCamera(
+        56, window.innerWidth/window.innerHeight, 1, 5000);
+
+    d3_scene.add(new THREE.AmbientLight(0x5878a0, 1.0));
+    const sun = new THREE.DirectionalLight(0xcdeaff, 0.85);
+    sun.position.set(150, 350, 120);
+    d3_scene.add(sun);
+    const fillLight = new THREE.DirectionalLight(0x1a4a6a, 0.5);
+    fillLight.position.set(-120, -80, -100);
+    d3_scene.add(fillLight);
+
+    // ── Sea surface (animated) ──
+    const surfGeo = new THREE.PlaneGeometry(D3_W*1.5, D3_W*1.5, 28, 28);
+    surfGeo.rotateX(-Math.PI/2);
+    const surfMat = new THREE.MeshPhongMaterial({
+        color:0x1d6f9e, transparent:true, opacity:0.36,
+        side:THREE.DoubleSide, shininess:90,
+    });
+    d3_surface = new THREE.Mesh(surfGeo, surfMat);
+    d3_scene.add(d3_surface);
+
+    // ── Thermocline plane (~20 m) ──
+    const thGeo = new THREE.PlaneGeometry(D3_W*1.35, D3_W*1.35);
+    thGeo.rotateX(-Math.PI/2);
+    const therm = new THREE.Mesh(thGeo, new THREE.MeshBasicMaterial({
+        color:0x38bdf8, transparent:true, opacity:0.11, side:THREE.DoubleSide }));
+    therm.position.y = _d3y(20);
+    d3_scene.add(therm);
+
+    // ── Seabed terrain ──
+    const bedGeo = new THREE.PlaneGeometry(D3_W*1.5, D3_W*1.5, 44, 44);
+    bedGeo.rotateX(-Math.PI/2);
+    const bp = bedGeo.attributes.position;
+    for (let i=0;i<bp.count;i++){
+        const x=bp.getX(i), z=bp.getZ(i);
+        bp.setY(i, Math.sin(x*0.012)*9 + Math.cos(z*0.015)*8 + Math.sin((x+z)*0.007)*6);
+    }
+    bedGeo.computeVertexNormals();
+    const bed = new THREE.Mesh(bedGeo, new THREE.MeshPhongMaterial({
+        color:0x16242f, flatShading:true }));
+    bed.position.y = _d3y(D3_SEABED);
+    d3_scene.add(bed);
+
+    // ── Depth reference grids ──
+    [10,20,30,40].forEach(dep=>{
+        const g = new THREE.GridHelper(D3_W, 8, 0x1a3a5c, 0x10222f);
+        g.position.y = _d3y(dep);
+        g.material.opacity = 0.16; g.material.transparent = true;
+        d3_scene.add(g);
+    });
+
+    d3_dynGroup = new THREE.Group();
+    d3_scene.add(d3_dynGroup);
+
+    d3_cam.target = new THREE.Vector3(
+        _d3x(typeof UDC!=='undefined'?UDC.nx:0.5), _d3y(28),
+        _d3z(typeof UDC!=='undefined'?UDC.ny:0.5));
+
+    // ── Camera input ──
+    canvas.addEventListener('mousedown', e=>{ d3_drag.on=true; d3_drag.x=e.clientX; d3_drag.y=e.clientY; });
+    window.addEventListener('mouseup', ()=>{ d3_drag.on=false; });
+    window.addEventListener('mousemove', e=>{
+        if(!d3_drag.on||!d3_active) return;
+        d3_cam.theta -= (e.clientX-d3_drag.x)*0.006;
+        d3_cam.phi    = Math.max(0.12, Math.min(1.52, d3_cam.phi-(e.clientY-d3_drag.y)*0.006));
+        d3_drag.x=e.clientX; d3_drag.y=e.clientY;
+    });
+    canvas.addEventListener('wheel', e=>{
+        if(!d3_active) return;
+        e.preventDefault();
+        d3_cam.radius = Math.max(140, Math.min(1100, d3_cam.radius+e.deltaY*0.6));
+    }, {passive:false});
+    window.addEventListener('resize', ()=>{
+        if(!d3_active||!d3_renderer) return;
+        d3_camera.aspect = window.innerWidth/window.innerHeight;
+        d3_camera.updateProjectionMatrix();
+        d3_renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+    d3_initDone = true;
+}
+
+// helper — cylinder ที่นอนตามแกน (รูปทรง pod/เรือดำน้ำ)
+function _d3pod(radius, length, color, emissive, segs) {
+    const g = new THREE.CylinderGeometry(radius, radius, length, segs||10);
+    g.rotateZ(Math.PI/2);
+    return new THREE.Mesh(g, new THREE.MeshPhongMaterial({
+        color:color, emissive:emissive||0x000000 }));
+}
+
+// rebuild dynamic entities ทุกเฟรม
+function update3DEntities() {
+    if (!d3_dynGroup) return;
+    while(d3_dynGroup.children.length){
+        const c = d3_dynGroup.children.pop();
+        if(c.geometry) c.geometry.dispose();
+        if(c.material) c.material.dispose();
+    }
+    // ── UDC capsule บนพื้นทะเล ──
+    if (typeof UDC !== 'undefined') {
+        const udc = _d3pod(8, 30, 0x64ffda, 0x0c4035, 14);
+        udc.position.set(_d3x(UDC.nx), _d3y(D3_SEABED-7), _d3z(UDC.ny));
+        d3_dynGroup.add(udc);
+    }
+    // ── Guardian UUVs + PSR volume ──
+    if (typeof guardianUUVs !== 'undefined') {
+        guardianUUVs.forEach(g=>{
+            const dep = g.depthBase || 30;
+            const x=_d3x(g.nx), y=_d3y(dep), z=_d3z(g.ny);
+            const m = _d3pod(2.6, 13, 0x22d3ee, 0x06384a, 8);
+            m.position.set(x,y,z);
+            d3_dynGroup.add(m);
+            if (typeof computeGuardianPSR === 'function') {
+                const psr = computeGuardianPSR(g);
+                const rr  = Math.max(psr.nm50 * (D3_W/27), 9);
+                const s = new THREE.Mesh(
+                    new THREE.SphereGeometry(rr, 18, 12),
+                    new THREE.MeshBasicMaterial({ color:0xfacc15,
+                        transparent:true, opacity:0.07 }));
+                s.position.set(x,y,z); s.scale.y = 0.5;   // lens shape
+                d3_dynGroup.add(s);
+            }
+        });
+    }
+    // ── Submarine threats ──
+    if (typeof threats !== 'undefined') {
+        threats.forEach(t=>{
+            if(!t.active) return;
+            if(t.type==='uuv'||t.isSubmarine){
+                const dep = t.dep || 20;
+                const sz  = t.subClassMeta ? t.subClassMeta.radius : 4;
+                const col = t.color ? new THREE.Color(t.color) : new THREE.Color(0xff4136);
+                const m = _d3pod(sz*0.7, sz*3, col, 0x300505, 10);
+                m.position.set(_d3x(t.nx), _d3y(dep), _d3z(t.ny));
+                d3_dynGroup.add(m);
+                // depth drop-line ถึงพื้น
+                const ln = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.3,0.3,Math.abs(_d3y(dep)-_d3y(D3_SEABED)),4),
+                    new THREE.MeshBasicMaterial({color:0xff4136,transparent:true,opacity:0.25}));
+                ln.position.set(_d3x(t.nx), (_d3y(dep)+_d3y(D3_SEABED))/2, _d3z(t.ny));
+                d3_dynGroup.add(ln);
+            }
+        });
+    }
+    // ── Surface vessels (PV + HSV) ──
+    const sv = [];
+    if(typeof patrolVessels!=='undefined') patrolVessels.forEach(v=>sv.push(v));
+    if(typeof surveyVessels!=='undefined') surveyVessels.forEach(v=>sv.push(v));
+    sv.forEach(v=>{
+        if(v.nx==null) return;
+        const m = new THREE.Mesh(new THREE.BoxGeometry(15,5,6),
+            new THREE.MeshPhongMaterial({color:0xf59e0b}));
+        m.position.set(_d3x(v.nx), 2.5, _d3z(v.ny));
+        d3_dynGroup.add(m);
+    });
+    // ── ASW Helicopter ──
+    if(typeof aswHelo!=='undefined' && aswHelo && aswHelo.state!=='STANDBY'){
+        const m = new THREE.Mesh(new THREE.BoxGeometry(11,5,5),
+            new THREE.MeshPhongMaterial({color:0x22d3ee,emissive:0x06384a}));
+        m.position.set(_d3x(aswHelo.nx), (aswHelo.altFt||300)*0.05+12, _d3z(aswHelo.ny));
+        d3_dynGroup.add(m);
+        // rotor disc
+        const r = new THREE.Mesh(new THREE.CylinderGeometry(11,11,0.4,16),
+            new THREE.MeshBasicMaterial({color:0x22d3ee,transparent:true,opacity:0.18}));
+        r.position.copy(m.position); r.position.y += 4;
+        d3_dynGroup.add(r);
+    }
+    // ── Sonobuoys ──
+    if(typeof sonobuoys!=='undefined'){
+        sonobuoys.forEach(b=>{
+            if(!b.active) return;
+            const m = new THREE.Mesh(new THREE.SphereGeometry(2,8,6),
+                new THREE.MeshBasicMaterial({color:0xfacc15}));
+            m.position.set(_d3x(b.nx), _d3y(12), _d3z(b.ny));
+            d3_dynGroup.add(m);
+        });
+    }
+    // HUD counts
+    const gE=document.getElementById('d3-guuv');
+    if(gE && typeof guardianUUVs!=='undefined') gE.textContent=guardianUUVs.length;
+    const tE=document.getElementById('d3-threats');
+    if(tE && typeof threats!=='undefined')
+        tE.textContent=threats.filter(t=>t.active).length;
+}
+
+function render3DLoop() {
+    if(!d3_active) return;
+    d3_raf = requestAnimationFrame(render3DLoop);
+    update3DEntities();
+    // sea surface wave animation
+    if(d3_surface){
+        const p = d3_surface.geometry.attributes.position;
+        const tm = performance.now()*0.001;
+        for(let i=0;i<p.count;i++){
+            const x=p.getX(i), z=p.getZ(i);
+            p.setY(i, Math.sin(x*0.03+tm*1.3)*3 + Math.cos(z*0.035+tm)*2.5);
+        }
+        p.needsUpdate = true;
+    }
+    // camera orbit
+    const t = d3_cam.target;
+    d3_camera.position.set(
+        t.x + d3_cam.radius*Math.sin(d3_cam.phi)*Math.cos(d3_cam.theta),
+        t.y + d3_cam.radius*Math.cos(d3_cam.phi),
+        t.z + d3_cam.radius*Math.sin(d3_cam.phi)*Math.sin(d3_cam.theta));
+    d3_camera.lookAt(t);
+    d3_renderer.render(d3_scene, d3_camera);
+}
+
+function toggle3DView() {
+    if (typeof THREE === 'undefined') {
+        if(typeof addLog==='function') addLog('[3D] ✗ Three.js ไม่โหลด — ตรวจสอบอินเทอร์เน็ต','#ef4444');
+        return;
+    }
+    d3_active = !d3_active;
+    const ov  = document.getElementById('dive3d');
+    const btn = document.getElementById('dive3dBtn');
+    if (d3_active) {
+        init3D();
+        d3_camera.aspect = window.innerWidth/window.innerHeight;
+        d3_camera.updateProjectionMatrix();
+        d3_renderer.setSize(window.innerWidth, window.innerHeight);
+        ov.classList.add('active');
+        if(btn) btn.style.background='rgba(34,211,238,.32)';
+        if(typeof addLog==='function') addLog('[3D] 🌐 เข้าสู่ 3D Underwater Dive View','#22d3ee');
+        if(typeof startOceanAmbience==='function') startOceanAmbience();
+        render3DLoop();
+    } else {
+        if(d3_raf) cancelAnimationFrame(d3_raf);
+        ov.classList.remove('active');
+        if(btn) btn.style.background='';
+        if(typeof addLog==='function') addLog('[3D] กลับสู่มุมมอง 2D','#475569');
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -10503,6 +10948,8 @@ function animate() {
     // TIER 3 — status bar + alert ribbon
     if (frame % 20 === 0 && typeof updateStatusBar   === 'function') updateStatusBar();
     if (frame % 20 === 0 && typeof updateAlertRibbon === 'function') updateAlertRibbon();
+    // v09 — ambient audio (UUV hum on/off ตามภัย)
+    if (frame % 30 === 0 && typeof updateAmbientAudio === 'function') updateAmbientAudio();
 
     frame++;
     if (!simPaused) requestAnimationFrame(animate);
@@ -11905,6 +12352,10 @@ function updateAlertRibbon() {
         txt.innerHTML = `THREAT INBOUND — <span class="ar-hi">${typeLabel}</span>` +
             ` · BRG <span class="ar-hi">${String(brg).padStart(3,'0')}°</span>` +
             ` · RNG <span class="ar-hi">${nearestD.toFixed(1)} NM</span>`;
+        // เล่นเสียงเตือนเมื่อ ribbon เพิ่งปรากฏ (threat ใหม่)
+        if (!ribbon.classList.contains('show') && typeof sfxWarningTone === 'function') {
+            sfxWarningTone();
+        }
         ribbon.classList.add('show');
         // สี: ใกล้ < 3nm = แดง, ไกลกว่า = amber
         ribbon.classList.toggle('amber', nearestD >= 3.0);
