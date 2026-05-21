@@ -9984,6 +9984,7 @@ function _updateAudioBtn() {
 let d3_active = false, d3_initDone = false;
 let d3_scene, d3_camera, d3_renderer, d3_dynGroup, d3_surface;
 let d3_fish = [], d3_seabedY = 0;
+let d3_godrays = [], d3_snow = null, d3_bubbles = null;
 let d3_raf = null;
 let d3_cam  = { theta: 0.9, phi: 0.95, radius: 470, target: null };
 let d3_drag = { on:false, x:0, y:0 };
@@ -10002,20 +10003,25 @@ function init3D() {
     d3_renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
     d3_renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     d3_renderer.setSize(window.innerWidth, window.innerHeight);
+    // cinematic tone mapping
+    d3_renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    d3_renderer.toneMappingExposure = 1.4;
+    d3_renderer.outputEncoding = THREE.sRGBEncoding;
 
     d3_scene = new THREE.Scene();
-    d3_scene.background = new THREE.Color(0x031018);
-    d3_scene.fog = new THREE.FogExp2(0x05161f, 0.0013);
+    d3_scene.background = new THREE.Color(0x04141d);
+    d3_scene.fog = new THREE.FogExp2(0x07283a, 0.0016);
 
     d3_camera = new THREE.PerspectiveCamera(
         56, window.innerWidth/window.innerHeight, 1, 5000);
 
-    d3_scene.add(new THREE.AmbientLight(0x5878a0, 1.0));
-    const sun = new THREE.DirectionalLight(0xcdeaff, 0.85);
-    sun.position.set(150, 350, 120);
+    // hemisphere — แสงฟ้าจากผิวน้ำ + มืดจากพื้น (gradient ธรรมชาติ)
+    d3_scene.add(new THREE.HemisphereLight(0x4d92b8, 0x081410, 1.3));
+    const sun = new THREE.DirectionalLight(0xdcf0ff, 1.05);
+    sun.position.set(120, 400, 90);
     d3_scene.add(sun);
-    const fillLight = new THREE.DirectionalLight(0x1a4a6a, 0.5);
-    fillLight.position.set(-120, -80, -100);
+    const fillLight = new THREE.DirectionalLight(0x1a5578, 0.45);
+    fillLight.position.set(-140, -100, -120);
     d3_scene.add(fillLight);
 
     // ── Sea surface (animated) ──
@@ -10064,6 +10070,10 @@ function init3D() {
     // ── UDC capsule + steel jacket + cables (static) ──
     buildUDC3D();
     buildCables3D();
+    // ── cinematic atmosphere: god rays + particles ──
+    buildGodRays();
+    buildMarineSnow();
+    buildBubbles();
 
     d3_dynGroup = new THREE.Group();
     d3_scene.add(d3_dynGroup);
@@ -10252,6 +10262,54 @@ function buildSeabedDecor() {
     }
 }
 
+// ── God rays — ลำแสงทะลุผิวน้ำ ──
+function buildGodRays() {
+    d3_godrays = [];
+    const rand=(a,b)=>a+Math.random()*(b-a);
+    for(let i=0;i<10;i++){
+        const len=rand(170,280), top=rand(16,34);
+        const cone=new THREE.Mesh(
+            new THREE.ConeGeometry(top, len, 7, 1, true),
+            new THREE.MeshBasicMaterial({ color:0xa8dcf0, transparent:true,
+                opacity:rand(0.035,0.075), blending:THREE.AdditiveBlending,
+                side:THREE.DoubleSide, depthWrite:false }));
+        cone.position.set(rand(-D3_W*0.52,D3_W*0.52), -len*0.40, rand(-D3_W*0.52,D3_W*0.52));
+        cone.rotation.z=rand(-0.16,0.16); cone.rotation.x=rand(-0.11,0.11);
+        d3_scene.add(cone);
+        d3_godrays.push({ mesh:cone, baseOp:cone.material.opacity, ph:rand(0,6.28) });
+    }
+}
+// ── Marine snow — ฝุ่นผงในน้ำลอยล่อง ──
+function buildMarineSnow() {
+    const N=780, geo=new THREE.BufferGeometry(), pos=new Float32Array(N*3);
+    for(let i=0;i<N;i++){
+        pos[i*3]  =(Math.random()-0.5)*D3_W*1.25;
+        pos[i*3+1]=Math.random()*_d3y(D3_SEABED);
+        pos[i*3+2]=(Math.random()-0.5)*D3_W*1.25;
+    }
+    geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+    d3_snow=new THREE.Points(geo, new THREE.PointsMaterial({
+        color:0xbcd0dc, size:1.5, transparent:true, opacity:0.45,
+        depthWrite:false, blending:THREE.AdditiveBlending }));
+    d3_scene.add(d3_snow);
+}
+// ── Bubbles — ฟองอากาศลอยขึ้น (เน้นรอบ UDC) ──
+function buildBubbles() {
+    const N=150, geo=new THREE.BufferGeometry(), pos=new Float32Array(N*3);
+    const ux=(typeof UDC!=='undefined')?_d3x(UDC.nx):0;
+    const uz=(typeof UDC!=='undefined')?_d3z(UDC.ny):0;
+    for(let i=0;i<N;i++){
+        const near=Math.random()<0.6;
+        pos[i*3]  = near ? ux+(Math.random()-0.5)*70 : (Math.random()-0.5)*D3_W;
+        pos[i*3+1]= d3_seabedY + Math.random()*Math.abs(d3_seabedY);
+        pos[i*3+2]= near ? uz+(Math.random()-0.5)*70 : (Math.random()-0.5)*D3_W;
+    }
+    geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+    d3_bubbles=new THREE.Points(geo, new THREE.PointsMaterial({
+        color:0xcfe8f5, size:2.4, transparent:true, opacity:0.55, depthWrite:false }));
+    d3_scene.add(d3_bubbles);
+}
+
 // ── เรือผิวน้ำแบบ composite (hull + superstructure + mast) ──
 function buildWarship3D(hullColor) {
     const g = new THREE.Group();
@@ -10438,6 +10496,33 @@ function render3DLoop() {
             if(c.name==='udc-marker' && c.material)
                 c.material.opacity = 0.5 + Math.sin(tm*3)*0.5;
         });
+    }
+    // god rays — shimmer
+    for(let i=0;i<d3_godrays.length;i++){
+        const gr=d3_godrays[i];
+        gr.mesh.material.opacity = gr.baseOp*(0.55+Math.sin(tm*0.5+gr.ph)*0.45);
+    }
+    // marine snow — drift ลงช้าๆ + แกว่ง
+    if(d3_snow){
+        const p=d3_snow.geometry.attributes.position;
+        for(let i=0;i<p.count;i++){
+            let y=p.getY(i)-0.16;
+            if(y<d3_seabedY) y=0;
+            p.setY(i,y);
+            p.setX(i, p.getX(i)+Math.sin(tm*0.3+i*0.7)*0.05);
+        }
+        p.needsUpdate=true;
+    }
+    // bubbles — ลอยขึ้น + แกว่ง
+    if(d3_bubbles){
+        const p=d3_bubbles.geometry.attributes.position;
+        for(let i=0;i<p.count;i++){
+            let y=p.getY(i)+(0.45+(i%5)*0.13);
+            if(y>0) y=d3_seabedY;
+            p.setY(i,y);
+            p.setX(i, p.getX(i)+Math.sin(tm*1.5+i)*0.11);
+        }
+        p.needsUpdate=true;
     }
     // camera orbit
     const t = d3_cam.target;
