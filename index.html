@@ -9991,7 +9991,7 @@ function _updateAudioBtn() {
 let d3_active = false, d3_initDone = false;
 let d3_scene, d3_camera, d3_renderer, d3_dynGroup, d3_surface;
 let d3_fish = [], d3_seabedY = 0;
-let d3_godrays = [], d3_snow = null, d3_bubbles = null;
+let d3_godrays = [], d3_snow = null;
 let d3_composer = null;   // bloom post-processing
 let d3_raf = null;
 let d3_cam  = { theta: 0.9, phi: 0.95, radius: 470, target: null };
@@ -10050,17 +10050,29 @@ function init3D() {
     therm.position.y = _d3y(20);
     d3_scene.add(therm);
 
-    // ── Seabed terrain ──
-    const bedGeo = new THREE.PlaneGeometry(D3_W*1.5, D3_W*1.5, 44, 44);
+    // ── Seabed — sand dunes + ripples + vertex colors (สมจริง) ──
+    const bedGeo = new THREE.PlaneGeometry(D3_W*1.5, D3_W*1.5, 100, 100);
     bedGeo.rotateX(-Math.PI/2);
     const bp = bedGeo.attributes.position;
+    const cSilt  = new THREE.Color(0x423f30);
+    const cSand  = new THREE.Color(0x6b6048);
+    const cLight = new THREE.Color(0x8a7d5c);
+    const bedCol = [];
     for (let i=0;i<bp.count;i++){
         const x=bp.getX(i), z=bp.getZ(i);
-        bp.setY(i, Math.sin(x*0.012)*9 + Math.cos(z*0.015)*8 + Math.sin((x+z)*0.007)*6);
+        const dune   = Math.sin(x*0.011)*9 + Math.cos(z*0.014)*8;
+        const med    = Math.sin((x+z)*0.03)*2.5;
+        const ripple = Math.sin(x*0.17 + z*0.05)*1.1;
+        bp.setY(i, dune + med + ripple);
+        const n = (Math.sin(x*0.05)*Math.cos(z*0.045)+1)/2;
+        const c = n<0.45 ? cSilt.clone().lerp(cSand,n/0.45)
+                         : cSand.clone().lerp(cLight,(n-0.45)/0.55);
+        bedCol.push(c.r,c.g,c.b);
     }
+    bedGeo.setAttribute('color', new THREE.Float32BufferAttribute(bedCol,3));
     bedGeo.computeVertexNormals();
     const bed = new THREE.Mesh(bedGeo, new THREE.MeshPhongMaterial({
-        color:0x4a4636, flatShading:true, shininess:4 }));   // sandy seabed
+        vertexColors:true, shininess:2 }));
     bed.position.y = _d3y(D3_SEABED);
     d3_scene.add(bed);
     d3_seabedY = _d3y(D3_SEABED);
@@ -10078,10 +10090,9 @@ function init3D() {
     // ── UDC capsule + steel jacket + cables (static) ──
     buildUDC3D();
     buildCables3D();
-    // ── cinematic atmosphere: god rays + particles ──
+    // ── cinematic atmosphere: god rays + marine snow ──
     buildGodRays();
     buildMarineSnow();
-    buildBubbles();
 
     d3_dynGroup = new THREE.Group();
     d3_scene.add(d3_dynGroup);
@@ -10237,7 +10248,8 @@ function buildCables3D() {
 function buildSeabedDecor() {
     const rand = (a,b)=> a + Math.random()*(b-a);
     const onBed = (x,z)=> d3_seabedY +
-        Math.sin(x*0.012)*9 + Math.cos(z*0.015)*8 + Math.sin((x+z)*0.007)*6;
+        Math.sin(x*0.011)*9 + Math.cos(z*0.014)*8 +
+        Math.sin((x+z)*0.03)*2.5 + Math.sin(x*0.17+z*0.05)*1.1;
     const coralCols = [0xd9788f, 0xe0935a, 0xb678d9, 0xd4b85a, 0x6ac4b0];
     // coral clusters
     for (let i=0;i<46;i++){
@@ -10268,10 +10280,10 @@ function buildSeabedDecor() {
         rk.scale.y=rand(0.5,0.9);
         d3_scene.add(rk);
     }
-    // small fish — composite realistic model
+    // small fish — composite realistic model (จำนวนน้อยลง)
     d3_fish = [];
     const fishCols=[0xd6dee6,0xe6c878,0x88c0e6,0xe6a878,0xbfe0c0,0xe89ac0];
-    for (let i=0;i<54;i++){
+    for (let i=0;i<22;i++){
         const fish=buildFish3D(fishCols[(Math.random()*fishCols.length)|0]);
         const sc=rand(0.34,0.66);
         fish.scale.set(sc,sc,sc);
@@ -10317,23 +10329,6 @@ function buildMarineSnow() {
         depthWrite:false, blending:THREE.AdditiveBlending }));
     d3_scene.add(d3_snow);
 }
-// ── Bubbles — ฟองอากาศลอยขึ้น (เน้นรอบ UDC) ──
-function buildBubbles() {
-    const N=150, geo=new THREE.BufferGeometry(), pos=new Float32Array(N*3);
-    const ux=(typeof UDC!=='undefined')?_d3x(UDC.nx):0;
-    const uz=(typeof UDC!=='undefined')?_d3z(UDC.ny):0;
-    for(let i=0;i<N;i++){
-        const near=Math.random()<0.6;
-        pos[i*3]  = near ? ux+(Math.random()-0.5)*70 : (Math.random()-0.5)*D3_W;
-        pos[i*3+1]= d3_seabedY + Math.random()*Math.abs(d3_seabedY);
-        pos[i*3+2]= near ? uz+(Math.random()-0.5)*70 : (Math.random()-0.5)*D3_W;
-    }
-    geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
-    d3_bubbles=new THREE.Points(geo, new THREE.PointsMaterial({
-        color:0xcfe8f5, size:2.4, transparent:true, opacity:0.55, depthWrite:false }));
-    d3_scene.add(d3_bubbles);
-}
-
 // ── ปลา composite (body + head + caudal/dorsal fin + eyes) ──
 function buildFish3D(color) {
     const g = new THREE.Group();
@@ -10376,6 +10371,28 @@ function _d3halo(radius, color) {
             opacity:0.6, blending:THREE.AdditiveBlending, depthWrite:false }));
     ring.rotation.x = Math.PI/2;   // วางแนวนอน
     return ring;
+}
+
+// ── Search Pattern path guide — เส้นทาง waypoint + จุด ──
+function _d3pathGuide(waypoints, depthM, color) {
+    if(!waypoints || waypoints.length<2) return null;
+    const g = new THREE.Group();
+    const pts = [];
+    waypoints.forEach(w=>{
+        if(w.nx==null||w.ny==null) return;
+        const v = new THREE.Vector3(_d3x(w.nx), _d3y(depthM), _d3z(w.ny));
+        pts.push(v);
+        const dot = new THREE.Mesh(new THREE.SphereGeometry(2.4,8,6),
+            new THREE.MeshBasicMaterial({ color:color, transparent:true, opacity:0.75 }));
+        dot.position.copy(v);
+        g.add(dot);
+    });
+    if(pts.length<2) return null;
+    pts.push(pts[0].clone());   // ปิด loop
+    const geo = new THREE.BufferGeometry().setFromPoints(pts);
+    g.add(new THREE.Line(geo, new THREE.LineBasicMaterial({
+        color:color, transparent:true, opacity:0.5 })));
+    return g;
 }
 
 // ── เรือผิวน้ำแบบ composite (hull + superstructure + mast) ──
@@ -10456,6 +10473,9 @@ function update3DEntities() {
             d3_dynGroup.add(craft);
             // halo ring เน้นวัตถุ (ฟ้า = friendly)
             const hl=_d3halo(15,0x2ee6ff); hl.position.set(x,y,z); d3_dynGroup.add(hl);
+            // search pattern path guide
+            const pg=_d3pathGuide(g.waypoints, dep, 0x2ee6ff);
+            if(pg) d3_dynGroup.add(pg);
             if (typeof computeGuardianPSR === 'function') {
                 const psr = computeGuardianPSR(g);
                 const rr  = Math.max(psr.nm50 * (D3_W/27), 9);
@@ -10509,6 +10529,9 @@ function update3DEntities() {
         d3_dynGroup.add(ship);
         // halo ring บนผิวน้ำ (เขียว=PV friendly, เหลือง=HSV)
         const hl=_d3halo(20,halo); hl.position.set(x,1,z); d3_dynGroup.add(hl);
+        // search pattern path guide (บนผิวน้ำ)
+        const pg=_d3pathGuide(v.waypoints, 0, halo);
+        if(pg) d3_dynGroup.add(pg);
     });
     // ── ASW Helicopter (composite: fuselage + tail + rotor) ──
     if(typeof aswHelo!=='undefined' && aswHelo && aswHelo.state!=='STANDBY'){
@@ -10590,17 +10613,6 @@ function render3DLoop() {
             if(y<d3_seabedY) y=0;
             p.setY(i,y);
             p.setX(i, p.getX(i)+Math.sin(tm*0.3+i*0.7)*0.05);
-        }
-        p.needsUpdate=true;
-    }
-    // bubbles — ลอยขึ้น + แกว่ง
-    if(d3_bubbles){
-        const p=d3_bubbles.geometry.attributes.position;
-        for(let i=0;i<p.count;i++){
-            let y=p.getY(i)+(0.45+(i%5)*0.13);
-            if(y>0) y=d3_seabedY;
-            p.setY(i,y);
-            p.setX(i, p.getX(i)+Math.sin(tm*1.5+i)*0.11);
         }
         p.needsUpdate=true;
     }
