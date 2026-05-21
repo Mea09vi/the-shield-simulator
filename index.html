@@ -9983,6 +9983,7 @@ function _updateAudioBtn() {
 // ═══════════════════════════════════════════════════════════════
 let d3_active = false, d3_initDone = false;
 let d3_scene, d3_camera, d3_renderer, d3_dynGroup, d3_surface;
+let d3_fish = [], d3_seabedY = 0;
 let d3_raf = null;
 let d3_cam  = { theta: 0.9, phi: 0.95, radius: 470, target: null };
 let d3_drag = { on:false, x:0, y:0 };
@@ -10045,17 +10046,24 @@ function init3D() {
     }
     bedGeo.computeVertexNormals();
     const bed = new THREE.Mesh(bedGeo, new THREE.MeshPhongMaterial({
-        color:0x16242f, flatShading:true }));
+        color:0x4a4636, flatShading:true, shininess:4 }));   // sandy seabed
     bed.position.y = _d3y(D3_SEABED);
     d3_scene.add(bed);
+    d3_seabedY = _d3y(D3_SEABED);
 
     // ── Depth reference grids ──
     [10,20,30,40].forEach(dep=>{
         const g = new THREE.GridHelper(D3_W, 8, 0x1a3a5c, 0x10222f);
         g.position.y = _d3y(dep);
-        g.material.opacity = 0.16; g.material.transparent = true;
+        g.material.opacity = 0.13; g.material.transparent = true;
         d3_scene.add(g);
     });
+
+    // ── Seabed decoration: coral, rocks, fish ──
+    buildSeabedDecor();
+    // ── UDC capsule + steel jacket + cables (static) ──
+    buildUDC3D();
+    buildCables3D();
 
     d3_dynGroup = new THREE.Group();
     d3_scene.add(d3_dynGroup);
@@ -10094,29 +10102,232 @@ function _d3pod(radius, length, color, emissive, segs) {
     return new THREE.Mesh(g, new THREE.MeshPhongMaterial({
         color:color, emissive:emissive||0x000000 }));
 }
+// helper — quick box / beam mesh
+function _d3box(w,h,d,color,emissive) {
+    return new THREE.Mesh(new THREE.BoxGeometry(w,h,d),
+        new THREE.MeshPhongMaterial({ color:color, emissive:emissive||0x000000 }));
+}
+
+// ── UDC: ทรงกระบอกใน steel jacket frame บนเสาเข็ม (ตามภาพอ้างอิง) ──
+function buildUDC3D() {
+    if (typeof UDC === 'undefined') return;
+    const grp = new THREE.Group();
+    const STEEL = 0x8a96a3, DARK = 0x3a444f;
+    // ── main cylinder hull (pressure vessel) ──
+    const hull = _d3pod(9, 38, 0xb8c2cc, 0x10171d, 20);
+    hull.position.y = 9;
+    grp.add(hull);
+    // end caps — domed
+    [-19, 19].forEach(ex=>{
+        const cap = new THREE.Mesh(new THREE.SphereGeometry(9, 16, 10),
+            new THREE.MeshPhongMaterial({ color:0x9aa6b2 }));
+        cap.position.set(ex, 9, 0); cap.scale.x = 0.4;
+        grp.add(cap);
+    });
+    // hull ribs (วงแหวนรอบ)
+    [-10,0,10].forEach(rx=>{
+        const rib = new THREE.Mesh(new THREE.TorusGeometry(9.3, 0.7, 6, 18),
+            new THREE.MeshPhongMaterial({ color:DARK }));
+        rib.rotation.y = Math.PI/2; rib.position.set(rx, 9, 0);
+        grp.add(rib);
+    });
+    // ── steel jacket truss frame ──
+    const FW = 46, FH = 24, FD = 22;   // frame outer dims
+    const beam = 1.4;
+    // top + bottom rectangle frames
+    [0, FH].forEach(yy=>{
+        const a=_d3box(FW,beam,beam,STEEL); a.position.set(0,yy, FD/2); grp.add(a);
+        const b=_d3box(FW,beam,beam,STEEL); b.position.set(0,yy,-FD/2); grp.add(b);
+        const c=_d3box(beam,beam,FD,STEEL); c.position.set( FW/2,yy,0); grp.add(c);
+        const d=_d3box(beam,beam,FD,STEEL); d.position.set(-FW/2,yy,0); grp.add(d);
+    });
+    // 4 corner posts
+    [[FW/2,FD/2],[FW/2,-FD/2],[-FW/2,FD/2],[-FW/2,-FD/2]].forEach(([px,pz])=>{
+        const post=_d3box(beam,FH,beam,STEEL); post.position.set(px,FH/2,pz); grp.add(post);
+    });
+    // X-bracing on long sides
+    [FD/2,-FD/2].forEach(pz=>{
+        [[-1,1],[1,1]].forEach(([s1])=>{
+            const br=_d3box(FW*0.62,beam*0.7,beam*0.7,DARK);
+            br.position.set(0,FH/2,pz);
+            br.rotation.z = s1*Math.atan2(FH,FW*0.7);
+            grp.add(br);
+        });
+    });
+    // ── 4 support piles ลงพื้นทะเล ──
+    const pileLen = 30;
+    [[FW/2-3,FD/2-3],[FW/2-3,-(FD/2-3)],[-(FW/2-3),FD/2-3],[-(FW/2-3),-(FD/2-3)]].forEach(([px,pz])=>{
+        const pile = new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,pileLen,8),
+            new THREE.MeshPhongMaterial({ color:0x6a7480 }));
+        pile.position.set(px,-pileLen/2,pz);
+        grp.add(pile);
+    });
+    // marker lights (มุมบน — กระพริบ)
+    [[FW/2,FD/2],[-FW/2,-FD/2]].forEach(([px,pz])=>{
+        const lt = new THREE.Mesh(new THREE.SphereGeometry(1.3,8,6),
+            new THREE.MeshBasicMaterial({ color:0x64ffda, transparent:true, opacity:1 }));
+        lt.position.set(px,FH+1.5,pz); lt.name='udc-marker';
+        grp.add(lt);
+    });
+    grp.position.set(_d3x(UDC.nx), d3_seabedY, _d3z(UDC.ny));
+    grp.name = 'udc3d';
+    d3_scene.add(grp);
+}
+
+// ── สายเคเบิล: โค้งจากขอบแผนที่ → พื้นทะเล → ขึ้นต่อ UDC ──
+function buildCables3D() {
+    if (typeof UDC === 'undefined' || typeof THREE.CatmullRomCurve3 === 'undefined') return;
+    const ux=_d3x(UDC.nx), uz=_d3z(UDC.ny);
+    const pts = [
+        new THREE.Vector3(_d3x(0.02), d3_seabedY+2,  _d3z(0.30)),   // landing
+        new THREE.Vector3(_d3x(0.22), d3_seabedY+3,  _d3z(0.34)),
+        new THREE.Vector3(_d3x(0.45), d3_seabedY+2,  _d3z(0.42)),
+        new THREE.Vector3(ux-30,      d3_seabedY+3,  uz-6),
+        new THREE.Vector3(ux,         d3_seabedY+14, uz),           // ต่อ UDC
+    ];
+    const curve = new THREE.CatmullRomCurve3(pts);
+    const tube  = new THREE.Mesh(
+        new THREE.TubeGeometry(curve, 60, 1.6, 8, false),
+        new THREE.MeshPhongMaterial({ color:0x2a3038 }));
+    d3_scene.add(tube);
+    // armor segment rings ตามสาย
+    for (let i=0.1;i<0.95;i+=0.12){
+        const p = curve.getPoint(i);
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(2.0,0.5,5,10),
+            new THREE.MeshPhongMaterial({ color:0x555c66 }));
+        ring.position.copy(p);
+        d3_scene.add(ring);
+    }
+}
+
+// ── พื้นทะเล: ปะการัง + หิน + ปลาเล็ก ──
+function buildSeabedDecor() {
+    const rand = (a,b)=> a + Math.random()*(b-a);
+    const onBed = (x,z)=> d3_seabedY +
+        Math.sin(x*0.012)*9 + Math.cos(z*0.015)*8 + Math.sin((x+z)*0.007)*6;
+    const coralCols = [0xd9788f, 0xe0935a, 0xb678d9, 0xd4b85a, 0x6ac4b0];
+    // coral clusters
+    for (let i=0;i<46;i++){
+        const x=rand(-D3_W*0.62,D3_W*0.62), z=rand(-D3_W*0.62,D3_W*0.62);
+        if (Math.abs(x-_d3x(UDC.nx))<55 && Math.abs(z-_d3z(UDC.ny))<45) continue;
+        const y=onBed(x,z), cl=coralCols[(Math.random()*coralCols.length)|0];
+        const cg=new THREE.Group();
+        const branches = 3+(Math.random()*4|0);
+        for (let b=0;b<branches;b++){
+            const h=rand(5,13);
+            const br=new THREE.Mesh(new THREE.ConeGeometry(rand(1.2,2.6),h,6),
+                new THREE.MeshPhongMaterial({color:cl,emissive:0x0a0608}));
+            br.position.set(rand(-3,3),h/2,rand(-3,3));
+            br.rotation.z=rand(-0.3,0.3);
+            cg.add(br);
+        }
+        cg.position.set(x,y,z);
+        d3_scene.add(cg);
+    }
+    // rocks
+    for (let i=0;i<34;i++){
+        const x=rand(-D3_W*0.66,D3_W*0.66), z=rand(-D3_W*0.66,D3_W*0.66);
+        const y=onBed(x,z), s=rand(3,9);
+        const rk=new THREE.Mesh(new THREE.IcosahedronGeometry(s,0),
+            new THREE.MeshPhongMaterial({color:0x39424c,flatShading:true}));
+        rk.position.set(x,y+s*0.4,z);
+        rk.rotation.set(rand(0,3),rand(0,3),rand(0,3));
+        rk.scale.y=rand(0.5,0.9);
+        d3_scene.add(rk);
+    }
+    // small fish (animated)
+    d3_fish = [];
+    const fishCols=[0xc8d4e0,0xe0c878,0x78b4e0,0xe09878];
+    for (let i=0;i<60;i++){
+        const body=new THREE.Mesh(new THREE.ConeGeometry(1.1,4.5,5),
+            new THREE.MeshPhongMaterial({color:fishCols[(Math.random()*fishCols.length)|0]}));
+        body.rotation.z=Math.PI/2;
+        const cx=rand(-D3_W*0.5,D3_W*0.5), cz=rand(-D3_W*0.5,D3_W*0.5);
+        const cy=rand(d3_seabedY+20, _d3y(8));
+        body.position.set(cx,cy,cz);
+        d3_scene.add(body);
+        d3_fish.push({ mesh:body, cx, cz, cy,
+            r:rand(14,42), spd:rand(0.3,0.9)*(Math.random()<0.5?-1:1),
+            ph:rand(0,6.28), bob:rand(2,6) });
+    }
+}
+
+// ── เรือผิวน้ำแบบ composite (hull + superstructure + mast) ──
+function buildWarship3D(hullColor) {
+    const g = new THREE.Group();
+    // hull — กล่องเรียวหัว
+    const hull = _d3box(20, 4.5, 7, hullColor||0x5a6470);
+    g.add(hull);
+    const bow = new THREE.Mesh(new THREE.ConeGeometry(3.5, 7, 4),
+        new THREE.MeshPhongMaterial({ color:hullColor||0x5a6470 }));
+    bow.rotation.z=-Math.PI/2; bow.rotation.y=Math.PI/4;
+    bow.scale.set(0.65,1,1); bow.position.set(13,0,0);
+    g.add(bow);
+    // superstructure
+    const s1=_d3box(8,4,5,0x8c95a0); s1.position.set(-1,4.2,0); g.add(s1);
+    const s2=_d3box(4.5,3,3.5,0x9aa3ae); s2.position.set(0,7.5,0); g.add(s2);
+    // mast
+    const mast=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.4,7,6),
+        new THREE.MeshPhongMaterial({color:0xb0b8c2}));
+    mast.position.set(0,11,0); g.add(mast);
+    // gun (หัวเรือ)
+    const gun=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.6,2.2,8),
+        new THREE.MeshPhongMaterial({color:0x6c7682}));
+    gun.position.set(7,3,0); g.add(gun);
+    return g;
+}
+
+// ── ยานใต้น้ำแบบ torpedo (body + nose cone + tail fins) ──
+function buildTorpedoCraft(radius, length, color, emissive, withSail) {
+    const g = new THREE.Group();
+    const body = _d3pod(radius, length*0.78, color, emissive, 12);
+    g.add(body);
+    // nose cone
+    const nose=new THREE.Mesh(new THREE.ConeGeometry(radius,length*0.22,12),
+        new THREE.MeshPhongMaterial({color:color,emissive:emissive||0x000000}));
+    nose.rotation.z=-Math.PI/2; nose.position.x=length*0.5;
+    g.add(nose);
+    // tail cone
+    const tail=new THREE.Mesh(new THREE.ConeGeometry(radius*0.7,length*0.18,10),
+        new THREE.MeshPhongMaterial({color:color,emissive:emissive||0x000000}));
+    tail.rotation.z=Math.PI/2; tail.position.x=-length*0.46;
+    g.add(tail);
+    // tail fins (X)
+    for (let a=0;a<4;a++){
+        const fin=_d3box(radius*1.0, 0.4, radius*1.8, color, emissive);
+        fin.position.x=-length*0.36;
+        fin.rotation.x=a*Math.PI/2;
+        g.add(fin);
+    }
+    // conning tower / sail (เรือดำน้ำ)
+    if (withSail){
+        const sail=_d3box(length*0.18, radius*1.3, radius*0.7, color, emissive);
+        sail.position.set(length*0.05, radius*1.0, 0);
+        g.add(sail);
+    }
+    return g;
+}
 
 // rebuild dynamic entities ทุกเฟรม
 function update3DEntities() {
     if (!d3_dynGroup) return;
     while(d3_dynGroup.children.length){
         const c = d3_dynGroup.children.pop();
-        if(c.geometry) c.geometry.dispose();
-        if(c.material) c.material.dispose();
+        c.traverse(o=>{
+            if(o.geometry) o.geometry.dispose();
+            if(o.material) o.material.dispose();
+        });
     }
-    // ── UDC capsule บนพื้นทะเล ──
-    if (typeof UDC !== 'undefined') {
-        const udc = _d3pod(8, 30, 0x64ffda, 0x0c4035, 14);
-        udc.position.set(_d3x(UDC.nx), _d3y(D3_SEABED-7), _d3z(UDC.ny));
-        d3_dynGroup.add(udc);
-    }
+    // (UDC + cables เป็น static — สร้างใน init3D แล้ว)
     // ── Guardian UUVs + PSR volume ──
     if (typeof guardianUUVs !== 'undefined') {
         guardianUUVs.forEach(g=>{
             const dep = g.depthBase || 30;
             const x=_d3x(g.nx), y=_d3y(dep), z=_d3z(g.ny);
-            const m = _d3pod(2.6, 13, 0x22d3ee, 0x06384a, 8);
-            m.position.set(x,y,z);
-            d3_dynGroup.add(m);
+            const craft = buildTorpedoCraft(2.8, 15, 0x22d3ee, 0x06384a, false);
+            craft.position.set(x,y,z);
+            if (g.heading!=null) craft.rotation.y = -g.heading;
+            d3_dynGroup.add(craft);
             if (typeof computeGuardianPSR === 'function') {
                 const psr = computeGuardianPSR(g);
                 const rr  = Math.max(psr.nm50 * (D3_W/27), 9);
@@ -10137,40 +10348,46 @@ function update3DEntities() {
                 const dep = t.dep || 20;
                 const sz  = t.subClassMeta ? t.subClassMeta.radius : 4;
                 const col = t.color ? new THREE.Color(t.color) : new THREE.Color(0xff4136);
-                const m = _d3pod(sz*0.7, sz*3, col, 0x300505, 10);
-                m.position.set(_d3x(t.nx), _d3y(dep), _d3z(t.ny));
-                d3_dynGroup.add(m);
+                const isSub = (t.subClass==='MIDGET'||t.subClass==='SSK');
+                const x=_d3x(t.nx), y=_d3y(dep), z=_d3z(t.ny);
+                const craft = buildTorpedoCraft(sz*0.8, sz*3.4, col, 0x300505, isSub);
+                craft.position.set(x,y,z);
+                craft.rotation.y = Math.atan2(-(_d3z(UDC.ny)-z), _d3x(UDC.nx)-x);
+                d3_dynGroup.add(craft);
                 // depth drop-line ถึงพื้น
+                const h = Math.abs(y - d3_seabedY);
                 const ln = new THREE.Mesh(
-                    new THREE.CylinderGeometry(0.3,0.3,Math.abs(_d3y(dep)-_d3y(D3_SEABED)),4),
-                    new THREE.MeshBasicMaterial({color:0xff4136,transparent:true,opacity:0.25}));
-                ln.position.set(_d3x(t.nx), (_d3y(dep)+_d3y(D3_SEABED))/2, _d3z(t.ny));
+                    new THREE.CylinderGeometry(0.3,0.3,h,4),
+                    new THREE.MeshBasicMaterial({color:0xff4136,transparent:true,opacity:0.22}));
+                ln.position.set(x, (y+d3_seabedY)/2, z);
                 d3_dynGroup.add(ln);
             }
         });
     }
-    // ── Surface vessels (PV + HSV) ──
+    // ── Surface vessels (PV + HSV) — composite warship ──
     const sv = [];
-    if(typeof patrolVessels!=='undefined') patrolVessels.forEach(v=>sv.push(v));
-    if(typeof surveyVessels!=='undefined') surveyVessels.forEach(v=>sv.push(v));
-    sv.forEach(v=>{
+    if(typeof patrolVessels!=='undefined') patrolVessels.forEach(v=>sv.push({v,col:0x5a6470}));
+    if(typeof surveyVessels!=='undefined') surveyVessels.forEach(v=>sv.push({v,col:0x3f6b7a}));
+    sv.forEach(({v,col})=>{
         if(v.nx==null) return;
-        const m = new THREE.Mesh(new THREE.BoxGeometry(15,5,6),
-            new THREE.MeshPhongMaterial({color:0xf59e0b}));
-        m.position.set(_d3x(v.nx), 2.5, _d3z(v.ny));
-        d3_dynGroup.add(m);
+        const ship = buildWarship3D(col);
+        ship.position.set(_d3x(v.nx), 1.5, _d3z(v.ny));
+        if(v.heading!=null) ship.rotation.y = -v.heading;
+        ship.scale.set(0.85,0.85,0.85);
+        d3_dynGroup.add(ship);
     });
-    // ── ASW Helicopter ──
+    // ── ASW Helicopter (composite: fuselage + tail + rotor) ──
     if(typeof aswHelo!=='undefined' && aswHelo && aswHelo.state!=='STANDBY'){
-        const m = new THREE.Mesh(new THREE.BoxGeometry(11,5,5),
-            new THREE.MeshPhongMaterial({color:0x22d3ee,emissive:0x06384a}));
-        m.position.set(_d3x(aswHelo.nx), (aswHelo.altFt||300)*0.05+12, _d3z(aswHelo.ny));
-        d3_dynGroup.add(m);
-        // rotor disc
-        const r = new THREE.Mesh(new THREE.CylinderGeometry(11,11,0.4,16),
-            new THREE.MeshBasicMaterial({color:0x22d3ee,transparent:true,opacity:0.18}));
-        r.position.copy(m.position); r.position.y += 4;
-        d3_dynGroup.add(r);
+        const hg = new THREE.Group();
+        const fus = _d3box(12,5,5,0x2a4a5c,0x06384a); hg.add(fus);
+        const tail= _d3box(12,2,2,0x2a4a5c); tail.position.set(-11,1.2,0); hg.add(tail);
+        const tf  = _d3box(1.6,4.5,1.6,0x2a4a5c); tf.position.set(-16,3,0); hg.add(tf);
+        const rotor = new THREE.Mesh(new THREE.CylinderGeometry(14,14,0.4,18),
+            new THREE.MeshBasicMaterial({color:0x22d3ee,transparent:true,opacity:0.2}));
+        rotor.position.y=4.6; hg.add(rotor);
+        hg.position.set(_d3x(aswHelo.nx), (aswHelo.altFt||300)*0.05+14, _d3z(aswHelo.ny));
+        if(aswHelo.heading!=null) hg.rotation.y = -aswHelo.heading;
+        d3_dynGroup.add(hg);
     }
     // ── Sonobuoys ──
     if(typeof sonobuoys!=='undefined'){
@@ -10194,15 +10411,33 @@ function render3DLoop() {
     if(!d3_active) return;
     d3_raf = requestAnimationFrame(render3DLoop);
     update3DEntities();
+    const tm = performance.now()*0.001;
     // sea surface wave animation
     if(d3_surface){
         const p = d3_surface.geometry.attributes.position;
-        const tm = performance.now()*0.001;
         for(let i=0;i<p.count;i++){
             const x=p.getX(i), z=p.getZ(i);
             p.setY(i, Math.sin(x*0.03+tm*1.3)*3 + Math.cos(z*0.035+tm)*2.5);
         }
         p.needsUpdate = true;
+    }
+    // fish swim animation — วนเป็นวง + bob ขึ้นลง
+    for(let i=0;i<d3_fish.length;i++){
+        const f = d3_fish[i];
+        const a = tm*f.spd + f.ph;
+        const nx = f.cx + Math.cos(a)*f.r;
+        const nz = f.cz + Math.sin(a)*f.r;
+        f.mesh.position.set(nx, f.cy + Math.sin(tm*0.6+f.ph)*f.bob, nz);
+        // หันหัวตามทิศว่าย
+        f.mesh.rotation.y = -a - Math.PI/2 * Math.sign(f.spd);
+    }
+    // UDC marker light กระพริบ
+    if(d3_scene){
+        const udc = d3_scene.getObjectByName('udc3d');
+        if(udc) udc.children.forEach(c=>{
+            if(c.name==='udc-marker' && c.material)
+                c.material.opacity = 0.5 + Math.sin(tm*3)*0.5;
+        });
     }
     // camera orbit
     const t = d3_cam.target;
