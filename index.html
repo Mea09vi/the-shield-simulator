@@ -10245,19 +10245,19 @@ function buildSeabedDecor() {
         rk.scale.y=rand(0.5,0.9);
         d3_scene.add(rk);
     }
-    // small fish (animated)
+    // small fish — composite realistic model
     d3_fish = [];
-    const fishCols=[0xc8d4e0,0xe0c878,0x78b4e0,0xe09878];
-    for (let i=0;i<60;i++){
-        const body=new THREE.Mesh(new THREE.ConeGeometry(1.1,4.5,5),
-            new THREE.MeshPhongMaterial({color:fishCols[(Math.random()*fishCols.length)|0]}));
-        body.rotation.z=Math.PI/2;
+    const fishCols=[0xd6dee6,0xe6c878,0x88c0e6,0xe6a878,0xbfe0c0,0xe89ac0];
+    for (let i=0;i<54;i++){
+        const fish=buildFish3D(fishCols[(Math.random()*fishCols.length)|0]);
+        const sc=rand(0.34,0.66);
+        fish.scale.set(sc,sc,sc);
         const cx=rand(-D3_W*0.5,D3_W*0.5), cz=rand(-D3_W*0.5,D3_W*0.5);
         const cy=rand(d3_seabedY+20, _d3y(8));
-        body.position.set(cx,cy,cz);
-        d3_scene.add(body);
-        d3_fish.push({ mesh:body, cx, cz, cy,
-            r:rand(14,42), spd:rand(0.3,0.9)*(Math.random()<0.5?-1:1),
+        fish.position.set(cx,cy,cz);
+        d3_scene.add(fish);
+        d3_fish.push({ mesh:fish, tail:fish.userData.tail, cx, cz, cy,
+            r:rand(14,44), spd:rand(0.3,0.8)*(Math.random()<0.5?-1:1),
             ph:rand(0,6.28), bob:rand(2,6) });
     }
 }
@@ -10308,6 +10308,50 @@ function buildBubbles() {
     d3_bubbles=new THREE.Points(geo, new THREE.PointsMaterial({
         color:0xcfe8f5, size:2.4, transparent:true, opacity:0.55, depthWrite:false }));
     d3_scene.add(d3_bubbles);
+}
+
+// ── ปลา composite (body + head + caudal/dorsal fin + eyes) ──
+function buildFish3D(color) {
+    const g = new THREE.Group();
+    const mat = new THREE.MeshPhongMaterial({ color:color, shininess:55,
+        emissive:new THREE.Color(color).multiplyScalar(0.10) });
+    // body — ellipsoid แบน
+    const body = new THREE.Mesh(new THREE.SphereGeometry(2.2,14,12), mat);
+    body.scale.set(2.0,0.95,0.6); g.add(body);
+    // head — cone เรียวหน้า
+    const head = new THREE.Mesh(new THREE.ConeGeometry(1.5,2.6,12), mat);
+    head.rotation.z=-Math.PI/2; head.position.x=4.2; head.scale.set(1,1,0.6);
+    g.add(head);
+    // caudal fin (หาง) — พัดแนวตั้ง
+    const tail = new THREE.Mesh(new THREE.ConeGeometry(2.3,3.4,4), mat);
+    tail.rotation.z=Math.PI/2; tail.position.x=-5.4; tail.scale.set(1,1,0.12);
+    g.add(tail);
+    // dorsal fin (ครีบบน)
+    const dorsal = new THREE.Mesh(new THREE.ConeGeometry(1.1,2.1,3), mat);
+    dorsal.position.set(-0.6,2.0,0); dorsal.scale.set(1.7,1,0.13);
+    g.add(dorsal);
+    // pectoral fin (ครีบข้าง)
+    const pec = new THREE.Mesh(new THREE.ConeGeometry(0.9,1.8,3), mat);
+    pec.rotation.x=Math.PI/2; pec.position.set(2.0,-0.6,1.4); pec.scale.set(1,1,0.2);
+    g.add(pec);
+    // eyes
+    [0.95,-0.95].forEach(ez=>{
+        const eye=new THREE.Mesh(new THREE.SphereGeometry(0.42,6,6),
+            new THREE.MeshBasicMaterial({color:0x0a0a0a}));
+        eye.position.set(4.0,0.55,ez); g.add(eye);
+    });
+    g.userData.tail = tail;
+    return g;
+}
+
+// ── Halo ring — เน้นวัตถุยุทธวิธีให้เด่น (TorusGeometry เรืองแสง) ──
+function _d3halo(radius, color) {
+    const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(radius, radius*0.055, 6, 30),
+        new THREE.MeshBasicMaterial({ color:color, transparent:true,
+            opacity:0.6, blending:THREE.AdditiveBlending, depthWrite:false }));
+    ring.rotation.x = Math.PI/2;   // วางแนวนอน
+    return ring;
 }
 
 // ── เรือผิวน้ำแบบ composite (hull + superstructure + mast) ──
@@ -10382,10 +10426,12 @@ function update3DEntities() {
         guardianUUVs.forEach(g=>{
             const dep = g.depthBase || 30;
             const x=_d3x(g.nx), y=_d3y(dep), z=_d3z(g.ny);
-            const craft = buildTorpedoCraft(2.8, 15, 0x22d3ee, 0x06384a, false);
+            const craft = buildTorpedoCraft(2.8, 15, 0x2ee6ff, 0x0c6a82, false);
             craft.position.set(x,y,z);
             if (g.heading!=null) craft.rotation.y = -g.heading;
             d3_dynGroup.add(craft);
+            // halo ring เน้นวัตถุ (ฟ้า = friendly)
+            const hl=_d3halo(15,0x2ee6ff); hl.position.set(x,y,z); d3_dynGroup.add(hl);
             if (typeof computeGuardianPSR === 'function') {
                 const psr = computeGuardianPSR(g);
                 const rr  = Math.max(psr.nm50 * (D3_W/27), 9);
@@ -10408,10 +10454,13 @@ function update3DEntities() {
                 const col = t.color ? new THREE.Color(t.color) : new THREE.Color(0xff4136);
                 const isSub = (t.subClass==='MIDGET'||t.subClass==='SSK');
                 const x=_d3x(t.nx), y=_d3y(dep), z=_d3z(t.ny);
-                const craft = buildTorpedoCraft(sz*0.8, sz*3.4, col, 0x300505, isSub);
+                const craft = buildTorpedoCraft(sz*0.8, sz*3.4, col, 0x600808, isSub);
                 craft.position.set(x,y,z);
                 craft.rotation.y = Math.atan2(-(_d3z(UDC.ny)-z), _d3x(UDC.nx)-x);
                 d3_dynGroup.add(craft);
+                // halo ring เน้นวัตถุ (แดง = hostile)
+                const hl=_d3halo(Math.max(sz*3.2,13),0xff3030);
+                hl.position.set(x,y,z); d3_dynGroup.add(hl);
                 // depth drop-line ถึงพื้น
                 const h = Math.abs(y - d3_seabedY);
                 const ln = new THREE.Mesh(
@@ -10422,17 +10471,20 @@ function update3DEntities() {
             }
         });
     }
-    // ── Surface vessels (PV + HSV) — composite warship ──
+    // ── Surface vessels (PV + HSV) — composite warship + halo ──
     const sv = [];
-    if(typeof patrolVessels!=='undefined') patrolVessels.forEach(v=>sv.push({v,col:0x5a6470}));
-    if(typeof surveyVessels!=='undefined') surveyVessels.forEach(v=>sv.push({v,col:0x3f6b7a}));
-    sv.forEach(({v,col})=>{
+    if(typeof patrolVessels!=='undefined') patrolVessels.forEach(v=>sv.push({v,col:0x6b7888,halo:0x3ddb8f}));
+    if(typeof surveyVessels!=='undefined') surveyVessels.forEach(v=>sv.push({v,col:0x5a8294,halo:0xfbbf24}));
+    sv.forEach(({v,col,halo})=>{
         if(v.nx==null) return;
         const ship = buildWarship3D(col);
-        ship.position.set(_d3x(v.nx), 1.5, _d3z(v.ny));
+        const x=_d3x(v.nx), z=_d3z(v.ny);
+        ship.position.set(x, 1.5, z);
         if(v.heading!=null) ship.rotation.y = -v.heading;
         ship.scale.set(0.85,0.85,0.85);
         d3_dynGroup.add(ship);
+        // halo ring บนผิวน้ำ (เขียว=PV friendly, เหลือง=HSV)
+        const hl=_d3halo(20,halo); hl.position.set(x,1,z); d3_dynGroup.add(hl);
     });
     // ── ASW Helicopter (composite: fuselage + tail + rotor) ──
     if(typeof aswHelo!=='undefined' && aswHelo && aswHelo.state!=='STANDBY'){
@@ -10443,9 +10495,12 @@ function update3DEntities() {
         const rotor = new THREE.Mesh(new THREE.CylinderGeometry(14,14,0.4,18),
             new THREE.MeshBasicMaterial({color:0x22d3ee,transparent:true,opacity:0.2}));
         rotor.position.y=4.6; hg.add(rotor);
-        hg.position.set(_d3x(aswHelo.nx), (aswHelo.altFt||300)*0.05+14, _d3z(aswHelo.ny));
+        const hx=_d3x(aswHelo.nx), hy=(aswHelo.altFt||300)*0.05+14, hz=_d3z(aswHelo.ny);
+        hg.position.set(hx, hy, hz);
         if(aswHelo.heading!=null) hg.rotation.y = -aswHelo.heading;
         d3_dynGroup.add(hg);
+        // halo ring (ฟ้า = friendly air)
+        const hl=_d3halo(17,0x2ee6ff); hl.position.set(hx,hy,hz); d3_dynGroup.add(hl);
     }
     // ── Sonobuoys ──
     if(typeof sonobuoys!=='undefined'){
@@ -10479,15 +10534,16 @@ function render3DLoop() {
         }
         p.needsUpdate = true;
     }
-    // fish swim animation — วนเป็นวง + bob ขึ้นลง
+    // fish swim animation — วนเป็นวง + bob + หางสะบัด
     for(let i=0;i<d3_fish.length;i++){
         const f = d3_fish[i];
         const a = tm*f.spd + f.ph;
         const nx = f.cx + Math.cos(a)*f.r;
         const nz = f.cz + Math.sin(a)*f.r;
         f.mesh.position.set(nx, f.cy + Math.sin(tm*0.6+f.ph)*f.bob, nz);
-        // หันหัวตามทิศว่าย
         f.mesh.rotation.y = -a - Math.PI/2 * Math.sign(f.spd);
+        // หางสะบัดซ้ายขวา (swimming motion)
+        if(f.tail) f.tail.rotation.y = Math.sin(tm*8+f.ph)*0.45;
     }
     // UDC marker light กระพริบ
     if(d3_scene){
