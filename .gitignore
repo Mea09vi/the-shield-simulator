@@ -1,0 +1,29 @@
+# --- Local caches & generated data ---
+_dem_cache/
+_bathy/
+_land_elev_compact.json
+_v10_inject.txt
+_inject_v10.py
+
+# --- Backups / old versions ---
+_เวอร์ชันเก่า/
+*Copy*.html
+*.bak
+*.before-embed.bak
+
+# --- Appendix / large binaries we don't want in git ---
+*.docx
+ภาคผนวก_Viewer.html
+ภาคผนวก_Viewer.html.before-embed.bak
+
+# --- Misc ---
+searches-export-search-results-*.json
+generate_appendix.py
+fetch_land_elevation.py
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
