@@ -4,6 +4,10 @@ _bathy/
 _land_elev_compact.json
 _v10_inject.txt
 _inject_v10.py
+tools/_woa_cache/
+
+# --- Local dev / preview config ---
+.claude/
 
 # --- Backups / old versions ---
 _เวอร์ชันเก่า/
