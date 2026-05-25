@@ -9823,6 +9823,581 @@ function drawSurveyVessels() {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  HSV-Ext — PDF-derived capabilities (HTMS Suriya 2026)
+//  Multibeam swath (5×depth) | FLS cone 60°×200m | ADCP field
+//  SVP/XBT markers | Heading/COG | Survey-line planner | Dashboard
+// ═══════════════════════════════════════════════════════════════
+const HsvExt = {
+    layers: {
+        swath:    true,   // A1 Multibeam swath trail (5× depth)
+        fls:      true,   // A2 Forward-looking sonar cone
+        adcp:     true,   // A3 ADCP current vector field
+        casts:    true,   // B1 SVP + XBT cast markers
+        hdgcog:   true,   // B3 Heading vs COG indicator
+        dashboard:true,   // C2 Survey dashboard sidebar
+    },
+    tracks: new Map(),       // vessel.label → [{nx,ny,depth,frame}]
+    casts:  [],              // SVP/XBT cast records {type, lat, lng, time, profile, label}
+    castMarkers: L.layerGroup(),
+    castVisible: false,
+    plannerMode: false,
+    plannerCorners: [],
+    plannerGroup: L.layerGroup(),
+    plannerVisible: false,
+    plannerSpacing: 200,     // m between lines (set from swath later)
+    nextXbtFrame: 600,
+    TRACK_MAX: 800,          // keep ~800 frames = ~13s history
+    SURVEY_SPEED_KN: 12,     // HTMS Suriya cruise (PDF)
+    FLS_RANGE_M: 200,        // PDF: DANIAMANT FLS 3D
+    FLS_HORIZ_DEG: 60,       // PDF
+    SWATH_FACTOR: 5.0,       // EM 2040 MKII: swath = 5× depth
+    DGPS_ACC_M: 0.5,         // SAAB R5 DGPS
+    palette: {
+        swath:  'rgba(56,189,248,0.16)',
+        swathE: 'rgba(56,189,248,0.55)',
+        fls:    'rgba(250,204,21,0.18)',
+        flsE:   'rgba(250,204,21,0.65)',
+        flsHot: 'rgba(239,68,68,0.55)',
+        adcp:   'rgba(34,211,238,0.75)',
+        hdg:    'rgba(34,197,94,0.85)',  // gyro heading
+        cog:    'rgba(56,189,248,0.85)', // course over ground
+        dgps:   'rgba(167,243,208,0.35)',
+    },
+};
+
+// ── synthetic tidal-current field (Gulf of Thailand-like) ──
+// Returns {u, v} in m/s for a given lat,lng, depth_m, frame
+function _hsvCurrent(lat, lng, depth_m, frame) {
+    const tideHr = (frame / 60 / 60) % 12.4;      // M2 ~12.42h (compressed)
+    const phase  = tideHr / 12.4 * Math.PI * 2;
+    // Spatial wave: rotating semi-diurnal pattern
+    const lx = (lng - 100.6) * 8;
+    const ly = (lat - 12.4) * 8;
+    const baseU = 0.55 * Math.sin(phase + lx);            // m/s
+    const baseV = 0.40 * Math.cos(phase + ly*0.7);
+    // Depth attenuation: surface fastest, weak at bottom
+    const att = Math.max(0.2, 1 - depth_m/60);
+    // Eddy perturbation (small)
+    const eddy = 0.08 * Math.sin(lx*3 + phase*2) * Math.cos(ly*3);
+    return { u: (baseU + eddy) * att, v: baseV * att };
+}
+
+// Push current position into track buffer + sample depth
+function _hsvUpdateTracks() {
+    surveyVessels.forEach(v => {
+        if (!HsvExt.tracks.has(v.label)) HsvExt.tracks.set(v.label, []);
+        const arr = HsvExt.tracks.get(v.label);
+        // Throttle: sample every 4 frames
+        if (arr.length === 0 || (frame - (arr[arr.length-1].frame||0)) >= 4) {
+            const depth = Math.max(5, Math.abs(sampleBathyDepth(v.nx, v.ny)));
+            arr.push({ nx:v.nx, ny:v.ny, depth, frame });
+            while (arr.length > HsvExt.TRACK_MAX) arr.shift();
+        }
+    });
+    // Clean tracks of deleted vessels
+    for (const lbl of HsvExt.tracks.keys()) {
+        if (!surveyVessels.find(v => v.label === lbl)) HsvExt.tracks.delete(lbl);
+    }
+}
+
+// Spawn synthetic XBT casts periodically when there are survey vessels
+function _hsvAutoXbt() {
+    if (!surveyVessels.length) return;
+    if (frame < HsvExt.nextXbtFrame) return;
+    HsvExt.nextXbtFrame = frame + 60 * 45;   // every 45 sec sim time
+    const v = surveyVessels[Math.floor(Math.random()*surveyVessels.length)];
+    if (!v) return;
+    const lat = LAT_TOP - v.ny*(LAT_TOP-LAT_BOT);
+    const lng = LNG_LEFT + v.nx*(LNG_RIGHT-LNG_LEFT);
+    // Synthetic T(z): warm surface mixed layer + thermocline
+    const sst = 28 + Math.random()*1.5;
+    const thermo = 12 + Math.random()*10;
+    const profile = [];
+    for (let z=0; z<=50; z+=2) {
+        const T = (z < thermo)
+            ? sst - z*0.02
+            : sst - (thermo*0.02) - (z-thermo)*0.35;
+        profile.push({ z, T: +T.toFixed(2) });
+    }
+    HsvExt.casts.push({
+        type:'XBT', lat, lng, time: Date.now(), label:`XBT#${HsvExt.casts.length+1}`,
+        sst:+sst.toFixed(2), thermo:+thermo.toFixed(1), profile,
+    });
+    _hsvRefreshCastMarkers();
+    if (typeof addLog === 'function')
+        addLog(`[HSV-Ext] 🌡️ XBT drop by ${v.label} — SST ${sst.toFixed(1)}°C · thermo ${thermo.toFixed(0)}m`, '#fbbf24');
+}
+
+// Capture SVP from completed CTD casts on survey vessels
+function _hsvCaptureCtdAsSvp() {
+    surveyVessels.forEach(v => {
+        if (!v.ctdCast || !v.ctdCast.completed) return;
+        if (v._svpCaptured === v.lastSVPCast) return;
+        v._svpCaptured = v.lastSVPCast;
+        const lat = LAT_TOP - v.ny*(LAT_TOP-LAT_BOT);
+        const lng = LNG_LEFT + v.nx*(LNG_RIGHT-LNG_LEFT);
+        const cs = parseFloat(v.ctdCast.cSurface), cd = parseFloat(v.ctdCast.cDeep);
+        const profile = [];
+        for (let z=0; z<=50; z+=5) {
+            const c = cs + (cd - cs)*(z/50);
+            profile.push({ z, c: +c.toFixed(2) });
+        }
+        HsvExt.casts.push({
+            type:'SVP', lat, lng, time: Date.now(), label:`SVP#${HsvExt.casts.length+1}`,
+            cSurface: cs, cDeep: cd,
+            thermoclineDepth: v.ctdCast.thermoclineDepth,
+            surfaceT: v.ctdCast.surfaceT, deepT: v.ctdCast.deepT, salinity: v.ctdCast.salinity,
+            profile,
+        });
+        _hsvRefreshCastMarkers();
+    });
+}
+
+function _hsvRefreshCastMarkers() {
+    HsvExt.castMarkers.clearLayers();
+    HsvExt.casts.forEach(c => {
+        const icon = L.divIcon({
+            className:'hsv-cast-icon',
+            html: c.type === 'SVP'
+                ? `<div style="background:#0ea5e9;color:#fff;border:1px solid #67e8f9;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font:bold 11px 'Share Tech Mono';box-shadow:0 0 6px rgba(56,189,248,.7)">S</div>`
+                : `<div style="background:#f59e0b;color:#fff;border:1px solid #fef3c7;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font:bold 11px 'Share Tech Mono';box-shadow:0 0 6px rgba(245,158,11,.7)">T</div>`,
+            iconSize:[22,22], iconAnchor:[11,11],
+        });
+        const m = L.marker([c.lat, c.lng], { icon });
+        m.bindPopup(_hsvCastPopupHtml(c), { maxWidth: 280 });
+        HsvExt.castMarkers.addLayer(m);
+    });
+}
+
+function _hsvCastPopupHtml(c) {
+    const W=220, H=130, PAD=22;
+    const isSvp = c.type === 'SVP';
+    const ys = c.profile.map(p => p.z);
+    const xs = c.profile.map(p => isSvp ? p.c : p.T);
+    const xMin = Math.min(...xs), xMax = Math.max(...xs);
+    const yMin = Math.min(...ys), yMax = Math.max(...ys);
+    const sx = (x) => PAD + (x - xMin)/(xMax - xMin || 1) * (W - PAD - 8);
+    const sy = (y) => 8 + (y - yMin)/(yMax - yMin || 1) * (H - PAD);
+    const pts = c.profile.map(p => `${sx(isSvp?p.c:p.T).toFixed(1)},${sy(p.z).toFixed(1)}`).join(' ');
+    const stroke = isSvp ? '#0ea5e9' : '#f59e0b';
+    const unit = isSvp ? 'm/s' : '°C';
+    const extra = isSvp
+        ? `<div>c<sub>0</sub>=${c.cSurface}·c<sub>z</sub>=${c.cDeep} m/s · thermo ${c.thermoclineDepth}m</div>
+           <div>T ${c.surfaceT}/${c.deepT}°C · S ${c.salinity} psu</div>`
+        : `<div>SST ${c.sst}°C · thermocline ~${c.thermo}m</div>`;
+    return `
+      <div style="font:11px 'Share Tech Mono';color:#0f172a;min-width:230px">
+        <div style="font-weight:bold;color:${stroke}">${c.type} · ${c.label}</div>
+        <div style="color:#64748b">${c.lat.toFixed(4)}°N ${c.lng.toFixed(4)}°E</div>
+        ${extra}
+        <svg width="${W}" height="${H+18}" style="background:#f1f5f9;border-radius:4px;margin-top:4px">
+          <polyline points="${pts}" fill="none" stroke="${stroke}" stroke-width="2"/>
+          <text x="${PAD}" y="${H+14}" font-size="9" fill="#64748b">${xMin.toFixed(1)} ${unit}</text>
+          <text x="${W-40}" y="${H+14}" font-size="9" fill="#64748b">${xMax.toFixed(1)}</text>
+          <text x="2" y="14" font-size="9" fill="#64748b">${yMin}m</text>
+          <text x="2" y="${H}" font-size="9" fill="#64748b">${yMax}m</text>
+        </svg>
+      </div>`;
+}
+
+// ─── Main draw entry, called from render loop ───
+function drawHsvExt() {
+    _hsvUpdateTracks();
+    _hsvAutoXbt();
+    _hsvCaptureCtdAsSvp();
+
+    if (!surveyVessels.length) { _hsvUpdateDashboard(null); return; }
+    let dashSel = null;
+
+    surveyVessels.forEach((v, vi) => {
+        const {x, y} = pn(v.nx, v.ny);
+        const wp = v.waypoints[v.currentWP];
+        const wpPx = pn(wp.nx, wp.ny);
+        const hdg = Math.atan2(wpPx.y-y, wpPx.x-x);
+        const track = HsvExt.tracks.get(v.label) || [];
+        const depth = Math.max(5, Math.abs(sampleBathyDepth(v.nx, v.ny)));
+
+        // ── A1. Multibeam swath trail (5× depth, along track) ──
+        if (HsvExt.layers.swath && v.sensors.mbes && track.length > 2) {
+            ctx.save();
+            ctx.fillStyle = HsvExt.palette.swath;
+            ctx.strokeStyle = HsvExt.palette.swathE;
+            ctx.lineWidth = 0.6;
+            ctx.beginPath();
+            // build polygon: walk track L side then R side back
+            const leftPts = [], rightPts = [];
+            for (let i = 0; i < track.length; i++) {
+                const t = track[i];
+                const tp = pn(t.nx, t.ny);
+                let dx, dy;
+                if (i < track.length-1) {
+                    const tn = pn(track[i+1].nx, track[i+1].ny);
+                    dx = tn.x - tp.x; dy = tn.y - tp.y;
+                } else {
+                    const tn = pn(track[i-1].nx, track[i-1].ny);
+                    dx = tp.x - tn.x; dy = tp.y - tn.y;
+                }
+                const m = Math.hypot(dx, dy) || 1;
+                // perpendicular unit
+                const nxp = -dy / m, nyp = dx / m;
+                // swath half-width in m → pixels
+                const halfWm = HsvExt.SWATH_FACTOR * t.depth / 2;
+                // approximate m → px: 1 nm = 1852 m
+                const halfWpx = (halfWm / 1852) * _pxNm;
+                leftPts.push({ x: tp.x + nxp*halfWpx, y: tp.y + nyp*halfWpx });
+                rightPts.push({ x: tp.x - nxp*halfWpx, y: tp.y - nyp*halfWpx });
+            }
+            ctx.moveTo(leftPts[0].x, leftPts[0].y);
+            for (let i = 1; i < leftPts.length; i++) ctx.lineTo(leftPts[i].x, leftPts[i].y);
+            for (let i = rightPts.length-1; i >= 0; i--) ctx.lineTo(rightPts[i].x, rightPts[i].y);
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+            // Coverage label
+            ctx.font='9px "Share Tech Mono"';
+            ctx.fillStyle='rgba(56,189,248,0.85)'; ctx.textAlign='left';
+            const swathWm = (HsvExt.SWATH_FACTOR * depth).toFixed(0);
+            ctx.fillText(`◢ MBES ${swathWm}m swath · ${depth.toFixed(0)}m WD`, x+18, y-14);
+            ctx.restore();
+        }
+
+        // ── A2. FLS Cone (60° horiz, 200m forward) ──
+        if (HsvExt.layers.fls) {
+            const rangePx = (HsvExt.FLS_RANGE_M / 1852) * _pxNm;
+            const halfA = (HsvExt.FLS_HORIZ_DEG * Math.PI / 180) / 2;
+            // detect nearest obstacle in cone (land sample or vessel)
+            let nearestM = Infinity;
+            // probe 10 samples along axis
+            for (let k = 1; k <= 10; k++) {
+                const r = (k/10) * HsvExt.FLS_RANGE_M;
+                const dn = (r/1852) * (1/27);   // crude nx step (27 ~ nx per nm)
+                const px = x + Math.cos(hdg) * rangePx * (k/10);
+                const py = y + Math.sin(hdg) * rangePx * (k/10);
+                // Convert back to nx,ny via inverse pn — approximate via lat/lng inversion
+                // Easier: probe along nx/ny directly
+                const _hx = Math.cos(hdg), _hy = Math.sin(hdg);
+                const _nx2 = v.nx + _hx * dn;
+                const _ny2 = v.ny + _hy * dn;
+                if (typeof sampleLandness === 'function' && sampleLandness(_nx2, _ny2) > 0.4) {
+                    nearestM = Math.min(nearestM, r);
+                }
+            }
+            const hot = nearestM < 100;
+            ctx.save();
+            const grad = ctx.createRadialGradient(x, y, 0, x, y, rangePx);
+            grad.addColorStop(0, hot ? HsvExt.palette.flsHot : HsvExt.palette.fls);
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.arc(x, y, rangePx, hdg-halfA, hdg+halfA);
+            ctx.closePath();
+            ctx.fillStyle = grad; ctx.fill();
+            ctx.strokeStyle = hot ? HsvExt.palette.flsHot : HsvExt.palette.flsE;
+            ctx.lineWidth = 1; ctx.stroke();
+            // range arcs (50, 100, 150, 200m)
+            ctx.setLineDash([2,4]); ctx.strokeStyle = hot ? 'rgba(239,68,68,0.4)' : 'rgba(250,204,21,0.35)';
+            for (let r of [50, 100, 150]) {
+                const rp = (r/HsvExt.FLS_RANGE_M) * rangePx;
+                ctx.beginPath(); ctx.arc(x, y, rp, hdg-halfA, hdg+halfA); ctx.stroke();
+            }
+            ctx.setLineDash([]);
+            // label
+            ctx.font='9px "Share Tech Mono"';
+            ctx.fillStyle = hot ? '#ef4444' : '#fbbf24';
+            ctx.textAlign='center';
+            const lx = x + Math.cos(hdg) * rangePx * 0.55;
+            const ly = y + Math.sin(hdg) * rangePx * 0.55;
+            ctx.fillText(hot ? `⚠ FLS ${nearestM.toFixed(0)}m` : `FLS 200m·60°`, lx, ly);
+            ctx.restore();
+        }
+
+        // ── A3. ADCP current vector field around vessel (1.5nm grid) ──
+        if (HsvExt.layers.adcp && v.sensors.adcp) {
+            const gridR = _pxNm * 1.5;
+            const step  = _pxNm * 0.35;     // arrow spacing
+            ctx.save();
+            ctx.strokeStyle = HsvExt.palette.adcp;
+            ctx.fillStyle   = HsvExt.palette.adcp;
+            ctx.lineWidth   = 1;
+            const baseLat = LAT_TOP - v.ny*(LAT_TOP-LAT_BOT);
+            const baseLng = LNG_LEFT + v.nx*(LNG_RIGHT-LNG_LEFT);
+            for (let dx = -gridR; dx <= gridR; dx += step) {
+                for (let dy = -gridR; dy <= gridR; dy += step) {
+                    if (dx*dx + dy*dy > gridR*gridR) continue;
+                    const ax = x + dx, ay = y + dy;
+                    // convert pixel offset to lat/lng for current sampling
+                    const llat = baseLat - (dy/_pxNm) / 60;     // 1nm ≈ 1/60 deg lat
+                    const llng = baseLng + (dx/_pxNm) / 60 / Math.cos(baseLat*Math.PI/180);
+                    const cur = _hsvCurrent(llat, llng, 5, frame);
+                    const mag = Math.hypot(cur.u, cur.v);
+                    if (mag < 0.05) continue;
+                    const ang = Math.atan2(cur.v, cur.u); // note: +v means N → upward on screen → -y
+                    const len = Math.min(18, mag * 25);
+                    const ex = ax + Math.cos(-ang) * len;   // flip y for screen
+                    const ey = ay + Math.sin(-ang) * len;
+                    ctx.globalAlpha = 0.35 + Math.min(0.5, mag*0.6);
+                    ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ex, ey); ctx.stroke();
+                    // arrowhead
+                    const a2 = Math.atan2(ey-ay, ex-ax);
+                    ctx.beginPath();
+                    ctx.moveTo(ex, ey);
+                    ctx.lineTo(ex - 4*Math.cos(a2-0.4), ey - 4*Math.sin(a2-0.4));
+                    ctx.lineTo(ex - 4*Math.cos(a2+0.4), ey - 4*Math.sin(a2+0.4));
+                    ctx.closePath(); ctx.fill();
+                }
+            }
+            ctx.globalAlpha = 1;
+            // legend
+            ctx.font='8px "Share Tech Mono"'; ctx.fillStyle='rgba(34,211,238,0.65)';
+            ctx.textAlign='left';
+            ctx.fillText('↟ ADCP 1.5nm · surface', x + gridR*0.71 + 3, y - gridR*0.71);
+            ctx.restore();
+        }
+
+        // ── B3. Heading vs COG + DGPS accuracy ring ──
+        if (HsvExt.layers.hdgcog) {
+            // gyro heading (assumed same as motion vector here; in real life differs by drift)
+            // synth drift from current at vessel position
+            const baseLat = LAT_TOP - v.ny*(LAT_TOP-LAT_BOT);
+            const baseLng = LNG_LEFT + v.nx*(LNG_RIGHT-LNG_LEFT);
+            const cur = _hsvCurrent(baseLat, baseLng, 3, frame);
+            // crab angle: arctangent of cross-track current / speed
+            const speedMs = HsvExt.SURVEY_SPEED_KN * 0.5144;
+            const crab = Math.atan2(-cur.v, speedMs + cur.u) * 0.4;   // damped for visibility
+            const cogHdg = hdg + crab;
+            const armPx  = 38;
+            ctx.save();
+            // gyro arrow (green)
+            ctx.strokeStyle = HsvExt.palette.hdg; ctx.lineWidth = 2.2;
+            ctx.beginPath(); ctx.moveTo(x, y);
+            ctx.lineTo(x + Math.cos(hdg)*armPx, y + Math.sin(hdg)*armPx);
+            ctx.stroke();
+            // COG arrow (cyan, dashed)
+            ctx.strokeStyle = HsvExt.palette.cog; ctx.setLineDash([4,3]); ctx.lineWidth = 1.6;
+            ctx.beginPath(); ctx.moveTo(x, y);
+            ctx.lineTo(x + Math.cos(cogHdg)*armPx, y + Math.sin(cogHdg)*armPx);
+            ctx.stroke(); ctx.setLineDash([]);
+            // DGPS accuracy ring (~±0.5m, but visualize at min 6px)
+            const dgpsPx = Math.max(6, (HsvExt.DGPS_ACC_M/1852)*_pxNm);
+            ctx.strokeStyle = HsvExt.palette.dgps; ctx.lineWidth = 0.8;
+            ctx.beginPath(); ctx.arc(x, y, dgpsPx, 0, Math.PI*2); ctx.stroke();
+            // crab label if meaningful
+            const crabDeg = (crab*180/Math.PI);
+            if (Math.abs(crabDeg) > 1) {
+                ctx.font='8px "Share Tech Mono"'; ctx.fillStyle='#67e8f9'; ctx.textAlign='left';
+                ctx.fillText(`crab ${crabDeg>=0?'+':''}${crabDeg.toFixed(1)}°`, x+armPx*0.6, y+armPx*0.6 + 10);
+            }
+            ctx.restore();
+        }
+
+        if (vi === 0) {
+            dashSel = { v, depth, track };
+        }
+    });
+
+    _hsvUpdateDashboard(dashSel);
+}
+
+// ── Dashboard (top-left HTML panel) ──
+function _ensureHsvDash() {
+    if (document.getElementById('hsvDashPanel')) return;
+    const div = document.createElement('div');
+    div.id = 'hsvDashPanel';
+    div.style.cssText = `position:absolute;top:84px;left:12px;z-index:600;
+        background:rgba(8,15,28,0.86);border:1px solid rgba(103,232,249,0.45);
+        border-radius:8px;padding:8px 10px;color:#cfeefb;
+        font:11px 'Share Tech Mono';min-width:200px;
+        box-shadow:0 0 12px rgba(56,189,248,.25);pointer-events:auto;
+        display:none`;
+    div.innerHTML = `
+      <div style="color:#67e8f9;font-weight:bold;margin-bottom:4px">🛰 SURVEY DASHBOARD</div>
+      <div id="hsvDashBody" style="line-height:1.45">no HSV deployed</div>`;
+    const mc = document.getElementById('mapContainer') || document.body;
+    mc.appendChild(div);
+}
+function _hsvUpdateDashboard(sel) {
+    _ensureHsvDash();
+    const panel = document.getElementById('hsvDashPanel');
+    const body  = document.getElementById('hsvDashBody');
+    if (!HsvExt.layers.dashboard) { panel.style.display='none'; return; }
+    panel.style.display = 'block';
+    if (!sel) { body.innerHTML = '<span style="color:#94a3b8">no HSV deployed</span>'; return; }
+    const v = sel.v, depth = sel.depth, track = sel.track;
+    const swathWm = HsvExt.SWATH_FACTOR * depth;
+    // coverage approx: track points × swath area
+    const samples = track.length;
+    const coverageKm2 = (samples * swathWm * (HsvExt.SURVEY_SPEED_KN*0.5144*(4/60))) / 1e6;
+    const lastSvp = HsvExt.casts.slice().reverse().find(c => c.type==='SVP');
+    const lastXbt = HsvExt.casts.slice().reverse().find(c => c.type==='XBT');
+    const fmtAge = (t) => {
+        if (!t) return '—';
+        const s = Math.floor((Date.now()-t)/1000);
+        return s < 60 ? `${s}s ago` : `${Math.floor(s/60)}m ago`;
+    };
+    body.innerHTML = `
+      <div><span style="color:#94a3b8">vessel</span> <b>${v.label}</b></div>
+      <div><span style="color:#94a3b8">depth</span> ${depth.toFixed(1)} m</div>
+      <div><span style="color:#94a3b8">MBES swath</span> ${swathWm.toFixed(0)} m (×5)</div>
+      <div><span style="color:#94a3b8">soundings</span> ${(samples*512).toLocaleString()}</div>
+      <div><span style="color:#94a3b8">coverage</span> ~${coverageKm2.toFixed(3)} km²</div>
+      <div><span style="color:#94a3b8">speed</span> ${HsvExt.SURVEY_SPEED_KN} kn · DGPS ±${HsvExt.DGPS_ACC_M}m</div>
+      <div><span style="color:#94a3b8">last SVP</span> ${fmtAge(lastSvp?lastSvp.time:null)}</div>
+      <div><span style="color:#94a3b8">last XBT</span> ${fmtAge(lastXbt?lastXbt.time:null)}</div>
+      <div style="margin-top:4px;color:#67e8f9;font-size:10px">EM 2040 · FLS 3D · ADCP · IBS</div>`;
+}
+
+// ─── Survey Line Planner (HYPACK lawn-mower) ───
+function _hsvPlannerStart() {
+    HsvExt.plannerMode = true;
+    HsvExt.plannerCorners = [];
+    HsvExt.plannerGroup.clearLayers();
+    if (!HsvExt.plannerVisible) {
+        HsvExt.plannerGroup.addTo(map);
+        HsvExt.plannerVisible = true;
+    }
+    document.getElementById('mapContainer').style.cursor = 'crosshair';
+    if (typeof addLog === 'function')
+        addLog('[HSV-Ext] 📐 Survey Planner — คลิก 2 มุมตรงข้ามเพื่อกำหนดพื้นที่สำรวจ', '#fbbf24');
+}
+function _hsvPlannerClick(e) {
+    if (!HsvExt.plannerMode) return;
+    HsvExt.plannerCorners.push([e.latlng.lat, e.latlng.lng]);
+    L.circleMarker(e.latlng, { radius:5, color:'#fbbf24', weight:2, fillOpacity:0.6 })
+        .addTo(HsvExt.plannerGroup);
+    if (HsvExt.plannerCorners.length === 2) _hsvPlannerBuild();
+}
+function _hsvPlannerBuild() {
+    const [a, b] = HsvExt.plannerCorners;
+    const latMin = Math.min(a[0], b[0]), latMax = Math.max(a[0], b[0]);
+    const lngMin = Math.min(a[1], b[1]), lngMax = Math.max(a[1], b[1]);
+    // bounding rect
+    L.rectangle([[latMin,lngMin],[latMax,lngMax]], { color:'#fbbf24', weight:2, fillOpacity:0.05, dashArray:'4 4' })
+        .addTo(HsvExt.plannerGroup);
+    // line spacing: derive from typical depth at center using 60% overlap (effective spacing = 0.4 × swath)
+    const centerLat = (latMin+latMax)/2, centerLng = (lngMin+lngMax)/2;
+    const cnx = (centerLng - LNG_LEFT)/(LNG_RIGHT-LNG_LEFT);
+    const cny = (LAT_TOP - centerLat)/(LAT_TOP - LAT_BOT);
+    const cdep = Math.max(5, Math.abs(sampleBathyDepth(cnx, cny)));
+    const swathWm = HsvExt.SWATH_FACTOR * cdep;
+    const spacingM = Math.max(150, swathWm * 0.4);   // floor 150m for sane line count
+    HsvExt.plannerSpacing = spacingM;
+    const spacingDeg = spacingM / 111000;
+    // lines parallel to E-W direction
+    const lines = [];
+    let count = 0;
+    for (let lat = latMin + spacingDeg/2; lat < latMax; lat += spacingDeg) {
+        const flip = count % 2 === 0;
+        const seg = flip ? [[lat,lngMin],[lat,lngMax]] : [[lat,lngMax],[lat,lngMin]];
+        lines.push(seg);
+        L.polyline(seg, { color:'#22c55e', weight:1.5, opacity:0.85 }).addTo(HsvExt.plannerGroup);
+        count++;
+    }
+    // connectors (turn segments)
+    for (let i = 0; i < lines.length-1; i++) {
+        const p1 = lines[i][1], p2 = lines[i+1][0];
+        L.polyline([p1,p2], { color:'#22c55e', weight:1, opacity:0.45, dashArray:'3 3' }).addTo(HsvExt.plannerGroup);
+    }
+    // total length
+    const widthKm = (lngMax - lngMin) * 111 * Math.cos(centerLat*Math.PI/180);
+    const heightKm = (latMax - latMin) * 111;
+    const totalKm = lines.length * widthKm + heightKm;
+    const hours = totalKm / (HsvExt.SURVEY_SPEED_KN * 1.852);
+    const etaH = Math.floor(hours);
+    const etaM = Math.round((hours - etaH) * 60);
+    // ETA label at top-right corner
+    L.marker([latMax, lngMax], {
+        icon: L.divIcon({
+            className:'hsv-plan-label',
+            html:`<div style="background:rgba(8,15,28,0.92);border:1px solid #fbbf24;color:#fbbf24;
+                padding:4px 8px;border-radius:4px;font:10px 'Share Tech Mono';white-space:nowrap">
+                ◆ ${lines.length} lines · ${spacingM.toFixed(0)}m spacing<br>
+                ${totalKm.toFixed(1)} km · ETA ${etaH}h ${etaM}m @ ${HsvExt.SURVEY_SPEED_KN}kn<br>
+                ~${(widthKm*heightKm).toFixed(2)} km² · depth ${cdep.toFixed(0)}m
+            </div>`,
+            iconAnchor:[-4,12],
+        })
+    }).addTo(HsvExt.plannerGroup);
+    HsvExt.plannerMode = false;
+    document.getElementById('mapContainer').style.cursor = '';
+    if (typeof addLog === 'function')
+        addLog(`[HSV-Ext] ✅ Plan: ${lines.length} lines · ${totalKm.toFixed(1)} km · ETA ${etaH}h${etaM}m`, '#22c55e');
+}
+function _hsvPlannerClear() {
+    HsvExt.plannerGroup.clearLayers();
+    HsvExt.plannerCorners = [];
+    HsvExt.plannerMode = false;
+    if (HsvExt.plannerVisible) {
+        map.removeLayer(HsvExt.plannerGroup);
+        HsvExt.plannerVisible = false;
+    }
+    document.getElementById('mapContainer').style.cursor = '';
+}
+
+map.on('click', _hsvPlannerClick);
+
+// ─── Cast markers toggle ───
+function _hsvToggleCasts() {
+    HsvExt.castVisible = !HsvExt.castVisible;
+    HsvExt.layers.casts = HsvExt.castVisible;
+    if (HsvExt.castVisible) HsvExt.castMarkers.addTo(map);
+    else map.removeLayer(HsvExt.castMarkers);
+}
+
+// ─── HSV-Ext control panel ───
+L.Control.HsvExtPanel = L.Control.extend({
+    options: { position: 'topright' },
+    onAdd: function() {
+        const div = L.DomUtil.create('div', 'leaflet-bar');
+        div.style.cssText = 'background:rgba(8,15,28,0.92);border:1px solid rgba(103,232,249,0.5);'
+            + 'border-radius:6px;padding:6px 8px;color:#cfeefb;font:10px "Share Tech Mono";'
+            + 'min-width:158px;box-shadow:0 0 8px rgba(56,189,248,.2)';
+        L.DomEvent.disableClickPropagation(div);
+        const mkRow = (key, label, color) => {
+            return `<label style="display:flex;align-items:center;gap:5px;cursor:pointer;padding:1px 0">
+                <input type="checkbox" data-hsvk="${key}" ${HsvExt.layers[key]?'checked':''}
+                       style="accent-color:${color}">
+                <span style="color:${color}">${label}</span></label>`;
+        };
+        div.innerHTML = `
+          <div style="color:#67e8f9;font-weight:bold;margin-bottom:4px;border-bottom:1px solid rgba(103,232,249,.3);padding-bottom:3px">
+            🛰 HSV-Ext (Suriya)
+          </div>
+          ${mkRow('swath',    'MBES Swath ×5',  '#38bdf8')}
+          ${mkRow('fls',      'FLS Cone 60°·200m','#fbbf24')}
+          ${mkRow('adcp',     'ADCP Current',   '#22d3ee')}
+          ${mkRow('hdgcog',   'HDG/COG·DGPS',   '#22c55e')}
+          ${mkRow('dashboard','Dashboard',      '#67e8f9')}
+          <div style="border-top:1px solid rgba(103,232,249,.25);margin-top:4px;padding-top:4px">
+            <button id="hsvCastsBtn" style="width:100%;background:rgba(14,165,233,.2);border:1px solid #0ea5e9;color:#7dd3fc;padding:3px;border-radius:3px;cursor:pointer;font:10px 'Share Tech Mono'">
+              SVP/XBT Markers (off)
+            </button>
+            <button id="hsvPlanBtn" style="width:100%;margin-top:3px;background:rgba(251,191,36,.2);border:1px solid #fbbf24;color:#fde68a;padding:3px;border-radius:3px;cursor:pointer;font:10px 'Share Tech Mono'">
+              📐 Survey Planner
+            </button>
+            <button id="hsvPlanClrBtn" style="width:100%;margin-top:3px;background:rgba(239,68,68,.15);border:1px solid #ef4444;color:#fca5a5;padding:3px;border-radius:3px;cursor:pointer;font:10px 'Share Tech Mono'">
+              clear plan
+            </button>
+          </div>`;
+        // wire toggles
+        div.querySelectorAll('input[data-hsvk]').forEach(inp => {
+            inp.addEventListener('change', e => {
+                HsvExt.layers[e.target.dataset.hsvk] = e.target.checked;
+                if (e.target.dataset.hsvk === 'dashboard' && !e.target.checked) {
+                    const p = document.getElementById('hsvDashPanel'); if (p) p.style.display='none';
+                }
+            });
+        });
+        div.querySelector('#hsvCastsBtn').addEventListener('click', e => {
+            _hsvToggleCasts();
+            e.target.textContent = HsvExt.castVisible ? 'SVP/XBT Markers (ON)' : 'SVP/XBT Markers (off)';
+            e.target.style.background = HsvExt.castVisible ? 'rgba(14,165,233,.55)' : 'rgba(14,165,233,.2)';
+        });
+        div.querySelector('#hsvPlanBtn').addEventListener('click', _hsvPlannerStart);
+        div.querySelector('#hsvPlanClrBtn').addEventListener('click', _hsvPlannerClear);
+        return div;
+    }
+});
+new L.Control.HsvExtPanel().addTo(map);
+
+// ═══════════════════════════════════════════════════════════════
 //  HSV — Hydrographic Survey Vessel Logic (Tier 1+2 features)
 // ───────────────────────────────────────────────────────────────
 //  CTD Cast → SVP update → Recompute PSR for all Guardian UUVs
@@ -14149,6 +14724,7 @@ function animate() {
     drawGuardianUUVs();
     drawPatrolVessels();
     drawSurveyVessels();
+    if (typeof drawHsvExt === 'function') drawHsvExt();
     drawROVs();
     drawADCP();
     drawUDCCapsule();
