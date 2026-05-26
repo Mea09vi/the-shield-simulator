@@ -748,6 +748,7 @@
             border-radius: 7px;
             padding: 2px 6px 6px;
             width: 178px;
+            top: 30px !important; /* v12.6.4 — ลงมา 30px ตามคำขอ */
         }
         .leaflet-top.leaflet-right::before {
             content: '▾ DEPLOY BLUE FORCE';
@@ -2458,26 +2459,7 @@
         <button class="mda-lp-collapse" id="mda-lp-collapse" title="พับ panel">◀</button>
     </div>
 
-    <!-- BASEMAP — Dark / Satellite radio (collapsed by default) -->
-    <div class="mda-lp-group collapsed" data-group="basemap">
-        <div class="mda-lp-group-head">
-            <span class="mda-lp-group-name"><span class="mda-lp-chev">▾</span> BASEMAP</span>
-        </div>
-        <div class="mda-lp-group-body">
-            <div class="mda-lp-row radio" data-mda-base="dark">
-                <span class="bullet"></span>
-                <span class="label"><span class="swatch" style="background:#1a1a1f"></span>Dark Matter</span>
-                <span class="count">CartoDB</span>
-                <span class="mda-rdo"></span>
-            </div>
-            <div class="mda-lp-row radio on" data-mda-base="sat">
-                <span class="bullet"></span>
-                <span class="label"><span class="swatch" style="background:#3d5a40"></span>Satellite</span>
-                <span class="count">Esri</span>
-                <span class="mda-rdo"></span>
-            </div>
-        </div>
-    </div>
+    <!-- BASEMAP group ลบออก v12.6.4 — ย้ายไป right-rail Layers & Tools (3 ปุ่ม: Dark/Satellite/GEBCO) -->
 
     <!-- ⚡ TACTICAL · v12 — Bathy/Zones/Tide/Frustum/TL Heatmap -->
     <div class="mda-lp-group" data-group="tactical">
@@ -4080,7 +4062,7 @@ const map = L.map('mapContainer', {
 });
 
 // [v12.1] Basemap layers — Dark (default) + Satellite, สลับได้จาก MDA layer panel
-// v12.6.3 — default basemap เปลี่ยนเป็น Satellite (Esri)
+// v12.6.3 — default basemap = Satellite; v12.6.4 — GEBCO added, buttons moved to right-rail
 window.__basemapDark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
     subdomains: 'abcd',
@@ -4092,6 +4074,46 @@ window.__basemapSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/s
     maxZoom: 18,
     minZoom: 3,
 }).addTo(map);
+window.__basemapGebco = L.tileLayer('https://tiles.gebco.net/tiles/gebco_latest/{z}/{x}/{y}.png', {
+    attribution: 'GEBCO Compilation Group (2023) GEBCO_2023 Grid',
+    maxZoom: 18,
+    maxNativeZoom: 7,
+});
+
+// ── Basemap switcher buttons (will appear in right-rail "BASE MAP" section) ──
+// v12.6.4 — ย้ายออกจาก MDA left-panel; 3 ตัวเลือก: Dark / Satellite / GEBCO
+(function () {
+    const BMS = [
+        { key: 'dark',  html: '🌑 Dark Matter',  getL: () => window.__basemapDark  },
+        { key: 'sat',   html: '🛰 Satellite',      getL: () => window.__basemapSat   },
+        { key: 'gebco', html: '🌊 GEBCO 2023',     getL: () => window.__basemapGebco },
+    ];
+    let currentKey = 'sat'; // satellite loaded by default
+    const allBtns = [];
+
+    BMS.forEach(bm => {
+        const ctrl = L.control({ position: 'topright' });
+        ctrl.onAdd = function () {
+            const btn = L.DomUtil.create('button', 'basemap-rr-btn');
+            btn.innerHTML = bm.html;
+            btn.dataset.bmKey = bm.key;
+            if (bm.key === currentKey) btn.classList.add('active');
+            L.DomEvent.disableClickPropagation(btn);
+            btn.onclick = function () {
+                if (bm.key === currentKey) return;
+                [window.__basemapDark, window.__basemapSat, window.__basemapGebco]
+                    .forEach(l => { if (l && map.hasLayer(l)) map.removeLayer(l); });
+                const lyr = bm.getL();
+                if (lyr) { lyr.addTo(map); lyr.bringToBack(); }
+                currentKey = bm.key;
+                allBtns.forEach(b => b.classList.toggle('active', b.dataset.bmKey === currentKey));
+            };
+            allBtns.push(btn);
+            return btn;
+        };
+        ctrl.addTo(map);
+    });
+})();
 
 // ═══════════════════════════════════════════════════════════════
 //  [v11] AIS TRAJECTORY HEATMAP — kernel density จากตำแหน่งเรือ
@@ -9516,21 +9538,7 @@ const gebco2023Layer = L.tileLayer(
     }
 );
 
-// ── MODE 3: MapTiler Ocean — Full nautical chart ───────────────
-//  Depth contours + port info + SENC-style rendering
-//  API Key: user-provided (research license)
-// 🔑 ใส่ MapTiler API key ของคุณเอง (สมัครฟรีที่ https://maptiler.com/)
-const MAPTILER_KEY = 'YOUR_MAPTILER_KEY';
-const maptilerOceanLayer = L.tileLayer(
-    `https://api.maptiler.com/maps/ocean/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`,
-    {
-        tileSize:      256,
-        opacity:       0.88,
-        maxZoom:       18,
-        maxNativeZoom: 18,
-        attribution:   '© <a href="https://www.maptiler.com/copyright/">MapTiler</a> © OpenStreetMap contributors'
-    }
-);
+// MODE 3 (MapTiler) removed v12.6.4 — ลบ per user request (ไม่ใช้ key)
 
 // ══════════════════════════════════════════════════════════════════════
 //  DEPTH SOUNDING MARKERS — GEBCO 2020 (nautical chart style)
@@ -9647,18 +9655,17 @@ const CHART_LEGENDS = {
         <div style="font-size:10px;color:#334155;text-align:right;margin-top:2px;">© MapTiler · OpenStreetMap</div>`
 };
 
-// ── Mode configurations ────────────────────────────────────────
+// ── Mode configurations (v12.6.4 — MapTiler removed, 2 modes only) ───────────
 const CHART_CONF = [
     { label:'⚓ Nautical',    color:'#8892b0', title:'คลิกเพื่อเปิด Nautical Chart' },
-    { label:'⚓ Esri Ocean',  color:'#38bdf8', title:'Mode 1/3: Esri Ocean Base + OpenSeaMap' },
-    { label:'⚓ GEBCO 2023',  color:'#7dd3fc', title:'Mode 2/3: GEBCO 2023 Grid Bathymetry + OpenSeaMap' },
-    { label:'⚓ MapTiler',    color:'#64ffda', title:'Mode 3/3: MapTiler Ocean Chart + OpenSeaMap' },
+    { label:'⚓ Esri Ocean',  color:'#38bdf8', title:'Mode 1/2: Esri Ocean Base + OpenSeaMap' },
+    { label:'⚓ GEBCO 2023',  color:'#7dd3fc', title:'Mode 2/2: GEBCO 2023 Grid Bathymetry + OpenSeaMap' },
 ];
 
 // ── Helper: remove all chart layers ───────────────────────────
 function removeAllChartLayers() {
     [gebcoBathyLayer, esriOceanRefLayer, gebco2023Layer,
-     maptilerOceanLayer, openSeaMapLayer, depthSoundingsLayer]
+     openSeaMapLayer, depthSoundingsLayer]
     .forEach(l => { if (map.hasLayer(l)) map.removeLayer(l); });
 }
 
@@ -9698,23 +9705,18 @@ function applyChartMode(btn) {
             esriOceanRefLayer.addTo(map);
             openSeaMapLayer.addTo(map);
             depthSoundingsLayer.addTo(map);
-            addLog('⚓ Chart 1/3: Esri Ocean Base + depth labels + OpenSeaMap', '#38bdf8');
+            addLog('⚓ Chart 1/2: Esri Ocean Base + depth labels + OpenSeaMap', '#38bdf8');
         } else if (chartMode === 2) {
             // GEBCO 2023: raw grid + seamarks + soundings
             gebco2023Layer.addTo(map);
             openSeaMapLayer.addTo(map);
             depthSoundingsLayer.addTo(map);
-            addLog('⚓ Chart 2/3: GEBCO 2023 Grid (15 arc-sec) + OpenSeaMap', '#7dd3fc');
-        } else if (chartMode === 3) {
-            // MapTiler Ocean: full chart + seamarks (soundings redundant — MapTiler already has them)
-            maptilerOceanLayer.addTo(map);
-            openSeaMapLayer.addTo(map);
-            addLog('⚓ Chart 3/3: MapTiler Ocean (SENC-style) + OpenSeaMap', '#64ffda');
-        }
+            addLog('⚓ Chart 2/2: GEBCO 2023 Grid (15 arc-sec) + OpenSeaMap', '#7dd3fc');
+        // Mode 3 (MapTiler) removed v12.6.4
     }
 }
 
-// ── Nautical Chart Button (cycles OFF → Esri → GEBCO → MapTiler → OFF) ──
+// ── Nautical Chart Button (cycles OFF → Esri → GEBCO → OFF) ──
 const openSeaMapBtn = L.control({ position: 'topright' });
 openSeaMapBtn.onAdd = function() {
     const btn = L.DomUtil.create('button', 'openseamap-btn');
@@ -9722,7 +9724,7 @@ openSeaMapBtn.onAdd = function() {
     btn.title     = CHART_CONF[0].title;
     btn.style.minWidth = '112px';
     btn.onclick = function() {
-        chartMode = (chartMode + 1) % 4;   // cycle 0→1→2→3→0
+        chartMode = (chartMode + 1) % 3;   // cycle 0→1→2→0 (MapTiler removed)
         applyChartMode(btn);
     };
     L.DomEvent.disableClickPropagation(btn);
@@ -19266,15 +19268,14 @@ function _sonarEqnRender(panel) {
     document.head.appendChild(css);
 
     // ── Category mapping: substring match on button text (Thai + English) ──
+    // v12.6.4 — เพิ่ม 'Dark' ให้จัดกลุ่ม Dark Matter ใน BASE MAP; ลบ ASSETS/OTHER
     const RULES = [
-        ['🗺 BASE MAP',       ['OpenSeaMap','OSM','SeaMap','Light','Vector','Satellite','Chart',
-                                'OpenStreet','Nautical','Esri','GEBCO','MapTiler','Ocean']],
+        ['🗺 BASE MAP',       ['Dark','OpenSeaMap','OSM','SeaMap','Light','Vector','Satellite','Chart',
+                                'OpenStreet','Nautical','Esri','GEBCO','Ocean']],
         ['🛡 ZONES · เขต',     ['ปะการัง','เขตปลอดภัย','กองเรือ','DAS','EEC','TSS','ร่องน้ำ',
                                 'Reef','Safety','Fleet','Zone']],
         ['⚓ INFRA · โครงสร้าง',['สถานี Landing','เคเบิ้ล','เส้นทางเดินเรือ','SLOC','Cable',
                                 'Landing','Radar Station']],
-        ['🚢 ASSETS · เรือ',   ['วาง','ล้าง','ตรวจการณ์','สำรวจ','GUUV','UUV','Patrol','Survey',
-                                'Place','Clear']],
         ['🔬 ANALYSIS · ฟิสิกส์',['Terrain Shadow','Sonar Eqn','Shadow','Sonar Equation']],
     ];
 
@@ -19319,13 +19320,17 @@ function _sonarEqnRender(panel) {
         });
         L.DomEvent.disableClickPropagation(master);
         rail.insertBefore(master, rail.firstChild);
+        // v12.6.4 — เริ่มต้นซ่อน (collapsed) ตามคำขอ
+        rail.classList.add('rr-hidden');
+        master.innerHTML = '🗂 LAYERS &amp; TOOLS ▸';
+        master.classList.add('collapsed');
 
         // Clear existing controls (will re-add inside sections)
         controls.forEach(c => rail.removeChild(c));
 
         // Order categories
-        const ORDER = ['🗺 BASE MAP','🛡 ZONES · เขต','⚓ INFRA · โครงสร้าง',
-                       '🚢 ASSETS · เรือ','🔬 ANALYSIS · ฟิสิกส์','OTHER'];
+        // v12.6.4 — ลบ ASSETS + OTHER ตามคำขอ
+        const ORDER = ['🗺 BASE MAP','🛡 ZONES · เขต','⚓ INFRA · โครงสร้าง','🔬 ANALYSIS · ฟิสิกส์'];
         ORDER.forEach((cat, idx) => {
             const items = groups[cat]; if (!items || items.length === 0) return;
             const sec = document.createElement('div');
@@ -20334,31 +20339,7 @@ function _sonarEqnRender(panel) {
             if (sw) sw.addEventListener('click', handler);
         });
 
-        // ── BASEMAP radio (Dark ↔ Satellite)
-        document.querySelectorAll('#mda-layerpanel .mda-lp-row[data-mda-base]').forEach(row => {
-            row.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const which = row.dataset.mdaBase;
-                document.querySelectorAll('#mda-layerpanel .mda-lp-row[data-mda-base]')
-                    .forEach(r => r.classList.toggle('on', r === row));
-                try {
-                    if (which === 'sat') {
-                        if (map.hasLayer(window.__basemapDark)) map.removeLayer(window.__basemapDark);
-                        window.__basemapSat.addTo(map);
-                        window.__basemapSat.bringToBack();
-                        toast('Basemap · Satellite (Esri)');
-                    } else {
-                        if (map.hasLayer(window.__basemapSat))  map.removeLayer(window.__basemapSat);
-                        window.__basemapDark.addTo(map);
-                        window.__basemapDark.bringToBack();
-                        toast('Basemap · Dark (CartoDB)');
-                    }
-                } catch (err) {
-                    console.warn('[MDA] basemap switch failed', err);
-                    toast('Basemap switch error');
-                }
-            });
-        });
+        // BASEMAP radio wiring ลบออก v12.6.4 — ย้ายไปปุ่มใน right-rail
 
         // ══════════════════════════════════════════════════════════
         //  v12.2 — TACTICAL / AIS / ACTIONS row wiring (v11 bridge)
