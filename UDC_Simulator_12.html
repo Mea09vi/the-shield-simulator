@@ -1798,46 +1798,7 @@
            • basemap switch (Dark/Satellite) ใน BASEMAP group
            ─────────────────────────────────────────────────────────── */
 
-        /* Status pill — bottom-center, doesn't block header */
-        #mda-statusbar {
-            position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
-            display: inline-flex; align-items: center; gap: 10px;
-            padding: 6px 14px; height: auto;
-            background: linear-gradient(180deg, rgba(2,9,18,.92), rgba(2,9,18,.75));
-            border: 1px solid var(--mda-edge); border-radius: 999px;
-            backdrop-filter: blur(12px) saturate(150%);
-            -webkit-backdrop-filter: blur(12px) saturate(150%);
-            font-family: 'Share Tech Mono', monospace; font-size: 10.5px;
-            color: var(--text-main); z-index: 5000; user-select: none;
-            box-shadow: 0 6px 24px rgba(0,212,255,.18), 0 0 0 1px rgba(0,212,255,.05) inset;
-            max-width: 96vw; overflow-x: auto; white-space: nowrap;
-        }
-        #mda-statusbar::-webkit-scrollbar { display: none; }
-        #mda-statusbar .mda-brand {
-            font-weight: 700; letter-spacing: 1px; color: var(--cyan);
-            text-shadow: 0 0 8px rgba(0,212,255,.4);
-        }
-        #mda-statusbar .mda-brand .v {
-            color: var(--purple, #b39ddb); font-size: 9px; margin-left: 4px;
-        }
-        #mda-statusbar .mda-sep { opacity: .25; padding: 0 1px; }
-        #mda-statusbar .mda-badge {
-            display: inline-flex; align-items: center; gap: 4px;
-            padding: 1px 7px; border: 1px solid var(--mda-edge);
-            border-radius: 999px; background: rgba(0,212,255,.06);
-            font-size: 9.5px; letter-spacing: .4px;
-            transition: background .25s, border-color .25s;
-        }
-        #mda-statusbar .mda-badge .dot {
-            width: 5px; height: 5px; border-radius: 50%;
-            background: var(--mda-ok); box-shadow: 0 0 5px var(--mda-ok);
-        }
-        #mda-statusbar .mda-badge.warn { border-color: var(--mda-amber); background: rgba(255,176,32,.10); }
-        #mda-statusbar .mda-badge.warn .dot { background: var(--mda-amber); box-shadow:0 0 5px var(--mda-amber); }
-        #mda-statusbar .mda-badge.crit { border-color: var(--mda-crit); background: rgba(255,56,96,.12); }
-        #mda-statusbar .mda-badge.crit .dot { background: var(--mda-crit); box-shadow:0 0 5px var(--mda-crit); animation: mdaPulse 1.2s infinite; }
-        #mda-statusbar .mda-clock { color: var(--text-muted); font-size: 9.5px; }
-        @keyframes mdaPulse { 0%,100% { opacity:1 } 50% { opacity:.45 } }
+        /* #mda-statusbar removed — v12.6.2 (ลบตามคำขอ ไม่จำเป็น) */
 
         /* Left layer panel — OSIRIS-style (chevron groups + iOS switches) */
         #mda-layerpanel {
@@ -2304,7 +2265,6 @@
         body.mda-mode .leaflet-top.leaflet-right { display: none !important; }
 
         /* hide MDA chrome until OSIRIS mode armed (default = OFF) */
-        body:not(.mda-mode) #mda-statusbar,
         body:not(.mda-mode) #mda-layerpanel,
         body:not(.mda-mode) .mda-handle,
         body:not(.mda-mode) #bf-deploy-panel,
@@ -2489,24 +2449,7 @@
      • intelfeed       — REMOVED (ตามคำขอ #2)
      ──────────────────────────────────────────────────────────────── -->
 
-<!-- Status pill (bottom-center) -->
-<div id="mda-statusbar">
-    <span class="mda-brand">🛡 SHIELD<span class="v">2.0</span></span>
-    <span class="mda-sep">│</span>
-    <span class="mda-badge" id="mda-bdg-air"     title="Air · OpenSky">
-        <span class="dot"></span>AIR <b id="mda-cnt-air">0</b></span>
-    <span class="mda-badge" id="mda-bdg-sea"     title="Maritime · AIS">
-        <span class="dot"></span>SEA <b id="mda-cnt-sea">0</b></span>
-    <span class="mda-badge" id="mda-bdg-seismic" title="Hazard · USGS">
-        <span class="dot"></span>SEIS <b id="mda-cnt-seismic">0</b></span>
-    <span class="mda-badge" id="mda-bdg-space"   title="Space · NOAA Kp">
-        <span class="dot"></span>Kp <b id="mda-cnt-space">--</b></span>
-    <span class="mda-badge" id="mda-bdg-gdelt"   title="Info · GDELT">
-        <span class="dot"></span>GDELT <b id="mda-cnt-gdelt">0</b></span>
-    <span class="mda-badge" id="mda-bdg-fusion"  title="Fusion items">
-        <span class="dot"></span>FUSION <b id="mda-cnt-fusion">0</b></span>
-    <span class="mda-clock" id="mda-clock">--:--:-- UTC</span>
-</div>
+<!-- #mda-statusbar removed v12.6.2 -->
 
 <!-- Left Layer Panel — OSIRIS-style (chevron groups + iOS switches) -->
 <div id="mda-layerpanel">
