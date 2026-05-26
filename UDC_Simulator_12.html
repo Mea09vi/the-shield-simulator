@@ -136,6 +136,7 @@
             border-bottom: 1px solid #1a3a5c;
             padding: 6px 16px; display: flex; align-items: center;
             justify-content: space-between; flex-shrink: 0;
+            position: sticky; top: 0; z-index: 5500; /* v12.6.6 — ติดขอบบน เมื่อ scroll */
         }
         header .title { font-size:16px; font-weight:700; color:var(--cyan);
             letter-spacing:2px; text-shadow:0 0 12px rgba(0,212,255,.5); }
@@ -2391,20 +2392,18 @@
            v12.4 — ZULU CLOCK (top-right HUD, LCD digital green)
            ──────────────────────────────────────────────────────────────── */
         #zulu-clock {
-            position: fixed;
-            top: 74px;
-            right: 236px;
-            z-index: 4600;
-            display: flex;
+            /* v12.6.6 — ย้ายเข้า header (ไม่ใช้ position:fixed แยก) */
+            display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 0;
-            background: transparent;
-            border: none;
-            box-shadow: none;
+            padding: 3px 8px;
+            background: rgba(0,255,102,0.06);
+            border: 1px solid rgba(0,255,102,0.22);
+            border-radius: 4px;
             font-family: 'Share Tech Mono', 'Consolas', monospace;
             user-select: none;
             pointer-events: none;
+            flex-shrink: 0;
         }
         #zulu-clock .zc-label {
             font-size: 12px;
@@ -2899,13 +2898,6 @@
 <!-- ── Classification Banner — TOP ────────────────────────────── -->
 <div class="classification-banner" data-augmented-ui="tl-clip br-clip both">UNCLASSIFIED // FOR TRAINING USE ONLY</div>
 
-<!-- v12.4 — ZULU clock HUD (top-right) -->
-<div id="zulu-clock" title="Zulu (UTC) tactical time">
-    <span class="zc-dot"></span>
-    <span class="zc-label">ZULU</span>
-    <span class="zc-time" id="zulu-time">--:--:--Z</span>
-</div>
-
 <header>
     <div>
         <div class="title">⚓ THE SHIELD 2.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v12 · MDA</span></div>
@@ -2924,6 +2916,12 @@
                    oninput="setUIZoom(this.value/100)">
             <span id="uiZoomVal">100%</span>
             <button class="uz-btn" onclick="fitUIZoom()" title="ปรับให้พอดีจออัตโนมัติ">⊡ Fit</button>
+        </div>
+        <!-- v12.6.6 — ZULU clock ย้ายเข้า header แทน position:fixed แยก -->
+        <div id="zulu-clock" title="Zulu (UTC) tactical time">
+            <span class="zc-dot"></span>
+            <span class="zc-label">ZULU</span>
+            <span class="zc-time" id="zulu-time">--:--:--Z</span>
         </div>
         <button id="fsBtn" onclick="toggleFullscreen()" title="Full Screen (F11)">⛶</button>
     </div>
