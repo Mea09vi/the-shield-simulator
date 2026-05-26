@@ -1890,17 +1890,34 @@
             box-shadow: 0 0 8px var(--cyan);
         }
 
-        /* Toggle handle (left only) */
+        /* Toggle handle (left only) — v12.4a: bigger, brighter, higher z-index */
         .mda-handle {
             position: fixed; top: 50%; transform: translateY(-50%);
-            width: 22px; height: 60px; cursor: pointer;
-            background: var(--mda-glass); border: 1px solid var(--mda-edge);
+            width: 28px; height: 80px; cursor: pointer;
+            background: rgba(2,12,24,0.92);
+            border: 1px solid var(--mda-edge);
             display: flex; align-items: center; justify-content: center;
-            color: var(--cyan); font-weight: bold; z-index: 4400;
-            opacity: 0; pointer-events: none; transition: opacity .25s;
+            color: var(--cyan); font-weight: bold; font-size: 14px;
+            z-index: 9500;                         /* above leaflet & overlays */
+            opacity: 0; pointer-events: none;
+            transition: opacity .25s, box-shadow .2s, background .2s, transform .2s;
+            backdrop-filter: blur(8px);
         }
-        .mda-handle.visible { opacity: 1; pointer-events: all; }
-        #mda-handle-left { left: 0; border-radius: 0 4px 4px 0; }
+        .mda-handle.visible {
+            opacity: 1; pointer-events: all;
+            box-shadow: 0 0 14px rgba(0,212,255,.55), 0 0 0 1px rgba(0,212,255,.30) inset;
+            animation: mdaHandlePulse 1.8s ease-in-out infinite;
+        }
+        .mda-handle:hover {
+            background: rgba(0,212,255,.18);
+            box-shadow: 0 0 22px rgba(0,212,255,.85);
+            transform: translateY(-50%) scale(1.08);
+        }
+        @keyframes mdaHandlePulse {
+            0%, 100% { box-shadow: 0 0 12px rgba(0,212,255,.45), 0 0 0 1px rgba(0,212,255,.25) inset; }
+            50%      { box-shadow: 0 0 22px rgba(0,212,255,.85), 0 0 0 1px rgba(0,212,255,.50) inset; }
+        }
+        #mda-handle-left { left: 0; border-radius: 0 6px 6px 0; }
 
         /* v12.2 — Static row (info only, no toggle) */
         #mda-layerpanel .mda-lp-row.mda-lp-static {
@@ -1942,58 +1959,63 @@
         #bf-deploy-panel {
             position: fixed; top: 80px; right: 8px; width: 232px;
             max-height: calc(100vh - 120px); overflow-y: auto;
-            background: var(--mda-glass); border: 1px solid var(--mda-edge);
+            background: rgba(2,12,24,0.62);                        /* match leaflet-top.leaflet-right */
+            border: 1px solid rgba(100,116,139,.30);                /* SLATE chrome */
             border-radius: 8px; backdrop-filter: blur(14px) saturate(150%);
             -webkit-backdrop-filter: blur(14px) saturate(150%);
             color: var(--text-main); font-family: 'Sarabun', sans-serif;
-            z-index: 4500; box-shadow: 0 8px 40px rgba(0,0,0,.55), 0 0 0 1px rgba(0,212,255,.06) inset;
+            z-index: 4500; box-shadow: 0 8px 40px rgba(0,0,0,.55), 0 0 0 1px rgba(100,116,139,.10) inset;
             transition: transform .35s ease, opacity .35s ease;
         }
         #bf-deploy-panel.collapsed { transform: translateX(110%); opacity: 0; pointer-events: none; }
         #bf-deploy-panel.dragging {
             transition: none; opacity: .92;
-            box-shadow: 0 12px 60px rgba(0,212,255,.4), 0 0 0 1px rgba(0,212,255,.3) inset;
+            box-shadow: 0 12px 60px rgba(100,116,139,.35), 0 0 0 1px rgba(148,163,184,.40) inset;
         }
         #bf-deploy-panel .bf-dp-head {
-            padding: 7px 12px 6px; border-bottom: 1px solid rgba(0,212,255,.18);
+            padding: 7px 12px 6px; border-bottom: 1px solid rgba(100,116,139,.22);
             display: flex; align-items: center; justify-content: space-between;
-            background: linear-gradient(180deg, rgba(0,212,255,.10), rgba(0,212,255,.02));
+            background: linear-gradient(180deg, rgba(100,116,139,.10), rgba(100,116,139,.02));
             cursor: move; user-select: none;
         }
         #bf-deploy-panel .bf-dp-head:hover {
-            background: linear-gradient(180deg, rgba(0,212,255,.16), rgba(0,212,255,.04));
+            background: linear-gradient(180deg, rgba(100,116,139,.18), rgba(100,116,139,.05));
         }
         #bf-deploy-panel .bf-dp-head::before {
-            content: '⋮⋮'; color: rgba(0,212,255,.45); font-size: 11px;
+            content: '⋮⋮'; color: rgba(148,163,184,.50); font-size: 11px;
             letter-spacing: -2px; margin-right: 6px; line-height: 1;
         }
         #bf-deploy-panel .bf-dp-title {
             font-size: 11px; font-weight: 700; letter-spacing: 1.1px;
-            color: var(--cyan); text-transform: uppercase;
-            text-shadow: 0 0 8px rgba(0,212,255,.35); flex: 1;
+            color: #9aa8bd; text-transform: uppercase;                /* SLATE title */
+            flex: 1;
         }
         #bf-deploy-panel .bf-dp-collapse {
-            background: transparent; border: 1px solid var(--mda-edge);
-            color: var(--text-muted); cursor: pointer; padding: 1px 6px;
+            background: rgba(8,21,37,.92); border: 1px solid rgba(100,116,139,.40);
+            color: #9aa8bd; cursor: pointer; padding: 1px 6px;
             border-radius: 3px; font-size: 10px;
+            transition: border-color .15s, color .15s, background .15s;
         }
-        #bf-deploy-panel .bf-dp-collapse:hover { color: var(--cyan); border-color: var(--mda-edge-hi); }
+        #bf-deploy-panel .bf-dp-collapse:hover {
+            color: #cbd5e1; border-color: rgba(148,163,184,.70);
+            background: rgba(100,116,139,.18);
+        }
 
-        #bf-deploy-panel .bf-dp-group { border-bottom: 1px solid rgba(0,212,255,.08); }
+        #bf-deploy-panel .bf-dp-group { border-bottom: 1px solid rgba(100,116,139,.12); }
         #bf-deploy-panel .bf-dp-group:last-child { border-bottom: none; }
         #bf-deploy-panel .bf-dp-group-head {
             display: flex; align-items: center; justify-content: space-between;
             padding: 5px 10px; cursor: pointer; user-select: none;
             transition: background .15s;
         }
-        #bf-deploy-panel .bf-dp-group-head:hover { background: rgba(0,212,255,.05); }
+        #bf-deploy-panel .bf-dp-group-head:hover { background: rgba(100,116,139,.06); }
         #bf-deploy-panel .bf-dp-group-name {
-            font-size: 10px; letter-spacing: 1.3px;
+            font-size: 10px; letter-spacing: 1.3px; color: #9aa8bd;
             text-transform: uppercase; display: flex; align-items: center; gap: 6px;
         }
         #bf-deploy-panel .bf-dp-chev {
             display: inline-block; width: 9px; transition: transform .25s;
-            font-size: 9px;
+            font-size: 9px; color: rgba(148,163,184,.65);
         }
         #bf-deploy-panel .bf-dp-group.collapsed .bf-dp-chev { transform: rotate(-90deg); }
         #bf-deploy-panel .bf-dp-group-body {
@@ -2005,12 +2027,14 @@
         }
         #bf-deploy-panel .bf-dp-count {
             font-family: 'Share Tech Mono', monospace; font-size: 9px;
-            color: var(--text-muted); background: rgba(0,0,0,.32);
+            color: #9aa8bd; background: rgba(0,0,0,.32);
             padding: 0 6px; border-radius: 10px; min-width: 22px; text-align: center;
-            border: 1px solid rgba(0,212,255,.12); line-height: 14px;
+            border: 1px solid rgba(100,116,139,.20); line-height: 14px;
+            transition: color .2s, border-color .2s;
         }
         #bf-deploy-panel .bf-dp-group.active .bf-dp-count {
-            color: var(--cyan); border-color: rgba(0,212,255,.35);
+            color: #cbd5e1; border-color: rgba(148,163,184,.55);
+            background: rgba(100,116,139,.18);
         }
 
         /* ASSETS — action row (button-style, no toggle switch) */
@@ -2032,8 +2056,8 @@
             overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
         #bf-deploy-panel .bf-dp-row .bf-dp-arrow {
-            color: var(--cyan); font-size: 13px; font-weight: bold;
-            opacity: .55; transition: transform .15s, opacity .15s;
+            color: #9aa8bd; font-size: 13px; font-weight: bold;        /* SLATE default */
+            opacity: .55; transition: transform .15s, opacity .15s, color .15s;
             text-align: right;
         }
         #bf-deploy-panel .bf-dp-row:hover .bf-dp-arrow { opacity: 1; transform: translateX(3px); }
@@ -2043,6 +2067,8 @@
             border-color: rgba(100,255,218,.30);
         }
         #bf-deploy-panel .bf-dp-row.bf-pv .label { color: #64ffda; }
+        #bf-deploy-panel .bf-dp-row.bf-pv:hover .bf-dp-arrow,
+        #bf-deploy-panel .bf-dp-row.bf-pv.active .bf-dp-arrow { color: #64ffda; }
         #bf-deploy-panel .bf-dp-row.bf-pv:hover {
             background: rgba(100,255,218,.10);
             border-color: rgba(100,255,218,.55);
@@ -2068,6 +2094,8 @@
             box-shadow: 0 0 14px rgba(34,211,238,.50);
             animation: bfPulse 1.4s ease-in-out infinite;
         }
+        #bf-deploy-panel .bf-dp-row.bf-guuv:hover .bf-dp-arrow,
+        #bf-deploy-panel .bf-dp-row.bf-guuv.active .bf-dp-arrow { color: #22d3ee; }
 
         #bf-deploy-panel .bf-dp-row.bf-survey {
             border-color: rgba(251,191,36,.30);
@@ -2083,6 +2111,8 @@
             box-shadow: 0 0 14px rgba(251,191,36,.50);
             animation: bfPulse 1.4s ease-in-out infinite;
         }
+        #bf-deploy-panel .bf-dp-row.bf-survey:hover .bf-dp-arrow,
+        #bf-deploy-panel .bf-dp-row.bf-survey.active .bf-dp-arrow { color: #fbbf24; }
 
         #bf-deploy-panel .bf-dp-row.bf-clear {
             border-color: rgba(239,68,68,.22);
@@ -2100,18 +2130,35 @@
             50%      { filter: brightness(1.2); }
         }
 
-        /* Right-side handle (mirror of MDA left handle) */
+        /* Right-side handle (mirror of MDA left handle) — v12.4a slate + bigger */
         #bf-handle-right {
             position: fixed; top: 50%; transform: translateY(-50%);
-            width: 22px; height: 60px; cursor: pointer;
-            background: var(--mda-glass); border: 1px solid var(--mda-edge);
+            width: 28px; height: 80px; cursor: pointer;
+            background: rgba(2,12,24,0.92);
+            border: 1px solid rgba(100,116,139,.45);
             display: flex; align-items: center; justify-content: center;
-            color: var(--cyan); font-weight: bold; z-index: 4400;
-            opacity: 0; pointer-events: none; transition: opacity .25s;
-            right: 0; border-radius: 4px 0 0 4px;
+            color: #9aa8bd; font-weight: bold; font-size: 14px;
+            z-index: 9500;
+            opacity: 0; pointer-events: none;
+            transition: opacity .25s, box-shadow .2s, background .2s, transform .2s, color .2s;
+            backdrop-filter: blur(8px);
+            right: 0; border-radius: 6px 0 0 6px;
         }
-        #bf-handle-right.visible { opacity: 1; pointer-events: all; }
-        #bf-handle-right:hover { color: #fff; border-color: var(--mda-edge-hi); }
+        #bf-handle-right.visible {
+            opacity: 1; pointer-events: all;
+            box-shadow: 0 0 12px rgba(148,163,184,.55), 0 0 0 1px rgba(148,163,184,.30) inset;
+            animation: bfHandlePulse 1.8s ease-in-out infinite;
+        }
+        #bf-handle-right:hover {
+            color: #cbd5e1; border-color: rgba(148,163,184,.85);
+            background: rgba(100,116,139,.22);
+            box-shadow: 0 0 22px rgba(148,163,184,.75);
+            transform: translateY(-50%) scale(1.08);
+        }
+        @keyframes bfHandlePulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(148,163,184,.40), 0 0 0 1px rgba(148,163,184,.25) inset; }
+            50%      { box-shadow: 0 0 20px rgba(148,163,184,.70), 0 0 0 1px rgba(148,163,184,.50) inset; }
+        }
 
         /* Hide legacy Leaflet topright deploy stack (panel now owns it) */
         body.mda-mode .leaflet-top.leaflet-right { display: none !important; }
