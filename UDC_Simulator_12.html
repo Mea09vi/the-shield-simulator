@@ -1770,87 +1770,95 @@
             transition: transform .35s ease, opacity .35s ease;
         }
         #mda-layerpanel.collapsed { transform: translateX(-110%); opacity:0; }
+        #mda-layerpanel.dragging { transition: none; opacity:.92; box-shadow: 0 12px 60px rgba(0,212,255,.4), 0 0 0 1px rgba(0,212,255,.3) inset; }
+        /* v12.3 — slimmer header + drag handle cursor */
         #mda-layerpanel .mda-lp-head {
-            padding: 12px 14px 10px; border-bottom: 1px solid rgba(0,212,255,.18);
+            padding: 7px 12px 6px; border-bottom: 1px solid rgba(0,212,255,.18);
             display: flex; align-items: center; justify-content: space-between;
             background: linear-gradient(180deg, rgba(0,212,255,.08), rgba(0,212,255,.02));
+            cursor: move; user-select: none;
+        }
+        #mda-layerpanel .mda-lp-head:hover { background: linear-gradient(180deg, rgba(0,212,255,.14), rgba(0,212,255,.04)); }
+        #mda-layerpanel .mda-lp-head::before {
+            content: '⋮⋮'; color: rgba(0,212,255,.45); font-size: 11px;
+            letter-spacing: -2px; margin-right: 6px; line-height: 1;
         }
         #mda-layerpanel .mda-lp-title {
-            font-size: 12px; font-weight: 700; letter-spacing: 1.2px;
+            font-size: 11px; font-weight: 700; letter-spacing: 1.1px;
             color: var(--cyan); text-transform: uppercase;
-            text-shadow: 0 0 8px rgba(0,212,255,.35);
+            text-shadow: 0 0 8px rgba(0,212,255,.35); flex: 1;
         }
         #mda-layerpanel .mda-lp-collapse {
             background: transparent; border: 1px solid var(--mda-edge);
-            color: var(--text-muted); cursor: pointer; padding: 2px 6px;
+            color: var(--text-muted); cursor: pointer; padding: 1px 6px;
             border-radius: 3px; font-size: 10px;
         }
 
-        /* GROUP — collapsible, chevron + master switch */
+        /* GROUP — collapsible, chevron + master switch (v12.3 — slimmer) */
         #mda-layerpanel .mda-lp-group {
             border-bottom: 1px solid rgba(0,212,255,.08);
         }
         #mda-layerpanel .mda-lp-group:last-child { border-bottom: none; }
         #mda-layerpanel .mda-lp-group-head {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 9px 12px; cursor: pointer; user-select: none;
+            padding: 5px 10px; cursor: pointer; user-select: none;
             transition: background .15s;
         }
         #mda-layerpanel .mda-lp-group-head:hover { background: rgba(0,212,255,.05); }
         #mda-layerpanel .mda-lp-group-name {
-            font-size: 10.5px; letter-spacing: 1.5px; color: var(--cyan);
-            text-transform: uppercase; display: flex; align-items: center; gap: 8px;
+            font-size: 10px; letter-spacing: 1.3px; color: var(--cyan);
+            text-transform: uppercase; display: flex; align-items: center; gap: 6px;
         }
         #mda-layerpanel .mda-lp-chev {
-            display: inline-block; width: 10px; transition: transform .25s;
-            color: var(--cyan); font-size: 10px;
+            display: inline-block; width: 9px; transition: transform .25s;
+            color: var(--cyan); font-size: 9px;
         }
         #mda-layerpanel .mda-lp-group.collapsed .mda-lp-chev { transform: rotate(-90deg); }
         #mda-layerpanel .mda-lp-group-body {
-            padding: 2px 8px 8px; max-height: 400px; overflow: hidden;
+            padding: 1px 6px 4px; max-height: 400px; overflow: hidden;
             transition: max-height .35s ease;
         }
         #mda-layerpanel .mda-lp-group.collapsed .mda-lp-group-body {
             max-height: 0; padding-top: 0; padding-bottom: 0;
         }
 
-        /* ROW — bullet dot + label + count chip + iOS-style toggle */
+        /* ROW — bullet dot + label + count chip + iOS-style toggle (v12.3 — slim rows) */
         #mda-layerpanel .mda-lp-row {
             display: grid;
-            grid-template-columns: 10px 1fr auto auto;
-            align-items: center; gap: 8px;
-            padding: 7px 6px; border-radius: 5px;
+            grid-template-columns: 9px 1fr auto auto;
+            align-items: center; gap: 6px;
+            padding: 3px 5px; border-radius: 4px;
             transition: background .15s;
         }
         #mda-layerpanel .mda-lp-row:hover { background: rgba(0,212,255,.06); }
         #mda-layerpanel .mda-lp-row .bullet {
-            width: 6px; height: 6px; border-radius: 50%;
+            width: 5px; height: 5px; border-radius: 50%;
             background: var(--text-muted); justify-self: center;
             box-shadow: 0 0 0 2px rgba(0,0,0,.4);
         }
         #mda-layerpanel .mda-lp-row.on .bullet {
-            background: var(--cyan); box-shadow: 0 0 8px var(--cyan), 0 0 0 2px rgba(0,212,255,.15);
+            background: var(--cyan); box-shadow: 0 0 7px var(--cyan), 0 0 0 2px rgba(0,212,255,.15);
         }
         #mda-layerpanel .mda-lp-row .label {
-            font-size: 12px; color: var(--text-main);
-            display: flex; align-items: center; gap: 6px;
+            font-size: 11px; color: var(--text-main);
+            display: flex; align-items: center; gap: 5px;
             overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
         #mda-layerpanel .mda-lp-row .swatch {
-            width: 9px; height: 9px; border-radius: 2px;
+            width: 8px; height: 8px; border-radius: 2px;
             border: 1px solid rgba(255,255,255,.18); flex-shrink: 0;
         }
         #mda-layerpanel .mda-lp-row .count {
-            font-family: 'Share Tech Mono', monospace; font-size: 10px;
+            font-family: 'Share Tech Mono', monospace; font-size: 9px;
             color: var(--text-muted); background: rgba(0,0,0,.32);
-            padding: 1px 7px; border-radius: 10px; min-width: 24px; text-align:center;
-            border: 1px solid rgba(0,212,255,.12);
+            padding: 0 6px; border-radius: 10px; min-width: 22px; text-align:center;
+            border: 1px solid rgba(0,212,255,.12); line-height: 14px;
         }
         #mda-layerpanel .mda-lp-row.on .count { color: var(--cyan); border-color: rgba(0,212,255,.35); }
 
-        /* iOS-style toggle switch */
+        /* iOS-style toggle switch (v12.3 — slimmer) */
         .mda-sw {
-            position: relative; width: 30px; height: 16px;
+            position: relative; width: 26px; height: 14px;
             background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.15);
             border-radius: 999px; cursor: pointer;
             transition: background .25s, border-color .25s;
@@ -1858,7 +1866,7 @@
         }
         .mda-sw::after {
             content: ''; position: absolute; top: 1px; left: 1px;
-            width: 12px; height: 12px; border-radius: 50%;
+            width: 10px; height: 10px; border-radius: 50%;
             background: #d8d8d8; box-shadow: 0 1px 3px rgba(0,0,0,.5);
             transition: left .25s, background .25s;
         }
@@ -1867,7 +1875,7 @@
             border-color: rgba(0,212,255,.6);
             box-shadow: 0 0 10px rgba(0,212,255,.35);
         }
-        .mda-sw.on::after { left: 15px; background: #fff; }
+        .mda-sw.on::after { left: 13px; background: #fff; }
 
         /* Radio-style row (used by BASEMAP group) */
         #mda-layerpanel .mda-lp-row.radio { cursor: pointer; }
@@ -1904,8 +1912,8 @@
         #mda-layerpanel .mda-lp-row.mda-lp-action { background: rgba(0,212,255,.04); }
         #mda-layerpanel .mda-lp-row.mda-lp-action:hover { background: rgba(0,212,255,.10); }
         #mda-layerpanel .mda-lp-row .mda-arrow {
-            width: 30px; text-align: right; color: var(--cyan);
-            font-size: 13px; font-weight: bold; opacity: .55;
+            width: 26px; text-align: right; color: var(--cyan);
+            font-size: 12px; font-weight: bold; opacity: .55;
             transition: transform .15s, opacity .15s;
         }
         #mda-layerpanel .mda-lp-row.mda-lp-action:hover .mda-arrow {
@@ -1966,9 +1974,9 @@
 
 <!-- Left Layer Panel — OSIRIS-style (chevron groups + iOS switches) -->
 <div id="mda-layerpanel">
-    <div class="mda-lp-head">
+    <div class="mda-lp-head" title="ลากเพื่อย้าย panel · double-click เพื่อ reset ตำแหน่ง">
         <div class="mda-lp-title">⛛ Layers · MDA</div>
-        <button class="mda-lp-collapse" id="mda-lp-collapse">◀</button>
+        <button class="mda-lp-collapse" id="mda-lp-collapse" title="พับ panel">◀</button>
     </div>
 
     <!-- BASEMAP — Dark / Satellite radio (collapsed by default) -->
@@ -18979,8 +18987,89 @@ function _sonarEqnRender(panel) {
         const lp  = document.getElementById('mda-layerpanel');
         const hL  = document.getElementById('mda-handle-left');
         const bL  = document.getElementById('mda-lp-collapse');
-        bL && bL.addEventListener('click', () => { lp.classList.add('collapsed'); hL && hL.classList.add('visible'); });
+        bL && bL.addEventListener('click', (e) => { e.stopPropagation(); lp.classList.add('collapsed'); hL && hL.classList.add('visible'); });
         hL && hL.addEventListener('click', () => { lp.classList.remove('collapsed'); hL.classList.remove('visible'); });
+
+        // ── v12.3 — Make MDA panel draggable via .mda-lp-head ─────────────
+        //  · pointer events (mouse + touch + pen)
+        //  · saves position to localStorage ('mda-lp-pos')
+        //  · clamps to viewport so it can't be lost off-screen
+        //  · ignores drags that start on the collapse button
+        (function setupDrag(){
+            const head = lp && lp.querySelector('.mda-lp-head');
+            if (!head || !lp) return;
+            // Restore saved position
+            try {
+                const saved = JSON.parse(localStorage.getItem('mda-lp-pos') || 'null');
+                if (saved && Number.isFinite(saved.left) && Number.isFinite(saved.top)) {
+                    const maxL = window.innerWidth  - 60;
+                    const maxT = window.innerHeight - 60;
+                    lp.style.left = Math.max(0, Math.min(saved.left, maxL)) + 'px';
+                    lp.style.top  = Math.max(0, Math.min(saved.top,  maxT)) + 'px';
+                    lp.style.right = 'auto';
+                }
+            } catch(_) {}
+
+            let dragging = false, startX = 0, startY = 0, baseL = 0, baseT = 0, pid = null;
+            head.addEventListener('pointerdown', (e) => {
+                // ignore the collapse button (and any other interactive children)
+                if (e.target.closest('.mda-lp-collapse')) return;
+                if (e.button !== 0 && e.pointerType === 'mouse') return; // only left mouse
+                dragging = true;
+                pid = e.pointerId;
+                const r = lp.getBoundingClientRect();
+                baseL = r.left; baseT = r.top;
+                startX = e.clientX; startY = e.clientY;
+                lp.classList.add('dragging');
+                lp.style.right = 'auto';            // pin via left/top while dragging
+                try { head.setPointerCapture(pid); } catch(_) {}
+                e.preventDefault();
+            });
+            head.addEventListener('pointermove', (e) => {
+                if (!dragging) return;
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                const w  = lp.offsetWidth, h = lp.offsetHeight;
+                const maxL = Math.max(0, window.innerWidth  - Math.min(w, 60));
+                const maxT = Math.max(0, window.innerHeight - 60);
+                const nl = Math.max(-w + 60, Math.min(baseL + dx, maxL));
+                const nt = Math.max(0,        Math.min(baseT + dy, maxT));
+                lp.style.left = nl + 'px';
+                lp.style.top  = nt + 'px';
+            });
+            const endDrag = (e) => {
+                if (!dragging) return;
+                dragging = false;
+                lp.classList.remove('dragging');
+                try { if (pid != null) head.releasePointerCapture(pid); } catch(_) {}
+                // persist
+                try {
+                    const r = lp.getBoundingClientRect();
+                    localStorage.setItem('mda-lp-pos', JSON.stringify({ left: r.left, top: r.top }));
+                } catch(_) {}
+            };
+            head.addEventListener('pointerup',     endDrag);
+            head.addEventListener('pointercancel', endDrag);
+
+            // Double-click header → snap back to default position
+            head.addEventListener('dblclick', (e) => {
+                if (e.target.closest('.mda-lp-collapse')) return;
+                lp.style.left = '8px'; lp.style.top = '80px'; lp.style.right = 'auto';
+                try { localStorage.removeItem('mda-lp-pos'); } catch(_) {}
+                if (typeof toast === 'function') toast('📍 MDA panel: reset position');
+            });
+
+            // Re-clamp on window resize
+            window.addEventListener('resize', () => {
+                const r = lp.getBoundingClientRect();
+                const maxL = Math.max(0, window.innerWidth  - 60);
+                const maxT = Math.max(0, window.innerHeight - 60);
+                if (r.left > maxL || r.top > maxT) {
+                    lp.style.left = Math.min(r.left, maxL) + 'px';
+                    lp.style.top  = Math.min(r.top,  maxT) + 'px';
+                }
+            });
+        })();
 
         // ── refresh all
         const rfA = document.getElementById('mda-refresh-all');
