@@ -1741,158 +1741,179 @@
             --mda-crit:    #ff3860;
             --mda-ok:      #2ecc71;
         }
-        /* Top status strip — global MDA badge bar */
+        /* ─── v12.1 UI refinement (Iris-style) ──────────────────────
+           • status bar = compact bottom-floating pill (ไม่บังหัวข้อ)
+           • intel feed = REMOVED (ย้ายข้อมูลลง fusion area ใน layer panel)
+           • layer panel = OSIRIS-style chevron groups + iOS toggle
+           • basemap switch (Dark/Satellite) ใน BASEMAP group
+           ─────────────────────────────────────────────────────────── */
+
+        /* Status pill — bottom-center, doesn't block header */
         #mda-statusbar {
-            position: fixed; top: 0; left: 0; right: 0; height: 32px;
-            display: flex; align-items: center; gap: 16px; padding: 0 14px;
-            background: linear-gradient(180deg, rgba(2,9,18,.95), rgba(2,9,18,.78));
-            border-bottom: 1px solid var(--mda-edge);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            font-family: 'Share Tech Mono', monospace; font-size: 11px;
+            position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 6px 14px; height: auto;
+            background: linear-gradient(180deg, rgba(2,9,18,.92), rgba(2,9,18,.75));
+            border: 1px solid var(--mda-edge); border-radius: 999px;
+            backdrop-filter: blur(12px) saturate(150%);
+            -webkit-backdrop-filter: blur(12px) saturate(150%);
+            font-family: 'Share Tech Mono', monospace; font-size: 10.5px;
             color: var(--text-main); z-index: 5000; user-select: none;
-            box-shadow: 0 2px 18px rgba(0,212,255,.08);
+            box-shadow: 0 6px 24px rgba(0,212,255,.18), 0 0 0 1px rgba(0,212,255,.05) inset;
+            max-width: 96vw; overflow-x: auto; white-space: nowrap;
         }
+        #mda-statusbar::-webkit-scrollbar { display: none; }
         #mda-statusbar .mda-brand {
             font-weight: 700; letter-spacing: 1px; color: var(--cyan);
             text-shadow: 0 0 8px rgba(0,212,255,.4);
         }
         #mda-statusbar .mda-brand .v {
-            color: var(--purple, #b39ddb); font-size: 10px; margin-left: 4px;
+            color: var(--purple, #b39ddb); font-size: 9px; margin-left: 4px;
         }
-        #mda-statusbar .mda-sep {
-            opacity: .35; padding: 0 2px;
-        }
+        #mda-statusbar .mda-sep { opacity: .25; padding: 0 1px; }
         #mda-statusbar .mda-badge {
-            display: inline-flex; align-items: center; gap: 5px;
-            padding: 2px 8px; border: 1px solid var(--mda-edge);
-            border-radius: 3px; background: rgba(0,212,255,.06);
-            font-size: 10px; letter-spacing: .5px;
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 1px 7px; border: 1px solid var(--mda-edge);
+            border-radius: 999px; background: rgba(0,212,255,.06);
+            font-size: 9.5px; letter-spacing: .4px;
             transition: background .25s, border-color .25s;
         }
         #mda-statusbar .mda-badge .dot {
-            width: 6px; height: 6px; border-radius: 50%;
-            background: var(--mda-ok); box-shadow: 0 0 6px var(--mda-ok);
+            width: 5px; height: 5px; border-radius: 50%;
+            background: var(--mda-ok); box-shadow: 0 0 5px var(--mda-ok);
         }
         #mda-statusbar .mda-badge.warn { border-color: var(--mda-amber); background: rgba(255,176,32,.10); }
-        #mda-statusbar .mda-badge.warn .dot { background: var(--mda-amber); box-shadow:0 0 6px var(--mda-amber); }
+        #mda-statusbar .mda-badge.warn .dot { background: var(--mda-amber); box-shadow:0 0 5px var(--mda-amber); }
         #mda-statusbar .mda-badge.crit { border-color: var(--mda-crit); background: rgba(255,56,96,.12); }
-        #mda-statusbar .mda-badge.crit .dot { background: var(--mda-crit); box-shadow:0 0 6px var(--mda-crit); animation: mdaPulse 1.2s infinite; }
-        #mda-statusbar .mda-clock { margin-left:auto; color: var(--text-muted); font-size: 10px; }
+        #mda-statusbar .mda-badge.crit .dot { background: var(--mda-crit); box-shadow:0 0 5px var(--mda-crit); animation: mdaPulse 1.2s infinite; }
+        #mda-statusbar .mda-clock { color: var(--text-muted); font-size: 9.5px; }
         @keyframes mdaPulse { 0%,100% { opacity:1 } 50% { opacity:.45 } }
 
-        /* Left layer panel — OSIRIS-style toggle list */
+        /* Left layer panel — OSIRIS-style (chevron groups + iOS switches) */
         #mda-layerpanel {
-            position: fixed; top: 40px; left: 8px; width: 260px;
-            max-height: calc(100vh - 56px); overflow-y: auto;
+            position: fixed; top: 80px; left: 8px; width: 282px;
+            max-height: calc(100vh - 120px); overflow-y: auto;
             background: var(--mda-glass); border: 1px solid var(--mda-edge);
-            border-radius: 6px; backdrop-filter: blur(14px) saturate(140%);
-            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            border-radius: 8px; backdrop-filter: blur(14px) saturate(150%);
+            -webkit-backdrop-filter: blur(14px) saturate(150%);
             color: var(--text-main); font-family: 'Sarabun', sans-serif;
-            z-index: 4500; box-shadow: 0 8px 40px rgba(0,0,0,.55);
+            z-index: 4500; box-shadow: 0 8px 40px rgba(0,0,0,.55), 0 0 0 1px rgba(0,212,255,.06) inset;
             transition: transform .35s ease, opacity .35s ease;
         }
         #mda-layerpanel.collapsed { transform: translateX(-110%); opacity:0; }
         #mda-layerpanel .mda-lp-head {
-            padding: 10px 12px 8px; border-bottom: 1px solid rgba(0,212,255,.15);
+            padding: 12px 14px 10px; border-bottom: 1px solid rgba(0,212,255,.18);
             display: flex; align-items: center; justify-content: space-between;
+            background: linear-gradient(180deg, rgba(0,212,255,.08), rgba(0,212,255,.02));
         }
         #mda-layerpanel .mda-lp-title {
-            font-size: 12px; font-weight: 700; letter-spacing: 1px;
+            font-size: 12px; font-weight: 700; letter-spacing: 1.2px;
             color: var(--cyan); text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(0,212,255,.35);
         }
         #mda-layerpanel .mda-lp-collapse {
             background: transparent; border: 1px solid var(--mda-edge);
             color: var(--text-muted); cursor: pointer; padding: 2px 6px;
             border-radius: 3px; font-size: 10px;
         }
+
+        /* GROUP — collapsible, chevron + master switch */
         #mda-layerpanel .mda-lp-group {
-            padding: 8px 10px 4px;
+            border-bottom: 1px solid rgba(0,212,255,.08);
         }
-        #mda-layerpanel .mda-lp-group-name {
-            font-size: 10px; letter-spacing: 1.5px; color: var(--text-muted);
-            text-transform: uppercase; padding: 4px 2px;
-        }
-        #mda-layerpanel .mda-lp-row {
+        #mda-layerpanel .mda-lp-group:last-child { border-bottom: none; }
+        #mda-layerpanel .mda-lp-group-head {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 6px 6px; border-radius: 4px; cursor: pointer;
+            padding: 9px 12px; cursor: pointer; user-select: none;
             transition: background .15s;
         }
-        #mda-layerpanel .mda-lp-row:hover { background: rgba(0,212,255,.08); }
-        #mda-layerpanel .mda-lp-row.active { background: rgba(0,212,255,.15); }
+        #mda-layerpanel .mda-lp-group-head:hover { background: rgba(0,212,255,.05); }
+        #mda-layerpanel .mda-lp-group-name {
+            font-size: 10.5px; letter-spacing: 1.5px; color: var(--cyan);
+            text-transform: uppercase; display: flex; align-items: center; gap: 8px;
+        }
+        #mda-layerpanel .mda-lp-chev {
+            display: inline-block; width: 10px; transition: transform .25s;
+            color: var(--cyan); font-size: 10px;
+        }
+        #mda-layerpanel .mda-lp-group.collapsed .mda-lp-chev { transform: rotate(-90deg); }
+        #mda-layerpanel .mda-lp-group-body {
+            padding: 2px 8px 8px; max-height: 400px; overflow: hidden;
+            transition: max-height .35s ease;
+        }
+        #mda-layerpanel .mda-lp-group.collapsed .mda-lp-group-body {
+            max-height: 0; padding-top: 0; padding-bottom: 0;
+        }
+
+        /* ROW — bullet dot + label + count chip + iOS-style toggle */
+        #mda-layerpanel .mda-lp-row {
+            display: grid;
+            grid-template-columns: 10px 1fr auto auto;
+            align-items: center; gap: 8px;
+            padding: 7px 6px; border-radius: 5px;
+            transition: background .15s;
+        }
+        #mda-layerpanel .mda-lp-row:hover { background: rgba(0,212,255,.06); }
+        #mda-layerpanel .mda-lp-row .bullet {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--text-muted); justify-self: center;
+            box-shadow: 0 0 0 2px rgba(0,0,0,.4);
+        }
+        #mda-layerpanel .mda-lp-row.on .bullet {
+            background: var(--cyan); box-shadow: 0 0 8px var(--cyan), 0 0 0 2px rgba(0,212,255,.15);
+        }
         #mda-layerpanel .mda-lp-row .label {
-            font-size: 12px; display: flex; align-items: center; gap: 8px;
+            font-size: 12px; color: var(--text-main);
+            display: flex; align-items: center; gap: 6px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
         #mda-layerpanel .mda-lp-row .swatch {
-            width: 10px; height: 10px; border-radius: 2px;
-            border: 1px solid rgba(255,255,255,.15);
+            width: 9px; height: 9px; border-radius: 2px;
+            border: 1px solid rgba(255,255,255,.18); flex-shrink: 0;
         }
         #mda-layerpanel .mda-lp-row .count {
             font-family: 'Share Tech Mono', monospace; font-size: 10px;
-            color: var(--text-muted); background: rgba(0,0,0,.25);
-            padding: 1px 6px; border-radius: 10px; min-width: 22px; text-align:center;
+            color: var(--text-muted); background: rgba(0,0,0,.32);
+            padding: 1px 7px; border-radius: 10px; min-width: 24px; text-align:center;
+            border: 1px solid rgba(0,212,255,.12);
         }
-        #mda-layerpanel .mda-lp-row.active .count { color: var(--cyan); }
+        #mda-layerpanel .mda-lp-row.on .count { color: var(--cyan); border-color: rgba(0,212,255,.35); }
 
-        /* Right intel feed — live alerts + fusion briefing */
-        #mda-intelfeed {
-            position: fixed; top: 40px; right: 8px; width: 320px;
-            max-height: calc(100vh - 56px); overflow-y: auto;
-            background: var(--mda-glass); border: 1px solid var(--mda-edge);
-            border-radius: 6px; backdrop-filter: blur(14px) saturate(140%);
-            -webkit-backdrop-filter: blur(14px) saturate(140%);
-            color: var(--text-main); font-family: 'Sarabun', sans-serif;
-            z-index: 4500; box-shadow: 0 8px 40px rgba(0,0,0,.55);
-            transition: transform .35s ease, opacity .35s ease;
+        /* iOS-style toggle switch */
+        .mda-sw {
+            position: relative; width: 30px; height: 16px;
+            background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.15);
+            border-radius: 999px; cursor: pointer;
+            transition: background .25s, border-color .25s;
+            flex-shrink: 0;
         }
-        #mda-intelfeed.collapsed { transform: translateX(110%); opacity:0; }
-        #mda-intelfeed .mda-if-head {
-            padding: 10px 12px 8px; border-bottom: 1px solid rgba(0,212,255,.15);
-            display: flex; align-items: center; justify-content: space-between;
+        .mda-sw::after {
+            content: ''; position: absolute; top: 1px; left: 1px;
+            width: 12px; height: 12px; border-radius: 50%;
+            background: #d8d8d8; box-shadow: 0 1px 3px rgba(0,0,0,.5);
+            transition: left .25s, background .25s;
         }
-        #mda-intelfeed .mda-if-title {
-            font-size: 12px; font-weight: 700; letter-spacing: 1px;
-            color: var(--cyan); text-transform: uppercase;
+        .mda-sw.on {
+            background: linear-gradient(90deg, rgba(0,212,255,.85), rgba(0,212,255,.55));
+            border-color: rgba(0,212,255,.6);
+            box-shadow: 0 0 10px rgba(0,212,255,.35);
         }
-        #mda-intelfeed .mda-if-tabs {
-            display:flex; gap:4px; padding: 6px 8px;
-            border-bottom:1px solid rgba(0,212,255,.10);
+        .mda-sw.on::after { left: 15px; background: #fff; }
+
+        /* Radio-style row (used by BASEMAP group) */
+        #mda-layerpanel .mda-lp-row.radio { cursor: pointer; }
+        #mda-layerpanel .mda-lp-row.radio .mda-rdo {
+            width: 14px; height: 14px; border-radius: 50%;
+            border: 1.5px solid rgba(0,212,255,.5); position: relative;
+            justify-self: end;
         }
-        #mda-intelfeed .mda-if-tab {
-            padding: 4px 10px; border-radius: 3px; cursor: pointer;
-            font-size: 11px; color: var(--text-muted);
-            border: 1px solid transparent;
-        }
-        #mda-intelfeed .mda-if-tab:hover { color: var(--text-main); background: rgba(0,212,255,.06); }
-        #mda-intelfeed .mda-if-tab.active {
-            color: var(--cyan); border-color: var(--mda-edge);
-            background: rgba(0,212,255,.12);
-        }
-        #mda-intelfeed .mda-if-body { padding: 8px 10px; }
-        #mda-intelfeed .mda-alert {
-            display: grid; grid-template-columns: 4px 1fr; gap: 8px;
-            padding: 7px 6px 7px 4px; margin-bottom: 6px;
-            background: rgba(0,0,0,.22); border-radius: 4px;
-            border-left: 3px solid var(--mda-edge);
-            font-size: 11.5px; line-height: 1.35;
-        }
-        #mda-intelfeed .mda-alert.sev-low    { border-left-color: var(--mda-ok); }
-        #mda-intelfeed .mda-alert.sev-med    { border-left-color: var(--mda-amber); }
-        #mda-intelfeed .mda-alert.sev-high   { border-left-color: var(--mda-crit); }
-        #mda-intelfeed .mda-alert .meta {
-            font-family: 'Share Tech Mono', monospace; font-size: 9.5px;
-            color: var(--text-muted); margin-top: 2px;
-        }
-        #mda-intelfeed .mda-alert .tag {
-            display:inline-block; padding:1px 5px; border-radius:8px;
-            background: rgba(0,212,255,.12); color: var(--cyan);
-            font-size: 9px; margin-right: 4px; letter-spacing: .5px;
-        }
-        #mda-intelfeed .mda-empty {
-            text-align: center; padding: 30px 10px; color: var(--text-muted);
-            font-size: 11px; font-style: italic;
+        #mda-layerpanel .mda-lp-row.radio.on .mda-rdo::after {
+            content: ''; position: absolute; inset: 2px;
+            border-radius: 50%; background: var(--cyan);
+            box-shadow: 0 0 8px var(--cyan);
         }
 
-        /* Toggle handles when panels collapsed */
+        /* Toggle handle (left only) */
         .mda-handle {
             position: fixed; top: 50%; transform: translateY(-50%);
             width: 22px; height: 60px; cursor: pointer;
@@ -1902,134 +1923,196 @@
             opacity: 0; pointer-events: none; transition: opacity .25s;
         }
         .mda-handle.visible { opacity: 1; pointer-events: all; }
-        #mda-handle-left  { left: 0; border-radius: 0 4px 4px 0; }
-        #mda-handle-right { right: 0; border-radius: 4px 0 0 4px; }
+        #mda-handle-left { left: 0; border-radius: 0 4px 4px 0; }
 
-        /* nudge top of map controls below status bar */
-        .leaflet-top { top: 36px !important; }
+        /* Toast for layer toggle feedback */
+        #mda-toast {
+            position: fixed; bottom: 56px; left: 50%; transform: translateX(-50%);
+            padding: 6px 14px; background: rgba(2,9,18,.92);
+            border: 1px solid var(--mda-edge); border-radius: 999px;
+            color: var(--cyan); font-family: 'Share Tech Mono', monospace;
+            font-size: 11px; z-index: 5001; opacity: 0;
+            transition: opacity .25s; pointer-events: none;
+            backdrop-filter: blur(10px);
+        }
+        #mda-toast.show { opacity: 1; }
+
         /* hide MDA chrome until OSIRIS mode armed (default = OFF) */
         body:not(.mda-mode) #mda-statusbar,
         body:not(.mda-mode) #mda-layerpanel,
-        body:not(.mda-mode) #mda-intelfeed,
-        body:not(.mda-mode) .mda-handle { display: none !important; }
+        body:not(.mda-mode) .mda-handle,
+        body:not(.mda-mode) #mda-toast { display: none !important; }
     </style>
 </head>
 <body>
 
 <!-- ════════════════════════════════════════════════════════════════
-     [v12 / The Shield 2.0]  MDA UI CHROME — OSIRIS-style overlay
+     [v12.1 / The Shield 2.0]  MDA UI CHROME — refined overlay
      ════════════════════════════════════════════════════════════════
-     • #mda-statusbar  — top horizontal strip with global SA badges
-     • #mda-layerpanel — left side, layer toggles by domain
-     • #mda-intelfeed  — right side, fused alerts + briefing
-     โครงสร้างนี้ overlay บน Leaflet เดิม (ไม่กระทบเครื่องมือ v11)
+     • #mda-statusbar  — compact bottom-center pill (ไม่บังหัวข้อ)
+     • #mda-layerpanel — left side, OSIRIS-style groups + switches
+     • intelfeed       — REMOVED (ตามคำขอ #2)
      ──────────────────────────────────────────────────────────────── -->
 
-<!-- Top Status Bar — global MDA awareness strip -->
+<!-- Status pill (bottom-center) -->
 <div id="mda-statusbar">
-    <span class="mda-brand">🛡 THE SHIELD 2.0<span class="v">v12·MDA</span></span>
+    <span class="mda-brand">🛡 SHIELD<span class="v">2.0</span></span>
     <span class="mda-sep">│</span>
-    <span class="mda-badge" id="mda-bdg-air"     title="Air domain · OpenSky">
+    <span class="mda-badge" id="mda-bdg-air"     title="Air · OpenSky">
         <span class="dot"></span>AIR <b id="mda-cnt-air">0</b></span>
-    <span class="mda-badge" id="mda-bdg-sea"     title="Maritime domain · AIS local + global">
+    <span class="mda-badge" id="mda-bdg-sea"     title="Maritime · AIS">
         <span class="dot"></span>SEA <b id="mda-cnt-sea">0</b></span>
-    <span class="mda-badge" id="mda-bdg-seismic" title="Hazard · USGS Earthquake">
-        <span class="dot"></span>SEISMIC <b id="mda-cnt-seismic">0</b></span>
-    <span class="mda-badge" id="mda-bdg-space"   title="Space Wx · NOAA SWPC Kp">
-        <span class="dot"></span>SPACE Kp <b id="mda-cnt-space">--</b></span>
-    <span class="mda-badge" id="mda-bdg-gdelt"   title="Info domain · GDELT events Indochina">
+    <span class="mda-badge" id="mda-bdg-seismic" title="Hazard · USGS">
+        <span class="dot"></span>SEIS <b id="mda-cnt-seismic">0</b></span>
+    <span class="mda-badge" id="mda-bdg-space"   title="Space · NOAA Kp">
+        <span class="dot"></span>Kp <b id="mda-cnt-space">--</b></span>
+    <span class="mda-badge" id="mda-bdg-gdelt"   title="Info · GDELT">
         <span class="dot"></span>GDELT <b id="mda-cnt-gdelt">0</b></span>
-    <span class="mda-badge" id="mda-bdg-fusion"  title="Intel Fusion · briefing items">
+    <span class="mda-badge" id="mda-bdg-fusion"  title="Fusion items">
         <span class="dot"></span>FUSION <b id="mda-cnt-fusion">0</b></span>
     <span class="mda-clock" id="mda-clock">--:--:-- UTC</span>
 </div>
 
-<!-- Left Layer Panel — domain-grouped toggles + entity counts -->
+<!-- Left Layer Panel — OSIRIS-style (chevron groups + iOS switches) -->
 <div id="mda-layerpanel">
     <div class="mda-lp-head">
         <div class="mda-lp-title">⛛ Layers · MDA</div>
         <button class="mda-lp-collapse" id="mda-lp-collapse">◀</button>
     </div>
 
-    <div class="mda-lp-group">
-        <div class="mda-lp-group-name">☰ Air Domain</div>
-        <div class="mda-lp-row active" data-mda-layer="aviation">
-            <span class="label"><span class="swatch" style="background:#ffd700"></span>OpenSky Flights</span>
-            <span class="count" id="mda-cnt-aviation">--</span>
+    <!-- BASEMAP — Dark / Satellite radio -->
+    <div class="mda-lp-group" data-group="basemap">
+        <div class="mda-lp-group-head">
+            <span class="mda-lp-group-name"><span class="mda-lp-chev">▾</span> BASEMAP</span>
+        </div>
+        <div class="mda-lp-group-body">
+            <div class="mda-lp-row radio on" data-mda-base="dark">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#1a1a1f"></span>Dark Matter</span>
+                <span class="count">CartoDB</span>
+                <span class="mda-rdo"></span>
+            </div>
+            <div class="mda-lp-row radio" data-mda-base="sat">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#3d5a40"></span>Satellite</span>
+                <span class="count">Esri</span>
+                <span class="mda-rdo"></span>
+            </div>
         </div>
     </div>
 
-    <div class="mda-lp-group">
-        <div class="mda-lp-group-name">☰ Maritime Domain</div>
-        <div class="mda-lp-row active" data-mda-layer="ais-heat">
-            <span class="label"><span class="swatch" style="background:#00d4ff"></span>AIS Heatmap (local)</span>
-            <span class="count" id="mda-cnt-aisheat">--</span>
+    <!-- AIR DOMAIN -->
+    <div class="mda-lp-group" data-group="air">
+        <div class="mda-lp-group-head">
+            <span class="mda-lp-group-name"><span class="mda-lp-chev">▾</span> ✈ AIR DOMAIN</span>
         </div>
-        <div class="mda-lp-row active" data-mda-layer="ais-anomaly">
-            <span class="label"><span class="swatch" style="background:#ff3860"></span>AIS Anomaly</span>
-            <span class="count" id="mda-cnt-aisanom">--</span>
-        </div>
-    </div>
-
-    <div class="mda-lp-group">
-        <div class="mda-lp-group-name">☰ Hazard / Environment</div>
-        <div class="mda-lp-row active" data-mda-layer="seismic">
-            <span class="label"><span class="swatch" style="background:#ff7f50"></span>Seismic (USGS)</span>
-            <span class="count" id="mda-cnt-seismic-row">--</span>
+        <div class="mda-lp-group-body">
+            <div class="mda-lp-row on" data-mda-layer="aviation">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#ffd700"></span>OpenSky Flights</span>
+                <span class="count" id="mda-cnt-aviation">--</span>
+                <span class="mda-sw on"></span>
+            </div>
         </div>
     </div>
 
-    <div class="mda-lp-group">
-        <div class="mda-lp-group-name">☰ Space Domain</div>
-        <div class="mda-lp-row active" data-mda-layer="space">
-            <span class="label"><span class="swatch" style="background:#b39ddb"></span>NOAA Kp Index</span>
-            <span class="count" id="mda-cnt-space-row">--</span>
+    <!-- MARITIME DOMAIN (counts only; layers stay in v11 toolbox) -->
+    <div class="mda-lp-group" data-group="sea">
+        <div class="mda-lp-group-head">
+            <span class="mda-lp-group-name"><span class="mda-lp-chev">▾</span> ⚓ MARITIME DOMAIN</span>
+        </div>
+        <div class="mda-lp-group-body">
+            <div class="mda-lp-row" data-mda-layer="ais-heat" title="ตัวควบคุมหลักอยู่ใน toolbar v11">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#00d4ff"></span>AIS Heatmap (local)</span>
+                <span class="count" id="mda-cnt-aisheat">--</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-layer="ais-anomaly" title="ตัวควบคุมหลักอยู่ใน toolbar v11">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#ff3860"></span>AIS Anomaly</span>
+                <span class="count" id="mda-cnt-aisanom">--</span>
+                <span class="mda-sw"></span>
+            </div>
         </div>
     </div>
 
-    <div class="mda-lp-group">
-        <div class="mda-lp-group-name">☰ Information Domain</div>
-        <div class="mda-lp-row active" data-mda-layer="gdelt">
-            <span class="label"><span class="swatch" style="background:#39ff14"></span>GDELT Events</span>
-            <span class="count" id="mda-cnt-gdelt-row">--</span>
+    <!-- HAZARD DOMAIN -->
+    <div class="mda-lp-group" data-group="hazard">
+        <div class="mda-lp-group-head">
+            <span class="mda-lp-group-name"><span class="mda-lp-chev">▾</span> ⛰ HAZARD / ENV</span>
+        </div>
+        <div class="mda-lp-group-body">
+            <div class="mda-lp-row on" data-mda-layer="seismic">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#ff7f50"></span>Seismic (USGS)</span>
+                <span class="count" id="mda-cnt-seismic-row">--</span>
+                <span class="mda-sw on"></span>
+            </div>
         </div>
     </div>
 
-    <div class="mda-lp-group">
-        <div class="mda-lp-group-name">☰ Cyber / Sensor Health</div>
-        <div class="mda-lp-row" data-mda-layer="cve" title="ติดตั้งภายหลัง — CVE feed (NVD) ผ่าน Cloudflare Worker">
-            <span class="label"><span class="swatch" style="background:#666"></span>CVE (planned)</span>
-            <span class="count">—</span>
+    <!-- SPACE DOMAIN -->
+    <div class="mda-lp-group" data-group="space">
+        <div class="mda-lp-group-head">
+            <span class="mda-lp-group-name"><span class="mda-lp-chev">▾</span> ☄ SPACE DOMAIN</span>
+        </div>
+        <div class="mda-lp-group-body">
+            <div class="mda-lp-row on" data-mda-layer="space">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#b39ddb"></span>NOAA Kp Index</span>
+                <span class="count" id="mda-cnt-space-row">--</span>
+                <span class="mda-sw on"></span>
+            </div>
         </div>
     </div>
 
-    <div class="mda-lp-group" style="border-top:1px solid rgba(0,212,255,.15); padding-top:8px; margin-top:6px;">
-        <div class="mda-lp-row" id="mda-refresh-all" style="cursor:pointer;">
-            <span class="label" style="color:var(--cyan);">↻ Refresh All Feeds</span>
-            <span class="count" id="mda-last-refresh">--</span>
+    <!-- INFORMATION DOMAIN -->
+    <div class="mda-lp-group" data-group="info">
+        <div class="mda-lp-group-head">
+            <span class="mda-lp-group-name"><span class="mda-lp-chev">▾</span> 📰 INFO DOMAIN</span>
+        </div>
+        <div class="mda-lp-group-body">
+            <div class="mda-lp-row on" data-mda-layer="gdelt">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#39ff14"></span>GDELT Events</span>
+                <span class="count" id="mda-cnt-gdelt-row">--</span>
+                <span class="mda-sw on"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CYBER DOMAIN (planned) -->
+    <div class="mda-lp-group collapsed" data-group="cyber">
+        <div class="mda-lp-group-head">
+            <span class="mda-lp-group-name"><span class="mda-lp-chev">▾</span> 🛡 CYBER / SENSOR</span>
+        </div>
+        <div class="mda-lp-group-body">
+            <div class="mda-lp-row" data-mda-layer="cve" title="ติดตั้งภายหลัง — CVE feed (NVD)">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#666"></span>CVE (planned)</span>
+                <span class="count">—</span>
+                <span class="mda-sw"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Refresh All button -->
+    <div class="mda-lp-group" data-group="actions">
+        <div class="mda-lp-group-body" style="padding-top: 6px;">
+            <div class="mda-lp-row" id="mda-refresh-all" style="cursor:pointer; background: rgba(0,212,255,.06);">
+                <span class="bullet" style="background: var(--cyan); box-shadow: 0 0 8px var(--cyan);"></span>
+                <span class="label" style="color:var(--cyan);">↻ Refresh All Feeds</span>
+                <span class="count" id="mda-last-refresh">--</span>
+                <span style="width:30px;"></span>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Right Intel Feed — fused alerts + scrollable briefing -->
-<div id="mda-intelfeed">
-    <div class="mda-if-head">
-        <div class="mda-if-title">⚠ Intel Feed</div>
-        <button class="mda-lp-collapse" id="mda-if-collapse">▶</button>
-    </div>
-    <div class="mda-if-tabs">
-        <div class="mda-if-tab active" data-mda-tab="fusion">FUSION</div>
-        <div class="mda-if-tab" data-mda-tab="alerts">ALERTS</div>
-        <div class="mda-if-tab" data-mda-tab="raw">RAW</div>
-    </div>
-    <div class="mda-if-body" id="mda-if-body">
-        <div class="mda-empty">รอข้อมูลจาก feed ทั้ง ๖ Domain…</div>
-    </div>
-</div>
-
-<!-- Collapsed handles to reopen panels -->
-<div class="mda-handle" id="mda-handle-left"  title="แสดง Layer Panel">▶</div>
-<div class="mda-handle" id="mda-handle-right" title="แสดง Intel Feed">◀</div>
+<!-- Toast notification + collapsed handle (left only) -->
+<div id="mda-toast"></div>
+<div class="mda-handle" id="mda-handle-left" title="แสดง Layer Panel">▶</div>
 
 <!-- ── Boot / Initialization Screen ───────────────────────────── -->
 <div id="bootScreen">
@@ -3186,12 +3269,18 @@ const map = L.map('mapContainer', {
     preferCanvas: false,
 });
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+// [v12.1] Basemap layers — Dark (default) + Satellite, สลับได้จาก MDA layer panel
+window.__basemapDark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
     subdomains: 'abcd',
     maxZoom: 16,
     minZoom: 9,
 }).addTo(map);
+window.__basemapSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+    maxZoom: 18,
+    minZoom: 3,
+});
 
 // ═══════════════════════════════════════════════════════════════
 //  [v11] AIS TRAJECTORY HEATMAP — kernel density จากตำแหน่งเรือ
@@ -18157,8 +18246,18 @@ function _sonarEqnRender(panel) {
                 setCount('mda-cnt-aviation', states.length);
                 console.log('[MDA·Aviation]', states.length, 'flights');
             } catch (e) {
-                console.warn('[MDA·Aviation] fetch fail:', e.message);
-                setBadge('air', 'ERR', 'crit');
+                // OpenSky anonymous endpoint อาจโดน rate-limit (403/429)
+                // อย่าทำให้ UI ค้าง — เก็บข้อมูลเดิม + แสดงสถานะ ratelimit
+                const msg = (e && e.message) || '';
+                const isLimit = /403|429/.test(msg);
+                console.warn('[MDA·Aviation] fetch fail:', msg, isLimit ? '(rate-limited)' : '');
+                if (isLimit) {
+                    setBadge('air', 'LIMIT', 'warn');
+                    const el = document.getElementById('mda-cnt-aviation');
+                    if (el) el.textContent = '⏳';
+                } else {
+                    setBadge('air', 'ERR', 'crit');
+                }
             }
         }
         return { layer, refresh, name: 'Aviation' };
@@ -18256,17 +18355,32 @@ function _sonarEqnRender(panel) {
         async function refresh() {
             try {
                 const j = await fetchJSON(URL, 'space', MDA.cfg.cacheTTL.space);
-                // j[0] = header, j[1..] = rows · last row คือล่าสุด
-                const last = j[j.length - 1];
-                const kp = parseFloat(last[1]);
-                MDA.data.space = { kp, time: last[0] };
+                // robust parsing — SWPC คืน array of arrays โดยแถวแรก = header
+                // หรือในบางช่วงคืน array of objects { time_tag, kp_index, ... }
+                if (!Array.isArray(j) || j.length < 2) throw new Error('Bad SWPC payload');
+                let kp = NaN, ts = '';
+                // หาแถวล่าสุดจากท้าย ที่มี value parse-able
+                for (let i = j.length - 1; i >= 1; i--) {
+                    const row = j[i];
+                    if (Array.isArray(row)) {
+                        // [time_tag, Kp, a_running, station_count]
+                        const v = parseFloat(row[1]);
+                        if (!isNaN(v)) { kp = v; ts = row[0]; break; }
+                    } else if (row && typeof row === 'object') {
+                        const v = parseFloat(row.kp_index ?? row.kp ?? row.Kp);
+                        if (!isNaN(v)) { kp = v; ts = row.time_tag || ''; break; }
+                    }
+                }
+                if (isNaN(kp)) throw new Error('Kp parse fail');
+                MDA.data.space = { kp, time: ts };
                 const level = kp >= 5 ? 'crit' : (kp >= 4 ? 'warn' : null);
                 setBadge('space', kp.toFixed(1), level);
                 setCount('mda-cnt-space-row', 'Kp ' + kp.toFixed(1));
-                console.log('[MDA·SpaceWx] Kp =', kp);
+                console.log('[MDA·SpaceWx] Kp =', kp, '@', ts);
             } catch (e) {
-                console.warn('[MDA·SpaceWx] fetch fail:', e.message);
+                console.warn('[MDA·SpaceWx] fetch/parse fail:', e.message);
                 setBadge('space', 'ERR', 'crit');
+                setCount('mda-cnt-space-row', '--');
             }
         }
         return { layer, refresh, name: 'SpaceWx' };
@@ -18449,55 +18563,112 @@ function _sonarEqnRender(panel) {
         document.head.appendChild(s);
     }
 
+    // toast helper (UI feedback when toggling)
+    function toast(msg) {
+        const el = document.getElementById('mda-toast');
+        if (!el) return;
+        el.textContent = msg;
+        el.classList.add('show');
+        clearTimeout(el.__t);
+        el.__t = setTimeout(() => el.classList.remove('show'), 1600);
+    }
+
     function wireUp() {
-        // ── เพิ่ม layer เข้า map (เปิดเริ่มต้น)
+        // ── เพิ่ม layer เข้า map (เปิดเริ่มต้น) — row ที่ติด .on
         MDA.Aviation.layer.addTo(map);
         MDA.Seismic.layer.addTo(map);
         MDA.GDELT.layer.addTo(map);
-        // SpaceWx ไม่มี marker — placeholder layer
+        // SpaceWx ไม่ใช่ marker layer — แค่อัปเดต badge
 
-        // ── layer panel toggles
-        document.querySelectorAll('#mda-layerpanel .mda-lp-row[data-mda-layer]').forEach(row => {
-            row.addEventListener('click', () => {
-                const key = row.dataset.mdaLayer;
-                if (key === 'cve') return; // planned
-                const isOn = row.classList.toggle('active');
-                MDA.state.on[key] = isOn;
-                // map layer toggle (เฉพาะที่มี layer)
-                const mapping = {
-                    'aviation': MDA.Aviation.layer,
-                    'seismic':  MDA.Seismic.layer,
-                    'space':    MDA.SpaceWx.layer,
-                    'gdelt':    MDA.GDELT.layer
-                };
-                const lyr = mapping[key];
-                if (lyr) { isOn ? lyr.addTo(map) : map.removeLayer(lyr); }
-                // ais-heat / ais-anomaly เป็น layer ของ v11 — handled by existing v11 toggles
-                console.log('[MDA] toggle', key, '=', isOn);
+        const layerMap = {
+            'aviation': MDA.Aviation.layer,
+            'seismic':  MDA.Seismic.layer,
+            'space':    MDA.SpaceWx.layer,
+            'gdelt':    MDA.GDELT.layer
+        };
+        const labelMap = {
+            'aviation': 'OpenSky Flights',
+            'seismic':  'USGS Seismic',
+            'space':    'Space Weather',
+            'gdelt':    'GDELT Events',
+            'ais-heat': 'AIS Heatmap',
+            'ais-anomaly': 'AIS Anomaly'
+        };
+
+        // ── chevron expand/collapse per group
+        document.querySelectorAll('#mda-layerpanel .mda-lp-group-head').forEach(head => {
+            head.addEventListener('click', (e) => {
+                // ignore clicks on master switch or radio
+                if (e.target.classList.contains('mda-sw')) return;
+                head.parentElement.classList.toggle('collapsed');
             });
         });
 
-        // ── tabs
-        document.querySelectorAll('.mda-if-tab').forEach(tab => {
-            tab.addEventListener('click', () => MDA.Fusion.setTab(tab.dataset.mdaTab));
+        // ── layer row toggle (entire row OR the switch)
+        document.querySelectorAll('#mda-layerpanel .mda-lp-row[data-mda-layer]').forEach(row => {
+            const sw = row.querySelector('.mda-sw');
+            const handler = (e) => {
+                e.stopPropagation();
+                const key = row.dataset.mdaLayer;
+                if (key === 'cve') { toast('CVE feed · planned (NVD)'); return; }
+                const turningOn = !row.classList.contains('on');
+                row.classList.toggle('on', turningOn);
+                if (sw) sw.classList.toggle('on', turningOn);
+                MDA.state.on[key] = turningOn;
+                const lyr = layerMap[key];
+                if (lyr) {
+                    if (turningOn) {
+                        lyr.addTo(map);
+                        // bring to front so user sees visual change immediately
+                        if (lyr.bringToFront) try { lyr.bringToFront(); } catch(_){}
+                    } else {
+                        map.removeLayer(lyr);
+                    }
+                }
+                // ais-heat / ais-anomaly = v11 layer (no direct hook here)
+                toast((turningOn ? 'ON · ' : 'OFF · ') + (labelMap[key] || key));
+                console.log('[MDA] toggle', key, '=', turningOn);
+            };
+            row.addEventListener('click', handler);
+            if (sw) sw.addEventListener('click', handler);
         });
 
-        // ── handles (collapse/expand left & right)
-        const lp = document.getElementById('mda-layerpanel');
-        const ifd = document.getElementById('mda-intelfeed');
-        const hL = document.getElementById('mda-handle-left');
-        const hR = document.getElementById('mda-handle-right');
-        const bL = document.getElementById('mda-lp-collapse');
-        const bR = document.getElementById('mda-if-collapse');
+        // ── BASEMAP radio (Dark ↔ Satellite)
+        document.querySelectorAll('#mda-layerpanel .mda-lp-row[data-mda-base]').forEach(row => {
+            row.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const which = row.dataset.mdaBase;
+                document.querySelectorAll('#mda-layerpanel .mda-lp-row[data-mda-base]')
+                    .forEach(r => r.classList.toggle('on', r === row));
+                try {
+                    if (which === 'sat') {
+                        if (map.hasLayer(window.__basemapDark)) map.removeLayer(window.__basemapDark);
+                        window.__basemapSat.addTo(map);
+                        window.__basemapSat.bringToBack();
+                        toast('Basemap · Satellite (Esri)');
+                    } else {
+                        if (map.hasLayer(window.__basemapSat))  map.removeLayer(window.__basemapSat);
+                        window.__basemapDark.addTo(map);
+                        window.__basemapDark.bringToBack();
+                        toast('Basemap · Dark (CartoDB)');
+                    }
+                } catch (err) {
+                    console.warn('[MDA] basemap switch failed', err);
+                    toast('Basemap switch error');
+                }
+            });
+        });
 
-        bL && bL.addEventListener('click', () => { lp.classList.add('collapsed'); hL.classList.add('show'); });
-        hL && hL.addEventListener('click', () => { lp.classList.remove('collapsed'); hL.classList.remove('show'); });
-        bR && bR.addEventListener('click', () => { ifd.classList.add('collapsed'); hR.classList.add('show'); });
-        hR && hR.addEventListener('click', () => { ifd.classList.remove('collapsed'); hR.classList.remove('show'); });
+        // ── handle collapse/expand (left only — intelfeed REMOVED)
+        const lp  = document.getElementById('mda-layerpanel');
+        const hL  = document.getElementById('mda-handle-left');
+        const bL  = document.getElementById('mda-lp-collapse');
+        bL && bL.addEventListener('click', () => { lp.classList.add('collapsed'); hL && hL.classList.add('visible'); });
+        hL && hL.addEventListener('click', () => { lp.classList.remove('collapsed'); hL.classList.remove('visible'); });
 
         // ── refresh all
         const rfA = document.getElementById('mda-refresh-all');
-        rfA && rfA.addEventListener('click', () => refreshAll(true));
+        rfA && rfA.addEventListener('click', () => { toast('Refreshing all feeds…'); refreshAll(true); });
 
         // ── UTC clock
         const clock = document.getElementById('mda-clock');
