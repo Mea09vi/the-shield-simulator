@@ -19342,8 +19342,19 @@ function _sonarEqnRender(panel) {
         // Clear existing controls (will re-add inside sections)
         controls.forEach(c => rail.removeChild(c));
 
+        // v12.7.2 — stash OTHER controls in hidden div so getElementById still works
+        // (placeGUUVBtn / placePatrolBtn / placeSurveyBtn ต้องอยู่ใน DOM สำหรับ bf-deploy-panel btn.click())
+        if (!document.getElementById('rr-stash')) {
+            const s = document.createElement('div');
+            s.id = 'rr-stash';
+            s.style.cssText = 'display:none;position:absolute;width:0;height:0;overflow:hidden;';
+            document.body.appendChild(s);
+        }
+        const rrStash = document.getElementById('rr-stash');
+        (groups['OTHER'] || []).forEach(c => rrStash.appendChild(c));
+
         // Order categories
-        // v12.6.4 — ลบ ASSETS + OTHER ตามคำขอ
+        // v12.6.4 — ลบ ASSETS + OTHER ออกจาก right-rail (ย้ายไป bf-deploy-panel แทน)
         const ORDER = ['🗺 BASE MAP','🛡 ZONES · เขต','⚓ INFRA · โครงสร้าง','🔬 ANALYSIS · ฟิสิกส์'];
         ORDER.forEach((cat, idx) => {
             const items = groups[cat]; if (!items || items.length === 0) return;
