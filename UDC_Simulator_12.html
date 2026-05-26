@@ -1936,10 +1936,192 @@
         }
         #mda-toast.show { opacity: 1; }
 
+        /* ════════════════════════════════════════════════════════════════
+           v12.4 — DEPLOY BLUE FORCE panel (right-side, draggable, hideable)
+           ──────────────────────────────────────────────────────────────── */
+        #bf-deploy-panel {
+            position: fixed; top: 80px; right: 8px; width: 232px;
+            max-height: calc(100vh - 120px); overflow-y: auto;
+            background: var(--mda-glass); border: 1px solid var(--mda-edge);
+            border-radius: 8px; backdrop-filter: blur(14px) saturate(150%);
+            -webkit-backdrop-filter: blur(14px) saturate(150%);
+            color: var(--text-main); font-family: 'Sarabun', sans-serif;
+            z-index: 4500; box-shadow: 0 8px 40px rgba(0,0,0,.55), 0 0 0 1px rgba(0,212,255,.06) inset;
+            transition: transform .35s ease, opacity .35s ease;
+        }
+        #bf-deploy-panel.collapsed { transform: translateX(110%); opacity: 0; pointer-events: none; }
+        #bf-deploy-panel.dragging {
+            transition: none; opacity: .92;
+            box-shadow: 0 12px 60px rgba(0,212,255,.4), 0 0 0 1px rgba(0,212,255,.3) inset;
+        }
+        #bf-deploy-panel .bf-dp-head {
+            padding: 7px 12px 6px; border-bottom: 1px solid rgba(0,212,255,.18);
+            display: flex; align-items: center; justify-content: space-between;
+            background: linear-gradient(180deg, rgba(0,212,255,.10), rgba(0,212,255,.02));
+            cursor: move; user-select: none;
+        }
+        #bf-deploy-panel .bf-dp-head:hover {
+            background: linear-gradient(180deg, rgba(0,212,255,.16), rgba(0,212,255,.04));
+        }
+        #bf-deploy-panel .bf-dp-head::before {
+            content: '⋮⋮'; color: rgba(0,212,255,.45); font-size: 11px;
+            letter-spacing: -2px; margin-right: 6px; line-height: 1;
+        }
+        #bf-deploy-panel .bf-dp-title {
+            font-size: 11px; font-weight: 700; letter-spacing: 1.1px;
+            color: var(--cyan); text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(0,212,255,.35); flex: 1;
+        }
+        #bf-deploy-panel .bf-dp-collapse {
+            background: transparent; border: 1px solid var(--mda-edge);
+            color: var(--text-muted); cursor: pointer; padding: 1px 6px;
+            border-radius: 3px; font-size: 10px;
+        }
+        #bf-deploy-panel .bf-dp-collapse:hover { color: var(--cyan); border-color: var(--mda-edge-hi); }
+
+        #bf-deploy-panel .bf-dp-group { border-bottom: 1px solid rgba(0,212,255,.08); }
+        #bf-deploy-panel .bf-dp-group:last-child { border-bottom: none; }
+        #bf-deploy-panel .bf-dp-group-head {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 5px 10px; cursor: pointer; user-select: none;
+            transition: background .15s;
+        }
+        #bf-deploy-panel .bf-dp-group-head:hover { background: rgba(0,212,255,.05); }
+        #bf-deploy-panel .bf-dp-group-name {
+            font-size: 10px; letter-spacing: 1.3px;
+            text-transform: uppercase; display: flex; align-items: center; gap: 6px;
+        }
+        #bf-deploy-panel .bf-dp-chev {
+            display: inline-block; width: 9px; transition: transform .25s;
+            font-size: 9px;
+        }
+        #bf-deploy-panel .bf-dp-group.collapsed .bf-dp-chev { transform: rotate(-90deg); }
+        #bf-deploy-panel .bf-dp-group-body {
+            padding: 3px 6px 6px; max-height: 200px; overflow: hidden;
+            transition: max-height .35s ease;
+        }
+        #bf-deploy-panel .bf-dp-group.collapsed .bf-dp-group-body {
+            max-height: 0; padding-top: 0; padding-bottom: 0;
+        }
+        #bf-deploy-panel .bf-dp-count {
+            font-family: 'Share Tech Mono', monospace; font-size: 9px;
+            color: var(--text-muted); background: rgba(0,0,0,.32);
+            padding: 0 6px; border-radius: 10px; min-width: 22px; text-align: center;
+            border: 1px solid rgba(0,212,255,.12); line-height: 14px;
+        }
+        #bf-deploy-panel .bf-dp-group.active .bf-dp-count {
+            color: var(--cyan); border-color: rgba(0,212,255,.35);
+        }
+
+        /* ASSETS — action row (button-style, no toggle switch) */
+        #bf-deploy-panel .bf-dp-row {
+            display: grid;
+            grid-template-columns: 22px 1fr 14px;
+            align-items: center; gap: 6px;
+            padding: 6px 8px; border-radius: 5px;
+            cursor: pointer; transition: background .15s, border-color .15s, box-shadow .15s;
+            margin-bottom: 3px; background: rgba(8,21,37,.50);
+            border: 1px solid rgba(100,116,139,.18);
+        }
+        #bf-deploy-panel .bf-dp-row:last-child { margin-bottom: 0; }
+        #bf-deploy-panel .bf-dp-row .bf-dp-ico {
+            font-size: 14px; text-align: center; line-height: 1;
+        }
+        #bf-deploy-panel .bf-dp-row .label {
+            font-size: 11.5px; font-weight: 600;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        #bf-deploy-panel .bf-dp-row .bf-dp-arrow {
+            color: var(--cyan); font-size: 13px; font-weight: bold;
+            opacity: .55; transition: transform .15s, opacity .15s;
+            text-align: right;
+        }
+        #bf-deploy-panel .bf-dp-row:hover .bf-dp-arrow { opacity: 1; transform: translateX(3px); }
+
+        /* Asset-specific color tones (preserve existing identity) */
+        #bf-deploy-panel .bf-dp-row.bf-pv {
+            border-color: rgba(100,255,218,.30);
+        }
+        #bf-deploy-panel .bf-dp-row.bf-pv .label { color: #64ffda; }
+        #bf-deploy-panel .bf-dp-row.bf-pv:hover {
+            background: rgba(100,255,218,.10);
+            border-color: rgba(100,255,218,.55);
+            box-shadow: 0 0 10px rgba(100,255,218,.20);
+        }
+        #bf-deploy-panel .bf-dp-row.bf-pv.active {
+            background: rgba(100,255,218,.18); border-color: #64ffda;
+            box-shadow: 0 0 14px rgba(100,255,218,.50);
+            animation: bfPulse 1.4s ease-in-out infinite;
+        }
+
+        #bf-deploy-panel .bf-dp-row.bf-guuv {
+            border-color: rgba(34,211,238,.30);
+        }
+        #bf-deploy-panel .bf-dp-row.bf-guuv .label { color: #22d3ee; }
+        #bf-deploy-panel .bf-dp-row.bf-guuv:hover {
+            background: rgba(34,211,238,.10);
+            border-color: rgba(34,211,238,.55);
+            box-shadow: 0 0 10px rgba(34,211,238,.20);
+        }
+        #bf-deploy-panel .bf-dp-row.bf-guuv.active {
+            background: rgba(34,211,238,.18); border-color: #22d3ee;
+            box-shadow: 0 0 14px rgba(34,211,238,.50);
+            animation: bfPulse 1.4s ease-in-out infinite;
+        }
+
+        #bf-deploy-panel .bf-dp-row.bf-survey {
+            border-color: rgba(251,191,36,.30);
+        }
+        #bf-deploy-panel .bf-dp-row.bf-survey .label { color: #fbbf24; }
+        #bf-deploy-panel .bf-dp-row.bf-survey:hover {
+            background: rgba(251,191,36,.10);
+            border-color: rgba(251,191,36,.55);
+            box-shadow: 0 0 10px rgba(251,191,36,.20);
+        }
+        #bf-deploy-panel .bf-dp-row.bf-survey.active {
+            background: rgba(251,191,36,.18); border-color: #fbbf24;
+            box-shadow: 0 0 14px rgba(251,191,36,.50);
+            animation: bfPulse 1.4s ease-in-out infinite;
+        }
+
+        #bf-deploy-panel .bf-dp-row.bf-clear {
+            border-color: rgba(239,68,68,.22);
+        }
+        #bf-deploy-panel .bf-dp-row.bf-clear .label { color: #e8918c; font-weight: 500; }
+        #bf-deploy-panel .bf-dp-row.bf-clear:hover {
+            background: rgba(239,68,68,.10);
+            border-color: rgba(239,68,68,.45);
+            box-shadow: 0 0 8px rgba(239,68,68,.20);
+        }
+        #bf-deploy-panel .bf-dp-row.bf-clear .bf-dp-arrow { color: #e8918c; }
+
+        @keyframes bfPulse {
+            0%, 100% { filter: brightness(1); }
+            50%      { filter: brightness(1.2); }
+        }
+
+        /* Right-side handle (mirror of MDA left handle) */
+        #bf-handle-right {
+            position: fixed; top: 50%; transform: translateY(-50%);
+            width: 22px; height: 60px; cursor: pointer;
+            background: var(--mda-glass); border: 1px solid var(--mda-edge);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--cyan); font-weight: bold; z-index: 4400;
+            opacity: 0; pointer-events: none; transition: opacity .25s;
+            right: 0; border-radius: 4px 0 0 4px;
+        }
+        #bf-handle-right.visible { opacity: 1; pointer-events: all; }
+        #bf-handle-right:hover { color: #fff; border-color: var(--mda-edge-hi); }
+
+        /* Hide legacy Leaflet topright deploy stack (panel now owns it) */
+        body.mda-mode .leaflet-top.leaflet-right { display: none !important; }
+
         /* hide MDA chrome until OSIRIS mode armed (default = OFF) */
         body:not(.mda-mode) #mda-statusbar,
         body:not(.mda-mode) #mda-layerpanel,
         body:not(.mda-mode) .mda-handle,
+        body:not(.mda-mode) #bf-deploy-panel,
+        body:not(.mda-mode) #bf-handle-right,
         body:not(.mda-mode) #mda-toast { display: none !important; }
     </style>
 </head>
@@ -2251,6 +2433,94 @@
         </div>
     </div>
 </div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     v12.4 — DEPLOY · BLUE FORCE panel (right-side, draggable, hideable)
+     ────────────────────────────────────────────────────────────────
+     ASSETS = action buttons (place / clear) — color tones preserved:
+       🚢 PV  = mint  (#64ffda)
+       🤿 GUUV = cyan (#22d3ee)
+       🔬 Survey = amber (#fbbf24)
+     ──────────────────────────────────────────────────────────────── -->
+<div id="bf-deploy-panel">
+    <div class="bf-dp-head" title="ลากเพื่อย้าย panel · double-click เพื่อ reset ตำแหน่ง">
+        <div class="bf-dp-title">🔵 Deploy · Blue Force</div>
+        <button class="bf-dp-collapse" id="bf-dp-collapse" title="พับ panel">▶</button>
+    </div>
+
+    <!-- ASSETS — PATROL VESSELS (PV) -->
+    <div class="bf-dp-group" data-bf-group="pv">
+        <div class="bf-dp-group-head">
+            <span class="bf-dp-group-name" style="color:#64ffda;">
+                <span class="bf-dp-chev">▾</span> 🚢 PATROL VESSELS
+            </span>
+            <span class="bf-dp-count" id="bf-cnt-pv">0</span>
+        </div>
+        <div class="bf-dp-group-body">
+            <div class="bf-dp-row bf-pv" data-bf-action="pv-place"
+                 title="วางเรือตรวจการณ์บนแผนที่ · กดซ้ำเพื่อยกเลิก">
+                <span class="bf-dp-ico">🚢</span>
+                <span class="label">วางเรือตรวจการณ์</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+            <div class="bf-dp-row bf-clear" data-bf-action="pv-clear"
+                 title="ลบเรือตรวจการณ์ที่วางทั้งหมด">
+                <span class="bf-dp-ico">🗑</span>
+                <span class="label">ล้างเรือที่วางไว้</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ASSETS — GUARDIAN UUV -->
+    <div class="bf-dp-group" data-bf-group="guuv">
+        <div class="bf-dp-group-head">
+            <span class="bf-dp-group-name" style="color:#22d3ee;">
+                <span class="bf-dp-chev">▾</span> 🤿 GUARDIAN UUV
+            </span>
+            <span class="bf-dp-count" id="bf-cnt-guuv">0</span>
+        </div>
+        <div class="bf-dp-group-body">
+            <div class="bf-dp-row bf-guuv" data-bf-action="guuv-place"
+                 title="วาง GUUV บนแผนที่ · Esc เพื่อออก">
+                <span class="bf-dp-ico">🤿</span>
+                <span class="label">วาง GUUV</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+            <div class="bf-dp-row bf-clear" data-bf-action="guuv-clear"
+                 title="ลบ GUUV ทั้งหมด">
+                <span class="bf-dp-ico">🗑</span>
+                <span class="label">ล้าง GUUV</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ASSETS — HYDROGRAPHIC SURVEY VESSELS -->
+    <div class="bf-dp-group" data-bf-group="sv">
+        <div class="bf-dp-group-head">
+            <span class="bf-dp-group-name" style="color:#fbbf24;">
+                <span class="bf-dp-chev">▾</span> 🔬 HYDROGRAPHIC SURVEY
+            </span>
+            <span class="bf-dp-count" id="bf-cnt-sv">0</span>
+        </div>
+        <div class="bf-dp-group-body">
+            <div class="bf-dp-row bf-survey" data-bf-action="sv-place"
+                 title="วางเรือสำรวจ Multibeam · Esc เพื่อออก">
+                <span class="bf-dp-ico">🔬</span>
+                <span class="label">วางเรือสำรวจอุทกฯ</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+            <div class="bf-dp-row bf-clear" data-bf-action="sv-clear"
+                 title="ลบเรือสำรวจทั้งหมด">
+                <span class="bf-dp-ico">🗑</span>
+                <span class="label">ล้างเรือสำรวจ</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="bf-handle-right" title="แสดง Deploy · Blue Force">◀</div>
 
 <!-- Toast notification + collapsed handle (left only) -->
 <div id="mda-toast"></div>
@@ -19067,6 +19337,189 @@ function _sonarEqnRender(panel) {
                 if (r.left > maxL || r.top > maxT) {
                     lp.style.left = Math.min(r.left, maxL) + 'px';
                     lp.style.top  = Math.min(r.top,  maxT) + 'px';
+                }
+            });
+        })();
+
+        // ════════════════════════════════════════════════════════════════
+        //  v12.4 — DEPLOY · BLUE FORCE panel wire-up
+        //  • Action rows delegate to existing leaflet-control buttons
+        //  • Drag + collapse + right-side handle (mirror MDA pattern)
+        //  • Count chips sync from patrolVessels / guardianUUVs / surveyVessels
+        //  • Active state mirrors placePatrolMode / placeGUUVMode / placeSurveyMode
+        // ────────────────────────────────────────────────────────────────
+        (function setupBfDeploy(){
+            const bp = document.getElementById('bf-deploy-panel');
+            const bh = document.getElementById('bf-handle-right');
+            const bc = document.getElementById('bf-dp-collapse');
+            if (!bp) return;
+
+            // ── Group chevrons (collapsible sections) ──
+            bp.querySelectorAll('.bf-dp-group-head').forEach(h => {
+                h.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    h.parentElement.classList.toggle('collapsed');
+                });
+            });
+
+            // ── Action row → delegate click to original leaflet button ──
+            const actionMap = {
+                'pv-place'   : 'placePatrolBtn',
+                'pv-clear'   : 'clearPatrolBtn',
+                'guuv-place' : 'placeGUUVBtn',
+                'guuv-clear' : 'clearGUUVBtn',
+                'sv-place'   : 'placeSurveyBtn',
+                'sv-clear'   : 'clearSurveyBtn',
+            };
+            bp.querySelectorAll('.bf-dp-row[data-bf-action]').forEach(row => {
+                row.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const act = row.dataset.bfAction;
+                    const tgtId = actionMap[act];
+                    if (!tgtId) return;
+                    const btn = document.getElementById(tgtId);
+                    if (btn) btn.click();
+                    // re-sync immediately and once async
+                    requestAnimationFrame(syncBfRows);
+                    setTimeout(syncBfRows, 250);
+                    // toast feedback
+                    const lbl = row.querySelector('.label');
+                    if (typeof toast === 'function' && lbl) toast('🔵 ' + lbl.textContent.trim());
+                });
+            });
+
+            // ── Sync .active state from legacy button classList (cross-scope safe) ──
+            function _btnActive(id) {
+                const b = document.getElementById(id);
+                return !!(b && b.classList.contains('active'));
+            }
+            function syncBfRows() {
+                try {
+                    const pvOn = _btnActive('placePatrolBtn');
+                    const guOn = _btnActive('placeGUUVBtn');
+                    const svOn = _btnActive('placeSurveyBtn');
+                    bp.querySelector('[data-bf-action="pv-place"]')   ?.classList.toggle('active', pvOn);
+                    bp.querySelector('[data-bf-action="guuv-place"]') ?.classList.toggle('active', guOn);
+                    bp.querySelector('[data-bf-action="sv-place"]')   ?.classList.toggle('active', svOn);
+                    // group highlight if any row active
+                    bp.querySelector('[data-bf-group="pv"]')   ?.classList.toggle('active', pvOn);
+                    bp.querySelector('[data-bf-group="guuv"]') ?.classList.toggle('active', guOn);
+                    bp.querySelector('[data-bf-group="sv"]')   ?.classList.toggle('active', svOn);
+                } catch(_) {}
+            }
+            // ── Sync count chips from DOM markers (Leaflet vessel layers) ──
+            //  Patrol Vessels / GUUV / Survey: count via marker classes or fallback
+            function syncBfCounts() {
+                try {
+                    const elPv = document.getElementById('bf-cnt-pv');
+                    const elGu = document.getElementById('bf-cnt-guuv');
+                    const elSv = document.getElementById('bf-cnt-sv');
+                    // Try global arrays first (works if exposed); else fallback to DOM scan
+                    if (elPv) {
+                        let n = 0;
+                        try { if (typeof patrolVessels !== 'undefined') n = patrolVessels.filter(v => v && v.userPlaced).length; } catch(_) {}
+                        elPv.textContent = String(n);
+                    }
+                    if (elGu) {
+                        let n = 0;
+                        try { if (typeof guardianUUVs !== 'undefined') n = guardianUUVs.length; } catch(_) {}
+                        elGu.textContent = String(n);
+                    }
+                    if (elSv) {
+                        let n = 0;
+                        try { if (typeof surveyVessels !== 'undefined') n = surveyVessels.length; } catch(_) {}
+                        elSv.textContent = String(n);
+                    }
+                } catch(_) {}
+            }
+            // poll every 1s — cheap and resilient to v11 internal changes
+            setInterval(() => { syncBfRows(); syncBfCounts(); }, 1000);
+            syncBfRows(); syncBfCounts();
+
+            // ── Collapse button + right-side handle ──
+            bc && bc.addEventListener('click', (e) => {
+                e.stopPropagation();
+                bp.classList.add('collapsed');
+                bh && bh.classList.add('visible');
+            });
+            bh && bh.addEventListener('click', () => {
+                bp.classList.remove('collapsed');
+                bh.classList.remove('visible');
+            });
+
+            // ── Drag via .bf-dp-head (mirror MDA pattern) ──
+            const head = bp.querySelector('.bf-dp-head');
+            if (!head) return;
+            // Restore saved position
+            try {
+                const saved = JSON.parse(localStorage.getItem('bf-dp-pos') || 'null');
+                if (saved && Number.isFinite(saved.left) && Number.isFinite(saved.top)) {
+                    const maxL = window.innerWidth  - 60;
+                    const maxT = window.innerHeight - 60;
+                    bp.style.left = Math.max(0, Math.min(saved.left, maxL)) + 'px';
+                    bp.style.top  = Math.max(0, Math.min(saved.top,  maxT)) + 'px';
+                    bp.style.right = 'auto';
+                }
+            } catch(_) {}
+
+            let dragging = false, startX = 0, startY = 0, baseL = 0, baseT = 0, pid = null;
+            head.addEventListener('pointerdown', (e) => {
+                if (e.target.closest('.bf-dp-collapse')) return;
+                if (e.button !== 0 && e.pointerType === 'mouse') return;
+                dragging = true;
+                pid = e.pointerId;
+                const r = bp.getBoundingClientRect();
+                baseL = r.left; baseT = r.top;
+                startX = e.clientX; startY = e.clientY;
+                bp.classList.add('dragging');
+                bp.style.right = 'auto';
+                try { head.setPointerCapture(pid); } catch(_) {}
+                e.preventDefault();
+            });
+            head.addEventListener('pointermove', (e) => {
+                if (!dragging) return;
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                const w  = bp.offsetWidth, h = bp.offsetHeight;
+                const maxL = Math.max(0, window.innerWidth  - Math.min(w, 60));
+                const maxT = Math.max(0, window.innerHeight - 60);
+                const nl = Math.max(-w + 60, Math.min(baseL + dx, maxL));
+                const nt = Math.max(0,        Math.min(baseT + dy, maxT));
+                bp.style.left = nl + 'px';
+                bp.style.top  = nt + 'px';
+            });
+            const endDrag = () => {
+                if (!dragging) return;
+                dragging = false;
+                bp.classList.remove('dragging');
+                try { if (pid != null) head.releasePointerCapture(pid); } catch(_) {}
+                try {
+                    const r = bp.getBoundingClientRect();
+                    localStorage.setItem('bf-dp-pos', JSON.stringify({ left: r.left, top: r.top }));
+                } catch(_) {}
+            };
+            head.addEventListener('pointerup',     endDrag);
+            head.addEventListener('pointercancel', endDrag);
+
+            // Double-click → snap back to right side
+            head.addEventListener('dblclick', (e) => {
+                if (e.target.closest('.bf-dp-collapse')) return;
+                bp.style.left = 'auto';
+                bp.style.right = '8px';
+                bp.style.top   = '80px';
+                try { localStorage.removeItem('bf-dp-pos'); } catch(_) {}
+                if (typeof toast === 'function') toast('📍 Deploy panel: reset ตำแหน่ง');
+            });
+
+            // Re-clamp on window resize
+            window.addEventListener('resize', () => {
+                if (bp.classList.contains('collapsed')) return;
+                const r = bp.getBoundingClientRect();
+                const maxL = Math.max(0, window.innerWidth  - 60);
+                const maxT = Math.max(0, window.innerHeight - 60);
+                if (r.left > maxL || r.top > maxT) {
+                    bp.style.left = Math.min(r.left, maxL) + 'px';
+                    bp.style.top  = Math.min(r.top,  maxT) + 'px';
                 }
             });
         })();
