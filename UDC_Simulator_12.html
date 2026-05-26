@@ -1410,11 +1410,13 @@
             position:fixed; top:50%; left:50%;
             transform:translate(-50%,-50%) scale(0.92);
             width:700px; z-index:8000;
+            max-height:calc(100vh - 60px);          /* v12.7.3 — ไม่ให้ใหญ่กว่าจอ */
+            display:flex; flex-direction:column;     /* header/footer sticky, body scroll */
             background:rgba(1,5,15,.98);
             border:1.5px solid #64ffda; border-radius:10px;
             padding:0; overflow:hidden;
             opacity:0; visibility:hidden; pointer-events:none;
-            transition:all .20s ease;
+            transition:opacity .20s ease, visibility .20s ease, transform .20s ease;
             box-shadow:0 0 50px rgba(100,255,218,.22),0 0 100px rgba(100,255,218,.08);
             backdrop-filter:blur(16px);
         }
@@ -1422,14 +1424,26 @@
             opacity:1; visibility:visible; pointer-events:auto;
             transform:translate(-50%,-50%) scale(1);
         }
+        /* v12.7.3 — header draggable cursor cue */
+        #pvShipModal .pv-modal-hdr { cursor:grab; user-select:none; }
+        #pvShipModal .pv-modal-hdr:active { cursor:grabbing; }
+        /* v12.7.3 — scrollable card area */
+        #pvShipModal .pvs-grid-wrap {
+            overflow-y:auto; flex:1; min-height:0;
+            scrollbar-width:thin; scrollbar-color:#1a3a5c transparent;
+        }
+        #pvShipModal .pvs-grid-wrap::-webkit-scrollbar { width:5px; }
+        #pvShipModal .pvs-grid-wrap::-webkit-scrollbar-thumb {
+            background:#1a3a5c; border-radius:3px;
+        }
         .pvs-grid {
             display:grid; grid-template-columns:repeat(2,1fr);
-            gap:11px; padding:13px 15px;
+            gap:9px; padding:10px 13px;
         }
         .pvs-card {
             background:rgba(8,21,37,.70);
             border:1.5px solid rgba(100,255,218,.22);
-            border-radius:8px; padding:10px 11px; cursor:pointer;
+            border-radius:8px; padding:8px 10px; cursor:pointer;
             transition:all .18s; position:relative; overflow:hidden;
         }
         .pvs-card:hover {
@@ -1467,9 +1481,9 @@
         }
         .pvs-sil-wrap {
             background:rgba(0,15,35,.70); border:1px solid rgba(100,255,218,.12);
-            border-radius:4px; margin-bottom:8px;
+            border-radius:4px; margin-bottom:6px;   /* v12.7.3 — compact */
             display:flex; align-items:center; justify-content:center;
-            height:80px; overflow:hidden;
+            height:54px; overflow:hidden;            /* v12.7.3 — 80→54px */
         }
         .pvs-sil-wrap canvas { display:block; }
         .pvs-card-body { display:flex; gap:10px; }
@@ -3327,6 +3341,7 @@
                     <button class="pv-modal-close" onclick="closePVShipModal()">✕ CLOSE</button>
                 </div>
 
+                <div class="pvs-grid-wrap"><!-- v12.7.3 scrollable wrapper -->
                 <div class="pvs-grid">
 
                     <!-- Naresuan FFG -->
@@ -3338,7 +3353,7 @@
                             <span class="pvs-ship-local">ชั้นนเรศวร</span>
                         </div>
                         <div class="pvs-sil-wrap">
-                            <canvas id="pvSil_naresuan" width="312" height="76"></canvas>
+                            <canvas id="pvSil_naresuan" width="312" height="54"></canvas>
                         </div>
                         <div class="pvs-card-body">
                             <div class="pvs-specs">
@@ -3366,7 +3381,7 @@
                             <span class="pvs-ship-local">ชั้นกระบี่</span>
                         </div>
                         <div class="pvs-sil-wrap">
-                            <canvas id="pvSil_krabi" width="312" height="76"></canvas>
+                            <canvas id="pvSil_krabi" width="312" height="54"></canvas>
                         </div>
                         <div class="pvs-card-body">
                             <div class="pvs-specs">
@@ -3392,7 +3407,7 @@
                             <span class="pvs-ship-local">ชั้นคำรณสินธุ์</span>
                         </div>
                         <div class="pvs-sil-wrap">
-                            <canvas id="pvSil_khamronsin" width="312" height="76"></canvas>
+                            <canvas id="pvSil_khamronsin" width="312" height="54"></canvas>
                         </div>
                         <div class="pvs-card-body">
                             <div class="pvs-specs">
@@ -3419,7 +3434,7 @@
                             <span class="pvs-ship-local">ชั้นชลบุรี</span>
                         </div>
                         <div class="pvs-sil-wrap">
-                            <canvas id="pvSil_chonburi" width="312" height="76"></canvas>
+                            <canvas id="pvSil_chonburi" width="312" height="54"></canvas>
                         </div>
                         <div class="pvs-card-body">
                             <div class="pvs-specs">
@@ -3444,7 +3459,7 @@
                             <span class="pvs-ship-local">ชั้นสัตหีบ · ประจำฐานสัตหีบ</span>
                         </div>
                         <div class="pvs-sil-wrap">
-                            <canvas id="pvSil_sattahip" width="312" height="76"></canvas>
+                            <canvas id="pvSil_sattahip" width="312" height="54"></canvas>
                         </div>
                         <div class="pvs-card-body">
                             <div class="pvs-specs">
@@ -3463,6 +3478,7 @@
                     </div>
 
                 </div><!-- /pvs-grid -->
+                </div><!-- /pvs-grid-wrap -->
 
                 <div class="pv-modal-footer">
                     <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(100,255,218,.45);flex:1;">
@@ -5728,6 +5744,53 @@ function closePVShipModal() {
     const patOpen = document.getElementById('pvPatternModal')?.classList.contains('pv-show');
     if (!patOpen) _pvBackdrop(false);
 }
+
+// ── v12.7.3: Draggable PV Ship Modal ──────────────────────────────
+(function _initPVModalDrag() {
+    let dragging = false, ox = 0, oy = 0;
+    const modal = document.getElementById('pvShipModal');
+    const hdr   = modal?.querySelector('.pv-modal-hdr');
+    if (!modal || !hdr) return;
+
+    hdr.addEventListener('mousedown', function(e) {
+        if (e.button !== 0) return;
+        // First drag: convert from transform-centered to explicit top/left
+        if (!modal.dataset.dragged) {
+            const r = modal.getBoundingClientRect();
+            modal.style.transform = 'none';
+            modal.style.top  = r.top  + 'px';
+            modal.style.left = r.left + 'px';
+            modal.dataset.dragged = '1';
+        }
+        dragging = true;
+        const r = modal.getBoundingClientRect();
+        ox = e.clientX - r.left;
+        oy = e.clientY - r.top;
+        e.preventDefault();
+    });
+    document.addEventListener('mousemove', function(e) {
+        if (!dragging) return;
+        let nx = e.clientX - ox;
+        let ny = e.clientY - oy;
+        // Clamp inside viewport
+        nx = Math.max(0, Math.min(nx, window.innerWidth  - modal.offsetWidth));
+        ny = Math.max(0, Math.min(ny, window.innerHeight - modal.offsetHeight));
+        modal.style.left = nx + 'px';
+        modal.style.top  = ny + 'px';
+    });
+    document.addEventListener('mouseup', function() { dragging = false; });
+
+    // Reset position when modal is re-opened (so it re-centers)
+    const origShow = window.showPVShipModal;
+    window.showPVShipModal = function() {
+        delete modal.dataset.dragged;
+        modal.style.transform = '';
+        modal.style.top  = '';
+        modal.style.left = '';
+        origShow();
+    };
+})();
+
 function selectShipCard(id) {
     pvSelectedShip = id;
     document.querySelectorAll('.pvs-card').forEach(c => c.classList.remove('pvs-selected'));
