@@ -15,9 +15,10 @@
   เทคโนโลยีหลัก:
     · Leaflet.js   — ไลบรารีแผนที่แบบ Interactive (Open-Source)
     · CartoDB      — ผู้ให้บริการ Tile Map พื้นหลังสีเข้ม (Dark Matter theme)
-    · MapTiler     — Terrain-RGB DEM (สำหรับ 3D Dive land elevation)
+    · Esri / GEBCO — Basemap: Satellite imagery + Nautical chart layers
     · HTML5 Canvas — วาดซ้อนบนแผนที่แบบ real-time (targets, zones, sonar)
     · JavaScript   — ควบคุม logic การจำลองทั้งหมด
+    · Note [v10]: DEM data pre-baked offline (© MapTiler Terrain-RGB v2 · decoded)
 
   v10 changelog (ต่อยอดจาก v09 Antigravity):
     · 3D Dive: เปลี่ยนความสูงเกาะจาก sine-wave สังเคราะห์ → DEM จริงจาก MapTiler
@@ -28,6 +29,14 @@
 
   การใช้งาน: เปิดไฟล์นี้ในเว็บบราวเซอร์ที่รองรับ HTML5
              (Chrome / Edge / Firefox รุ่นล่าสุด) โดยไม่ต้องติดตั้งโปรแกรมเพิ่มเติม
+
+  ── Comment & Version Convention ────────────────────────────────
+  Version tags ใช้ 2 รูปแบบที่มีความหมายต่างกัน:
+    [v09] / [v10] / [v11]   — "Added in version X" — marker ว่า feature นี้เพิ่มครั้งแรก
+    /* v12.x.x — desc */    — "Changed in v12.x.x" — inline note ของการแก้ไขล่าสุด
+  Section dividers ใช้ 2 ระดับ:
+    // ═══════════════════  — หัวข้อหลัก (Major section)
+    // ───────────────────  — หัวข้อรอง (Sub-section)
 ════════════════════════════════════════════════════════════════════
 -->
 <!DOCTYPE html>
@@ -7257,7 +7266,7 @@ function buildBathyLayer() {
 }
 
 function toggleBathymetry() {
-    var btn = document.getElementById('bathyBtn');
+    const btn = document.getElementById('bathyBtn');
     if (!bathyActive) {
         bathyActive = true;
         buildBathyLayer();
@@ -7316,7 +7325,7 @@ function buildSeaZonesLayer() {
 }
 
 function toggleSeaZones() {
-    var btn = document.getElementById('seaZonesBtn');
+    const btn = document.getElementById('seaZonesBtn');
     if (!seaZonesActive) {
         seaZonesActive = true;
         buildSeaZonesLayer();
@@ -9485,12 +9494,12 @@ terrainShadowBtn.onAdd = function() {
 terrainShadowBtn.addTo(map);
 
 // ═══════════════════════════════════════════════════════════════
-//  NAUTICAL CHART LAYERS — 3 modes (Esri / GEBCO 2023 / MapTiler)
+//  NAUTICAL CHART LAYERS — 2 modes (Esri Ocean / GEBCO 2023)
 // ───────────────────────────────────────────────────────────────
 //  Mode 1 — Esri Ocean Base (GEBCO/NOAA/NGA)  · classic depth shading
 //  Mode 2 — GEBCO 2023 Grid                   · raw bathymetry greyscale
-//  Mode 3 — MapTiler Ocean                    · full-color nautical chart
 //  Shared overlay: OpenSeaMap IALA seamarks + custom depth soundings
+//  [Note: Mode 3 MapTiler Ocean ถูกลบใน v12.6.4 — ไม่ใช้ API key]
 // ═══════════════════════════════════════════════════════════════
 
 // ── Shared: OpenSeaMap IALA seamarks overlay ──────────────────
@@ -9535,8 +9544,6 @@ const gebco2023Layer = L.tileLayer(
         attribution:   'GEBCO Compilation Group (2023) GEBCO_2023 Grid'
     }
 );
-
-// MODE 3 (MapTiler) removed v12.6.4 — ลบ per user request (ไม่ใช้ key)
 
 // ══════════════════════════════════════════════════════════════════════
 //  DEPTH SOUNDING MARKERS — GEBCO 2020 (nautical chart style)
@@ -9604,7 +9611,7 @@ DEPTH_SOUNDINGS.forEach(([lat, lng, depthM]) => {
 });
 
 // ── Nautical Chart mode state ─────────────────────────────────
-//  0 = OFF  |  1 = Esri Ocean  |  2 = GEBCO 2023  |  3 = MapTiler
+//  0 = OFF  |  1 = Esri Ocean  |  2 = GEBCO 2023
 let chartMode = 0;
 
 // ── Legend HTML templates (indexed by mode) ───────────────────
@@ -9637,23 +9644,9 @@ const CHART_LEGENDS = {
             <span style="color:#60a5fa;">■</span> Depth soundings (custom)
         </div>
         <div style="font-size:10px;color:#334155;text-align:right;margin-top:2px;">GEBCO · BODC · CC-BY 4.0</div>`,
-    3: `
-        <div class="leg-title" style="color:#64ffda;">⚓ MAPTILER OCEAN</div>
-        <div style="width:100%;height:9px;border-radius:2px;margin:3px 0 2px;
-             background:linear-gradient(to right,#d4f1f4,#75e6da,#189ab4,#05445e,#031d2e);
-             border:1px solid rgba(100,255,218,.25);"></div>
-        <div style="display:flex;justify-content:space-between;font-size:10px;color:#64748b;margin-bottom:3px;">
-            <span>ตื้น</span><span>contours</span><span>ลึก</span>
-        </div>
-        <div style="font-size:10px;color:#94a3b8;line-height:1.5;">
-            <span style="color:#64ffda;">■</span> MapTiler Ocean (SENC-style)<br>
-            <span style="color:#38bdf8;">■</span> OpenSeaMap IALA seamarks<br>
-            <span style="color:#fbbf24;">■</span> Depth contours + ports
-        </div>
-        <div style="font-size:10px;color:#334155;text-align:right;margin-top:2px;">© MapTiler · OpenStreetMap</div>`
 };
 
-// ── Mode configurations (v12.6.4 — MapTiler removed, 2 modes only) ───────────
+// ── Mode configurations ────────────────────────────────────────────────────────
 const CHART_CONF = [
     { label:'⚓ Nautical',    color:'#8892b0', title:'คลิกเพื่อเปิด Nautical Chart' },
     { label:'⚓ Esri Ocean',  color:'#38bdf8', title:'Mode 1/2: Esri Ocean Base + OpenSeaMap' },
@@ -9723,7 +9716,7 @@ openSeaMapBtn.onAdd = function() {
     btn.title     = CHART_CONF[0].title;
     btn.style.minWidth = '112px';
     btn.onclick = function() {
-        chartMode = (chartMode + 1) % 3;   // cycle 0→1→2→0 (MapTiler removed)
+        chartMode = (chartMode + 1) % 3;   // cycle: OFF(0) → Esri(1) → GEBCO(2) → OFF
         applyChartMode(btn);
     };
     L.DomEvent.disableClickPropagation(btn);

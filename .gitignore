@@ -1,10 +1,9 @@
 # --- Local caches & generated data ---
-_dem_cache/
+data/dem/cache/
+data/dem/_land_elev_compact.json
 _bathy/
-_land_elev_compact.json
-_v10_inject.txt
-_inject_v10.py
-tools/_woa_cache/
+scripts/tools/_woa_cache/
+scripts/_inject_v10.py
 
 # --- Local dev / preview config ---
 .claude/
@@ -22,8 +21,8 @@ _เวอร์ชันเก่า/
 
 # --- Misc ---
 searches-export-search-results-*.json
-generate_appendix.py
-fetch_land_elevation.py
+scripts/generate_appendix.py
+scripts/fetch_land_elevation.py
 
 # --- OS / editor ---
 .DS_Store
