@@ -142,8 +142,7 @@
         header .subtitle { font-size:10px; color:var(--text-muted); margin-top:1px; }
         .badge    { background:#0d1f3c; border:1px solid #1a3a5c; border-radius:5px;
             padding:3px 10px; font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--cyan); }
-        .badge-v4 { background:rgba(189,147,249,.12); border:1px solid var(--purple); border-radius:5px;
-            padding:3px 10px; font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--purple); }
+        /* v12.5-E: .badge-v4 ถูกลบออก — ใช้ปุ่ม RESET แทนตำแหน่งใน header */
         #clock { font-family:'Share Tech Mono',monospace; font-size:14px; color:var(--teal); }
         /* ── Fullscreen Button ── */
         #fsBtn {
@@ -889,6 +888,85 @@
             box-shadow: 0 0 24px rgba(56,189,248,0.18), inset 0 0 40px rgba(0,0,0,0.5);
             backdrop-filter: blur(6px);
         }
+        /* ── v12.6-C: Seismic 3-tab Chart Panel (overlay on map, mirror tideChartPanel) ── */
+        #seismicChartPanel {
+            position: absolute;
+            bottom: 42px; right: 12px;
+            width: 460px; height: 280px;
+            background: rgba(1,10,22,0.93);
+            border: 1px solid rgba(251,146,60,0.55);
+            border-radius: 9px;
+            padding: 0;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 0 24px rgba(251,146,60,0.18), inset 0 0 40px rgba(0,0,0,0.5);
+            backdrop-filter: blur(6px);
+            overflow: hidden;
+            flex-direction: column;
+        }
+        #seismicChartPanel[data-shown="1"] { display: flex; }
+        #seisChartHdr {
+            display: flex; align-items: center; gap: 6px;
+            padding: 5px 8px 4px 8px;
+            background: rgba(251,146,60,0.10);
+            border-bottom: 1px solid rgba(251,146,60,0.35);
+            flex-shrink: 0;
+        }
+        #seisChartHdr > .seis-title {
+            color: #fb923c;
+            font-family: 'Share Tech Mono',monospace;
+            font-size: 10.5px; font-weight: 700;
+            letter-spacing: 1.5px;
+        }
+        .seis-tabs {
+            display: flex; gap: 3px; margin-left: auto; margin-right: 4px;
+        }
+        .seis-tab {
+            background: rgba(8,21,37,0.80);
+            border: 1px solid rgba(251,146,60,0.30);
+            border-radius: 4px;
+            color: rgba(251,146,60,0.65);
+            font-family: 'Share Tech Mono',monospace;
+            font-size: 9.5px;
+            padding: 3px 7px;
+            cursor: pointer;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+        .seis-tab:hover  { background: rgba(251,146,60,.10); color: #fb923c; }
+        .seis-tab.active {
+            background: rgba(251,146,60,.18);
+            border-color: #fb923c;
+            color: #ffd9b0;
+            box-shadow: 0 0 5px rgba(251,146,60,.40);
+        }
+        #seisChartClose {
+            background: transparent; border: 1px solid rgba(251,146,60,.35);
+            color: #fb923c; cursor: pointer;
+            font-family: 'Share Tech Mono',monospace;
+            font-size: 10px; padding: 2px 6px;
+            border-radius: 3px;
+        }
+        #seisChartClose:hover { background: rgba(239,68,68,.18); color: #fca5a5; border-color: #ef4444; }
+        #seisChartBody {
+            flex: 1; position: relative; min-height: 0;
+            padding: 6px 8px 6px 8px;
+        }
+        .seis-pane {
+            display: none;
+            position: absolute; inset: 6px 8px 6px 8px;
+        }
+        .seis-pane.active { display: block; }
+        .seis-placeholder {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; padding: 12px;
+            color: rgba(251,146,60,0.55);
+            font-family: 'Share Tech Mono',monospace;
+            font-size: 11px; line-height: 1.5;
+            pointer-events: none;
+        }
+        .seis-pane canvas { width: 100% !important; height: 100% !important; }
         #chartToggleBtn {
             background: rgba(8,21,37,0.80);
             border: 1px solid rgba(56,189,248,0.50);
@@ -2125,6 +2203,65 @@
         }
         #bf-deploy-panel .bf-dp-row.bf-clear .bf-dp-arrow { color: #e8918c; }
 
+        /* v12.5 — Section divider (ASSETS / COMMAND ACTIONS) */
+        #bf-deploy-panel .bf-dp-section {
+            padding: 7px 12px 5px;
+            font-size: 9px; font-weight: 700; letter-spacing: 1.8px;
+            color: rgba(148,163,184,.92);
+            text-transform: uppercase;
+            background: linear-gradient(180deg, rgba(100,116,139,.10), rgba(100,116,139,.02));
+            border-bottom: 1px solid rgba(100,116,139,.22);
+            border-top: 1px solid rgba(100,116,139,.22);
+            user-select: none;
+            display: flex; align-items: center; gap: 6px;
+        }
+        #bf-deploy-panel .bf-dp-section .bf-dp-section-sub {
+            font-size: 8.5px; letter-spacing: 1.2px;
+            color: rgba(148,163,184,.55); font-weight: 600;
+            margin-left: auto; text-transform: none;
+        }
+
+        /* v12.5 — COMMAND ACTIONS: Helo Scramble (amber) */
+        #bf-deploy-panel .bf-dp-row.bf-helo {
+            border-color: rgba(245,158,11,.30);
+        }
+        #bf-deploy-panel .bf-dp-row.bf-helo .label { color: #fcd34d; }
+        #bf-deploy-panel .bf-dp-row.bf-helo:hover {
+            background: rgba(245,158,11,.10);
+            border-color: rgba(245,158,11,.55);
+            box-shadow: 0 0 10px rgba(245,158,11,.20);
+        }
+        #bf-deploy-panel .bf-dp-row.bf-helo:hover .bf-dp-arrow { color: #fcd34d; }
+
+        /* v12.5 — COMMAND ACTIONS: Helo CAP (cyan) */
+        #bf-deploy-panel .bf-dp-row.bf-helo-cap {
+            border-color: rgba(34,211,238,.30);
+        }
+        #bf-deploy-panel .bf-dp-row.bf-helo-cap .label { color: #67e8f9; }
+        #bf-deploy-panel .bf-dp-row.bf-helo-cap:hover {
+            background: rgba(34,211,238,.10);
+            border-color: rgba(34,211,238,.55);
+            box-shadow: 0 0 10px rgba(34,211,238,.20);
+        }
+        #bf-deploy-panel .bf-dp-row.bf-helo-cap:hover .bf-dp-arrow { color: #67e8f9; }
+
+        /* v12.5 — COMMAND ACTIONS: Mine Lay (green) */
+        #bf-deploy-panel .bf-dp-row.bf-mine {
+            border-color: rgba(34,197,94,.30);
+        }
+        #bf-deploy-panel .bf-dp-row.bf-mine .label { color: #4ade80; }
+        #bf-deploy-panel .bf-dp-row.bf-mine:hover {
+            background: rgba(34,197,94,.10);
+            border-color: rgba(34,197,94,.55);
+            box-shadow: 0 0 10px rgba(34,197,94,.20);
+        }
+        #bf-deploy-panel .bf-dp-row.bf-mine:hover .bf-dp-arrow { color: #4ade80; }
+        #bf-deploy-panel .bf-dp-row.bf-mine.mine-active {
+            background: rgba(34,197,94,.18); border-color: #22c55e;
+            box-shadow: 0 0 14px rgba(34,197,94,.50);
+            animation: bfPulse 1.4s ease-in-out infinite;
+        }
+
         @keyframes bfPulse {
             0%, 100% { filter: brightness(1); }
             50%      { filter: brightness(1.2); }
@@ -2169,7 +2306,174 @@
         body:not(.mda-mode) .mda-handle,
         body:not(.mda-mode) #bf-deploy-panel,
         body:not(.mda-mode) #bf-handle-right,
-        body:not(.mda-mode) #mda-toast { display: none !important; }
+        body:not(.mda-mode) #mda-toast,
+        body:not(.mda-mode) #udc-reset-confirm { display: none !important; }
+        /* v12.5-E: #udc-reset-btn ย้ายเข้า header จึงต้องแสดงตลอด (ไม่ผูกกับ mda-mode) */
+
+        /* ════════════════════════════════════════════════════════════════
+           v12.5-E — Standalone RESET button (Emergency Drill)
+           ย้ายเข้า header flex (แทนที่ .badge-v4 เดิม) · with confirmation modal
+           ──────────────────────────────────────────────────────────── */
+        #udc-reset-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 11px;
+            background: rgba(2,12,24,0.78);
+            border: 1px solid rgba(239,68,68,.55);
+            border-radius: 5px;
+            color: #f87171;
+            font-family: 'Share Tech Mono', 'Consolas', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.4px;
+            cursor: pointer;
+            user-select: none;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow:
+                0 2px 8px rgba(0,0,0,.35),
+                0 0 0 1px rgba(239,68,68,.15) inset;
+            transition: background .15s, border-color .15s, box-shadow .15s, transform .15s, color .15s;
+        }
+        #udc-reset-btn:hover {
+            background: rgba(239,68,68,.18);
+            border-color: #ef4444;
+            color: #fca5a5;
+            box-shadow:
+                0 4px 22px rgba(239,68,68,.45),
+                0 0 0 1px rgba(239,68,68,.40) inset;
+            transform: translateY(-1px);
+        }
+        #udc-reset-btn:active { transform: translateY(0); }
+        #udc-reset-btn .urb-icon {
+            display: inline-block;
+            transition: transform .5s ease;
+            font-size: 12px;
+        }
+        #udc-reset-btn:hover .urb-icon { transform: rotate(180deg); }
+
+        /* Confirmation modal */
+        #udc-reset-confirm {
+            position: fixed; inset: 0; z-index: 9999;
+            display: none; align-items: center; justify-content: center;
+            background: rgba(0,0,0,.65);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        #udc-reset-confirm.show { display: flex; }
+        #udc-reset-confirm .urc-box {
+            background: rgba(2,12,24,.96);
+            border: 1px solid rgba(239,68,68,.65);
+            border-radius: 10px;
+            padding: 22px 26px;
+            min-width: 340px; max-width: 480px;
+            box-shadow:
+                0 10px 50px rgba(239,68,68,.45),
+                0 0 0 1px rgba(239,68,68,.25) inset;
+            color: #cbd5e1;
+            font-family: 'Sarabun', sans-serif;
+            animation: urcPop .25s ease-out;
+        }
+        @keyframes urcPop {
+            from { opacity: 0; transform: scale(.92) translateY(-8px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        #udc-reset-confirm .urc-title {
+            color: #fca5a5; font-size: 13px; font-weight: 700;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            margin-bottom: 12px;
+            display: flex; align-items: center; gap: 8px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        #udc-reset-confirm .urc-msg {
+            font-size: 13px; line-height: 1.65; color: #cbd5e1;
+            margin-bottom: 14px;
+        }
+        #udc-reset-confirm .urc-msg b { color: #f87171; }
+        #udc-reset-confirm .urc-warn {
+            font-size: 11px; color: #fbbf24;
+            background: rgba(251,191,36,.08);
+            border-left: 3px solid #fbbf24;
+            padding: 7px 11px;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+        #udc-reset-confirm .urc-btns {
+            display: flex; gap: 10px; justify-content: flex-end;
+        }
+        #udc-reset-confirm .urc-btn {
+            padding: 7px 16px; border-radius: 6px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
+            cursor: pointer; transition: all .15s;
+            background: transparent; border: 1px solid;
+        }
+        #udc-reset-confirm .urc-cancel {
+            border-color: rgba(148,163,184,.5); color: #9aa8bd;
+        }
+        #udc-reset-confirm .urc-cancel:hover {
+            background: rgba(148,163,184,.15); color: #cbd5e1;
+            border-color: rgba(148,163,184,.8);
+        }
+        #udc-reset-confirm .urc-confirm {
+            border-color: #ef4444; color: #fca5a5;
+            background: rgba(239,68,68,.10);
+        }
+        #udc-reset-confirm .urc-confirm:hover {
+            background: rgba(239,68,68,.32); color: #fff;
+            box-shadow: 0 0 16px rgba(239,68,68,.55);
+        }
+
+        /* ════════════════════════════════════════════════════════════════
+           v12.4 — ZULU CLOCK (top-right HUD, LCD digital green)
+           ──────────────────────────────────────────────────────────────── */
+        #zulu-clock {
+            position: fixed;
+            top: 74px;
+            right: 236px;
+            z-index: 4600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            font-family: 'Share Tech Mono', 'Consolas', monospace;
+            user-select: none;
+            pointer-events: none;
+        }
+        #zulu-clock .zc-label {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            color: #00ff66;
+            text-shadow:
+                0 0 6px rgba(0, 255, 102, 0.70),
+                0 0 14px rgba(0, 255, 102, 0.40);
+            opacity: 0.95;
+        }
+        #zulu-clock .zc-time {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #00ff66;
+            text-shadow:
+                0 0 5px rgba(0, 255, 102, 0.85),
+                0 0 12px rgba(0, 255, 102, 0.45),
+                0 0 20px rgba(0, 255, 102, 0.25);
+            font-variant-numeric: tabular-nums;
+        }
+        /* pulsing dot to indicate "live" tick */
+        #zulu-clock .zc-dot {
+            width: 5px; height: 5px; border-radius: 50%;
+            background: #00ff66;
+            box-shadow: 0 0 7px #00ff66, 0 0 12px rgba(0,255,102,0.5);
+            animation: zcBlink 1s ease-in-out infinite;
+        }
+        @keyframes zcBlink {
+            0%, 100% { opacity: 1; }
+            50%      { opacity: 0.25; }
+        }
     </style>
 </head>
 <body>
@@ -2491,8 +2795,14 @@
      ──────────────────────────────────────────────────────────────── -->
 <div id="bf-deploy-panel">
     <div class="bf-dp-head" title="ลากเพื่อย้าย panel · double-click เพื่อ reset ตำแหน่ง">
-        <div class="bf-dp-title">🔵 Deploy · Blue Force</div>
+        <div class="bf-dp-title">🔵 Blue Force Operations</div>
         <button class="bf-dp-collapse" id="bf-dp-collapse" title="พับ panel">▶</button>
+    </div>
+
+    <!-- ─── SECTION 1: ASSETS (วาง) ─── -->
+    <div class="bf-dp-section">
+        <span>▾ ASSETS</span>
+        <span class="bf-dp-section-sub">วาง</span>
     </div>
 
     <!-- ASSETS — PATROL VESSELS (PV) -->
@@ -2566,8 +2876,73 @@
             </div>
         </div>
     </div>
+
+    <!-- ─── SECTION 2: COMMAND ACTIONS (สั่ง) — v12.5 ─── -->
+    <div class="bf-dp-section">
+        <span>▾ COMMAND ACTIONS</span>
+        <span class="bf-dp-section-sub">สั่ง</span>
+    </div>
+
+    <!-- COMMAND — ASW HELICOPTER (collapsed by default) -->
+    <div class="bf-dp-group collapsed" data-bf-group="helo">
+        <div class="bf-dp-group-head">
+            <span class="bf-dp-group-name" style="color:#fcd34d;">
+                <span class="bf-dp-chev">▾</span> 🚁 ASW HELICOPTER
+            </span>
+        </div>
+        <div class="bf-dp-group-body">
+            <div class="bf-dp-row bf-helo" data-bf-cmd="helo-scramble"
+                 title="สั่ง ฮ.ปจอ. ขึ้นบินสกัดกั้นภัย">
+                <span class="bf-dp-ico">🚁</span>
+                <span class="label">Scramble</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+            <div class="bf-dp-row bf-helo-cap" data-bf-cmd="helo-cap"
+                 title="ส่ง ฮ.ปจอ. ขึ้น Combat Air Patrol">
+                <span class="bf-dp-ico">✈</span>
+                <span class="label">Airborne CAP</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMMAND — MINE WARFARE (collapsed by default) -->
+    <div class="bf-dp-group collapsed" data-bf-group="mine">
+        <div class="bf-dp-group-head">
+            <span class="bf-dp-group-name" style="color:#4ade80;">
+                <span class="bf-dp-chev">▾</span> 💣 MINE WARFARE
+            </span>
+        </div>
+        <div class="bf-dp-group-body">
+            <div class="bf-dp-row bf-mine" id="mineFieldBtn" data-bf-cmd="mine-lay"
+                 title="วางทุ่นระเบิดควบคุมในแนวเข้าฐาน">
+                <span class="bf-dp-ico">💣</span>
+                <span class="label">Lay Controlled Minefield</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+        </div>
+    </div>
 </div>
-<div id="bf-handle-right" title="แสดง Deploy · Blue Force">◀</div>
+<div id="bf-handle-right" title="แสดง Blue Force Operations">◀</div>
+
+<!-- v12.5-E: ปุ่ม #udc-reset-btn ย้ายเข้า <header> แทนตำแหน่ง .badge-v4 เดิม -->
+
+<!-- v12.5 — Reset confirmation modal -->
+<div id="udc-reset-confirm" role="dialog" aria-modal="true" aria-labelledby="urc-title-text">
+    <div class="urc-box">
+        <div class="urc-title" id="urc-title-text">⚠ Reset All Systems</div>
+        <div class="urc-msg">
+            การกระทำนี้จะ <b>รีเซ็ตทั้งระบบ</b> (Emergency Drill Reset) และย้อนสถานะกลับสู่ค่าเริ่มต้น
+        </div>
+        <div class="urc-warn">
+            ⚠ ภัยคุกคามทั้งหมด · กำลังฝ่ายเรา · Event log · Threat queue · Timers จะถูกล้าง
+        </div>
+        <div class="urc-btns">
+            <button class="urc-btn urc-cancel" id="urc-cancel-btn">CANCEL</button>
+            <button class="urc-btn urc-confirm" id="urc-confirm-btn">⟳ CONFIRM RESET</button>
+        </div>
+    </div>
+</div>
 
 <!-- Toast notification + collapsed handle (left only) -->
 <div id="mda-toast"></div>
@@ -2596,6 +2971,13 @@
 <!-- ── Classification Banner — TOP ────────────────────────────── -->
 <div class="classification-banner" data-augmented-ui="tl-clip br-clip both">UNCLASSIFIED // FOR TRAINING USE ONLY</div>
 
+<!-- v12.4 — ZULU clock HUD (top-right) -->
+<div id="zulu-clock" title="Zulu (UTC) tactical time">
+    <span class="zc-dot"></span>
+    <span class="zc-label">ZULU</span>
+    <span class="zc-time" id="zulu-time">--:--:--Z</span>
+</div>
+
 <header>
     <div>
         <div class="title">⚓ THE SHIELD 2.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v12 · MDA</span></div>
@@ -2603,7 +2985,10 @@
     </div>
     <div style="display:flex;gap:10px;align-items:center;">
         <span class="sys-status-pill"><span class="dot"></span>SYSTEM OPERATIONAL</span>
-        <span class="badge-v4">v12.2 · OSIRIS · MDA · Augmented-UI</span>
+        <!-- v12.5-E: ปุ่ม RESET แทนตำแหน่ง .badge-v4 เดิม (Emergency Drill, with modal) -->
+        <div id="udc-reset-btn" title="Reset all systems · Emergency Drill">
+            <span class="urb-icon">⟳</span><span>RESET</span>
+        </div>
         <!-- v12.2: DTG cluster ย้ายไปแสดงใน #mda-statusbar (bottom-center pill) เพื่อลดความซ้ำซ้อน -->
         <div id="uiZoomCtl" title="ปรับขนาดการแสดงผลทั้งหน้า — ให้พอดี 1 จอ desktop">
             <span class="uz-lbl">UI</span>
@@ -3342,6 +3727,36 @@
                 <canvas id="tideChartCanvas"></canvas>
             </div>
 
+            <!-- ── v12.6-C: Seismic Chart Panel (3-tab: Helicorder / Magnitude / PGA) ── -->
+            <div id="seismicChartPanel">
+                <div id="seisChartHdr">
+                    <span class="seis-title">🌐 SEISMIC CHART</span>
+                    <div class="seis-tabs">
+                        <button class="seis-tab active" data-seis-tab="helicorder">📊 Helicorder</button>
+                        <button class="seis-tab"        data-seis-tab="mag">🎯 Magnitude</button>
+                        <button class="seis-tab"        data-seis-tab="pga">⚡ PGA</button>
+                    </div>
+                    <button id="seisChartClose" onclick="toggleSeismicChart()" title="Close">✕</button>
+                </div>
+                <div id="seisChartBody">
+                    <div class="seis-pane active" data-seis-pane="helicorder">
+                        <canvas id="seisHelicorder"></canvas>
+                        <div class="seis-placeholder" id="seisHelicorderPlaceholder">
+                            📊 Helicorder Trace<br>
+                            <span style="font-size:9.5px;color:rgba(251,146,60,.40);">
+                                (Phase E — Raspberry Shake WebSocket<br>real-time waveform)
+                            </span>
+                        </div>
+                    </div>
+                    <div class="seis-pane" data-seis-pane="mag">
+                        <canvas id="seisMagChart"></canvas>
+                    </div>
+                    <div class="seis-pane" data-seis-pane="pga">
+                        <canvas id="seisPgaChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
             <!-- ── Nautical Chart Legend (แสดงเมื่อ Nautical Chart เปิด) ── -->
             <div id="isobathLegend">
                 <div id="chartLegendContent">
@@ -3389,12 +3804,56 @@
             </div>
         </div>
 
-        <div class="panel" style="flex:1;min-height:0;">
+        <!-- v12.6: Event Log fixed height 90px (inner #eventLog) — ปลดล็อก flex:1 เพื่อหลีกทางให้ Seismic panel -->
+        <div class="panel" style="flex-shrink:0;">
             <div class="panel-title" style="color:var(--text-muted);">📋 Event Log</div>
             <div id="eventLog">
                 <span style="color:var(--teal);">--:--:--</span>
                 <span style="color:var(--text-muted);"> v07 GIS init — DAS Armed · Tide + Sea State · AIS Live Online</span><br>
             </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════════════
+             v12.6 — SEISMIC MONITOR PANEL (UDC-centric earthquake telemetry)
+             ──────────────────────────────────────────────────────────────
+             แหล่งข้อมูล: TMD (หลัก) + USGS (backup)
+             แสดง: PGA at UDC · last event · risk level · tsunami · cable
+             ปุ่ม Open Chart → toggle #seismicChartPanel (3 tabs)
+             ════════════════════════════════════════════════════════════ -->
+        <div class="panel" id="panel-seismic" style="border-color:#fb923c;padding:6px 10px;flex-shrink:0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1px;">
+                <div class="panel-title" style="color:#fb923c;">🌐 Seismic Monitor</div>
+                <span class="ind" id="ind-seismic" style="background:#fb923c;box-shadow:0 0 6px #fb923c;"></span>
+            </div>
+            <div class="panel-sub" style="color:#fb923c;margin-bottom:2px;">TMD + USGS · PGA at UDC site</div>
+
+            <!-- PGA visual gauge (0 - 0.5g range) -->
+            <div id="seis-pga-wrap" style="position:relative;height:8px;background:#020a14;border:1px solid #1a3a5c;border-radius:3px;overflow:hidden;margin-bottom:2px;">
+                <div id="seis-pga-fill" style="height:100%;width:0%;background:linear-gradient(90deg,#22c55e 0%,#ffd700 40%,#f97316 70%,#ef4444 100%);transition:width .4s;"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin:1px 0 2px 0;">
+                <span style="font-size:10px;color:var(--text-muted);">0g</span>
+                <span id="seis-pga-val" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:#fb923c;">0.000g</span>
+                <span style="font-size:10px;color:var(--text-muted);">0.5g</span>
+            </div>
+
+            <hr class="divider">
+
+            <!-- Telemetry rows -->
+            <div class="sensor-row" style="margin-top:1px;"><span>🎯 Last Event</span><span id="seis-last-mag" class="val">M-.-</span></div>
+            <div class="sensor-row"><span>📏 Distance</span><span id="seis-last-dist" class="val">--- km</span></div>
+            <div class="sensor-row"><span>⏱ Time ago</span><span id="seis-last-ago" class="val s-ok">---</span></div>
+            <div class="sensor-row"><span>⚠ Risk Level</span><span id="seis-risk" class="val s-ok">NEGLIGIBLE</span></div>
+            <div class="sensor-row"><span>🌊 Tsunami</span><span id="seis-tsunami" class="val s-ok">CLEAR</span></div>
+            <div class="sensor-row"><span>📡 Cable Risk</span><span id="seis-cable" class="val s-ok">NOMINAL</span></div>
+
+            <hr class="divider" style="margin:2px 0;">
+
+            <!-- Open Chart button -->
+            <button id="seisChartBtn" onclick="toggleSeismicChart()"
+                    style="width:100%;margin-top:1px;padding:4px 8px;background:rgba(251,146,60,.1);border:1px solid #fb923c;border-radius:4px;color:#fb923c;font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer;letter-spacing:1px;transition:background .2s,box-shadow .2s;">
+                📈 OPEN SEISMIC CHART
+            </button>
         </div>
 
         <!-- 🌡️ Thermal / PUE Telemetry (collapsible) -->
@@ -3442,20 +3901,8 @@
             <button class="btn btn-uuv" style="background:rgba(255,107,53,.12);border-color:rgba(255,107,53,.5);color:#ff8c5a;justify-content:center;" onclick="launchScenario('mining')">💣 Covert Mining (SDV)</button>
         </div>
 
-        <!-- 🔵 BLUE FORCE — Command Actions -->
-        <div class="panel" style="border-color:#22d3ee;">
-            <div class="panel-title" style="color:#22d3ee;">🔵 Blue Force Command</div>
-            <div class="panel-sub" style="color:#22d3ee;">สั่งการกำลังฝ่ายเรา</div>
-            <div class="ctrl-grp">▾ ASW Helicopter</div>
-            <div class="ctrl-row">
-                <button class="btn" style="background:rgba(245,158,11,.15);border-color:#f59e0b;color:#fcd34d;" onclick="manualScrambleHelo()">🚁 Scramble</button>
-                <button class="btn" style="background:rgba(34,211,238,.12);border-color:#22d3ee;color:#67e8f9;" onclick="manualCAPHelo()">✈ Airborne CAP</button>
-            </div>
-            <div class="ctrl-grp">▾ Mine Warfare</div>
-            <button id="mineFieldBtn" class="btn" style="background:rgba(34,197,94,.10);border-color:#22c55e;color:#4ade80;justify-content:center;" onclick="layControlledMinefield()">💣 Lay Minefield</button>
-            <div class="ctrl-hint">💡 วางกำลัง PV · GUUV · HSV — ใช้ปุ่มชุด DEPLOY มุมขวาบนของแผนที่</div>
-            <button class="btn btn-reset" onclick="resetAll()">⟳ RESET ALL SYSTEMS</button>
-        </div>
+        <!-- v12.5: Blue Force Command panel merged into Deploy · Blue Force Operations panel (right-side floating).
+                    Reset All Systems moved to standalone top-right button (#udc-reset-btn) with confirmation modal. -->
     </div>
 
     <!-- BOTTOM STRIP — V06: Domain Badges + Threat Vector Timeline -->
@@ -9613,6 +10060,409 @@ function toggleTideChart() {
     panel.style.display = shown ? 'none' : 'block';
     btn.classList.toggle('active', !shown);
     if (!shown && !tideChartInstance) initTideChart();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  v12.6-C  Seismic Chart Panel — 3-tab toggle (Helicorder / Mag / PGA)
+//  ─────────────────────────────────────────────────────────────
+//  · ตัว panel เป็น overlay บน map (mirror layout ของ #tideChartPanel)
+//  · 3 แท็บ: Helicorder (waveform real-time, Phase E)
+//           Magnitude  (scatter Dist×Mag จาก USGS, Phase D)
+//           PGA        (time-series Now-cast 24h, Phase D)
+// ═══════════════════════════════════════════════════════════════
+let seisMagChartInstance = null;
+let seisPgaChartInstance = null;
+let seisHelicorderInstance = null;            // Phase E จะ assign
+
+// ═══════════════════════════════════════════════════════════════
+//  v12.6-E  Helicorder Engine — synthesised waveform + event injection
+//  ─────────────────────────────────────────────────────────────
+//  Note: Raspberry Shake WebSocket (e.g. wss://gs1.raspberryshake.org)
+//  requires authentication and a CORS proxy — out of scope for client-only
+//  build. Instead, we render a physically-realistic synthesised trace:
+//   · Ambient: pseudo-random Brownian noise (1-Hz floor)
+//   · Events:  for every entry in MDA.data.seismicAll, render a
+//              wave-packet at the correct P-wave arrival time (UTC),
+//              amplitude scaled to impact.pga_g at UDC
+//   · Layout:  6 rows × 10-min each = 60-min rolling window
+//   · Refresh: 1 Hz (full redraw)
+// ═══════════════════════════════════════════════════════════════
+const Helicorder = (() => {
+    let cv = null, ctx = null;
+    let timer = null;
+    const dpr = window.devicePixelRatio || 1;
+    const TIME_SPAN_MS = 60 * 60_000;   // 60 min total
+    const ROWS         = 6;
+    const ROW_SPAN_MS  = TIME_SPAN_MS / ROWS;   // 10 min/row
+
+    // Deterministic pseudo-random ∈ [0,1) — Mulberry32-style
+    const hash01 = (n) => {
+        let t = (n + 0x6D2B79F5) | 0;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+
+    // Ambient micro-seismic noise — combination of slow sines + low-amp random
+    const ambient = (t_ms) => {
+        const bin = Math.floor(t_ms / 50);     // 20-Hz noise samples
+        return Math.sin(t_ms / 1300) * 0.42
+             + Math.sin(t_ms / 700)  * 0.27
+             + (hash01(bin) - 0.5)   * 0.55;
+    };
+
+    // Single-event wave packet (Gaussian envelope × sinusoid)
+    const eventPacket = (event, t_ms) => {
+        if (!event?.impact) return 0;
+        const originMs  = event.feat?.properties?.time;
+        if (!originMs) return 0;
+        const arrivalMs = originMs + event.impact.pwaveETA_s * 1000;
+        const dt = (t_ms - arrivalMs) / 1000;   // seconds since P-arrival
+        if (dt < -2 || dt > 28) return 0;
+        // bell envelope centered ~5s after arrival (coda)
+        const env = Math.exp(-Math.pow(dt - 5, 2) / 22);
+        // amplitude scaled by PGA — clamped to row half-height
+        const amp = Math.min(48, event.impact.pga_g * 2400);
+        return env * amp * Math.sin(dt * 8.5);
+    };
+
+    const draw = () => {
+        if (!cv || !ctx) return;
+        const W = cv.width  / dpr;
+        const H = cv.height / dpr;
+        // BG
+        ctx.fillStyle = 'rgba(10,18,32,0.94)';
+        ctx.fillRect(0, 0, W, H);
+
+        const events = window.MDA?.data?.seismicAll || [];
+        const now    = Date.now();
+        const rowH   = H / ROWS;
+        const traceX0 = 40;
+        const traceW  = W - 44;
+        const STEP    = 2;   // px per sample (≈ 3s/sample at 600-wide × 10-min row)
+
+        // grid (row separators)
+        ctx.strokeStyle = 'rgba(251,146,60,0.10)';
+        ctx.lineWidth = 1;
+        for (let r = 0; r <= ROWS; r++) {
+            const y = r * rowH;
+            ctx.beginPath();
+            ctx.moveTo(traceX0 - 2, y); ctx.lineTo(W, y);
+            ctx.stroke();
+        }
+        // y-axis baseline (per row)
+        ctx.strokeStyle = 'rgba(251,146,60,0.06)';
+        for (let r = 0; r < ROWS; r++) {
+            const yMid = r * rowH + rowH / 2;
+            ctx.beginPath();
+            ctx.moveTo(traceX0, yMid); ctx.lineTo(W, yMid);
+            ctx.stroke();
+        }
+
+        // trace rows  (row 0 = NEWEST at top — classic helicorder)
+        ctx.lineWidth = 0.85;
+        for (let r = 0; r < ROWS; r++) {
+            const rowEndMs   = now - r * ROW_SPAN_MS;
+            const rowStartMs = rowEndMs - ROW_SPAN_MS;
+            const yMid       = r * rowH + rowH / 2;
+
+            // time label
+            const lbl = new Date(rowStartMs);
+            const HH  = String(lbl.getUTCHours()).padStart(2, '0');
+            const MM  = String(lbl.getUTCMinutes()).padStart(2, '0');
+            ctx.fillStyle = 'rgba(251,146,60,0.55)';
+            ctx.font = '8px "Share Tech Mono", monospace';
+            ctx.fillText(`${HH}:${MM}Z`, 2, yMid + 3);
+
+            // trace — color shifts orange→red if any event in this row exceeded MODERATE
+            let rowMaxAmp = 0;
+            ctx.strokeStyle = '#fb923c';
+            ctx.beginPath();
+            ctx.moveTo(traceX0, yMid);
+            for (let x = 0; x <= traceW; x += STEP) {
+                const t = rowStartMs + (x / traceW) * ROW_SPAN_MS;
+                let v = ambient(t);
+                for (const e of events) v += eventPacket(e, t);
+                const av = Math.abs(v);
+                if (av > rowMaxAmp) rowMaxAmp = av;
+                v = Math.max(-rowH / 2.2, Math.min(rowH / 2.2, v));
+                ctx.lineTo(traceX0 + x, yMid - v);
+            }
+            // color: red if MODERATE+ packet, yellow if WEAK+, orange otherwise
+            if      (rowMaxAmp > 38) ctx.strokeStyle = '#ff1744';
+            else if (rowMaxAmp > 20) ctx.strokeStyle = '#ff9800';
+            else                     ctx.strokeStyle = '#fb923c';
+            ctx.stroke();
+        }
+
+        // now-cursor (top-right marker of newest row)
+        ctx.strokeStyle = '#ff5722';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(W - 2, 0); ctx.lineTo(W - 2, rowH);
+        ctx.stroke();
+
+        // status overlay
+        ctx.fillStyle = '#fb923c';
+        ctx.font = 'bold 9px "Share Tech Mono", monospace';
+        ctx.fillText('● SYNTH 1 Hz · ' + events.length + ' evt', W - 132, H - 4);
+    };
+
+    const resize = () => {
+        if (!cv) return;
+        const r = cv.getBoundingClientRect();
+        if (r.width < 5 || r.height < 5) return;   // hidden
+        cv.width  = Math.floor(r.width  * dpr);
+        cv.height = Math.floor(r.height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+
+    const init = (canvas) => {
+        cv  = canvas;
+        ctx = cv.getContext('2d');
+        resize();
+        if (timer) clearInterval(timer);
+        draw();
+        timer = setInterval(() => { resize(); draw(); }, 1000);
+        return true;
+    };
+
+    const stop = () => {
+        if (timer) { clearInterval(timer); timer = null; }
+    };
+
+    return { init, draw, resize, stop };
+})();
+window.Helicorder = Helicorder;
+
+function initSeismicChart() {
+    if (!window.Chart) return;
+
+    // ── Tab 2: Magnitude scatter (M vs Distance from UDC) ──
+    if (!seisMagChartInstance) {
+        const c = document.getElementById('seisMagChart');
+        if (c) {
+            seisMagChartInstance = new Chart(c.getContext('2d'), {
+                type: 'scatter',
+                data: { datasets: [{
+                    label: 'Events (24h)',
+                    data: [],
+                    backgroundColor: 'rgba(251,146,60,0.55)',
+                    borderColor: '#fb923c',
+                    pointRadius: 5, pointHoverRadius: 7
+                }] },
+                options: {
+                    animation: false, responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'MAGNITUDE × DISTANCE FROM UDC (24h)',
+                            color: '#fb923c',
+                            font: { family: 'Share Tech Mono', size: 9, weight: 'bold' },
+                            padding: { top: 2, bottom: 4 }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            min: 10, max: 20000,
+                            title: { display: true, text: 'Distance (km, log)', color: '#fb923c', font: { size: 8 } },
+                            ticks: { color: '#8892b0', font: { family: 'Share Tech Mono', size: 8 } },
+                            grid: { color: 'rgba(26,58,92,0.45)' }
+                        },
+                        y: {
+                            min: 0, max: 9,
+                            title: { display: true, text: 'Magnitude', color: '#fb923c', font: { size: 8 } },
+                            ticks: { color: '#8892b0', font: { family: 'Share Tech Mono', size: 8 } },
+                            grid: { color: 'rgba(26,58,92,0.45)' }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // ── Tab 3: PGA time-series (24h ‘Now-cast’ — peak PGA per hour) ──
+    if (!seisPgaChartInstance) {
+        const c = document.getElementById('seisPgaChart');
+        if (c) {
+            seisPgaChartInstance = new Chart(c.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Peak PGA at UDC (mg)',
+                        data: [],
+                        backgroundColor: ctx => {
+                            const v = ctx.parsed?.y ?? 0;   // mg
+                            if (v >= 340)  return '#ff1744';
+                            if (v >= 180)  return '#ff5722';
+                            if (v >= 92)   return '#ff9800';
+                            if (v >= 39)   return '#ffc107';
+                            if (v >= 14)   return '#90caf9';
+                            return '#607d8b';
+                        },
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    animation: false, responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'PGA AT UDC — Hourly Peak (24h)',
+                            color: '#fb923c',
+                            font: { family: 'Share Tech Mono', size: 9, weight: 'bold' },
+                            padding: { top: 2, bottom: 4 }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#8892b0', font: { family: 'Share Tech Mono', size: 7 }, maxTicksLimit: 8 },
+                            grid:  { color: 'rgba(26,58,92,0.45)' }
+                        },
+                        y: {
+                            min: 0,
+                            title: { display: true, text: 'PGA (mg)', color: '#fb923c', font: { size: 8 } },
+                            ticks: { color: '#8892b0', font: { family: 'Share Tech Mono', size: 8 } },
+                            grid:  { color: 'rgba(26,58,92,0.45)' }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // ── Wire tab switcher (one-time)
+    if (!initSeismicChart._tabsWired) {
+        document.querySelectorAll('#seisChartHdr .seis-tab').forEach(tab => {
+            tab.addEventListener('click', () => switchSeismicTab(tab.dataset.seisTab));
+        });
+        initSeismicChart._tabsWired = true;
+    }
+
+    // ── Tab 1: Helicorder — boot synthesised waveform engine (v12.6-E)
+    const heli = document.getElementById('seisHelicorder');
+    if (heli && !initSeismicChart._heliBooted) {
+        const ph = document.getElementById('seisHelicorderPlaceholder');
+        if (ph) ph.style.display = 'none';
+        try { Helicorder.init(heli); initSeismicChart._heliBooted = true; }
+        catch (e) { console.warn('[Helicorder] init fail:', e.message); }
+    }
+
+    // ── Push initial data if available (from MDA.data.seismicAll, Phase B)
+    if (typeof refreshSeismicChart === 'function') refreshSeismicChart();
+}
+
+function switchSeismicTab(name) {
+    document.querySelectorAll('#seisChartHdr .seis-tab').forEach(t =>
+        t.classList.toggle('active', t.dataset.seisTab === name));
+    document.querySelectorAll('#seisChartBody .seis-pane').forEach(p =>
+        p.classList.toggle('active', p.dataset.seisPane === name));
+    // resize Chart.js / Helicorder on tab switch (canvas was hidden — needs layout)
+    setTimeout(() => {
+        if (name === 'mag'        && seisMagChartInstance)  seisMagChartInstance.resize();
+        if (name === 'pga'        && seisPgaChartInstance)  seisPgaChartInstance.resize();
+        if (name === 'helicorder' && window.Helicorder)     { Helicorder.resize(); Helicorder.draw(); }
+    }, 60);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  v12.6-D  refreshSeismicChart() — pump MDA.data.seismicAll into Tab 2/3
+//  ─────────────────────────────────────────────────────────────
+//  · Tab 2: Magnitude scatter (M × distKm-from-UDC), colour by risk tier
+//  · Tab 3: PGA hourly bars (24h history of peak PGA at UDC)
+//  · เรียกจาก MDA.Seismic.refresh() ทุก 180s + เมื่อ user เปิด panel ครั้งแรก
+// ═══════════════════════════════════════════════════════════════
+function refreshSeismicChart() {
+    const all = window.MDA?.data?.seismicAll;
+    if (!all || !all.length) return;
+
+    const riskRgb = (risk) =>
+        risk === 'SEVERE'   ? '#ff1744'
+      : risk === 'HIGH'     ? '#ff5722'
+      : risk === 'MODERATE' ? '#ff9800'
+      : risk === 'LOW'      ? '#ffc107'
+      : risk === 'WEAK'     ? '#90caf9'
+      :                       '#607d8b';
+
+    // ── Tab 2: Magnitude × Distance scatter
+    if (seisMagChartInstance) {
+        const pts    = all.map(e => ({
+            x: Math.max(10, e.impact.distKm),     // clamp ≥10 for log axis
+            y: e.mag,
+            risk:  e.impact.riskLevel,
+            place: e.feat.properties.place || '?',
+            depth: e.depth,
+            pga_mg:(e.impact.pga_g * 1000).toFixed(2)
+        }));
+        const colors = pts.map(p => riskRgb(p.risk));
+        const ds = seisMagChartInstance.data.datasets[0];
+        ds.data                  = pts;
+        ds.pointBackgroundColor  = colors;
+        ds.pointBorderColor      = colors;
+        // tooltip callback
+        seisMagChartInstance.options.plugins.tooltip = {
+            callbacks: {
+                label: (ctx) => {
+                    const r = ctx.raw;
+                    return [
+                        `M${r.y.toFixed(1)} · ${r.place}`,
+                        `${r.x.toFixed(0)} km · depth ${r.depth.toFixed(0)} km`,
+                        `PGA ${r.pga_mg} mg · ${r.risk}`
+                    ];
+                }
+            },
+            titleFont: { family: 'Share Tech Mono', size: 9 },
+            bodyFont:  { family: 'Share Tech Mono', size: 9 }
+        };
+        seisMagChartInstance.update('none');
+    }
+
+    // ── Tab 3: Hourly peak-PGA bars (24h, oldest left → newest right)
+    if (seisPgaChartInstance) {
+        const now    = Date.now();
+        const hourMs = 3_600_000;
+        const buckets = new Array(24).fill(0);     // mg
+        const labels  = [];
+        for (let i = 23; i >= 0; i--) {
+            const t = new Date(now - i * hourMs);
+            labels.push(String(t.getUTCHours()).padStart(2, '0') + 'Z');
+        }
+        all.forEach(e => {
+            const ageH = Math.floor((now - e.feat.properties.time) / hourMs);
+            if (ageH >= 0 && ageH < 24) {
+                const idx = 23 - ageH;
+                const mg  = e.impact.pga_g * 1000;
+                if (mg > buckets[idx]) buckets[idx] = mg;
+            }
+        });
+        seisPgaChartInstance.data.labels          = labels;
+        seisPgaChartInstance.data.datasets[0].data = buckets;
+        seisPgaChartInstance.update('none');
+    }
+}
+// expose globally so MDA.Seismic.refresh() can call it across IIFE boundary
+window.refreshSeismicChart = refreshSeismicChart;
+
+function toggleSeismicChart() {
+    const panel = document.getElementById('seismicChartPanel');
+    const btn   = document.getElementById('seisChartBtn');
+    if (!panel) {
+        if (typeof toast === 'function') toast('🌐 Seismic Chart panel — not rendered');
+        else console.warn('[Seismic Chart] panel missing');
+        return;
+    }
+    const shown = panel.getAttribute('data-shown') === '1';
+    if (shown) {
+        panel.removeAttribute('data-shown');
+    } else {
+        panel.setAttribute('data-shown', '1');
+        initSeismicChart();
+    }
+    if (btn) btn.classList.toggle('active', !shown);
 }
 
 
@@ -17814,6 +18664,14 @@ function updateClock() {
             [now.getHours(), now.getMinutes(), now.getSeconds()].map(p2).join(':')
             + ' +07';
     }
+    // v12.4: ZULU clock HUD (top-right) — HH:MM:SSZ
+    const ztEl = document.getElementById('zulu-time');
+    if (ztEl) {
+        ztEl.textContent =
+            p2(now.getUTCHours()) + ':' +
+            p2(now.getUTCMinutes()) + ':' +
+            p2(now.getUTCSeconds()) + 'Z';
+    }
 }
 setInterval(updateClock,1000); updateClock();
 
@@ -18567,7 +19425,11 @@ function _sonarEqnRender(panel) {
             // ขอบเขต indochina/อ่าวไทย-อันดามัน สำหรับ OpenSky bbox
             bbox: { lamin: 5.6, lomin: 95.0, lamax: 21.0, lomax: 108.0 },
             poll: { aviation: 60_000, seismic: 180_000, space: 600_000, gdelt: 300_000, fusion: 30_000 },
-            cacheTTL: { aviation: 55_000, seismic: 170_000, space: 590_000, gdelt: 290_000 }
+            cacheTTL: { aviation: 55_000, seismic: 170_000, space: 590_000, gdelt: 290_000 },
+            // v12.6-F: TMD (Thai Meteorological Dept) primary, USGS backup
+            // Set to your deployed Cloudflare Worker URL (template: see /workers/tmd-proxy.js
+            // in repo, or inline at top of MDA.Seismic IIFE) — null = skip TMD, USGS-only
+            tmdProxyUrl: null
         },
         layers: {},       // L.layerGroup() ต่อโดเมน
         data:   { aviation: [], seismic: [], space: null, gdelt: [], fusion: [] },
@@ -18615,6 +19477,74 @@ function _sonarEqnRender(panel) {
         if (el) el.textContent = (n == null ? '--' : String(n));
     };
     MDA.util = { cacheGet, cacheSet, fetchJSON, setBadge, setCount };
+
+    /* ══════════════════════════════════════════════════════════════
+       v12.6-B · UDC-Impact Classifier (PGA + Tsunami + Cable Risk)
+       ──────────────────────────────────────────────────────────────
+       วัตถุประสงค์ : แปลงเหตุการณ์แผ่นดินไหว (lat/lon/depth/M) เป็น
+                     ตัวชี้วัดที่เกี่ยวข้องกับฐานทัพ UDC สัตหีบโดยตรง
+       อ้างอิงทฤษฎี :
+         · Joyner & Boore (1981) GMPE — active shallow crustal
+         · Wald (1999) PGA ↔ MMI conversion
+         · PTWC tsunami warning criteria (M ≥ 7.0, depth ≤ 70km, offshore)
+         · Submarine cable vulnerability — ITU-T G.978
+       ════════════════════════════════════════════════════════════ */
+    const UDC_SITE = { lat: 12.712, lng: 100.820 };   // ฐานทัพเรือสัตหีบ
+    MDA.UDC_SITE = UDC_SITE;
+
+    const haversineKm = (lat1, lon1, lat2, lon2) => {
+        const R = 6371;
+        const toRad = d => d * Math.PI / 180;
+        const dLat = toRad(lat2 - lat1);
+        const dLon = toRad(lon2 - lon1);
+        const a = Math.sin(dLat/2) ** 2
+                + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2) ** 2;
+        return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    };
+
+    const computeUDCImpact = (event) => {
+        const { lat, lon, depth = 10, mag = 0, place = '' } = event;
+        const distKm = haversineKm(UDC_SITE.lat, UDC_SITE.lng, lat, lon);
+        const h      = Math.max(depth, 8);            // pseudo-depth กันค่าศูนย์
+        const R_jb   = Math.sqrt(distKm * distKm + h * h);
+
+        // ── Joyner-Boore (1981) simplified GMPE: log10(PGA[g]) = 0.41M − log10(R+7) − 0.0026R − 1.66
+        const logPGA = 0.41 * mag - Math.log10(R_jb + 7) - 0.0026 * R_jb - 1.66;
+        const pga_g  = Math.max(0, Math.pow(10, logPGA));
+
+        // ── Risk tier (Wald 1999 PGA→MMI)
+        const riskLevel =
+            pga_g >= 0.34  ? 'SEVERE'    :   // MMI VIII+ — heavy damage
+            pga_g >= 0.18  ? 'HIGH'      :   // MMI VII   — light damage
+            pga_g >= 0.092 ? 'MODERATE'  :   // MMI VI    — strong shaking
+            pga_g >= 0.039 ? 'LOW'       :   // MMI V     — moderate shaking
+            pga_g >= 0.014 ? 'WEAK'      :   // MMI IV    — light shaking
+                             'NEGLIGIBLE';   // MMI III-  — barely felt
+
+        // ── P-wave / S-wave arrival (textbook seismology, crustal average)
+        const pVel = 6.5, sVel = 3.7;
+        const hypocenter3D = Math.sqrt(distKm * distKm + h * h);
+        const pwaveETA_s   = hypocenter3D / pVel;
+        const sShakeETA_s  = hypocenter3D / sVel;
+
+        // ── Tsunami potential (PTWC simplified: M, depth, offshore signal)
+        const placeLC   = (place || '').toLowerCase();
+        const isOffshore = /sea|ocean|gulf|strait|trench|ridge|island/.test(placeLC);
+        let tsunamiPotential = 'CLEAR';
+        if (mag >= 7.5 && depth <= 70 && isOffshore)                    tsunamiPotential = 'WARNING';
+        else if (mag >= 7.0 && depth <= 70 && isOffshore && distKm < 3000) tsunamiPotential = 'WATCH';
+
+        // ── Submarine cable risk (UDC-specific)
+        let cableRisk = 'NOMINAL';
+        if (pga_g >= 0.15)                                 cableRisk = 'CRITICAL';
+        else if (pga_g >= 0.08)                            cableRisk = 'WARNING';
+        else if (pga_g >= 0.03 || (mag >= 6.5 && distKm < 100)) cableRisk = 'CAUTION';
+
+        return { distKm, pga_g, riskLevel, pwaveETA_s, sShakeETA_s, tsunamiPotential, cableRisk };
+    };
+
+    MDA.util.haversineKm      = haversineKm;
+    MDA.util.computeUDCImpact = computeUDCImpact;
 
 
 //  [ส่วนที่ 38] หมวด ญ — Multi-Domain Awareness (MDA / Air Domain)
@@ -18710,52 +19640,420 @@ function _sonarEqnRender(panel) {
     MDA.Seismic = (function () {
         const layer = L.layerGroup();
         MDA.layers.seismic = layer;
-        const URL = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson';
+        const URL_USGS    = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson';
+        const URL_TMD_RAW = 'https://earthquake.tmd.go.th/feed/rss_inside.xml';
 
-        const magColor = (m) => {
-            if (m >= 6)   return '#ff1744';
-            if (m >= 5)   return '#ff5722';
-            if (m >= 4)   return '#ff9800';
-            if (m >= 3)   return '#ffc107';
-            return '#90caf9';
+        /* ─────────────────────────────────────────────────────────────
+           v12.6-F · TMD (Thai Meteorological Dept) RSS proxy
+           ─────────────────────────────────────────────────────────────
+           TMD blocks browser CORS — must route through a Cloudflare Worker.
+           Set MDA.cfg.tmdProxyUrl to your deployed worker, e.g.
+               https://tmd-proxy.YOUR-SUBDOMAIN.workers.dev/
+
+           Minimal Worker code (deploy at workers.cloudflare.com):
+           ┌────────────────────────────────────────────────────────────┐
+           │ export default {                                            │
+           │   async fetch(req, env) {                                   │
+           │     const u = new URL(req.url);                             │
+           │     const src = u.searchParams.get('src');                  │
+           │     if (!src) return new Response('?src= required', 400);   │
+           │     // Whitelist TMD domain only — no open proxy            │
+           │     if (!/^https:\/\/earthquake\.tmd\.go\.th\//.test(src))  │
+           │       return new Response('domain not allowed', 403);       │
+           │     const r = await fetch(src, { cf: { cacheTtl: 60 } });   │
+           │     const body = await r.text();                            │
+           │     return new Response(body, {                             │
+           │       status: r.status,                                     │
+           │       headers: {                                            │
+           │         'Content-Type': 'application/xml; charset=utf-8',   │
+           │         'Access-Control-Allow-Origin': '*',                 │
+           │         'Cache-Control': 'public, max-age=60'               │
+           │       }                                                     │
+           │     });                                                     │
+           │   }                                                         │
+           │ };                                                          │
+           └────────────────────────────────────────────────────────────┘
+           ─────────────────────────────────────────────────────────── */
+
+        // ── v12.6-B: color by UDC-impact PGA tier (Wald 1999 PGA↔MMI), not raw magnitude
+        const riskColor = (pga_g) => {
+            if (pga_g >= 0.34)  return '#ff1744';  // SEVERE   (MMI VIII+)
+            if (pga_g >= 0.18)  return '#ff5722';  // HIGH     (MMI VII)
+            if (pga_g >= 0.092) return '#ff9800';  // MODERATE (MMI VI)
+            if (pga_g >= 0.039) return '#ffc107';  // LOW      (MMI V)
+            if (pga_g >= 0.014) return '#90caf9';  // WEAK     (MMI IV)
+            return '#607d8b';                       // NEGLIGIBLE
         };
 
-        async function refresh() {
-            try {
-                const j = await fetchJSON(URL, 'seismic', MDA.cfg.cacheTTL.seismic);
-                const feats = (j.features || []).filter(f => {
-                    const [lon, lat] = f.geometry.coordinates;
-                    return lat >= MDA.cfg.bbox.lamin && lat <= MDA.cfg.bbox.lamax
-                        && lon >= MDA.cfg.bbox.lomin && lon <= MDA.cfg.bbox.lomax;
+        /* ── parseTMDRss : XML → normalised event list ─────────────── */
+        function parseTMDRss(xmlText) {
+            const doc = new DOMParser().parseFromString(xmlText, 'application/xml');
+            if (doc.querySelector('parsererror')) {
+                console.warn('[TMD] RSS parse error'); return [];
+            }
+            const items = Array.from(doc.querySelectorAll('item'));
+            const out = [];
+            for (const it of items) {
+                const title = it.querySelector('title')?.textContent || '';
+                const desc  = it.querySelector('description')?.textContent || '';
+                // geo:lat / geo:long via getElementsByTagNameNS or wildcard
+                const latEl = it.getElementsByTagNameNS('*', 'lat')[0]
+                              || it.getElementsByTagName('geo:lat')[0];
+                const lonEl = it.getElementsByTagNameNS('*', 'long')[0]
+                              || it.getElementsByTagName('geo:long')[0];
+                let lat = parseFloat(latEl?.textContent || 'NaN');
+                let lon = parseFloat(lonEl?.textContent || 'NaN');
+                // fallback — TMD also embeds "Lat 17.123 Long 99.456" in description
+                if (isNaN(lat) || isNaN(lon)) {
+                    const m = /Lat[^\d-]*([-\d.]+)\s*Long[^\d-]*([-\d.]+)/i.exec(desc);
+                    if (m) { lat = parseFloat(m[1]); lon = parseFloat(m[2]); }
+                }
+                if (isNaN(lat) || isNaN(lon)) continue;
+                const magM = /Magnitude[^\d]*([\d.]+)/i.exec(title + ' ' + desc);
+                const depM = /Depth[^\d]*([\d.]+)\s*km/i.exec(title + ' ' + desc);
+                const mag   = magM ? parseFloat(magM[1]) : 0;
+                const depth = depM ? parseFloat(depM[1]) : 10;
+                const pub   = it.querySelector('pubDate')?.textContent;
+                const time  = pub ? new Date(pub).getTime() : Date.now();
+                const place = title.replace(/^\s*Magnitude\s*[\d.]+\s*/i, '').trim()
+                              || 'TMD event';
+                out.push({
+                    feat: {
+                        type: 'Feature',
+                        geometry: { type: 'Point', coordinates: [lon, lat, depth] },
+                        properties: { mag, place, time, source: 'TMD' },
+                        id: 'tmd-' + time + '-' + lat.toFixed(2) + '-' + lon.toFixed(2)
+                    },
+                    lon, lat, depth, mag, source: 'TMD'
                 });
-                layer.clearLayers();
-                feats.forEach(f => {
+            }
+            return out;
+        }
+
+        /* ── mergeSources : TMD priority, dedup by time(±60s) × dist(±25km) */
+        function mergeSources(tmd, usgs) {
+            const out = tmd.slice();   // TMD wins for Thailand region
+            for (const u of usgs) {
+                const ut = u.feat.properties.time;
+                const dup = tmd.some(t => {
+                    const dt = Math.abs(ut - t.feat.properties.time);
+                    const dd = MDA.util.haversineKm(t.lat, t.lon, u.lat, u.lon);
+                    return dt < 60_000 && dd < 25;
+                });
+                if (!dup) out.push(u);
+            }
+            return out;
+        }
+
+        async function refresh() {
+            let tmdRaw = [], usgsRaw = [];
+            let srcLabel = 'USGS';
+            const proxy = MDA.cfg.tmdProxyUrl;
+
+            // ── (1) TMD via Cloudflare Worker (if configured)
+            if (proxy) {
+                try {
+                    const url = proxy.replace(/\/$/, '') + '?src=' + encodeURIComponent(URL_TMD_RAW);
+                    const resp = await fetch(url, { cache: 'default' });
+                    if (resp.ok) {
+                        const xml = await resp.text();
+                        tmdRaw = parseTMDRss(xml).map(e => ({
+                            ...e,
+                            impact: MDA.util.computeUDCImpact({
+                                lat: e.lat, lon: e.lon, depth: e.depth, mag: e.mag,
+                                place: e.feat.properties.place
+                            })
+                        }));
+                        if (tmdRaw.length) srcLabel = 'TMD+USGS';
+                    } else {
+                        console.warn('[MDA·Seismic·TMD] proxy HTTP', resp.status);
+                    }
+                } catch (e) {
+                    console.warn('[MDA·Seismic·TMD] proxy fail:', e.message);
+                }
+            }
+
+            // ── (2) USGS (always, for global coverage / tsunami early warning)
+            try {
+                const j = await fetchJSON(URL_USGS, 'seismic', MDA.cfg.cacheTTL.seismic);
+                const allFeats = j.features || [];
+                usgsRaw = allFeats.map(f => {
                     const [lon, lat, depth] = f.geometry.coordinates;
                     const mag = f.properties.mag || 0;
+                    f.properties.source = 'USGS';
+                    const impact = MDA.util.computeUDCImpact({
+                        lat, lon, depth, mag,
+                        place: f.properties.place || ''
+                    });
+                    return { feat: f, lon, lat, depth, mag, impact, source: 'USGS' };
+                });
+            } catch (e) {
+                console.warn('[MDA·Seismic·USGS] fetch fail:', e.message);
+                if (!tmdRaw.length) { setBadge('seismic', 'ERR', 'crit'); return; }
+            }
+
+            try {
+                // ── (3) Merge & dedup
+                const eventsWithImpact = mergeSources(tmdRaw, usgsRaw);
+                MDA.data.seismicSource = srcLabel;
+
+                // ── เก็บเหตุการณ์ที่ PGA-ที่-UDC สูงสุด (ใช้กับ sidebar panel)
+                const lastEvent = eventsWithImpact.reduce(
+                    (max, e) => (!max || e.impact.pga_g > max.impact.pga_g) ? e : max,
+                    null);
+
+                // ── Map markers — กรองเฉพาะใน region bbox (ไม่รก map)
+                const regionEvents = eventsWithImpact.filter(e =>
+                    e.lat >= MDA.cfg.bbox.lamin && e.lat <= MDA.cfg.bbox.lamax
+                    && e.lon >= MDA.cfg.bbox.lomin && e.lon <= MDA.cfg.bbox.lomax);
+
+                layer.clearLayers();
+                regionEvents.forEach(({ feat, lat, lon, depth, mag, impact, source }) => {
+                    const col = riskColor(impact.pga_g);
                     const c = L.circleMarker([lat, lon], {
                         radius: Math.max(4, mag * 4),
-                        color: magColor(mag), fillColor: magColor(mag),
+                        color: col, fillColor: col,
                         fillOpacity: 0.5, weight: 2
                     });
+                    const src = source || feat.properties.source || 'USGS';
                     c.bindTooltip(
-                        `<b>M ${mag.toFixed(1)}</b> · ${f.properties.place || '?'}<br>` +
+                        `<b>M ${mag.toFixed(1)}</b> · ${feat.properties.place || '?'}` +
+                        ` <span style="color:#fb923c;font-size:9px;">[${src}]</span><br>` +
                         `Depth ${depth.toFixed(1)} km · ` +
-                        new Date(f.properties.time).toUTCString(),
+                        new Date(feat.properties.time).toUTCString() +
+                        `<hr style="border:0;border-top:1px solid #1a3a5c;margin:3px 0;">` +
+                        `<b style="color:${col};">UDC Impact: ${impact.riskLevel}</b><br>` +
+                        `📏 ${impact.distKm.toFixed(0)} km · ` +
+                        `📊 PGA ${(impact.pga_g * 1000).toFixed(1)} mg<br>` +
+                        `⏱ P-wave ${impact.pwaveETA_s.toFixed(1)}s · ` +
+                        `S ${impact.sShakeETA_s.toFixed(1)}s<br>` +
+                        `🌊 ${impact.tsunamiPotential} · 📡 Cable ${impact.cableRisk}`,
                         { sticky: true, className: 'mda-tooltip' }
                     );
                     layer.addLayer(c);
                 });
-                MDA.data.seismic = feats;
-                const maxM = feats.reduce((m, f) => Math.max(m, f.properties.mag || 0), 0);
-                setBadge('seismic', feats.length, maxM >= 5 ? 'crit' : (maxM >= 4 ? 'warn' : null));
-                setCount('mda-cnt-seismic-row', feats.length);
-                console.log('[MDA·Seismic]', feats.length, 'events, max M =', maxM.toFixed(1));
+
+                MDA.data.seismic           = regionEvents.map(e => e.feat); // legacy
+                MDA.data.lastSeismicEvent  = lastEvent;
+                MDA.data.seismicAll        = eventsWithImpact;              // for chart (Phase D)
+
+                // ── v12.6-G: pick most severe tsunami-candidate event (NOT max-PGA at UDC)
+                //   เพราะ tsunamiPotential ถูกกำหนดโดย M+depth+offshore  ไม่ใช่ PGA-ที่-UDC
+                const tsunamiCandidates = eventsWithImpact.filter(
+                    e => e.impact.tsunamiPotential !== 'CLEAR');
+                const tsunamiEvent = tsunamiCandidates.reduce(
+                    (m, e) => {
+                        if (!m) return e;
+                        const rank = (t) => t === 'WARNING' ? 2 : t === 'WATCH' ? 1 : 0;
+                        if (rank(e.impact.tsunamiPotential) > rank(m.impact.tsunamiPotential)) return e;
+                        if (rank(e.impact.tsunamiPotential) === rank(m.impact.tsunamiPotential)
+                            && e.mag > m.mag) return e;
+                        return m;
+                    }, null);
+                MDA.data.tsunamiEvent = tsunamiEvent;
+                if (MDA.Tsunami) {
+                    if (tsunamiEvent) MDA.Tsunami.trigger(tsunamiEvent);
+                    else              MDA.Tsunami.clear();
+                }
+
+                // ── อัพเดต sidebar Seismic Monitor panel
+                updateUDCPanel(lastEvent);
+
+                // ── v12.6-D: pump fresh data into Seismic Chart (Tab 2/3)
+                if (typeof window.refreshSeismicChart === 'function') {
+                    window.refreshSeismicChart();
+                }
+
+                const maxM = regionEvents.reduce((m, e) => Math.max(m, e.mag), 0);
+                setBadge('seismic', regionEvents.length,
+                         maxM >= 5 ? 'crit' : (maxM >= 4 ? 'warn' : null));
+                setCount('mda-cnt-seismic-row', regionEvents.length);
+                console.log('[MDA·Seismic]', regionEvents.length, 'region evt ('+srcLabel+
+                            ', TMD '+tmdRaw.length+' / USGS '+usgsRaw.length+'), max M =',
+                            maxM.toFixed(1),
+                            '· UDC max PGA =',
+                            lastEvent ? (lastEvent.impact.pga_g * 1000).toFixed(2) + ' mg' : 'n/a');
             } catch (e) {
                 console.warn('[MDA·Seismic] fetch fail:', e.message);
                 setBadge('seismic', 'ERR', 'crit');
             }
         }
-        return { layer, refresh, name: 'Seismic' };
+
+        // ── v12.6-B: refresh sidebar Seismic Monitor panel from lastEvent
+        function updateUDCPanel(lastEvent) {
+            const $ = id => document.getElementById(id);
+            const pgaFill = $('seis-pga-fill');
+            if (!pgaFill) return; // panel ยังไม่ render
+            const pgaVal = $('seis-pga-val');
+            const magEl  = $('seis-last-mag');
+            const distEl = $('seis-last-dist');
+            const agoEl  = $('seis-last-ago');
+            const riskEl = $('seis-risk');
+            const tsuEl  = $('seis-tsunami');
+            const cabEl  = $('seis-cable');
+            const ind    = $('ind-seismic');
+
+            if (!lastEvent || !lastEvent.impact) {
+                pgaFill.style.width = '0%';
+                pgaVal.textContent  = '0.000g';
+                magEl.textContent   = 'M-.-';
+                distEl.textContent  = '--- km';
+                agoEl.textContent   = '---';
+                agoEl.className     = 'val s-ok';
+                riskEl.textContent  = 'NEGLIGIBLE';
+                riskEl.className    = 'val s-ok';
+                tsuEl.textContent   = 'CLEAR';
+                tsuEl.className     = 'val s-ok';
+                cabEl.textContent   = 'NOMINAL';
+                cabEl.className     = 'val s-ok';
+                if (ind) {
+                    ind.style.background = '#fb923c';
+                    ind.style.boxShadow  = '0 0 6px #fb923c';
+                }
+                return;
+            }
+
+            const { mag, impact, feat } = lastEvent;
+            const pga = impact.pga_g;
+
+            // PGA gauge — 0–0.5g range
+            pgaFill.style.width = Math.min(100, (pga / 0.5) * 100).toFixed(1) + '%';
+            pgaVal.textContent  = pga.toFixed(3) + 'g';
+
+            magEl.textContent  = 'M' + mag.toFixed(1);
+            distEl.textContent = impact.distKm.toFixed(0) + ' km';
+
+            const ageMs  = Date.now() - feat.properties.time;
+            const ageMin = Math.floor(ageMs / 60000);
+            const ageHr  = Math.floor(ageMin / 60);
+            agoEl.textContent = ageHr > 0 ? `${ageHr}h ${ageMin % 60}m` : `${ageMin}m`;
+            agoEl.className   = ageMin < 30 ? 'val s-warn' : 'val s-ok';
+
+            const riskCls = {
+                'NEGLIGIBLE':'s-ok',  'WEAK':'s-ok', 'LOW':'s-warn',
+                'MODERATE':'s-warn', 'HIGH':'s-alert', 'SEVERE':'s-alert'
+            };
+            riskEl.textContent = impact.riskLevel;
+            riskEl.className   = 'val ' + (riskCls[impact.riskLevel] || 's-ok');
+
+            // v12.6-G: prefer dedicated tsunami event (may differ from max-PGA event)
+            const tsuEvt = MDA.data?.tsunamiEvent;
+            if (tsuEvt) {
+                const eta_min = Math.round(tsuEvt.impact.distKm * 1000 / 200 / 60);
+                tsuEl.textContent = tsuEvt.impact.tsunamiPotential + ' · ETA ' + eta_min + 'm';
+                tsuEl.className   = 'val ' + (tsuEvt.impact.tsunamiPotential === 'WARNING' ? 's-alert' : 's-warn');
+            } else {
+                tsuEl.textContent = impact.tsunamiPotential;
+                tsuEl.className   = 'val ' + (impact.tsunamiPotential === 'WARNING' ? 's-alert'
+                                           :  impact.tsunamiPotential === 'WATCH'   ? 's-warn'
+                                           :  's-ok');
+            }
+
+            cabEl.textContent = impact.cableRisk;
+            cabEl.className   = 'val ' + (impact.cableRisk === 'CRITICAL' ? 's-alert'
+                                       :  impact.cableRisk === 'WARNING'  ? 's-alert'
+                                       :  impact.cableRisk === 'CAUTION'  ? 's-warn'
+                                       :  's-ok');
+
+            if (ind) {
+                const col = riskColor(pga);
+                ind.style.background = col;
+                ind.style.boxShadow  = '0 0 6px ' + col;
+            }
+        }
+
+        return { layer, refresh, updateUDCPanel, name: 'Seismic' };
+    })();
+
+
+    /* ══════════════════════════════════════════════════════════════
+       v12.6-G · Tsunami Warning Visualization (PTWC-style ring)
+       ──────────────────────────────────────────────────────────────
+       วัตถุประสงค์ : visualize tsunami wave-front จากเหตุการณ์
+                     ที่ผ่านเกณฑ์ PTWC (M ≥ 7 / depth ≤ 70 / offshore)
+       หลักการ      : · ตรวจสอบ MDA.data.seismicAll ทุก seismic-refresh
+                     · หา event ที่ tsunamiPotential != CLEAR
+                       (severity max ตาม PGA-ที่-UDC)
+                     · วาด animated ring ขยายออกจาก epicenter
+                     · ความเร็วคลื่นน้ำลึก ≈ 200 m/s (√(g·depth)
+                       ที่ depth 4000m) — accelerated 60× for viz
+                     · ringตอนนำหน้า = wave front; 2 rings ตามหลัง = trailing
+       เชื่อมโยง    : Toast notification + MDA.layers.tsunami (toggleable)
+       ════════════════════════════════════════════════════════════ */
+    MDA.Tsunami = (function () {
+        const SPEED_MS  = 200;         // m/s, deep-ocean tsunami phase speed
+        const VIZ_ACCEL = 60;          // 60× time-accel for visualization
+        const layer     = L.layerGroup();
+        MDA.layers.tsunami = layer;
+        let raf = null;
+        let activeEvt = null;
+        let lastToastId = null;        // dedup toast per event
+
+        function trigger(event) {
+            if (!event || !event.impact) { clear(); return; }
+            const tier = event.impact.tsunamiPotential;
+            if (tier === 'CLEAR') { clear(); return; }
+            const evtId = event.feat?.id || ('evt-' + event.feat?.properties?.time);
+            if (activeEvt && activeEvt.id === evtId) return;   // already animating
+            activeEvt = { id: evtId, started: performance.now(), evt: event, tier };
+
+            // Toast (one per event)
+            if (lastToastId !== evtId && typeof toast === 'function') {
+                const place = event.feat.properties.place || 'unknown';
+                const eta_min = Math.round(event.impact.distKm * 1000 / SPEED_MS / 60);
+                toast(`🌊 TSUNAMI ${tier} · M${event.mag.toFixed(1)} ${place}\n` +
+                      `ETA to UDC ≈ ${eta_min} min`,
+                      tier === 'WARNING' ? 'crit' : 'warn');
+                lastToastId = evtId;
+            }
+            startLoop();
+        }
+
+        function startLoop() {
+            if (raf) cancelAnimationFrame(raf);
+            const step = (now) => {
+                if (!activeEvt) return;
+                const elapsedS = (now - activeEvt.started) / 1000;
+                let radiusM = elapsedS * SPEED_MS * VIZ_ACCEL;
+                const maxR  = (activeEvt.evt.impact.distKm + 800) * 1000;
+                if (radiusM > maxR) { activeEvt.started = now; radiusM = 0; }
+
+                layer.clearLayers();
+                const lat = activeEvt.evt.lat;
+                const lon = activeEvt.evt.lon;
+                const col = activeEvt.tier === 'WARNING' ? '#ef4444' : '#fb923c';
+
+                // Epicenter pulse
+                L.circleMarker([lat, lon], {
+                    radius: 5, color: col, weight: 2,
+                    fillColor: col, fillOpacity: 0.85
+                }).addTo(layer);
+
+                // 3 concentric expanding rings (lead + 2 trailing)
+                for (let i = 0; i < 3; i++) {
+                    const r = radiusM - i * 90_000;
+                    if (r <= 1000) continue;
+                    L.circle([lat, lon], {
+                        radius: r,
+                        color: col,
+                        weight: 2 - i * 0.5,
+                        fillColor: col,
+                        fillOpacity: 0.04,
+                        dashArray: i === 0 ? null : '5,5'
+                    }).addTo(layer);
+                }
+                raf = requestAnimationFrame(step);
+            };
+            raf = requestAnimationFrame(step);
+        }
+
+        function clear() {
+            if (raf) { cancelAnimationFrame(raf); raf = null; }
+            activeEvt = null;
+            layer.clearLayers();
+        }
+
+        return { layer, trigger, clear, name: 'Tsunami' };
     })();
 
 
@@ -19006,6 +20304,7 @@ function _sonarEqnRender(panel) {
         MDA.Aviation.layer.addTo(map);
         MDA.Seismic.layer.addTo(map);
         MDA.GDELT.layer.addTo(map);
+        if (MDA.Tsunami) MDA.Tsunami.layer.addTo(map);   // v12.6-G — empty until trigger
         // SpaceWx ไม่ใช่ marker layer — แค่อัปเดต badge
 
         const layerMap = {
@@ -19435,6 +20734,26 @@ function _sonarEqnRender(panel) {
                 });
             });
 
+            // ── v12.5: COMMAND ACTIONS rows → call functions directly ──
+            bp.querySelectorAll('.bf-dp-row[data-bf-cmd]').forEach(row => {
+                row.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const cmd = row.dataset.bfCmd;
+                    try {
+                        if (cmd === 'helo-scramble' && typeof manualScrambleHelo === 'function') {
+                            manualScrambleHelo();
+                        } else if (cmd === 'helo-cap' && typeof manualCAPHelo === 'function') {
+                            manualCAPHelo();
+                        } else if (cmd === 'mine-lay' && typeof layControlledMinefield === 'function') {
+                            layControlledMinefield();
+                        }
+                    } catch(_) {}
+                    // toast feedback
+                    const lbl = row.querySelector('.label');
+                    if (typeof toast === 'function' && lbl) toast('🔵 ' + lbl.textContent.trim());
+                });
+            });
+
             // ── Sync .active state from legacy button classList (cross-scope safe) ──
             function _btnActive(id) {
                 const b = document.getElementById(id);
@@ -19568,6 +20887,41 @@ function _sonarEqnRender(panel) {
                     bp.style.left = Math.min(r.left, maxL) + 'px';
                     bp.style.top  = Math.min(r.top,  maxT) + 'px';
                 }
+            });
+        })();
+
+        // ────────────────────────────────────────────────────────────────
+        //  v12.5 — Standalone RESET button + confirmation modal
+        //  • Floating top-right (next to ZULU clock)
+        //  • Always asks for confirmation before invoking resetAll()
+        //  • Esc + click-outside-box to cancel
+        // ────────────────────────────────────────────────────────────────
+        (function setupResetBtn() {
+            const btn        = document.getElementById('udc-reset-btn');
+            const modal      = document.getElementById('udc-reset-confirm');
+            const cancelBtn  = document.getElementById('urc-cancel-btn');
+            const confirmBtn = document.getElementById('urc-confirm-btn');
+            if (!btn || !modal) return;
+
+            function open()  { modal.classList.add('show'); }
+            function close() { modal.classList.remove('show'); }
+
+            btn.addEventListener('click', (e) => { e.stopPropagation(); open(); });
+            cancelBtn  && cancelBtn .addEventListener('click', close);
+            confirmBtn && confirmBtn.addEventListener('click', () => {
+                close();
+                try {
+                    if (typeof resetAll === 'function') resetAll();
+                    if (typeof toast === 'function') toast('⟳ Systems Reset — Emergency Drill complete');
+                } catch (err) { console.warn('[reset]', err); }
+            });
+            // backdrop click → cancel
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) close();
+            });
+            // Esc → cancel
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('show')) close();
             });
         })();
 
