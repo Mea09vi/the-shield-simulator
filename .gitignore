@@ -31,3 +31,9 @@ Thumbs.db
 *.swp
 .vscode/
 .idea/
+
+# --- Local credentials / account files (NEVER commit) ---
+*Account*.pdf
+RTN*Account*.pdf
+*credentials*.json
+*.env

@@ -179,18 +179,7 @@
             border-bottom: 1px solid #2d6d2d;
             user-select: none;
         }
-        .classification-banner.bottom {
-            display: flex; justify-content: space-between;
-            padding: 2px 14px;
-        }
-        /* DTG clock cluster */
-        #dtgCluster {
-            display: flex; flex-direction: column; align-items: flex-end;
-            font-family: 'Share Tech Mono', monospace; line-height: 1.25;
-        }
-        #dtgZulu  { font-size: 14px; color: var(--teal); letter-spacing: 1px;
-            text-shadow: 0 0 8px rgba(100,255,218,.4); }
-        #dtgLocal { font-size: 9px; color: var(--text-muted); letter-spacing: .5px; }
+        /* v12.2: ลบ .classification-banner.bottom + #dtgCluster (ย้ายไป #mda-statusbar) */
         /* System status pill in header */
         .sys-status-pill {
             display: flex; align-items: center; gap: 5px;
@@ -301,28 +290,7 @@
         #coordReadout .cr-label { color: #4a6585; }
         #coordReadout .cr-val   { color: var(--teal); }
 
-        /* ═══ TIER 3 — Status Bar + Alert Ribbon ═════════════════ */
-        #statusBar {
-            flex-shrink: 0; display: flex; align-items: stretch;
-            background: linear-gradient(180deg,#04111f,#020a14);
-            border-top: 1px solid #1a3a5c;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 10px; height: 25px;
-        }
-        .sb-seg {
-            display: flex; align-items: center; gap: 6px;
-            padding: 0 11px; white-space: nowrap;
-            border-right: 1px solid rgba(26,58,92,.55);
-        }
-        .sb-seg .sb-label { color: #4a6585; letter-spacing: 1px; }
-        .sb-seg .sb-value { color: var(--teal); font-weight: 700; letter-spacing: .5px; }
-        .sb-spacer { flex: 1; }
-        .sb-seg.sb-brand { color: #3b5275; border-right: none;
-            border-left: 1px solid rgba(26,58,92,.55); letter-spacing: 1px; }
-        .sb-cond-green { color: var(--green) !important; }
-        .sb-cond-amber { color: var(--amber) !important; }
-        .sb-cond-red   { color: var(--red)   !important; animation: blink 1s infinite; }
-        @media (max-width: 1100px) { .sb-seg.sb-hideable { display:none; } }
+        /* ═══ v12.2: ลบ #statusBar + .sb-* (ย้าย CONDITION/THREATS ไปแถบขวา, DTG → #mda-statusbar) ═══ */
 
         /* Alert Ribbon — slides down over map when threat active */
         #alertRibbon {
@@ -373,12 +341,13 @@
         }
         .layout-splitter.ls-left  { left:calc(var(--col-l,210px) + 3px); }
         .layout-splitter.ls-right { right:calc(var(--col-r,210px) + 3px); }
-        /* ── UI Zoom control (header) ── */
+        /* ── UI Zoom control (header) — v12.2: hidden by default, toggle with Ctrl+` ── */
         #uiZoomCtl {
-            display:flex; align-items:center; gap:5px;
+            display:none; align-items:center; gap:5px;
             background:rgba(2,12,24,.55); border:1px solid #1a3a5c;
             border-radius:6px; padding:3px 8px;
         }
+        #uiZoomCtl.show { display:flex; }
         #uiZoomCtl .uz-lbl { font-size:9px; letter-spacing:1px; color:var(--text-muted); }
         #uiZoomSlider { width:80px; accent-color:var(--teal); cursor:pointer; }
         #uiZoomVal {
@@ -1925,6 +1894,28 @@
         .mda-handle.visible { opacity: 1; pointer-events: all; }
         #mda-handle-left { left: 0; border-radius: 0 4px 4px 0; }
 
+        /* v12.2 — Static row (info only, no toggle) */
+        #mda-layerpanel .mda-lp-row.mda-lp-static {
+            cursor: default; opacity: .8;
+        }
+        #mda-layerpanel .mda-lp-row.mda-lp-static:hover { background: transparent; }
+
+        /* v12.2 — Action row (button-style, no switch) */
+        #mda-layerpanel .mda-lp-row.mda-lp-action { background: rgba(0,212,255,.04); }
+        #mda-layerpanel .mda-lp-row.mda-lp-action:hover { background: rgba(0,212,255,.10); }
+        #mda-layerpanel .mda-lp-row .mda-arrow {
+            width: 30px; text-align: right; color: var(--cyan);
+            font-size: 13px; font-weight: bold; opacity: .55;
+            transition: transform .15s, opacity .15s;
+        }
+        #mda-layerpanel .mda-lp-row.mda-lp-action:hover .mda-arrow {
+            opacity: 1; transform: translateX(3px);
+        }
+        #mda-layerpanel .mda-lp-row.mda-refresh-row {
+            background: rgba(0,212,255,.08);
+            border-top: 1px solid rgba(0,212,255,.15);
+        }
+
         /* Toast for layer toggle feedback */
         #mda-toast {
             position: fixed; bottom: 56px; left: 50%; transform: translateX(-50%);
@@ -1980,8 +1971,8 @@
         <button class="mda-lp-collapse" id="mda-lp-collapse">◀</button>
     </div>
 
-    <!-- BASEMAP — Dark / Satellite radio -->
-    <div class="mda-lp-group" data-group="basemap">
+    <!-- BASEMAP — Dark / Satellite radio (collapsed by default) -->
+    <div class="mda-lp-group collapsed" data-group="basemap">
         <div class="mda-lp-group-head">
             <span class="mda-lp-group-name"><span class="mda-lp-chev">▾</span> BASEMAP</span>
         </div>
@@ -2001,6 +1992,155 @@
         </div>
     </div>
 
+    <!-- ⚡ TACTICAL · v11 — Bathy/Zones/Tide/Frustum/TL Heatmap -->
+    <div class="mda-lp-group" data-group="tactical">
+        <div class="mda-lp-group-head">
+            <span class="mda-lp-group-name"><span class="mda-lp-chev">▾</span> ⚡ TACTICAL · v11</span>
+        </div>
+        <div class="mda-lp-group-body">
+            <div class="mda-lp-row" data-mda-action="bathy" data-sync-btn="bathyBtn" title="เส้นชั้นความลึก (Isobath) 10/20/30/50 m">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#38bdf8"></span>🌊 Bathymetry</span>
+                <span class="count">10–50m</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-action="zones" data-sync-btn="seaZonesBtn" title="เส้นฐานตรง · TS 12NM · JDA">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#facc15"></span>⚓ Sea Zones</span>
+                <span class="count">UNCLOS</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-action="tide" data-sync-btn="chartToggleBtn" title="กราฟ Tide vs Detection Modifier">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#22d3ee"></span>📈 Tide Chart</span>
+                <span class="count">Live</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-action="frustum" data-sync-btn="camFrustumBtn" title="Three-geo camera frustum projected onto map">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#a78bfa"></span>📐 Camera Frustum</span>
+                <span class="count">3D</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-action="tlheat" data-sync-btn="tlHeatBtn" data-context-cycle="freq" title="Left: toggle · Right-click: cycle freq (15k/8k/3.5k Hz)">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#22d3ee"></span>🌡 TL Heatmap</span>
+                <span class="count" id="mda-cnt-tlheat">15k</span>
+                <span class="mda-sw"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🚤 HSV-EXT · Hydrographic Survey (v11 B1-B7) — collapsed by default -->
+    <div class="mda-lp-group collapsed" data-group="hsv">
+        <div class="mda-lp-group-head">
+            <span class="mda-lp-group-name"><span class="mda-lp-chev">▾</span> 🚤 HSV-EXT · v11</span>
+        </div>
+        <div class="mda-lp-group-body">
+            <div class="mda-lp-row" data-mda-action="hsv-swath" data-hsv-key="swath" title="Multibeam swath trail (5× depth along track)">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#38bdf8"></span>MBES Swath ×5</span>
+                <span class="count">v11</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-action="hsv-fls" data-hsv-key="fls" title="Forward-looking sonar cone (60° × 200m)">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#fbbf24"></span>FLS Cone 60°·200m</span>
+                <span class="count">v11</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-action="hsv-adcp" data-hsv-key="adcp" title="ADCP current vector field overlay">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#22d3ee"></span>ADCP Current</span>
+                <span class="count">v11</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-action="hsv-hdgcog" data-hsv-key="hdgcog" title="Heading vs COG indicator + DGPS ring">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#22c55e"></span>HDG/COG · DGPS</span>
+                <span class="count">v11</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-action="hsv-dashboard" data-hsv-key="dashboard" title="Survey Dashboard side-panel (SIS-like)">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#67e8f9"></span>Survey Dashboard</span>
+                <span class="count">SIS</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-action="hsv-casts" data-hsv-key="casts" title="SVP/XBT cast markers (popup CTD profiles)">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#0ea5e9"></span>SVP/XBT Markers</span>
+                <span class="count">CTD</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row mda-lp-action" data-mda-action="hsv-plan-start" title="HYPACK-style Survey Line Planner — click 2 corners">
+                <span class="bullet" style="background:#fbbf24"></span>
+                <span class="label" style="color:#fde68a;">📐 Survey Planner</span>
+                <span class="count">START</span>
+                <span class="mda-arrow">›</span>
+            </div>
+            <div class="mda-lp-row mda-lp-action" data-mda-action="hsv-plan-clear" title="Clear current survey plan">
+                <span class="bullet" style="background:#ef4444"></span>
+                <span class="label" style="color:#fca5a5;">✕ Clear Plan</span>
+                <span class="count">RESET</span>
+                <span class="mda-arrow">›</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📡 AIS · MARITIME — Live/Kpler/Heatmap/Anomaly + SeaVision -->
+    <div class="mda-lp-group" data-group="ais">
+        <div class="mda-lp-group-head">
+            <span class="mda-lp-group-name"><span class="mda-lp-chev">▾</span> 📡 AIS · MARITIME</span>
+        </div>
+        <div class="mda-lp-group-body">
+            <div class="mda-lp-row" data-mda-action="ais-live" data-sync-btn="aisToggleBtn" title="AIS Live — AISStream.io WebSocket">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#10b981"></span>📡 AIS Live</span>
+                <span class="count" id="mda-cnt-aislive">--</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-action="ais-kpler" data-sync-btn="aisKplerBtn" title="AIS via Kpler (CF Worker proxy)">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#a78bfa"></span>🛰 AIS Kpler</span>
+                <span class="count" id="mda-cnt-aiskpler">--</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-action="ais-heat" data-sync-btn="aisHeatBtn" title="AIS Trajectory Heatmap (KDE 24h)">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#f59e0b"></span>🔥 AIS Heatmap</span>
+                <span class="count" id="mda-cnt-aisheat">--</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-action="ais-anomaly" data-sync-btn="aisAnomBtn" title="AISViz Anomaly Detection (spoof/dark/loiter)">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#ff3860"></span>🚨 AIS Anomaly</span>
+                <span class="count" id="mda-cnt-aisanom">--</span>
+                <span class="mda-sw"></span>
+            </div>
+            <!-- AIS source indicator -->
+            <div class="mda-lp-row mda-lp-static" title="แหล่งข้อมูล AIS ที่กำลังใช้งาน">
+                <span class="bullet" style="background:#64748b;box-shadow:none"></span>
+                <span class="label" style="color:#94a3b8">↪ Source</span>
+                <span class="count" id="mda-ais-source">SIM</span>
+                <span style="width:30px"></span>
+            </div>
+            <!-- SeaVision JSON import (action buttons) -->
+            <div class="mda-lp-row mda-lp-action" data-mda-action="sv-import" title="Import ไฟล์ JSON จาก SeaVision">
+                <span class="bullet" style="background:#0ea5e9"></span>
+                <span class="label">📂 Import SeaVision JSON</span>
+                <span class="count">FILE</span>
+                <span class="mda-arrow">›</span>
+            </div>
+            <div class="mda-lp-row mda-lp-action" data-mda-action="sv-reset" title="ล้างข้อมูล SeaVision JSON">
+                <span class="bullet" style="background:#ef4444"></span>
+                <span class="label">🗑 Reset SeaVision</span>
+                <span class="count">CLR</span>
+                <span class="mda-arrow">›</span>
+            </div>
+        </div>
+    </div>
+
     <!-- AIR DOMAIN -->
     <div class="mda-lp-group" data-group="air">
         <div class="mda-lp-group-head">
@@ -2012,27 +2152,6 @@
                 <span class="label"><span class="swatch" style="background:#ffd700"></span>OpenSky Flights</span>
                 <span class="count" id="mda-cnt-aviation">--</span>
                 <span class="mda-sw on"></span>
-            </div>
-        </div>
-    </div>
-
-    <!-- MARITIME DOMAIN (counts only; layers stay in v11 toolbox) -->
-    <div class="mda-lp-group" data-group="sea">
-        <div class="mda-lp-group-head">
-            <span class="mda-lp-group-name"><span class="mda-lp-chev">▾</span> ⚓ MARITIME DOMAIN</span>
-        </div>
-        <div class="mda-lp-group-body">
-            <div class="mda-lp-row" data-mda-layer="ais-heat" title="ตัวควบคุมหลักอยู่ใน toolbar v11">
-                <span class="bullet"></span>
-                <span class="label"><span class="swatch" style="background:#00d4ff"></span>AIS Heatmap (local)</span>
-                <span class="count" id="mda-cnt-aisheat">--</span>
-                <span class="mda-sw"></span>
-            </div>
-            <div class="mda-lp-row" data-mda-layer="ais-anomaly" title="ตัวควบคุมหลักอยู่ใน toolbar v11">
-                <span class="bullet"></span>
-                <span class="label"><span class="swatch" style="background:#ff3860"></span>AIS Anomaly</span>
-                <span class="count" id="mda-cnt-aisanom">--</span>
-                <span class="mda-sw"></span>
             </div>
         </div>
     </div>
@@ -2052,8 +2171,8 @@
         </div>
     </div>
 
-    <!-- SPACE DOMAIN -->
-    <div class="mda-lp-group" data-group="space">
+    <!-- SPACE DOMAIN (collapsed by default — info-only Kp) -->
+    <div class="mda-lp-group collapsed" data-group="space">
         <div class="mda-lp-group-head">
             <span class="mda-lp-group-name"><span class="mda-lp-chev">▾</span> ☄ SPACE DOMAIN</span>
         </div>
@@ -2068,7 +2187,7 @@
     </div>
 
     <!-- INFORMATION DOMAIN -->
-    <div class="mda-lp-group" data-group="info">
+    <div class="mda-lp-group collapsed" data-group="info">
         <div class="mda-lp-group-head">
             <span class="mda-lp-group-name"><span class="mda-lp-chev">▾</span> 📰 INFO DOMAIN</span>
         </div>
@@ -2097,14 +2216,29 @@
         </div>
     </div>
 
-    <!-- Refresh All button -->
+    <!-- ⚙ ACTIONS — 3D Dive · SFX · Refresh -->
     <div class="mda-lp-group" data-group="actions">
-        <div class="mda-lp-group-body" style="padding-top: 6px;">
-            <div class="mda-lp-row" id="mda-refresh-all" style="cursor:pointer; background: rgba(0,212,255,.06);">
+        <div class="mda-lp-group-head">
+            <span class="mda-lp-group-name"><span class="mda-lp-chev">▾</span> ⚙ ACTIONS</span>
+        </div>
+        <div class="mda-lp-group-body">
+            <div class="mda-lp-row" data-mda-action="dive3d" data-sync-btn="dive3dBtn" title="3D Underwater Dive View — Three.js scene">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#0ea5e9"></span>🌐 3D Dive View</span>
+                <span class="count">SUB</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-action="audio" data-sync-btn="audioBtn" title="เปิด/ปิดเสียง SFX (sonar/DAS/ROE/explosion)">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#fbbf24"></span>🔊 Audio SFX</span>
+                <span class="count" id="mda-cnt-audio">OFF</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row mda-lp-action mda-refresh-row" id="mda-refresh-all" title="ดึงข้อมูล OSINT ทั้งหมดอีกครั้ง">
                 <span class="bullet" style="background: var(--cyan); box-shadow: 0 0 8px var(--cyan);"></span>
                 <span class="label" style="color:var(--cyan);">↻ Refresh All Feeds</span>
                 <span class="count" id="mda-last-refresh">--</span>
-                <span style="width:30px;"></span>
+                <span class="mda-arrow">›</span>
             </div>
         </div>
     </div>
@@ -2144,11 +2278,8 @@
     </div>
     <div style="display:flex;gap:10px;align-items:center;">
         <span class="sys-status-pill"><span class="dot"></span>SYSTEM OPERATIONAL</span>
-        <span class="badge-v4">v11 — augmented-ui · AIS Heatmap · Anomaly Detect · Camera Frustum</span>
-        <div id="dtgCluster">
-            <div id="dtgZulu">------Z --- --</div>
-            <div id="dtgLocal">LOCAL --:--:-- +07</div>
-        </div>
+        <span class="badge-v4">v12.2 · OSIRIS · MDA · Augmented-UI</span>
+        <!-- v12.2: DTG cluster ย้ายไปแสดงใน #mda-statusbar (bottom-center pill) เพื่อลดความซ้ำซ้อน -->
         <div id="uiZoomCtl" title="ปรับขนาดการแสดงผลทั้งหน้า — ให้พอดี 1 จอ desktop">
             <span class="uz-lbl">UI</span>
             <input type="range" id="uiZoomSlider" min="55" max="100" value="100"
@@ -2914,9 +3045,9 @@
         <div class="panel" style="padding:6px 10px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
                 <div class="panel-title" style="color:var(--text-muted);">🎯 IFF Legend</div>
-                <button class="iff-toggle-btn" onclick="toggleIFF()" id="iffToggleBtn">▼ ซ่อน</button>
+                <button class="iff-toggle-btn" onclick="toggleIFF()" id="iffToggleBtn">▶ แสดง</button>
             </div>
-            <div id="iffContent" class="iff-legend">
+            <div id="iffContent" class="iff-legend" style="display:none;">
                 <div class="iff-row"><div class="iff-dot" style="background:#f59e0b;box-shadow:0 0 4px #f59e0b;"></div><span style="color:#f59e0b;">UNKNOWN — ยังไม่จำแนกฝ่าย</span></div>
                 <div class="iff-row"><div class="iff-dot" style="background:#ff4136;box-shadow:0 0 4px #ff4136;"></div><span style="color:#ff4136;">HOSTILE — จำแนกแล้ว ศัตรู</span></div>
                 <div class="iff-row"><div class="iff-dot" style="background:#ffd700;box-shadow:0 0 4px #ffd700;"></div><span style="color:#ffd700;">SUSPECT — ต้องสงสัย</span></div>
@@ -3079,50 +3210,11 @@
 
 </div>
 
-<!-- ── TIER 3: System Status Bar ──────────────────────────────── -->
-<div id="statusBar">
-    <div class="sb-seg">
-        <span class="sb-label">CONDITION</span>
-        <span class="sb-value sb-cond-green" id="sbCondition">SECURE</span>
-    </div>
-    <div class="sb-seg">
-        <span class="sb-label">POSTURE</span>
-        <span class="sb-value" id="sbPosture">ROUTINE</span>
-    </div>
-    <div class="sb-seg">
-        <span class="sb-label">SEA</span>
-        <span class="sb-value" id="sbSeaState">SS1</span>
-    </div>
-    <div class="sb-seg sb-hideable">
-        <span class="sb-label">TIDE</span>
-        <span class="sb-value" id="sbTide">+0.0m</span>
-    </div>
-    <div class="sb-seg">
-        <span class="sb-label">THREATS</span>
-        <span class="sb-value" id="sbThreats">0</span>
-    </div>
-    <div class="sb-seg sb-hideable">
-        <span class="sb-label">ASW HELO</span>
-        <span class="sb-value" id="sbHelo">STANDBY</span>
-    </div>
-    <div class="sb-spacer"></div>
-    <div class="sb-seg sb-hideable">
-        <span class="sb-label">AO</span>
-        <span class="sb-value">SATTAHIP · GULF OF THAILAND</span>
-    </div>
-    <div class="sb-seg">
-        <span class="sb-label">DTG</span>
-        <span class="sb-value" id="sbDtg">------Z</span>
-    </div>
-    <div class="sb-seg sb-brand">THE SHIELD 2.0</div>
-</div>
-
-<!-- ── Classification Banner — BOTTOM ─────────────────────────── -->
-<div class="classification-banner bottom" data-augmented-ui="tl-clip br-clip both">
-    <span>UNCLASSIFIED // FOR TRAINING USE ONLY</span>
-    <span style="color:#7da77d;">THE SHIELD 2.0 · UDC MULTI-DOMAIN AWARENESS · v12</span>
-    <span>UNCLASSIFIED // FOR TRAINING USE ONLY</span>
-</div>
+<!-- ── v12.2 UI CLEANUP ─────────────────────────────────────────
+     • ลบ #statusBar (CONDITION/POSTURE/SEA/TIDE/THREATS/HELO/AO/DTG)
+       → ย้ายข้อมูลที่จำเป็นไป panel ขวา + #mda-statusbar pill
+     • ลบ Classification Banner BOTTOM (ซ้ำกับ banner ด้านบน)
+     ─────────────────────────────────────────────────────────── -->
 
 <!-- ── 3D Underwater Dive View (v09) ──────────────────────────── -->
 <div id="dive3d">
@@ -6721,6 +6813,17 @@ document.addEventListener('keydown', function(e) {
         if (placeSurveyMode)  { placeSurveyMode=false;  document.getElementById('placeSurveyBtn')?.classList.remove('active'); }
         mapDiv.classList.remove('place-mode');
         map.dragging.enable();
+    }
+    // v12.2: Ctrl+` to toggle UI Zoom Control (hidden by default to declutter header)
+    if (e.ctrlKey && (e.key === '`' || e.key === '~')) {
+        e.preventDefault();
+        const zc = document.getElementById('uiZoomCtl');
+        if (zc) {
+            zc.classList.toggle('show');
+            if (typeof toast === 'function') {
+                toast(zc.classList.contains('show') ? '🔍 UI Zoom Control: SHOW' : '🔍 UI Zoom Control: HIDDEN');
+            }
+        }
     }
 });
 
@@ -16637,7 +16740,7 @@ function resumeAfterFLS() {
 //  [V06] Dynamic UI — Briefing Overlay · Threat Timeline · IFF Toggle · Outcome
 // ═══════════════════════════════════════════════════════════════
 let scenarioStartTime = 0;
-let iffCollapsed   = false;
+let iffCollapsed   = true;   // v12.2: default collapsed to declutter right panel
 let thermCollapsed = false;
 
 // ── Scenario Briefing Definitions ────────────────────────────────
@@ -18659,6 +18762,219 @@ function _sonarEqnRender(panel) {
             });
         });
 
+        // ══════════════════════════════════════════════════════════
+        //  v12.2 — TACTICAL / AIS / ACTIONS row wiring (v11 bridge)
+        // ──────────────────────────────────────────────────────────
+        //  data-mda-action     → name of the v11 toggle (string switch)
+        //  data-sync-btn       → ID of legacy button → mirror .active/.ais-live class onto row.on
+        //  data-context-cycle  → right-click triggers cycle handler (e.g. TL freq)
+        // ══════════════════════════════════════════════════════════
+        // HSV-Ext layer helper — flip HsvExt.layers[key] and trigger UI side-effects
+        const hsvFlip = (key) => {
+            try {
+                if (typeof HsvExt === 'undefined' || !HsvExt.layers) return;
+                HsvExt.layers[key] = !HsvExt.layers[key];
+                // Special: dashboard close → hide its panel
+                if (key === 'dashboard' && !HsvExt.layers.dashboard) {
+                    const p = document.getElementById('hsvDashPanel');
+                    if (p) p.style.display = 'none';
+                }
+                // Sync the floating Leaflet panel checkbox too (in case it's exposed)
+                const cb = document.querySelector(`input[data-hsvk="${key}"]`);
+                if (cb) cb.checked = HsvExt.layers[key];
+            } catch (e) { console.warn('[hsvFlip]', key, e); }
+        };
+
+        const v11ToggleMap = {
+            'bathy'      : () => window.toggleBathymetry  && window.toggleBathymetry(),
+            'zones'      : () => window.toggleSeaZones    && window.toggleSeaZones(),
+            'tide'       : () => window.toggleTideChart   && window.toggleTideChart(),
+            'frustum'    : () => window.toggleCamFrustum  && window.toggleCamFrustum(),
+            'tlheat'     : () => window.toggleTlHeat      && window.toggleTlHeat(),
+            'ais-live'   : () => window.toggleAISLive     && window.toggleAISLive(),
+            'ais-kpler'  : () => window.toggleAISKpler    && window.toggleAISKpler(),
+            'ais-heat'   : () => window.toggleAisHeat     && window.toggleAisHeat(),
+            'ais-anomaly': () => window.toggleAisAnomaly  && window.toggleAisAnomaly(),
+            'dive3d'     : () => window.toggle3DView      && window.toggle3DView(),
+            'audio'      : () => window.toggleAudio       && window.toggleAudio(),
+            'sv-import'  : () => { const i=document.getElementById('svImportInput'); if(i) i.click(); },
+            'sv-reset'   : () => window.resetSVImport     && window.resetSVImport(),
+            // HSV-Ext (v11 B1–B7)
+            'hsv-swath'    : () => hsvFlip('swath'),
+            'hsv-fls'      : () => hsvFlip('fls'),
+            'hsv-adcp'     : () => hsvFlip('adcp'),
+            'hsv-hdgcog'   : () => hsvFlip('hdgcog'),
+            'hsv-dashboard': () => hsvFlip('dashboard'),
+            'hsv-casts'    : () => { try { if (typeof _hsvToggleCasts === 'function') _hsvToggleCasts(); } catch(e){} },
+            'hsv-plan-start': () => { try { if (typeof _hsvPlannerStart === 'function') _hsvPlannerStart(); } catch(e){} },
+            'hsv-plan-clear': () => { try { if (typeof _hsvPlannerClear === 'function') _hsvPlannerClear(); } catch(e){} },
+        };
+
+        // Read legacy-button state ("on" if active/live/audio-on/innerHTML contains "ON")
+        function readBtnOn(btnId) {
+            // dive3dBtn → check overlay class instead of variable (cross-scope safe)
+            if (btnId === 'dive3dBtn') {
+                const ov = document.getElementById('dive3d');
+                return !!(ov && ov.classList.contains('active'));
+            }
+            // audioBtn → uses .audio-on
+            if (btnId === 'audioBtn') {
+                const b = document.getElementById(btnId);
+                return !!(b && b.classList.contains('audio-on'));
+            }
+            const b = document.getElementById(btnId);
+            if (!b) return false;
+            if (b.classList.contains('active'))   return true;
+            if (b.classList.contains('ais-live')) return true;
+            // for floating buttons that flip innerHTML
+            return /\(ON\)|●/.test(b.innerHTML || '');
+        }
+
+        // Sync all action rows from legacy button state (call after toggle)
+        function syncActionRow(row) {
+            // HSV-Ext rows read from HsvExt.layers / HsvExt.castVisible
+            if (row.dataset.hsvKey) {
+                let on = false;
+                try {
+                    if (typeof HsvExt !== 'undefined') {
+                        if (row.dataset.hsvKey === 'casts') on = !!HsvExt.castVisible;
+                        else if (HsvExt.layers) on = !!HsvExt.layers[row.dataset.hsvKey];
+                    }
+                } catch(_) { on = false; }
+                const sw = row.querySelector('.mda-sw');
+                row.classList.toggle('on', on);
+                if (sw) sw.classList.toggle('on', on);
+                return;
+            }
+            const btnId = row.dataset.syncBtn;
+            if (!btnId) return;
+            const sw = row.querySelector('.mda-sw');
+            const on = readBtnOn(btnId);
+            row.classList.toggle('on', on);
+            if (sw) sw.classList.toggle('on', on);
+        }
+        // Sync count chips from live state
+        function syncCountChips() {
+            // AIS Live count
+            const aliveCnt = document.getElementById('ais-live-count');
+            const out1 = document.getElementById('mda-cnt-aislive');
+            if (out1) out1.textContent = (aliveCnt && aliveCnt.textContent) ? aliveCnt.textContent.trim() : '--';
+            // AIS Kpler count
+            const akCnt = document.getElementById('ais-kpler-count');
+            const out2 = document.getElementById('mda-cnt-aiskpler');
+            if (out2) out2.textContent = (akCnt && akCnt.textContent) ? akCnt.textContent.trim() : '--';
+            // AIS Heatmap point count → derived from layer state, not direct (cross-scope safe)
+            const out3 = document.getElementById('mda-cnt-aisheat');
+            if (out3) {
+                try {
+                    out3.textContent = (typeof aisHeatPoints !== 'undefined' && aisHeatPoints)
+                        ? String(aisHeatPoints.length) : '--';
+                } catch(_) { out3.textContent = '--'; }
+            }
+            // AIS Anomaly count
+            const out4 = document.getElementById('mda-cnt-aisanom');
+            if (out4) {
+                try {
+                    out4.textContent = (typeof _aisAnomalyMMSI !== 'undefined' && _aisAnomalyMMSI)
+                        ? String(_aisAnomalyMMSI.size) : '--';
+                } catch(_) { out4.textContent = '--'; }
+            }
+            // Audio state label — read from audioBtn class instead of variable
+            const out5 = document.getElementById('mda-cnt-audio');
+            const aBtn = document.getElementById('audioBtn');
+            if (out5) out5.textContent = (aBtn && aBtn.classList.contains('audio-on')) ? 'ON' : 'OFF';
+            // TL Heatmap freq label
+            const tb = document.getElementById('tlHeatBtn');
+            const out6 = document.getElementById('mda-cnt-tlheat');
+            if (out6 && tb) {
+                const m = (tb.innerHTML || '').match(/(\d+(?:\.\d+)?)\s*kHz/i);
+                if (m) out6.textContent = m[1] + 'k';
+            }
+        }
+        function syncAllActionRows() {
+            document.querySelectorAll('#mda-layerpanel .mda-lp-row[data-mda-action]').forEach(syncActionRow);
+            syncCountChips();
+        }
+
+        document.querySelectorAll('#mda-layerpanel .mda-lp-row[data-mda-action]').forEach(row => {
+            const sw = row.querySelector('.mda-sw');
+            const action = row.dataset.mdaAction;
+
+            const fire = (e) => {
+                e && e.stopPropagation && e.stopPropagation();
+                const fn = v11ToggleMap[action];
+                if (typeof fn !== 'function') {
+                    toast('Action not wired: ' + action);
+                    return;
+                }
+                try { fn(); } catch (err) { console.warn('[MDA·action]', action, err); }
+                // sync immediately + on next frame (some v11 buttons update async)
+                requestAnimationFrame(() => syncActionRow(row));
+                setTimeout(() => syncActionRow(row), 250);
+                // toast
+                const lbl = row.querySelector('.label');
+                const txt = lbl ? lbl.textContent.trim() : action;
+                if (action === 'sv-import' || action === 'sv-reset') toast(txt);
+                else toast(txt);
+            };
+
+            row.addEventListener('click', fire);
+            if (sw) sw.addEventListener('click', fire);
+
+            // right-click for TL frequency cycle
+            if (row.dataset.contextCycle === 'freq') {
+                row.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    if (typeof window._cycleTlHeatFreq === 'function') {
+                        const fakeEvt = { preventDefault: () => {} };
+                        window._cycleTlHeatFreq(fakeEvt);
+                        // update count chip from button text
+                        setTimeout(() => {
+                            const tb = document.getElementById('tlHeatBtn');
+                            const m = tb && tb.innerHTML.match(/(\d+(?:\.\d+)?)\s*kHz/i);
+                            const cnt = document.getElementById('mda-cnt-tlheat');
+                            if (cnt && m) cnt.textContent = m[1] + 'k';
+                        }, 100);
+                    }
+                });
+            }
+        });
+
+        // periodic sync — catch state changes triggered elsewhere
+        setInterval(syncAllActionRows, 1500);
+        // initial sync after a moment
+        setTimeout(syncAllActionRows, 600);
+
+        // AIS source indicator — read from legacy #aisSourceTag
+        setInterval(() => {
+            const src = document.getElementById('aisSourceTag');
+            const out = document.getElementById('mda-ais-source');
+            if (src && out) out.textContent = (src.textContent || 'SIM').trim();
+        }, 1000);
+
+        // hide legacy toolbar + floating controls now that MDA owns them
+        function hideLegacyChrome() {
+            const tb = document.querySelector('.map-hdr-tools');
+            if (tb) tb.style.display = 'none';
+            ['aisHeatBtn','aisAnomBtn','camFrustumBtn','tlHeatBtn','hsvCastsBtn','hsvPlanBtn','hsvPlanClrBtn'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    // walk up to leaflet-bar parent and hide
+                    let p = el;
+                    for (let i=0; i<6 && p; i++) {
+                        if (p.classList && (p.classList.contains('leaflet-bar') || p.classList.contains('leaflet-control'))) {
+                            p.style.display = 'none'; break;
+                        }
+                        p = p.parentElement;
+                    }
+                }
+            });
+        }
+        hideLegacyChrome();
+        // re-hide on a brief retry — some controls are added asynchronously
+        setTimeout(hideLegacyChrome, 500);
+        setTimeout(hideLegacyChrome, 2000);
+
         // ── handle collapse/expand (left only — intelfeed REMOVED)
         const lp  = document.getElementById('mda-layerpanel');
         const hL  = document.getElementById('mda-handle-left');
@@ -18670,15 +18986,17 @@ function _sonarEqnRender(panel) {
         const rfA = document.getElementById('mda-refresh-all');
         rfA && rfA.addEventListener('click', () => { toast('Refreshing all feeds…'); refreshAll(true); });
 
-        // ── UTC clock
+        // ── UTC clock — DTG format (DDHHMMZ MON YY) + LOCAL
         const clock = document.getElementById('mda-clock');
+        const _MON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
         setInterval(() => {
             if (!clock) return;
             const d = new Date();
-            clock.textContent =
-                String(d.getUTCHours()).padStart(2, '0') + ':' +
-                String(d.getUTCMinutes()).padStart(2, '0') + ':' +
-                String(d.getUTCSeconds()).padStart(2, '0') + ' UTC';
+            const p2 = n => String(n).padStart(2, '0');
+            const zulu = p2(d.getUTCDate()) + p2(d.getUTCHours()) + p2(d.getUTCMinutes())
+                       + 'Z ' + _MON[d.getUTCMonth()] + ' ' + String(d.getUTCFullYear()).slice(-2);
+            const local = p2(d.getHours()) + ':' + p2(d.getMinutes()) + ':' + p2(d.getSeconds()) + ' +07';
+            clock.innerHTML = '<b style="color:var(--cyan)">' + zulu + '</b> · <span style="opacity:.55">' + local + '</span>';
         }, 1000);
     }
 
