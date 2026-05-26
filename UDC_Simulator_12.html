@@ -1399,10 +1399,17 @@
         /* ══════════════════════════════════════════════════════════════
            PV Ship Type Selection Modal  — Step 1 of 2
            ══════════════════════════════════════════════════════════════ */
+        /* v12.7.1 — backdrop scrim ปิดพื้นหลังเมื่อ PV modal เปิด */
+        #pv-modal-backdrop {
+            display:none; position:fixed; inset:0;
+            background:rgba(0,0,0,.55); z-index:7998;
+            backdrop-filter:blur(2px);
+        }
+        #pv-modal-backdrop.active { display:block; }
         #pvShipModal {
-            position:absolute; top:50%; left:50%;
+            position:fixed; top:50%; left:50%;
             transform:translate(-50%,-50%) scale(0.92);
-            width:700px; z-index:1210;
+            width:700px; z-index:8000;
             background:rgba(1,5,15,.98);
             border:1.5px solid #64ffda; border-radius:10px;
             padding:0; overflow:hidden;
@@ -1484,9 +1491,9 @@
            PV Search Pattern Configuration Modal
            ══════════════════════════════════════════════════════════════ */
         #pvPatternModal {
-            position:absolute; top:50%; left:50%;
+            position:fixed; top:50%; left:50%;
             transform:translate(-50%,-50%) scale(0.92);
-            width:580px; z-index:1200;
+            width:580px; z-index:8000;
             background:rgba(1,5,15,.98);
             border:1.5px solid #64ffda; border-radius:10px;
             padding:0; overflow:hidden;
@@ -3304,6 +3311,9 @@
                     </button>
                 </div>
             </div>
+
+            <!-- v12.7.1 — backdrop scrim (dims all panels when PV modal is open) -->
+            <div id="pv-modal-backdrop" onclick="closePVShipModal();closePVPatternModal();"></div>
 
             <!-- ══════════════════════════════════════════════════════
                  Step 1 — PV Ship Type Selection Modal
@@ -5593,13 +5603,21 @@ function generatePVWaypoints(cx, cy) {
 //  Pattern Modal — UI control functions
 // ═══════════════════════════════════════════════════════════════
 
+function _pvBackdrop(show) { /* v12.7.1 */
+    const el = document.getElementById('pv-modal-backdrop');
+    if (el) el.classList.toggle('active', show);
+}
 function showPVPatternModal() {
     document.getElementById('pvPatternModal').classList.add('pv-show');
+    _pvBackdrop(true);
     refreshPatternPreview();
 }
 
 function closePVPatternModal() {
     document.getElementById('pvPatternModal').classList.remove('pv-show');
+    // hide backdrop only if ship modal also closed
+    const shipOpen = document.getElementById('pvShipModal')?.classList.contains('pvs-show');
+    if (!shipOpen) _pvBackdrop(false);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -5694,6 +5712,7 @@ let pvSelectedShip = 'naresuan';
 // ── Ship Modal controls ──────────────────────────────────────────
 function showPVShipModal() {
     document.getElementById('pvShipModal').classList.add('pvs-show');
+    _pvBackdrop(true);
     setTimeout(() => {
         // Naresuan = frigate hull · Chon Buri/Sattahip = small-craft hull
         drawNaresuanSilhouette('pvSil_naresuan');
@@ -5705,6 +5724,9 @@ function showPVShipModal() {
 }
 function closePVShipModal() {
     document.getElementById('pvShipModal').classList.remove('pvs-show');
+    // hide backdrop only if pattern modal also closed
+    const patOpen = document.getElementById('pvPatternModal')?.classList.contains('pv-show');
+    if (!patOpen) _pvBackdrop(false);
 }
 function selectShipCard(id) {
     pvSelectedShip = id;
