@@ -21146,15 +21146,18 @@ function _sonarEqnRender(panel) {
             return { colour: '#94a3b8', glow: '#94a3b888', shape: '●', label: type || 'Seamark' };
         }
 
-        // ── Build DivIcon for a node
+        // ── Build DivIcon for a node — chip กลม สีเข้ม + ring สี-IALA ให้เด่นบน satellite
         function makeIcon(style, sizePx) {
-            const s = sizePx || 16;
+            const s = sizePx || 22;
+            const glyphPx = Math.round(s * 0.62);
             return L.divIcon({
                 className: '',
-                html: `<div style="
-                    font-size:${s}px; line-height:1; color:${style.colour};
-                    text-shadow: 0 0 4px #000, 0 0 10px ${style.glow};
-                    cursor:pointer; user-select:none;">
+                html: `<div class="seamark-icon" style="
+                        font-size:${glyphPx}px;
+                        color:${style.colour};
+                        border:1.5px solid ${style.colour};
+                        box-shadow: 0 0 0 1px rgba(0,0,0,.55), 0 0 8px ${style.glow};
+                        text-shadow: 0 0 3px #000;">
                     ${style.shape}</div>`,
                 iconSize:   [s, s],
                 iconAnchor: [s/2, s/2]
@@ -21176,17 +21179,30 @@ function _sonarEqnRender(panel) {
             if (tags['ref'])                    rows.push(['Ref',       tags['ref']]);
 
             const rowsHtml = rows.map(([k, v]) =>
-                `<tr><td style="color:#64748b;padding-right:8px;font-size:9px;text-transform:uppercase">${k}</td>` +
-                `<td style="color:#e2e8f0;font-size:10px">${v}</td></tr>`).join('');
+                `<tr>
+                    <td style="color:#64748b;padding:1px 10px 1px 0;font-size:9px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;vertical-align:top">${k}</td>
+                    <td style="color:#e2e8f0;font-size:11px;font-family:'Share Tech Mono',monospace">${v}</td>
+                </tr>`).join('');
 
-            return `<div style="font-family:'Share Tech Mono',monospace;min-width:180px">
-                <div style="font-size:13px;color:${style.colour};margin-bottom:6px;">
-                    ${style.shape} <b>${name}</b></div>
+            return `<div style="font-family:'Share Tech Mono',monospace;min-width:200px">
+                <div style="display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(56,189,248,.25);padding-bottom:6px;margin-bottom:6px">
+                    <span style="
+                        display:inline-flex;align-items:center;justify-content:center;
+                        width:22px;height:22px;border-radius:50%;
+                        background:rgba(6,17,32,.95);
+                        border:1.5px solid ${style.colour};
+                        color:${style.colour};font-size:13px;font-weight:bold;
+                        text-shadow:0 0 3px #000;flex-shrink:0">${style.shape}</span>
+                    <div style="flex:1;min-width:0">
+                        <div style="font-size:12px;color:${style.colour};font-weight:bold;line-height:1.2">${name}</div>
+                        <div style="font-size:9px;color:#64748b;letter-spacing:.05em;text-transform:uppercase;margin-top:2px">${style.label}</div>
+                    </div>
+                </div>
                 <table style="border-collapse:collapse;width:100%">${rowsHtml}</table>
-                <div style="color:#475569;font-size:9px;margin-top:6px">
-                    OSM node #${node.id} · IALA Region A
-                    <br><a href="https://www.openstreetmap.org/node/${node.id}" target="_blank"
-                       style="color:#38bdf8;">ดูใน OSM ↗</a>
+                <div style="color:#475569;font-size:9px;margin-top:8px;padding-top:6px;border-top:1px dashed rgba(100,116,139,.3)">
+                    OSM #${node.id} · IALA Region A ·
+                    <a href="https://www.openstreetmap.org/node/${node.id}" target="_blank"
+                       style="color:#38bdf8;text-decoration:none">view ↗</a>
                 </div>
             </div>`;
         }
@@ -21224,9 +21240,9 @@ function _sonarEqnRender(panel) {
                 const tags  = node.tags || {};
                 const style = resolveStyle(tags);
                 const isLarge = tags['seamark:type'] === 'light_major';
-                const icon  = makeIcon(style, isLarge ? 20 : 16);
+                const icon  = makeIcon(style, isLarge ? 28 : 22);
                 L.marker([node.lat, node.lon], { icon })
-                    .bindPopup(makePopup(node, style, tags), { className: 'mda-tooltip', maxWidth: 260 })
+                    .bindPopup(makePopup(node, style, tags), { className: 'seamark-popup', maxWidth: 280, closeButton: true })
                     .addTo(layer);
             });
             MDA.data.seamarks = nodes;
@@ -21418,6 +21434,33 @@ function _sonarEqnRender(panel) {
                 font-style: italic; font-size: 11px; }
             .mda-tooltip { background: rgba(8,21,37,.92) !important; color:#e8f4ff !important;
                 border:1px solid var(--mda-edge) !important; font-size:10px !important; }
+            /* [v13.0.7] Seamark popup — solid CIC-dark chrome ให้อ่านชัดบน satellite */
+            .seamark-popup .leaflet-popup-content-wrapper {
+                background: rgba(6,17,32,0.96) !important;
+                border:1px solid rgba(56,189,248,.45) !important;
+                border-radius:6px !important;
+                box-shadow:0 0 18px rgba(56,189,248,.25), 0 4px 14px rgba(0,0,0,.6) !important;
+                color:#e2e8f0 !important;
+                padding:2px !important;
+            }
+            .seamark-popup .leaflet-popup-content { margin:8px 10px !important; line-height:1.35 !important; }
+            .seamark-popup .leaflet-popup-tip { background: rgba(6,17,32,0.96) !important;
+                border:1px solid rgba(56,189,248,.45) !important; }
+            .seamark-popup .leaflet-popup-close-button {
+                color:#94a3b8 !important; top:4px !important; right:6px !important; font-size:16px !important;
+            }
+            .seamark-popup .leaflet-popup-close-button:hover { color:#f87171 !important; }
+            /* Icon chip — กลม สีดำ มี ring สี-IALA ให้เด่นบน satellite */
+            .seamark-icon {
+                display:flex; align-items:center; justify-content:center;
+                width:100%; height:100%;
+                background: radial-gradient(circle, rgba(6,17,32,0.95) 55%, rgba(6,17,32,0.6) 100%);
+                border-radius:50%;
+                font-family:'Share Tech Mono',monospace;
+                font-weight:bold;
+                line-height:1;
+                cursor:pointer; user-select:none;
+            }
         `;
         document.head.appendChild(s);
     }
