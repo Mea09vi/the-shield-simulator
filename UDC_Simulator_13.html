@@ -21236,7 +21236,26 @@ function _sonarEqnRender(panel) {
             // แสดง loading state
             const cntEl = document.getElementById('mda-cnt-seamark');
             if (cntEl) { cntEl.textContent = '…'; cntEl.style.color = '#fbbf24'; }
-            if (typeof addLog === 'function') addLog('🗺 กำลังโหลด IALA Seamarks จาก Overpass API…', '#22d3ee');
+
+            // [v13.0.6] STATIC-FIRST — render snapshot ทันที (instant, no network)
+            if (window.MDA_SEAMARK_STATIC && Array.isArray(window.MDA_SEAMARK_STATIC.elements)) {
+                const nodes = window.MDA_SEAMARK_STATIC.elements;
+                renderNodes(nodes);
+                if (cntEl) {
+                    cntEl.textContent = nodes.length;
+                    cntEl.style.color = '#4ade80';
+                    cntEl.title       = `${nodes.length} IALA seamarks (static snapshot · ODbL © OSM)\n` +
+                                        `Sattahip AOI · ${window.MDA_SEAMARK_STATIC.generator || 'Overpass snapshot'}`;
+                }
+                setBadge('seamark', nodes.length, null);
+                if (typeof addLog === 'function')
+                    addLog(`✅ IALA Seamarks: ${nodes.length} nodes (static snapshot)`, '#4ade80');
+                console.log('[MDA·Seamarks]', nodes.length, 'nodes from static snapshot');
+                return;
+            }
+
+            // Fallback: live Overpass (กรณีไม่มี static file — ไม่ปกติ)
+            if (typeof addLog === 'function') addLog('🗺 Static snapshot ไม่พบ — fallback ไป Overpass API…', '#fbbf24');
             try {
                 const { j, used } = await tryMirrors();
                 const nodes = j.elements || [];
@@ -21249,25 +21268,9 @@ function _sonarEqnRender(panel) {
                 }
                 setBadge('seamark', nodes.length, nodes.length === 0 ? 'warn' : null);
                 if (typeof addLog === 'function')
-                    addLog(`✅ IALA Seamarks: ${nodes.length} nodes โหลดสำเร็จ`, nodes.length === 0 ? '#fbbf24' : '#4ade80');
-                console.log('[MDA·Seamarks]', nodes.length, 'nodes loaded from Overpass');
+                    addLog(`✅ IALA Seamarks: ${nodes.length} nodes (live Overpass)`, nodes.length === 0 ? '#fbbf24' : '#4ade80');
             } catch (e) {
                 console.error('[MDA·Seamarks] Overpass fail:', e.message);
-                // [v13.0.5] Final fallback — bundled static snapshot (ทำงาน offline / file://)
-                if (window.MDA_SEAMARK_STATIC && Array.isArray(window.MDA_SEAMARK_STATIC.elements)) {
-                    const nodes = window.MDA_SEAMARK_STATIC.elements;
-                    renderNodes(nodes);
-                    if (cntEl) {
-                        cntEl.textContent = nodes.length + '·s';
-                        cntEl.style.color = '#fbbf24';
-                        cntEl.title       = `Network blocked — ใช้ static snapshot (${nodes.length} nodes)\n` +
-                                            `เหตุผล: ${e.message}\nแนะนำ: เปิดผ่าน start-server.bat เพื่อใช้ข้อมูลสด`;
-                    }
-                    setBadge('seamark', nodes.length, 'warn');
-                    if (typeof addLog === 'function')
-                        addLog(`⚠ Seamarks: network blocked → ใช้ static snapshot (${nodes.length} nodes)`, '#fbbf24');
-                    return;
-                }
                 if (cntEl) {
                     cntEl.textContent = 'ERR';
                     cntEl.style.color = '#ef4444';
