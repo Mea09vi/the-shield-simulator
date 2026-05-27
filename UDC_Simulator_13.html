@@ -20175,13 +20175,17 @@ function _sonarEqnRender(panel) {
         const layer = L.layerGroup();
         MDA.layers.aviation = layer;
         const BBOX = MDA.cfg.bbox;
-        // v12.6.3 — เปลี่ยนจาก OpenSky (CORS block) → adsb.fi (open CORS, ไม่ต้องใช้ key)
-        //   endpoint: /api/v2/lat/{lat}/lon/{lon}/dist/{dist_nm}
-        //   response: { ac: [ { hex, flight, lat, lon, track, alt_baro, gs, t, r, ... } ] }
+        // v13.0.2 — adsb.fi endpoint broken (HTTP 400) → fallback chain:
+        //   1) adsb.lol  (open CORS, max 250 nm)
+        //   2) OpenSky   (bbox-based, CORS support)
+        //   response normalize → { ac: [...] }
         const centerLat = ((BBOX.lamin + BBOX.lamax) / 2).toFixed(2);
         const centerLon = ((BBOX.lomin + BBOX.lomax) / 2).toFixed(2);
-        const RADIUS_NM = 600;  // ครอบคลุม Indochina/อ่าวไทย/อันดามัน
-        const URL = `https://opendata.adsb.fi/api/v2/lat/${centerLat}/lon/${centerLon}/dist/${RADIUS_NM}`;
+        const RADIUS_NM = 250;  // adsb.lol จำกัดที่ 250 nm
+        const URL_ADSB_LOL = `https://api.adsb.lol/v2/lat/${centerLat}/lon/${centerLon}/dist/${RADIUS_NM}`;
+        const URL_OPENSKY  = `https://opensky-network.org/api/states/all` +
+                             `?lamin=${BBOX.lamin}&lomin=${BBOX.lomin}` +
+                             `&lamax=${BBOX.lamax}&lomax=${BBOX.lomax}`;
 
         const planeIcon = (track) => L.divIcon({
             className: 'mda-plane-icon',
@@ -20193,10 +20197,37 @@ function _sonarEqnRender(panel) {
             iconSize: [18, 18], iconAnchor: [9, 9]
         });
 
+        // Normalize OpenSky states array → adsb.fi-like { ac: [...] }
+        // OpenSky state vector indices:
+        // 0:icao24 1:callsign 2:origin 3:time_pos 4:time 5:lon 6:lat 7:alt_baro
+        // 8:on_ground 9:velocity 10:track 11:vrate 12:.. 13:alt_geo 14:.. 15:.. 16:cat
+        function normalizeOpenSky(j) {
+            const states = (j && Array.isArray(j.states)) ? j.states : [];
+            return states.map(s => ({
+                hex:      s[0],
+                flight:   (s[1] || '').trim(),
+                lat:      s[6],
+                lon:      s[5],
+                track:    s[10],
+                alt_baro: s[8] ? 'ground' : (typeof s[7] === 'number' ? Math.round(s[7] * 3.2808) : null),
+                gs:       (typeof s[9] === 'number') ? s[9] * 1.9438 : null,  // m/s → kn
+                r:        '', t: ''
+            }));
+        }
+
         async function refresh() {
             try {
-                const j = await fetchJSON(URL, 'aviation', MDA.cfg.cacheTTL.aviation);
-                // adsb.fi response: { ac: [ {...} ] }
+                let j, src;
+                // Try adsb.lol first
+                try {
+                    j = await fetchJSON(URL_ADSB_LOL, 'aviation', MDA.cfg.cacheTTL.aviation);
+                    src = 'adsb.lol';
+                } catch (e1) {
+                    console.warn('[MDA·Aviation] adsb.lol fail, falling back to OpenSky:', e1.message);
+                    j = await fetchJSON(URL_OPENSKY, 'aviation_os', MDA.cfg.cacheTTL.aviation);
+                    j = { ac: normalizeOpenSky(j) };
+                    src = 'OpenSky';
+                }
                 const ac = (j && Array.isArray(j.ac)) ? j.ac : [];
                 layer.clearLayers();
                 let count = 0;
@@ -20226,11 +20257,17 @@ function _sonarEqnRender(panel) {
                 MDA.data.aviation = ac;
                 setBadge('air', count, count > 80 ? 'warn' : null);
                 setCount('mda-cnt-aviation', count);
-                console.log('[MDA·Aviation] adsb.fi', count, 'flights');
+                console.log(`[MDA·Aviation] ${src} → ${count} flights`);
+                if (typeof addLog === 'function')
+                    addLog(`✈ Aviation: ${count} flights via ${src}`, '#22d3ee');
             } catch (e) {
                 const msg = (e && e.message) || '';
-                console.warn('[MDA·Aviation] fetch fail:', msg);
+                console.error('[MDA·Aviation] all sources failed:', msg);
                 setBadge('air', 'ERR', 'crit');
+                const cntEl = document.getElementById('mda-cnt-aviation');
+                if (cntEl) cntEl.title = `Aviation API error: ${msg}`;
+                if (typeof addLog === 'function')
+                    addLog(`❌ Aviation: ${msg} — ดู Console`, '#ef4444');
             }
         }
         return { layer, refresh, name: 'Aviation' };
@@ -21013,7 +21050,12 @@ function _sonarEqnRender(panel) {
         // bbox ครอบคลุมอ่าวสัตหีบ + เกาะคราม + พื้นที่ AOI
         const BBOX  = '12.3,100.5,13.0,101.2';
         const _Q    = `[out:json][timeout:25];node["seamark:type"](${BBOX});out body;`;
-        const URL   = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(_Q)}`;
+        // v13.0.2 — multi-mirror fallback (main API บางครั้ง rate-limit / CORS reject null origin)
+        const MIRRORS = [
+            'https://overpass-api.de/api/interpreter',
+            'https://overpass.kumi.systems/api/interpreter',
+            'https://overpass.private.coffee/api/interpreter',
+        ];
 
         // ── IALA Region A appearance per seamark type + lateral category
         function resolveStyle(tags) {
@@ -21108,16 +21150,31 @@ function _sonarEqnRender(panel) {
             </div>`;
         }
 
+        async function tryMirrors() {
+            const errs = [];
+            for (const base of MIRRORS) {
+                const url = `${base}?data=${encodeURIComponent(_Q)}`;
+                try {
+                    const r = await fetch(url, { mode: 'cors' });
+                    if (!r.ok) { errs.push(`${base.split('/')[2]}: HTTP ${r.status}`); continue; }
+                    const j = await r.json();
+                    return { j, used: base };
+                } catch (e) {
+                    errs.push(`${base.split('/')[2]}: ${e.message}`);
+                }
+            }
+            throw new Error('all mirrors failed → ' + errs.join(' | '));
+        }
+
         async function refresh() {
             // แสดง loading state
             const cntEl = document.getElementById('mda-cnt-seamark');
             if (cntEl) { cntEl.textContent = '…'; cntEl.style.color = '#fbbf24'; }
             if (typeof addLog === 'function') addLog('🗺 กำลังโหลด IALA Seamarks จาก Overpass API…', '#22d3ee');
             try {
-                const r = await fetch(URL);
-                if (!r.ok) throw new Error(`HTTP ${r.status}`);
-                const j = await r.json();
+                const { j, used } = await tryMirrors();
                 const nodes = j.elements || [];
+                console.log('[MDA·Seamarks] mirror used:', used);
                 layer.clearLayers();
 
                 nodes.forEach(node => {
@@ -21141,12 +21198,18 @@ function _sonarEqnRender(panel) {
                 if (typeof addLog === 'function')
                     addLog(`✅ IALA Seamarks: ${nodes.length} nodes โหลดสำเร็จ`, nodes.length === 0 ? '#fbbf24' : '#4ade80');
                 console.log('[MDA·Seamarks]', nodes.length, 'nodes loaded from Overpass');
-                console.log('[MDA·Seamarks] URL used:', URL);
             } catch (e) {
                 console.error('[MDA·Seamarks] Overpass fail:', e.message);
-                if (cntEl) { cntEl.textContent = 'ERR'; cntEl.style.color = '#ef4444'; }
+                if (cntEl) {
+                    cntEl.textContent = 'ERR';
+                    cntEl.style.color = '#ef4444';
+                    cntEl.title       = `Overpass error: ${e.message}\n` +
+                                        `เป็นไปได้ว่า: 1) file:// CORS block — เปิดผ่าน local web server แทน  ` +
+                                        `2) Network/firewall  3) Overpass API rate-limit (รอ 1 นาที)`;
+                }
                 setBadge('seamark', 'ERR', 'crit');
-                if (typeof addLog === 'function') addLog('❌ Seamarks: Overpass API ล้มเหลว — ดู Console', '#ef4444');
+                if (typeof addLog === 'function')
+                    addLog(`❌ Seamarks: ${e.message} (hover ดู tooltip)`, '#ef4444');
             }
         }
 
