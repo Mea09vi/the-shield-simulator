@@ -21011,9 +21011,9 @@ function _sonarEqnRender(panel) {
         MDA.layers.seamarks = layer;
 
         // bbox ครอบคลุมอ่าวสัตหีบ + เกาะคราม + พื้นที่ AOI
-        const BBOX = '12.3,100.5,13.0,101.2';
-        const URL  = `https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];` +
-                     `node["seamark:type"](${BBOX});out body;`;
+        const BBOX  = '12.3,100.5,13.0,101.2';
+        const _Q    = `[out:json][timeout:25];node["seamark:type"](${BBOX});out body;`;
+        const URL   = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(_Q)}`;
 
         // ── IALA Region A appearance per seamark type + lateral category
         function resolveStyle(tags) {
@@ -21109,8 +21109,13 @@ function _sonarEqnRender(panel) {
         }
 
         async function refresh() {
+            // แสดง loading state
+            const cntEl = document.getElementById('mda-cnt-seamark');
+            if (cntEl) { cntEl.textContent = '…'; cntEl.style.color = '#fbbf24'; }
+            if (typeof addLog === 'function') addLog('🗺 กำลังโหลด IALA Seamarks จาก Overpass API…', '#22d3ee');
             try {
                 const r = await fetch(URL);
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
                 const j = await r.json();
                 const nodes = j.elements || [];
                 layer.clearLayers();
@@ -21127,17 +21132,21 @@ function _sonarEqnRender(panel) {
 
                 MDA.data.seamarks = nodes;
                 // update count chip
-                const cntEl = document.getElementById('mda-cnt-seamark');
                 if (cntEl) {
                     cntEl.textContent = nodes.length;
                     cntEl.style.color = '';      // reset amber → default
                     cntEl.title       = `${nodes.length} OSM seamark nodes in Sattahip AOI`;
                 }
                 setBadge('seamark', nodes.length, nodes.length === 0 ? 'warn' : null);
-                console.log('[MDA·Seamarks]', nodes.length, 'nodes');
+                if (typeof addLog === 'function')
+                    addLog(`✅ IALA Seamarks: ${nodes.length} nodes โหลดสำเร็จ`, nodes.length === 0 ? '#fbbf24' : '#4ade80');
+                console.log('[MDA·Seamarks]', nodes.length, 'nodes loaded from Overpass');
+                console.log('[MDA·Seamarks] URL used:', URL);
             } catch (e) {
-                console.warn('[MDA·Seamarks] Overpass fail:', e.message);
+                console.error('[MDA·Seamarks] Overpass fail:', e.message);
+                if (cntEl) { cntEl.textContent = 'ERR'; cntEl.style.color = '#ef4444'; }
                 setBadge('seamark', 'ERR', 'crit');
+                if (typeof addLog === 'function') addLog('❌ Seamarks: Overpass API ล้มเหลว — ดู Console', '#ef4444');
             }
         }
 
