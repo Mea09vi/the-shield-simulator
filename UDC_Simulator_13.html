@@ -20087,6 +20087,16 @@ function _sonarEqnRender(panel) {
     };
     MDA.util = { cacheGet, cacheSet, fetchJSON, setBadge, setCount };
 
+    // ── v13.0.3 startup diagnostics ───────────────────────────────────
+    try {
+        // เคลียร์ cache key เก่าจาก adsb.fi/opensky (อาจค้างข้อมูลผิด format)
+        ['aviation', 'aviation_os'].forEach(k => localStorage.removeItem('mda-cache-' + k));
+        const proto = location.protocol;
+        const banner = `%c[MDA v13.0.3] %cprotocol=${proto} ` +
+                       (proto === 'file:' ? '⚠ file:// อาจถูก CORS block — แนะนำเปิดผ่าน local server' : '✓');
+        console.log(banner, 'color:#22d3ee;font-weight:bold', 'color:#94a3b8');
+    } catch (e) {}
+
     /* ══════════════════════════════════════════════════════════════
        v12.6-B · UDC-Impact Classifier (PGA + Tsunami + Cable Risk)
        ──────────────────────────────────────────────────────────────
@@ -20215,18 +20225,34 @@ function _sonarEqnRender(panel) {
             }));
         }
 
+        // CORS proxy wrapper (สำหรับ file:// origin หรือ null-origin block)
+        async function fetchViaProxy(targetUrl) {
+            const proxied = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+            const r = await fetch(proxied);
+            if (!r.ok) throw new Error('proxy HTTP ' + r.status);
+            return r.json();
+        }
+
         async function refresh() {
             try {
                 let j, src;
-                // Try adsb.lol first
+                // ① adsb.lol direct
                 try {
                     j = await fetchJSON(URL_ADSB_LOL, 'aviation', MDA.cfg.cacheTTL.aviation);
                     src = 'adsb.lol';
                 } catch (e1) {
-                    console.warn('[MDA·Aviation] adsb.lol fail, falling back to OpenSky:', e1.message);
-                    j = await fetchJSON(URL_OPENSKY, 'aviation_os', MDA.cfg.cacheTTL.aviation);
-                    j = { ac: normalizeOpenSky(j) };
-                    src = 'OpenSky';
+                    console.warn('[MDA·Aviation] adsb.lol direct fail:', e1.message);
+                    // ② OpenSky direct
+                    try {
+                        const raw = await fetchJSON(URL_OPENSKY, 'aviation_os', MDA.cfg.cacheTTL.aviation);
+                        j = { ac: normalizeOpenSky(raw) };
+                        src = 'OpenSky';
+                    } catch (e2) {
+                        console.warn('[MDA·Aviation] OpenSky direct fail:', e2.message);
+                        // ③ adsb.lol via allorigins proxy (กัน file:// CORS)
+                        j = await fetchViaProxy(URL_ADSB_LOL);
+                        src = 'adsb.lol (proxied)';
+                    }
                 }
                 const ac = (j && Array.isArray(j.ac)) ? j.ac : [];
                 layer.clearLayers();
@@ -21163,7 +21189,21 @@ function _sonarEqnRender(panel) {
                     errs.push(`${base.split('/')[2]}: ${e.message}`);
                 }
             }
-            throw new Error('all mirrors failed → ' + errs.join(' | '));
+            // ── Last-resort: CORS proxy (สำหรับ file:// หรือ null-origin)
+            try {
+                const proxied = `https://api.allorigins.win/raw?url=${
+                    encodeURIComponent(MIRRORS[0] + '?data=' + encodeURIComponent(_Q))
+                }`;
+                const r = await fetch(proxied);
+                if (r.ok) {
+                    const j = await r.json();
+                    return { j, used: 'allorigins.win → overpass-api.de' };
+                }
+                errs.push(`allorigins: HTTP ${r.status}`);
+            } catch (e) {
+                errs.push(`allorigins: ${e.message}`);
+            }
+            throw new Error('all mirrors + proxy failed → ' + errs.join(' | '));
         }
 
         async function refresh() {
