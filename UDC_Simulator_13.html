@@ -20060,10 +20060,28 @@ function _sonarEqnRender(panel) {
         try { localStorage.setItem('mda-cache-' + key, JSON.stringify({ t: Date.now(), v })); }
         catch (e) {}
     };
+    // v13.0.4 — fetch with hard timeout (กัน hang ใน file:// + CORS preflight)
+    const fetchTO = (url, ms = 8000, init = {}) => {
+        const ctl = new AbortController();
+        const t = setTimeout(() => ctl.abort(), ms);
+        return fetch(url, { ...init, signal: ctl.signal })
+            .finally(() => clearTimeout(t));
+    };
+    // race หลาย CORS proxy พร้อมกัน — เอาตัวที่เร็วที่สุด
+    const CORS_PROXIES = [
+        u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+        u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+        u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+    ];
+    const fetchViaAnyProxy = async (targetUrl, ms = 10000) => {
+        const attempts = CORS_PROXIES.map(makeUrl => fetchTO(makeUrl(targetUrl), ms)
+            .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }));
+        return Promise.any(attempts);  // เอา proxy ที่สำเร็จเร็วที่สุด
+    };
     const fetchJSON = async (url, key, ttl) => {
         const cached = cacheGet(key, ttl);
         if (cached) return cached;
-        const r = await fetch(url, { mode: 'cors' });
+        const r = await fetchTO(url, 8000, { mode: 'cors' });
         if (!r.ok) throw new Error('HTTP ' + r.status);
         const j = await r.json();
         cacheSet(key, j);
@@ -20225,13 +20243,8 @@ function _sonarEqnRender(panel) {
             }));
         }
 
-        // CORS proxy wrapper (สำหรับ file:// origin หรือ null-origin block)
-        async function fetchViaProxy(targetUrl) {
-            const proxied = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
-            const r = await fetch(proxied);
-            if (!r.ok) throw new Error('proxy HTTP ' + r.status);
-            return r.json();
-        }
+        // CORS proxy wrapper — race ทุก proxy พร้อมกัน
+        const fetchViaProxy = (u) => fetchViaAnyProxy(u, 10000);
 
         async function refresh() {
             try {
@@ -21178,32 +21191,28 @@ function _sonarEqnRender(panel) {
 
         async function tryMirrors() {
             const errs = [];
+            // ① ลอง direct ทุก mirror (มี timeout 8s)
             for (const base of MIRRORS) {
                 const url = `${base}?data=${encodeURIComponent(_Q)}`;
                 try {
-                    const r = await fetch(url, { mode: 'cors' });
-                    if (!r.ok) { errs.push(`${base.split('/')[2]}: HTTP ${r.status}`); continue; }
-                    const j = await r.json();
+                    const r = await MDA.util.fetchJSON ? null : null; // placeholder
+                    const resp = await fetchTO(url, 8000, { mode: 'cors' });
+                    if (!resp.ok) { errs.push(`${base.split('/')[2]}: HTTP ${resp.status}`); continue; }
+                    const j = await resp.json();
                     return { j, used: base };
                 } catch (e) {
-                    errs.push(`${base.split('/')[2]}: ${e.message}`);
+                    errs.push(`${base.split('/')[2]}: ${e.message || 'abort'}`);
                 }
             }
-            // ── Last-resort: CORS proxy (สำหรับ file:// หรือ null-origin)
+            // ② race CORS proxies (10s timeout)
             try {
-                const proxied = `https://api.allorigins.win/raw?url=${
-                    encodeURIComponent(MIRRORS[0] + '?data=' + encodeURIComponent(_Q))
-                }`;
-                const r = await fetch(proxied);
-                if (r.ok) {
-                    const j = await r.json();
-                    return { j, used: 'allorigins.win → overpass-api.de' };
-                }
-                errs.push(`allorigins: HTTP ${r.status}`);
+                const target = MIRRORS[0] + '?data=' + encodeURIComponent(_Q);
+                const j = await fetchViaAnyProxy(target, 10000);
+                return { j, used: 'CORS-proxy → overpass-api.de' };
             } catch (e) {
-                errs.push(`allorigins: ${e.message}`);
+                errs.push(`proxy-race: ${e.message || 'all proxies failed'}`);
             }
-            throw new Error('all mirrors + proxy failed → ' + errs.join(' | '));
+            throw new Error('all paths failed → ' + errs.join(' | '));
         }
 
         async function refresh() {
