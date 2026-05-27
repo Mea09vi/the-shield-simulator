@@ -88,6 +88,8 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/math/SimplexNoise.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/SSAOShader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/SSAOPass.js"></script>
+    <!-- [v13.0.5] Static IALA seamark snapshot — offline fallback (loaded best-effort) -->
+    <script src="seamarks-static.js" onerror="console.warn('[MDA·Seamarks] static snapshot not found — offline fallback disabled')"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <!--
       ── CSS Stylesheet ────────────────────────────────────────────
@@ -21215,6 +21217,21 @@ function _sonarEqnRender(panel) {
             throw new Error('all paths failed → ' + errs.join(' | '));
         }
 
+        // [v13.0.5] แยก render block ออกมาเพื่อ reuse กับ static fallback
+        function renderNodes(nodes) {
+            layer.clearLayers();
+            nodes.forEach(node => {
+                const tags  = node.tags || {};
+                const style = resolveStyle(tags);
+                const isLarge = tags['seamark:type'] === 'light_major';
+                const icon  = makeIcon(style, isLarge ? 20 : 16);
+                L.marker([node.lat, node.lon], { icon })
+                    .bindPopup(makePopup(node, style, tags), { className: 'mda-tooltip', maxWidth: 260 })
+                    .addTo(layer);
+            });
+            MDA.data.seamarks = nodes;
+        }
+
         async function refresh() {
             // แสดง loading state
             const cntEl = document.getElementById('mda-cnt-seamark');
@@ -21224,24 +21241,11 @@ function _sonarEqnRender(panel) {
                 const { j, used } = await tryMirrors();
                 const nodes = j.elements || [];
                 console.log('[MDA·Seamarks] mirror used:', used);
-                layer.clearLayers();
-
-                nodes.forEach(node => {
-                    const tags  = node.tags || {};
-                    const style = resolveStyle(tags);
-                    const isLarge = tags['seamark:type'] === 'light_major';
-                    const icon  = makeIcon(style, isLarge ? 20 : 16);
-                    L.marker([node.lat, node.lon], { icon })
-                        .bindPopup(makePopup(node, style, tags), { className: 'mda-tooltip', maxWidth: 260 })
-                        .addTo(layer);
-                });
-
-                MDA.data.seamarks = nodes;
-                // update count chip
+                renderNodes(nodes);
                 if (cntEl) {
                     cntEl.textContent = nodes.length;
-                    cntEl.style.color = '';      // reset amber → default
-                    cntEl.title       = `${nodes.length} OSM seamark nodes in Sattahip AOI`;
+                    cntEl.style.color = '';
+                    cntEl.title       = `${nodes.length} OSM seamark nodes in Sattahip AOI · src: ${used}`;
                 }
                 setBadge('seamark', nodes.length, nodes.length === 0 ? 'warn' : null);
                 if (typeof addLog === 'function')
@@ -21249,11 +21253,26 @@ function _sonarEqnRender(panel) {
                 console.log('[MDA·Seamarks]', nodes.length, 'nodes loaded from Overpass');
             } catch (e) {
                 console.error('[MDA·Seamarks] Overpass fail:', e.message);
+                // [v13.0.5] Final fallback — bundled static snapshot (ทำงาน offline / file://)
+                if (window.MDA_SEAMARK_STATIC && Array.isArray(window.MDA_SEAMARK_STATIC.elements)) {
+                    const nodes = window.MDA_SEAMARK_STATIC.elements;
+                    renderNodes(nodes);
+                    if (cntEl) {
+                        cntEl.textContent = nodes.length + '·s';
+                        cntEl.style.color = '#fbbf24';
+                        cntEl.title       = `Network blocked — ใช้ static snapshot (${nodes.length} nodes)\n` +
+                                            `เหตุผล: ${e.message}\nแนะนำ: เปิดผ่าน start-server.bat เพื่อใช้ข้อมูลสด`;
+                    }
+                    setBadge('seamark', nodes.length, 'warn');
+                    if (typeof addLog === 'function')
+                        addLog(`⚠ Seamarks: network blocked → ใช้ static snapshot (${nodes.length} nodes)`, '#fbbf24');
+                    return;
+                }
                 if (cntEl) {
                     cntEl.textContent = 'ERR';
                     cntEl.style.color = '#ef4444';
                     cntEl.title       = `Overpass error: ${e.message}\n` +
-                                        `เป็นไปได้ว่า: 1) file:// CORS block — เปิดผ่าน local web server แทน  ` +
+                                        `เป็นไปได้ว่า: 1) file:// CORS block — เปิดผ่าน start-server.bat  ` +
                                         `2) Network/firewall  3) Overpass API rate-limit (รอ 1 นาที)`;
                 }
                 setBadge('seamark', 'ERR', 'crit');
