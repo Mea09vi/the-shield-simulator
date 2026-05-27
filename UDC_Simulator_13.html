@@ -2846,10 +2846,10 @@
             <span class="mda-lp-group-name"><span class="mda-lp-chev">▾</span> 🌊 MARITIME ENV · v13</span>
         </div>
         <div class="mda-lp-group-body">
-            <div class="mda-lp-row" data-mda-layer="seamark" title="OpenSeaMap IALA seamarks — ทุ่น/โป๊ะ/ตำแหน่งอันตรายทางเรือ (© OpenSeaMap CC-BY-SA) · หมายเหตุ: coverage ในอ่าวไทย sparse">
+            <div class="mda-lp-row" data-mda-layer="seamark" title="IALA Seamarks (Overpass/OSM) — ทุ่น·ไฟ·ซาก ใน bbox อ่าวสัตหีบ · IALA Region A styling">
                 <span class="bullet"></span>
-                <span class="label"><span class="swatch" style="background:#22d3ee"></span>OpenSeaMap Seamarks</span>
-                <span class="count" id="mda-cnt-seamark" title="Gulf of Thailand: sparse coverage" style="color:#fbbf24;">sparse</span>
+                <span class="label"><span class="swatch" style="background:#22d3ee"></span>IALA Seamarks (OSM)</span>
+                <span class="count" id="mda-cnt-seamark" title="Overpass API — โหลดเมื่อ toggle ON">—</span>
                 <span class="mda-sw"></span>
             </div>
             <div class="mda-lp-row" data-mda-layer="marine-wx" title="Marine Weather — wave height · direction · period (Open-Meteo Marine API, ไม่ต้องใช้ key)">
@@ -20041,7 +20041,7 @@ function _sonarEqnRender(panel) {
             tmdProxyUrl: null
         },
         layers: {},       // L.layerGroup() ต่อโดเมน
-        data:   { aviation: [], seismic: [], space: null, gdelt: [], fusion: [], marineWx: null },
+        data:   { aviation: [], seismic: [], space: null, gdelt: [], fusion: [], marineWx: null, seamarks: null },
         state:  { on: { aviation: true, 'ais-heat': true, 'ais-anomaly': true, seismic: true, space: true, gdelt: true, seamark: false, 'marine-wx': false } },
         timers: {}
     };
@@ -20984,6 +20984,167 @@ function _sonarEqnRender(panel) {
     })();
 
 
+//  [ส่วนที่ 41.6 — v13] หมวด ญ.ส  Seamark Layer — Overpass API (OSM)
+//  วัตถุประสงค์ : ดึง seamark nodes จาก OpenStreetMap ผ่าน Overpass API
+//  หลักการ      : query `node["seamark:type"]` ใน bbox อ่าวสัตหีบ
+//                render เป็น IALA Region A marker (port=red, stbd=green,
+//                light=amber, wreck=grey) พร้อม popup รายละเอียด
+//  ข้อดีเหนือ tile: แสดง node จริงที่ OSM มี (tile cache อาจล่าช้า)
+//  อ้างอิง       : https://overpass-api.de · IALA Maritime Buoyage System Region A
+    /* ══════════════════════════════════════════════════════════════
+       [ส่วนที่ 41.6]  หมวด ญ.ส  Seamarks — Overpass API query
+       ──────────────────────────────────────────────────────────────
+       bbox     : 12.3,100.5,13.0,101.2 — อ่าวสัตหีบ + surrounding
+       query    : node["seamark:type"] → ทุก aid-to-navigation ใน OSM
+       ████ IALA Region A (ไทยใช้) ████
+         Port hand    → Red    ◆  (ซ้ายเมื่อเข้าจากทะเล)
+         Starboard    → Green  ◆  (ขวาเมื่อเข้าจากทะเล)
+         Cardinal N/E → Black/Yellow ▲
+         Isolated danger → Black/Red ●
+         Safe water   → Red/White ●
+         Light minor  → Amber  ✦
+         Light major  → White  ★
+         Wreck        → Grey   ✕
+       ════════════════════════════════════════════════════════════ */
+    MDA.Seamarks = (function () {
+        const layer = L.layerGroup();
+        MDA.layers.seamarks = layer;
+
+        // bbox ครอบคลุมอ่าวสัตหีบ + เกาะคราม + พื้นที่ AOI
+        const BBOX = '12.3,100.5,13.0,101.2';
+        const URL  = `https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];` +
+                     `node["seamark:type"](${BBOX});out body;`;
+
+        // ── IALA Region A appearance per seamark type + lateral category
+        function resolveStyle(tags) {
+            const type    = tags['seamark:type'] || '';
+            const lateral = tags['seamark:buoy_lateral:category']
+                         || tags['seamark:beacon_lateral:category'] || '';
+            const cardinal = tags['seamark:buoy_cardinal:category']
+                          || tags['seamark:beacon_cardinal:category'] || '';
+            const lightCol = (tags['seamark:light:colour'] || '').split(';')[0].trim().toLowerCase();
+
+            // ── Lateral (port / starboard)
+            if (type === 'buoy_lateral' || type === 'beacon_lateral') {
+                if (lateral === 'port')       return { colour: '#ef4444', glow: '#ef444488', shape: '◆', label: 'Port (Red)'      };
+                if (lateral === 'starboard')  return { colour: '#22c55e', glow: '#22c55e88', shape: '◆', label: 'Stbd (Green)'    };
+                if (lateral === 'preferred_channel_port')
+                                              return { colour: '#ef4444', glow: '#ef444488', shape: '◈', label: 'Pref Port'       };
+                if (lateral === 'preferred_channel_starboard')
+                                              return { colour: '#22c55e', glow: '#22c55e88', shape: '◈', label: 'Pref Stbd'       };
+            }
+            // ── Cardinal
+            if (type === 'buoy_cardinal' || type === 'beacon_cardinal') {
+                const cardMap = {
+                    north: { colour: '#fbbf24', glow: '#fbbf2488', shape: '▲', label: 'Cardinal N' },
+                    south: { colour: '#fbbf24', glow: '#fbbf2488', shape: '▼', label: 'Cardinal S' },
+                    east:  { colour: '#fbbf24', glow: '#fbbf2488', shape: '▶', label: 'Cardinal E' },
+                    west:  { colour: '#fbbf24', glow: '#fbbf2488', shape: '◀', label: 'Cardinal W' },
+                };
+                if (cardMap[cardinal]) return cardMap[cardinal];
+                return { colour: '#fbbf24', glow: '#fbbf2488', shape: '▲', label: 'Cardinal'    };
+            }
+            // ── Lights
+            if (type === 'light_major') return { colour: '#f8fafc', glow: '#f8fafc88', shape: '★', label: 'Light (Major)' };
+            if (type === 'light_minor') {
+                const lc = { red:'#ef4444', green:'#22c55e', white:'#f8fafc', amber:'#fbbf24', yellow:'#fbbf24' };
+                const c  = lc[lightCol] || '#fde68a';
+                return { colour: c, glow: c + '88', shape: '✦', label: `Light (${lightCol||'minor'})` };
+            }
+            if (type === 'light_vessel')        return { colour: '#fde68a', glow: '#fde68a88', shape: '⛟', label: 'Light Vessel'  };
+            // ── Dangers / special
+            if (type === 'isolated_danger')     return { colour: '#e879f9', glow: '#e879f988', shape: '●', label: 'Isolated Danger'};
+            if (type === 'safe_water')          return { colour: '#38bdf8', glow: '#38bdf888', shape: '●', label: 'Safe Water'     };
+            if (type === 'special_purpose')     return { colour: '#fbbf24', glow: '#fbbf2488', shape: '◆', label: 'Special'       };
+            if (type === 'wreck')               return { colour: '#94a3b8', glow: '#94a3b888', shape: '✕', label: 'Wreck'         };
+            if (type === 'obstruction')         return { colour: '#f87171', glow: '#f8717188', shape: '✕', label: 'Obstruction'   };
+            if (type === 'rock')                return { colour: '#cbd5e1', glow: '#cbd5e188', shape: '✕', label: 'Rock'          };
+            // ── Fallback
+            return { colour: '#94a3b8', glow: '#94a3b888', shape: '●', label: type || 'Seamark' };
+        }
+
+        // ── Build DivIcon for a node
+        function makeIcon(style, sizePx) {
+            const s = sizePx || 16;
+            return L.divIcon({
+                className: '',
+                html: `<div style="
+                    font-size:${s}px; line-height:1; color:${style.colour};
+                    text-shadow: 0 0 4px #000, 0 0 10px ${style.glow};
+                    cursor:pointer; user-select:none;">
+                    ${style.shape}</div>`,
+                iconSize:   [s, s],
+                iconAnchor: [s/2, s/2]
+            });
+        }
+
+        // ── Build popup HTML
+        function makePopup(node, style, tags) {
+            const name = tags.name || tags['seamark:name'] || style.label;
+            const rows = [];
+            if (tags['seamark:type'])           rows.push(['Type',      tags['seamark:type']]);
+            if (tags['seamark:light:colour'])   rows.push(['Light col', tags['seamark:light:colour']]);
+            if (tags['seamark:light:character'])rows.push(['Character', tags['seamark:light:character']]);
+            if (tags['seamark:light:period'])   rows.push(['Period',    tags['seamark:light:period'] + ' s']);
+            if (tags['seamark:light:range'])    rows.push(['Range',     tags['seamark:light:range']  + ' M']);
+            if (tags['seamark:height'])         rows.push(['Height',    tags['seamark:height']       + ' m']);
+            if (tags['seamark:buoy_lateral:colour'])  rows.push(['Colour', tags['seamark:buoy_lateral:colour']]);
+            if (tags['seamark:buoy_cardinal:category'])  rows.push(['Cardinal', tags['seamark:buoy_cardinal:category']]);
+            if (tags['ref'])                    rows.push(['Ref',       tags['ref']]);
+
+            const rowsHtml = rows.map(([k, v]) =>
+                `<tr><td style="color:#64748b;padding-right:8px;font-size:9px;text-transform:uppercase">${k}</td>` +
+                `<td style="color:#e2e8f0;font-size:10px">${v}</td></tr>`).join('');
+
+            return `<div style="font-family:'Share Tech Mono',monospace;min-width:180px">
+                <div style="font-size:13px;color:${style.colour};margin-bottom:6px;">
+                    ${style.shape} <b>${name}</b></div>
+                <table style="border-collapse:collapse;width:100%">${rowsHtml}</table>
+                <div style="color:#475569;font-size:9px;margin-top:6px">
+                    OSM node #${node.id} · IALA Region A
+                    <br><a href="https://www.openstreetmap.org/node/${node.id}" target="_blank"
+                       style="color:#38bdf8;">ดูใน OSM ↗</a>
+                </div>
+            </div>`;
+        }
+
+        async function refresh() {
+            try {
+                const r = await fetch(URL);
+                const j = await r.json();
+                const nodes = j.elements || [];
+                layer.clearLayers();
+
+                nodes.forEach(node => {
+                    const tags  = node.tags || {};
+                    const style = resolveStyle(tags);
+                    const isLarge = tags['seamark:type'] === 'light_major';
+                    const icon  = makeIcon(style, isLarge ? 20 : 16);
+                    L.marker([node.lat, node.lon], { icon })
+                        .bindPopup(makePopup(node, style, tags), { className: 'mda-tooltip', maxWidth: 260 })
+                        .addTo(layer);
+                });
+
+                MDA.data.seamarks = nodes;
+                // update count chip
+                const cntEl = document.getElementById('mda-cnt-seamark');
+                if (cntEl) {
+                    cntEl.textContent = nodes.length;
+                    cntEl.style.color = '';      // reset amber → default
+                    cntEl.title       = `${nodes.length} OSM seamark nodes in Sattahip AOI`;
+                }
+                setBadge('seamark', nodes.length, nodes.length === 0 ? 'warn' : null);
+                console.log('[MDA·Seamarks]', nodes.length, 'nodes');
+            } catch (e) {
+                console.warn('[MDA·Seamarks] Overpass fail:', e.message);
+                setBadge('seamark', 'ERR', 'crit');
+            }
+        }
+
+        return { layer, refresh, name: 'Seamarks' };
+    })();
+
+
 //  [ส่วนที่ 42] หมวด ญ — Multi-Domain Awareness (MDA / Intel Fusion)
 //  วัตถุประสงค์ : รวมสัญญาณจาก ๔ โดเมน → briefing items priority-sorted
 //  หลักการ      : Rule-based (R1–R5) · CRIT/WARN/INFO · render 3 tabs
@@ -21142,7 +21303,7 @@ function _sonarEqnRender(panel) {
             'space':     MDA.SpaceWx.layer,
             'gdelt':     MDA.GDELT.layer,
             // [v13] Maritime Environment
-            'seamark':   openSeaMapLayer,          // standalone OpenSeaMap IALA toggle
+            'seamark':   MDA.Seamarks.layer,       // Overpass API OSM seamark markers (IALA Region A)
             'marine-wx': MDA.MarineWx.layer        // Open-Meteo wave/wind markers
         };
         const labelMap = {
@@ -21193,13 +21354,9 @@ function _sonarEqnRender(panel) {
                     if (panel) panel.style.display = turningOn ? '' : 'none';
                     if (turningOn && !MDA.data.marineWx) MDA.MarineWx.refresh();
                 }
-                // [v13] seamark: warn user about sparse coverage in Gulf of Thailand
-                if (key === 'seamark' && turningOn) {
-                    setTimeout(() => toast('⚠ OpenSeaMap: ข้อมูลในอ่าวไทยยังไม่สมบูรณ์ — Gulf of Thailand coverage sparse'), 400);
-                    _placeSeamarkAdvisory();
-                }
-                if (key === 'seamark' && !turningOn) {
-                    _removeSeamarkAdvisory();
+                // [v13] seamark: lazy-fetch Overpass API on first enable
+                if (key === 'seamark' && turningOn && !MDA.data.seamarks) {
+                    MDA.Seamarks.refresh();
                 }
                 // ais-heat / ais-anomaly = v11 layer (no direct hook here)
                 toast((turningOn ? 'ON · ' : 'OFF · ') + (labelMap[key] || key));
@@ -21208,38 +21365,6 @@ function _sonarEqnRender(panel) {
             row.addEventListener('click', handler);
             if (sw) sw.addEventListener('click', handler);
         });
-
-        // [v13] Seamark advisory marker — แจ้ง coverage status ใน AOI
-        let _seamarkAdvisoryMarker = null;
-        function _placeSeamarkAdvisory() {
-            if (_seamarkAdvisoryMarker) return;
-            const icon = L.divIcon({
-                className: '',
-                html: `<div style="
-                    background:rgba(8,21,37,.92); border:1px solid rgba(251,191,36,.6);
-                    border-radius:6px; padding:5px 9px; font-family:'Share Tech Mono',monospace;
-                    font-size:10px; color:#fbbf24; white-space:nowrap;
-                    box-shadow:0 0 10px rgba(251,191,36,.25); line-height:1.5;
-                    max-width:220px; white-space:normal;">
-                    ⚠ OpenSeaMap<br>
-                    <span style="color:rgba(255,255,255,.6);font-size:9px;">
-                    Gulf of Thailand coverage sparse<br>
-                    — ชุมชนยังไม่ได้ contribute IALA<br>
-                    seamark data ในพื้นที่นี้<br>
-                    <a href="https://map.openseamap.org/?zoom=13&lat=12.66&lon=100.9" target="_blank"
-                       style="color:#38bdf8;">ดูที่ OpenSeaMap ↗</a>
-                    </span></div>`,
-                iconAnchor: [0, 0]
-            });
-            _seamarkAdvisoryMarker = L.marker([12.72, 100.95], { icon, interactive: true })
-                .addTo(map);
-        }
-        function _removeSeamarkAdvisory() {
-            if (_seamarkAdvisoryMarker) {
-                map.removeLayer(_seamarkAdvisoryMarker);
-                _seamarkAdvisoryMarker = null;
-            }
-        }
 
         // BASEMAP radio wiring ลบออก v12.6.4 — ย้ายไปปุ่มใน right-rail
 
