@@ -5236,14 +5236,14 @@ cableLandingGroup.addLayer(clsPhetburiMarker);
 cableLandingGroup.addLayer(clsChumphonMarker);
 cableLandingGroup.addLayer(clsRayongMarker);
 
-// ── Cable Routes (OSM Overpass · Real Submarine Cable Ways) ──
-// [v13.0.9] เปลี่ยนจากเส้นทาง hardcoded เป็นข้อมูลจริงจาก OpenStreetMap (Overpass API)
-//   · static-first  : โหลดทันทีจาก window.MDA_CABLES_STATIC (snapshot 2026-05-28)
-//   · live fallback : ถ้า static ไม่มี ลอง fetch Overpass สด
-//   · licence       : ODbL · © OpenStreetMap contributors
-//   · tags          : seamark:type=cable_submarine | man_made=submarine_cable
-//                     | (communication:medium=fibre AND location=underwater)
-//   · หมายเหตุ      : พิกัด OSM ก็เป็น "ประมาณการ" เช่นกัน (±100m-1km offshore)
+// ── Cable Routes (TeleGeography Submarine Cable Map) ──
+// [v13.0.12] เปลี่ยนแหล่งข้อมูลจาก OSM (เกือบไม่มีในอ่าวไทย) → TeleGeography (industry standard)
+//   · static       : window.MDA_CABLES_STATIC จาก submarinecablemap.com/api/v3 (snapshot 2026-05-28)
+//   · license      : © TeleGeography — non-commercial display เท่านั้น
+//   · bbox         : 0-15N, 95-115E (Andaman + อ่าวไทย + SCS)
+//   · cables ใกล้สัตหีบที่ map ไว้จริง: ADC, AAG, CAT Submarine Network (CSN), MCT, TDSCN, ฯลฯ
+//   · หมายเหตุ      : พิกัดเป็น "ประมาณการ" เช่นกัน (TG เองก็ระบุว่า approximate)
+//                    แต่เป็นค่าอ้างอิงมาตรฐานอุตสาหกรรม ดีกว่าเดาเอง
 
 // สีตามชื่อ — cables ที่มีชื่อใช้ palette สด, ไม่มีชื่อใช้สีเทาอ่อน
 const CABLE_PALETTE = ['#4ade80','#f87171','#7c3aed','#e879f9','#eab308','#06b6d4','#fb923c','#22d3ee','#a78bfa','#f472b6'];
@@ -5269,7 +5269,7 @@ function renderCableWays(ways, source) {
         });
         const label = named ? `〰 ${w.name}` : '〰 (unnamed submarine cable)';
         line.bindTooltip(
-            `${label}<br><span style="opacity:.7;font-size:11px">OSM way ${w.id} · © OpenStreetMap · ODbL</span>`,
+            `${label}<br><span style="opacity:.7;font-size:11px">id: ${w.id} · © TeleGeography · approximate</span>`,
             {sticky:true}
         );
         cableRouteGroup.addLayer(line);
@@ -5315,11 +5315,10 @@ out geom;`;
     }
 }
 
-// ── Approximate Gulf of Thailand routes (v13.0.10) ──
-// OSM แทบไม่มีเส้นเคเบิ้ลที่ map ไว้ในอ่าวไทย (โดยเฉพาะรอบสัตหีบ/ศรีราชา) เพราะ
-// เส้นทางจริงของ AAG/APG/SMW-5 ภายใน EEZ ไทย เป็นข้อมูลกึ่งลับ — เลยเสริม
-// "เส้นประมาณการ" ของอ่าวไทย จากการ์ดสาธารณะ TeleGeography + landing stations
-// แยกสไตล์ชัดเจน (เส้นบาง dotted + label "ประมาณการ") ไม่ปนกับ OSM จริง
+// ── Removed in v13.0.12: hardcoded approximate Gulf routes ──
+// แทนที่ด้วย TeleGeography data ที่มี ADC/AAG/CSN/MCT/TDSCN จริงในอ่าวไทย
+// (เก็บโค้ดไว้เผื่อ TG ลบหรือ block IP — แต่ default ไม่ render แล้ว)
+/*
 // [v13.0.11] waypoint แรกของทุกเส้น = "ออกฝั่ง" (~10-15 km offshore) ก่อนค่อยมุ่งทิศจริง
 // Si Racha CLS อยู่ที่ 13.17,100.93 (บนฝั่ง) — drop ลงน้ำที่ 13.10,100.80 ก่อน
 // แล้วอ้อมแหลมสัตหีบ (12.55-12.7N, 100.85-100.95E) ทางตะวันตกหรือตะวันออกตามเส้นทาง
@@ -5397,37 +5396,24 @@ const APPROX_GULF_ROUTES = [
     ]}
 ];
 
-function renderApproxGulfRoutes() {
-    for (const r of APPROX_GULF_ROUTES) {
-        const line = L.polyline(r.coords, {
-            color: r.color, weight: 2.2, dashArray: '2,6',  // dotted (different from OSM dashed)
-            opacity: 0.88
-        });
-        line.bindTooltip(
-            `📍 ${r.name}<br><span style="opacity:.7;font-size:11px">ประมาณการจาก TeleGeography + landing stations<br>ไม่ใช่พิกัดจริง · ใช้เพื่อ situational awareness</span>`,
-            {sticky:true}
-        );
-        cableRouteGroup.addLayer(line);
-    }
-    addLog('CABLE', `เสริมเส้นประมาณการอ่าวไทย ${APPROX_GULF_ROUTES.length} เส้น (TeleGeography-based)`);
-}
+*/
+// — end of disabled hardcoded approximate routes —
 
 (async function initCables() {
-    // STATIC-FIRST — render snapshot ทันที (instant, no network)
+    // STATIC-FIRST — render TeleGeography snapshot ทันที (instant, no network)
     if (window.MDA_CABLES_STATIC && Array.isArray(window.MDA_CABLES_STATIC.elements)) {
-        renderCableWays(window.MDA_CABLES_STATIC.elements, 'static snapshot (OSM/ODbL)');
-        renderApproxGulfRoutes();
+        const src = window.MDA_CABLES_STATIC.source || 'static snapshot';
+        renderCableWays(window.MDA_CABLES_STATIC.elements, src);
         return;
     }
-    // Fallback: live Overpass
-    addLog('CABLE', 'ไม่พบ static snapshot — กำลังเรียก Overpass สด…');
+    // Fallback: live Overpass (OSM data — sparse but at least something)
+    addLog('CABLE', 'ไม่พบ TeleGeography snapshot — fallback Overpass…');
     const ways = await loadCablesLive();
     if (ways && ways.length) {
-        renderCableWays(ways, 'Overpass live');
+        renderCableWays(ways, 'Overpass live (OSM)');
     } else {
         addLog('CABLE', 'โหลดเส้นเคเบิ้ลล้มเหลว (offline?)');
     }
-    renderApproxGulfRoutes();  // เสมอ — ไม่ขึ้นกับ OSM
 })();
 
 // Toggle A button — Landing Station
