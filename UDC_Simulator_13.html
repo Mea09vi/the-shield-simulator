@@ -90,6 +90,7 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/SSAOPass.js"></script>
     <!-- [v13.0.5] Static IALA seamark snapshot — offline fallback (loaded best-effort) -->
     <script src="seamarks-static.js" onerror="console.warn('[MDA·Seamarks] static snapshot not found — offline fallback disabled')"></script>
+    <script src="cables-static.js" onerror="console.warn('[MDA·Cables] static snapshot not found — Overpass-only mode')"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <!--
       ── CSS Stylesheet ────────────────────────────────────────────
@@ -5235,90 +5236,100 @@ cableLandingGroup.addLayer(clsPhetburiMarker);
 cableLandingGroup.addLayer(clsChumphonMarker);
 cableLandingGroup.addLayer(clsRayongMarker);
 
-// ── Cable Routes (Extended Gulf of Thailand Reach) ──
-// [v13.0.8] แก้ waypoints ให้อยู่ในน่านน้ำจริง — อิงแนวชายฝั่งจาก OSM + TeleGeography
-// (เส้นทางยังเป็น "ประมาณการ" เพราะพิกัดจริงเป็นความลับ — แต่ไม่ตัดผ่านแผ่นดินอีกแล้ว)
+// ── Cable Routes (OSM Overpass · Real Submarine Cable Ways) ──
+// [v13.0.9] เปลี่ยนจากเส้นทาง hardcoded เป็นข้อมูลจริงจาก OpenStreetMap (Overpass API)
+//   · static-first  : โหลดทันทีจาก window.MDA_CABLES_STATIC (snapshot 2026-05-28)
+//   · live fallback : ถ้า static ไม่มี ลอง fetch Overpass สด
+//   · licence       : ODbL · © OpenStreetMap contributors
+//   · tags          : seamark:type=cable_submarine | man_made=submarine_cable
+//                     | (communication:medium=fibre AND location=underwater)
+//   · หมายเหตุ      : พิกัด OSM ก็เป็น "ประมาณการ" เช่นกัน (±100m-1km offshore)
 
-// 🟢 Green — Si Racha CLS → ออกอ่าวไทยฝั่งตะวันตก → Songkhla/Narathiwat → Kelantan, MY
-//   เลียบชายฝั่งฝั่งตะวันตกของอ่าวไทย (Phetchaburi → Chumphon → Surat → Songkhla)
-const greenRoute = L.polyline([
-    [13.115, 100.915],  // Si Racha CLS
-    [12.850, 100.500],  // offshore ชะอำ (ห่างฝั่ง ~25 km)
-    [12.100,  99.950],  // offshore หัวหิน
-    [11.000,  99.550],  // offshore ประจวบฯ
-    [10.200,  99.400],  // offshore ชุมพร
-    [ 9.100,  99.500],  // offshore สุราษฎร์ฯ
-    [ 8.000,  99.800],  // offshore นครศรีธรรมราช
-    [ 7.000, 100.500],  // offshore สงขลา
-    [ 6.200, 101.800],  // offshore นราธิวาส
-    [ 6.100, 102.200]   // ชายแดน MY (Kelantan)
-], {color:'#4ade80', weight:2.5, dashArray:'8,5', opacity:0.92})
-    .bindTooltip('🟢 Green — Si Racha → Songkhla → Kelantan (MY)', {sticky:true});
+// สีตามชื่อ — cables ที่มีชื่อใช้ palette สด, ไม่มีชื่อใช้สีเทาอ่อน
+const CABLE_PALETTE = ['#4ade80','#f87171','#7c3aed','#e879f9','#eab308','#06b6d4','#fb923c','#22d3ee','#a78bfa','#f472b6'];
+function cableColor(name) {
+    if (!name) return '#94a3b8'; // unnamed → slate
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = ((h << 5) - h + name.charCodeAt(i)) | 0;
+    return CABLE_PALETTE[Math.abs(h) % CABLE_PALETTE.length];
+}
 
-// 🔴 Red — Si Racha → กลางอ่าวไทย → ออกช่องอ่าวไทย-SCS → Singapore (เส้น Pahang offshore)
-const redRoute = L.polyline([
-    [13.115, 100.915],  // Si Racha CLS
-    [12.200, 100.800],  // mid-gulf
-    [10.500, 101.000],  // mid-gulf ลึก
-    [ 8.000, 101.800],  // ออกจากปากอ่าว
-    [ 6.000, 103.000],  // offshore Kelantan (ใน SCS แล้ว)
-    [ 3.500, 104.500],  // offshore Pahang
-    [ 1.500, 104.800],  // เข้าสิงคโปร์ทางตะวันออก
-    [ 1.270, 103.850]   // Singapore landing
-], {color:'#f87171', weight:2.5, dashArray:'8,5', opacity:0.92})
-    .bindTooltip('🔴 Red — Si Racha → Singapore (East Malay coast)', {sticky:true});
+function renderCableWays(ways, source) {
+    if (!Array.isArray(ways) || !ways.length) return 0;
+    cableRouteGroup.clearLayers();
+    let n = 0;
+    for (const w of ways) {
+        if (!w.coords || w.coords.length < 2) continue;
+        const named = w.name && w.name.length;
+        const color = cableColor(w.name);
+        const line = L.polyline(w.coords, {
+            color, weight: named ? 2.6 : 2.0,
+            dashArray: named ? '8,5' : '4,4',
+            opacity: named ? 0.95 : 0.65
+        });
+        const label = named ? `〰 ${w.name}` : '〰 (unnamed submarine cable)';
+        line.bindTooltip(
+            `${label}<br><span style="opacity:.7;font-size:11px">OSM way ${w.id} · © OpenStreetMap · ODbL</span>`,
+            {sticky:true}
+        );
+        cableRouteGroup.addLayer(line);
+        n++;
+    }
+    addLog('CABLE', `โหลดเส้นเคเบิ้ล ${n} ways จาก ${source}`);
+    return n;
+}
 
-// 🟣 Dark Purple — Si Racha → ผ่านน่านน้ำกัมพูชา → SCS ใต้เวียดนาม
-const darkPurpleRoute = L.polyline([
-    [13.115, 100.915],  // Si Racha CLS
-    [12.200, 101.500],  // mid-eastern gulf (ตราด offshore)
-    [10.500, 102.500],  // offshore Sihanoukville
-    [ 8.500, 104.200],  // ใต้ Phú Quốc / west of Cà Mau
-    [ 7.500, 105.500],  // ใต้แหลม Cà Mau (SCS)
-    [ 6.000, 107.000]   // SCS เปิด
-], {color:'#7c3aed', weight:2.5, dashArray:'8,5', opacity:0.92})
-    .bindTooltip('🟣 Dark Purple — Si Racha → SCS ผ่าน Cà Mau', {sticky:true});
+async function loadCablesLive() {
+    // Overpass query: same filter as the static snapshot
+    const q = `[out:json][timeout:30];
+(
+  way["seamark:type"="cable_submarine"](0.5,98.0,14.0,110.0);
+  way["man_made"="submarine_cable"](0.5,98.0,14.0,110.0);
+  way["communication:medium"="fibre"]["location"="underwater"](0.5,98.0,14.0,110.0);
+);
+out geom;`;
+    const endpoints = [
+        'https://overpass-api.de/api/interpreter',
+        'https://overpass.kumi.systems/api/interpreter',
+        'https://overpass.openstreetmap.fr/api/interpreter'
+    ];
+    const ctrl = new AbortController();
+    const tmo = setTimeout(() => ctrl.abort(), 30000);
+    try {
+        const res = await Promise.any(endpoints.map(u =>
+            fetch(u, {method:'POST', body:'data='+encodeURIComponent(q), signal:ctrl.signal})
+                .then(r => r.ok ? r.json() : Promise.reject())
+        ));
+        clearTimeout(tmo);
+        const ways = (res.elements || []).filter(e => e.geometry && e.geometry.length >= 2)
+            .map(e => ({
+                id: e.id,
+                name: (e.tags && (e.tags.name || e.tags['seamark:name'])) || '',
+                coords: e.geometry.map(g => [g.lat, g.lon])
+            }));
+        return ways;
+    } catch (err) {
+        clearTimeout(tmo);
+        console.warn('[MDA·Cables] live Overpass fetch failed:', err);
+        return null;
+    }
+}
 
-// 🌸 Fuchsia — Si Racha → ออก SCS ผ่าน Cà Mau → ฝั่งตะวันออกเวียดนาม
-const fuchsiaRoute = L.polyline([
-    [13.115, 100.915],  // Si Racha CLS
-    [12.400, 101.800],  // offshore ตราด
-    [11.000, 103.200],  // ใต้ Sihanoukville
-    [ 9.500, 104.800],  // offshore Cà Mau
-    [ 8.500, 106.500],  // SCS
-    [10.500, 108.500]   // ฝั่งตะวันออกเวียดนาม (Phan Thiết offshore)
-], {color:'#e879f9', weight:2.5, dashArray:'8,5', opacity:0.92})
-    .bindTooltip('🌸 Fuchsia — Si Racha → Vietnam East / SCS', {sticky:true});
-
-// 🟡 Gold — Rayong CLS → กลางอ่าวไทย → Singapore (เส้นสำรอง)
-const goldRoute = L.polyline([
-    [12.650, 101.250],  // Rayong CLS
-    [11.500, 101.400],  // offshore Klaeng/Trat
-    [ 9.500, 102.200],  // mid-southern gulf
-    [ 7.000, 103.200],  // offshore Pattani
-    [ 4.000, 104.500],  // east Malay
-    [ 1.500, 104.500],  // east Tioman
-    [ 1.300, 104.300]   // Singapore (east approach)
-], {color:'#eab308', weight:2.5, dashArray:'8,5', opacity:0.92})
-    .bindTooltip('🟡 Gold — Rayong → Lower Gulf → Singapore', {sticky:true});
-
-// 🩵 AAG — Si Racha → SCS → Pacific (เลี่ยงจุด Cà Mau ลงใต้)
-const aagRoute = L.polyline([
-    [13.115, 100.915],  // Si Racha CLS
-    [12.400, 101.500],  // mid-eastern gulf
-    [10.500, 103.500],  // offshore กัมพูชา
-    [ 8.500, 105.500],  // ใต้เวียดนาม (Cà Mau offshore)
-    [10.000, 109.000],  // SCS ตะวันออกเวียดนาม
-    [12.000, 113.000]   // SCS เปิด — มุ่ง Guam/Pacific
-], {color:'#06b6d4', weight:2.5, dashArray:'8,5', opacity:0.92})
-    .bindTooltip('🩵 AAG — Asia-America Gateway → Pacific', {sticky:true});
-
-cableRouteGroup.addLayer(greenRoute);
-cableRouteGroup.addLayer(redRoute);
-cableRouteGroup.addLayer(darkPurpleRoute);
-cableRouteGroup.addLayer(fuchsiaRoute);
-cableRouteGroup.addLayer(goldRoute);
-cableRouteGroup.addLayer(aagRoute);
+(async function initCables() {
+    // STATIC-FIRST — render snapshot ทันที (instant, no network)
+    if (window.MDA_CABLES_STATIC && Array.isArray(window.MDA_CABLES_STATIC.elements)) {
+        renderCableWays(window.MDA_CABLES_STATIC.elements, 'static snapshot (OSM/ODbL)');
+        return;
+    }
+    // Fallback: live Overpass
+    addLog('CABLE', 'ไม่พบ static snapshot — กำลังเรียก Overpass สด…');
+    const ways = await loadCablesLive();
+    if (ways && ways.length) {
+        renderCableWays(ways, 'Overpass live');
+    } else {
+        addLog('CABLE', 'โหลดเส้นเคเบิ้ลล้มเหลว (offline?)');
+    }
+})();
 
 // Toggle A button — Landing Station
 const cableABtn = L.control({ position: 'topright' });
