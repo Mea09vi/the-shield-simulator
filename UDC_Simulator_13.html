@@ -5237,6 +5237,7 @@ cableLandingGroup.addLayer(clsChumphonMarker);
 cableLandingGroup.addLayer(clsRayongMarker);
 
 // ── Cable Routes (TeleGeography Submarine Cable Map) ──
+// [v13.0.13] Professional cartographic line style (single muted color + halo, no dash)
 // [v13.0.12] เปลี่ยนแหล่งข้อมูลจาก OSM (เกือบไม่มีในอ่าวไทย) → TeleGeography (industry standard)
 //   · static       : window.MDA_CABLES_STATIC จาก submarinecablemap.com/api/v3 (snapshot 2026-05-28)
 //   · license      : © TeleGeography — non-commercial display เท่านั้น
@@ -5245,14 +5246,16 @@ cableLandingGroup.addLayer(clsRayongMarker);
 //   · หมายเหตุ      : พิกัดเป็น "ประมาณการ" เช่นกัน (TG เองก็ระบุว่า approximate)
 //                    แต่เป็นค่าอ้างอิงมาตรฐานอุตสาหกรรม ดีกว่าเดาเอง
 
-// สีตามชื่อ — cables ที่มีชื่อใช้ palette สด, ไม่มีชื่อใช้สีเทาอ่อน
-const CABLE_PALETTE = ['#4ade80','#f87171','#7c3aed','#e879f9','#eab308','#06b6d4','#fb923c','#22d3ee','#a78bfa','#f472b6'];
-function cableColor(name) {
-    if (!name) return '#94a3b8'; // unnamed → slate
-    let h = 0;
-    for (let i = 0; i < name.length; i++) h = ((h << 5) - h + name.charCodeAt(i)) | 0;
-    return CABLE_PALETTE[Math.abs(h) % CABLE_PALETTE.length];
-}
+// [v13.0.13] Professional cartographic style — single muted color, thin solid line + halo
+//   · ใช้สีเดียว (เทา-ฟ้าอมเขียวแบบ nautical chart) แทน palette หลากสี
+//   · เส้นบาง (1.1px) แบบทึบ ไม่มี dash → ดูเป็นแผนที่จริง ไม่เหมือนลูกกวาด
+//   · มี halo (เส้นรองสีเข้มกึ่งโปร่ง) ช่วยให้อ่านง่ายบน basemap ทุกสี
+//   · unnamed cable opacity ต่ำกว่า เพื่อลดความรกตา
+const CABLE_STYLE = {
+    halo:  { color: '#0b1220', weight: 2.6, opacity: 0.55, lineCap: 'round', lineJoin: 'round', interactive: false },
+    named: { color: '#7dd3fc', weight: 1.1, opacity: 0.95, lineCap: 'round', lineJoin: 'round' },
+    plain: { color: '#7dd3fc', weight: 1.0, opacity: 0.55, lineCap: 'round', lineJoin: 'round' }
+};
 
 function renderCableWays(ways, source) {
     if (!Array.isArray(ways) || !ways.length) return 0;
@@ -5261,13 +5264,11 @@ function renderCableWays(ways, source) {
     for (const w of ways) {
         if (!w.coords || w.coords.length < 2) continue;
         const named = w.name && w.name.length;
-        const color = cableColor(w.name);
-        const line = L.polyline(w.coords, {
-            color, weight: named ? 2.6 : 2.0,
-            dashArray: named ? '8,5' : '4,4',
-            opacity: named ? 0.95 : 0.65
-        });
-        const label = named ? `〰 ${w.name}` : '〰 (unnamed submarine cable)';
+        // halo first (drawn underneath)
+        cableRouteGroup.addLayer(L.polyline(w.coords, CABLE_STYLE.halo));
+        // core line on top
+        const line = L.polyline(w.coords, named ? CABLE_STYLE.named : CABLE_STYLE.plain);
+        const label = named ? `⌇ ${w.name}` : '⌇ (unnamed submarine cable)';
         line.bindTooltip(
             `${label}<br><span style="opacity:.7;font-size:11px">id: ${w.id} · © TeleGeography · approximate</span>`,
             {sticky:true}
