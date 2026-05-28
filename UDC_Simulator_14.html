@@ -3664,7 +3664,9 @@
         <span style="color:#94a3b8;">MODE:</span>
         <span class="mda-ai-mode-pill on"    id="mda-ai-mode-rules"   title="Rule-based offline · 5-class taxonomy + alerts">⚙ RULES</span>
         <span class="mda-ai-mode-pill off"   id="mda-ai-mode-llm"     title="LLM (Claude Opus ผ่าน Cloudflare Worker) · disabled (ยังไม่ตั้ง proxy)">✨ OPUS</span>
+        <span class="mda-ai-mode-pill off"   id="mda-ai-settings-btn" title="ตั้งค่า Cloudflare Worker proxy URL">⚙ Settings</span>
         <span class="mda-ai-toolbar-spacer"></span>
+        <span class="mda-ai-toolbar-info">PROXY: <span id="mda-ai-proxy-info" style="color:#fbbf24;">not set</span></span>
         <span class="mda-ai-toolbar-info">STATE: <span id="mda-ai-mode-state" style="color:#7dd3fc;">offline-mock</span></span>
         <span class="mda-ai-toolbar-info">UPDATED: <span id="mda-ai-last-update" style="color:#7dd3fc;">--:--:--</span></span>
     </div>
@@ -22527,6 +22529,7 @@ function _sonarEqnRender(panel) {
         const $ = id => document.getElementById(id);
         let modal, backdrop, headerBtn, closeBtn, dismissBtn, refreshBtn;
         let modeRules, modeLlm, modeState, lastUpdate;
+        let settingsBtn, proxyInfo;
         let alertList, alertCount, taxTotal, taxRule;
         let ruleSynth, ruleLevel;
         let opusNarr, opusMeta, opusTokens, opusLatency, opusModel, opusConf, opusCaveats;
@@ -22544,6 +22547,8 @@ function _sonarEqnRender(panel) {
             modeLlm    = $('mda-ai-mode-llm');
             modeState  = $('mda-ai-mode-state');
             lastUpdate = $('mda-ai-last-update');
+            settingsBtn= $('mda-ai-settings-btn');
+            proxyInfo  = $('mda-ai-proxy-info');
             alertList  = $('mda-ai-alerts');
             alertCount = $('mda-ai-alert-count');
             taxTotal   = $('mda-ai-tax-total');
@@ -23001,84 +23006,121 @@ function _sonarEqnRender(panel) {
             if (state.opusBusy) return;
             state.opusBusy = true;
 
-            // Loading state
+            const proxy = MDA.cfg.aiProxyUrl;
+            const wantReal = (state.mode === 'llm') && !!proxy && !MDA.cfg.aiMockMode;
+
+            // Loading state (honest message based on path)
             opusNarr.classList.remove('empty');
             opusNarr.innerHTML = `
                 <div class="mda-ai-opus-loading">
                     <div class="mda-ai-spinner"></div>
-                    <div>กำลังเรียก Claude Opus ผ่าน proxy …</div>
-                    <div style="font-size:9px;color:#94a3b8;letter-spacing:0.10em;">(mock pipeline · 2.0s)</div>
+                    <div>${wantReal
+                        ? 'กำลังเรียก Claude Opus ผ่าน Worker …'
+                        : 'กำลังประมวลผล mock pipeline …'}</div>
+                    <div style="font-size:9px;color:#94a3b8;letter-spacing:0.10em;">
+                        ${wantReal ? 'live · anthropic /v1/messages' : 'offline · narrative-from-state'}
+                    </div>
                 </div>`;
             if (opusTokens) opusTokens.textContent = '…';
             if (opusLatency) opusLatency.textContent = 'pending';
 
             const t0 = performance.now();
 
-            // try real proxy first if configured
-            const proxy = MDA.cfg.aiProxyUrl;
-            let narrative = null;
-            let modelLabel = 'claude-opus-mock';
+            // upstream result holders
+            let narrative   = null;
+            let modelLabel  = 'claude-opus-mock';
+            let serverLat   = null;
+            let usage       = null;
+            let errMsg      = null;
+            let source      = 'mock';     // 'real' | 'fallback' | 'mock'
 
-            if (state.mode === 'llm' && proxy && !MDA.cfg.aiMockMode) {
+            if (wantReal) {
                 try {
                     const r = await fetch(proxy, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            mode: 'opus-analysis',
                             taxonomy: state.taxonomy,
-                            alerts: state.alerts.slice(0, 10)
+                            alerts: state.alerts.slice(0, 12)
                         })
                     });
-                    const j = await r.json();
-                    narrative = j.text || null;
-                    modelLabel = j.model || 'claude-opus';
+                    const j = await r.json().catch(() => null);
+                    if (!r.ok) {
+                        errMsg = (j && (j.error || j.detail)) || ('HTTP ' + r.status);
+                        console.warn('[MDA.AI] Worker returned error', r.status, j);
+                    } else if (j && j.text) {
+                        narrative  = j.text;
+                        modelLabel = j.model || 'claude-opus';
+                        serverLat  = (typeof j.latency_ms === 'number') ? j.latency_ms : null;
+                        usage      = j.usage || null;
+                        source     = 'real';
+                    } else {
+                        errMsg = 'empty response from Worker';
+                    }
                 } catch (e) {
+                    errMsg = String(e && e.message || e);
                     console.warn('[MDA.AI] Opus proxy call failed, falling back to mock', e);
                 }
             }
 
-            // mock delay (real or fallback)
-            await new Promise(res => setTimeout(res, 2000));
+            // fallback to mock narrative if real path didn't produce text
             if (!narrative) {
+                // only sleep for the mock UX (skip if we already paid network latency)
+                if (!wantReal) {
+                    await new Promise(res => setTimeout(res, 1800));
+                }
                 narrative = _opusNarrativeFromState();
+                source = wantReal ? 'fallback' : 'mock';
             }
 
-            const latency = Math.round(performance.now() - t0);
+            const wallLat = Math.round(performance.now() - t0);
+            const latency = (serverLat != null) ? serverLat : wallLat;
 
             // render
             opusNarr.innerHTML = '';
             opusNarr.textContent = narrative;
             opusNarr.classList.remove('empty');
 
-            const tok = Math.round(narrative.length / 4);  // rough token count
+            // real token count when available, otherwise rough estimate (chars/4)
+            let tok;
+            if (usage && typeof usage.output_tokens === 'number') {
+                tok = usage.output_tokens;
+            } else {
+                tok = Math.round(narrative.length / 4);
+            }
             const conf = state.alerts.length
                 ? (state.alerts.reduce((s,a) => s+a.conf, 0) / state.alerts.length * 100).toFixed(0) + '%'
                 : '--';
 
-            if (opusTokens)  opusTokens.textContent  = '~' + tok + ' tok';
-            if (opusLatency) opusLatency.textContent = latency + 'ms';
+            if (opusTokens)  opusTokens.textContent  = (usage ? '' : '~') + tok + ' tok';
+            if (opusLatency) opusLatency.textContent = latency + 'ms' + (serverLat != null ? ' (srv)' : '');
             if (opusModel)   opusModel.textContent   = modelLabel;
             if (opusConf)    opusConf.textContent    = conf;
 
             // caveats
             if (opusCaveats) {
-                const t = state.taxonomy;
-                const total = t.kinetic + t.asymmetric + t.cyber + t.environmental + t.hybrid;
                 const lvl = _ruleLevel();
                 const parts = [];
                 parts.push(`<div>· เกณฑ์ความเชื่อมั่น: <b style="color:#c4b5fd;">${conf}</b> · samples: <b>${state.alerts.length}</b></div>`);
-                parts.push(`<div>· Decision Support — ผ่าน HITL ตาม <b>DoD 3000.09</b></div>`);
+                parts.push(`<div>· Decision Support — ผ่าน HITL ตาม <b>DoD 3000.09</b> / <b>MASS Code III-A</b></div>`);
                 if (lvl === 'HIGH') parts.push(`<div style="color:#fca5a5;">· แนะนำ <b>2-person rule</b> ก่อนเปลี่ยน posture</div>`);
-                if (state.mode === 'rules' || !proxy) parts.push(`<div style="color:#94a3b8;font-style:italic;">· mock mode — proxy ${proxy ? 'available' : 'null'}</div>`);
+                if (source === 'real') {
+                    parts.push(`<div style="color:#86efac;">· live · ${modelLabel} · ${usage ? (usage.input_tokens + ' in / ' + usage.output_tokens + ' out') : 'usage n/a'}</div>`);
+                } else if (source === 'fallback') {
+                    parts.push(`<div style="color:#fca5a5;">· proxy failed — fallback to mock · ${errMsg || 'unknown error'}</div>`);
+                } else {
+                    parts.push(`<div style="color:#94a3b8;font-style:italic;">· mock mode — proxy ${proxy ? 'set แต่ปิดอยู่' : 'ไม่ได้ตั้ง URL'}</div>`);
+                }
                 opusCaveats.innerHTML = parts.join('');
             }
 
-            state.lastOpus = { ts: _now(), narrative, latency, model: modelLabel };
+            state.lastOpus = { ts: _now(), narrative, latency, model: modelLabel, source, usage };
             state.opusBusy = false;
 
             try { if (typeof addLog === 'function') {
-                addLog('[AI] Opus analysis complete · ' + latency + 'ms · ' + modelLabel, '#c4b5fd');
+                const tag = source === 'real' ? 'LIVE' : (source === 'fallback' ? 'FALLBACK' : 'MOCK');
+                addLog('[AI] Opus ' + tag + ' · ' + latency + 'ms · ' + modelLabel + (usage ? (' · ' + usage.output_tokens + ' tok') : ''),
+                       source === 'real' ? '#86efac' : (source === 'fallback' ? '#fca5a5' : '#c4b5fd'));
             }} catch (_) {}
         }
 
@@ -23215,6 +23257,75 @@ function _sonarEqnRender(panel) {
                     ? (MDA.cfg.aiProxyUrl ? 'online · Claude Opus' : 'llm · proxy=null (mock)')
                     : 'offline · rules-only';
             }
+            _refreshProxyInfo();
+        }
+
+        // ── v14.0.4 · proxy URL settings (localStorage) ─────
+        const LS_KEY_PROXY = 'shield_ai_proxy_url';
+
+        function _shortProxy(u) {
+            if (!u) return 'not set';
+            try {
+                const host = new URL(u).host;
+                return host.length > 28 ? host.slice(0, 25) + '…' : host;
+            } catch (_) {
+                return u.length > 28 ? u.slice(0, 25) + '…' : u;
+            }
+        }
+
+        function _refreshProxyInfo() {
+            if (!proxyInfo) return;
+            const url = MDA.cfg.aiProxyUrl;
+            proxyInfo.textContent = _shortProxy(url);
+            proxyInfo.style.color = url ? '#86efac' : '#fbbf24';
+            if (proxyInfo.parentElement) proxyInfo.parentElement.title = url || 'ยังไม่ตั้ง Worker URL — คลิก ⚙ Settings';
+        }
+
+        function _loadProxyFromStorage() {
+            try {
+                const saved = localStorage.getItem(LS_KEY_PROXY);
+                if (saved && /^https?:\/\//i.test(saved)) {
+                    MDA.cfg.aiProxyUrl = saved;
+                    return saved;
+                }
+            } catch (_) { /* localStorage unavailable (file://) */ }
+            return null;
+        }
+
+        function _saveProxyToStorage(url) {
+            try {
+                if (url) localStorage.setItem(LS_KEY_PROXY, url);
+                else     localStorage.removeItem(LS_KEY_PROXY);
+            } catch (_) { /* ignore */ }
+        }
+
+        function openSettings() {
+            const cur = MDA.cfg.aiProxyUrl || '';
+            const msg = [
+                'Cloudflare Worker URL สำหรับ Claude Opus relay',
+                '',
+                'รูปแบบ: https://shield-ai-proxy.<your-subdomain>.workers.dev',
+                '(ปล่อยว่างเพื่อล้างค่า · ใช้ mock mode)',
+            ].join('\n');
+            const ans = window.prompt(msg, cur);
+            if (ans === null) return;   // user cancelled
+            const trimmed = ans.trim();
+            if (trimmed === '') {
+                MDA.cfg.aiProxyUrl = null;
+                _saveProxyToStorage(null);
+                try { addLog('[AI] Proxy URL cleared · กลับสู่ mock mode', '#fbbf24'); } catch (_) {}
+            } else if (!/^https?:\/\//i.test(trimmed)) {
+                window.alert('URL ต้องขึ้นต้นด้วย https:// หรือ http://');
+                return;
+            } else {
+                MDA.cfg.aiProxyUrl = trimmed.replace(/\/+$/, '');  // strip trailing slash
+                _saveProxyToStorage(MDA.cfg.aiProxyUrl);
+                try { addLog('[AI] Proxy URL set · ' + _shortProxy(MDA.cfg.aiProxyUrl), '#86efac'); } catch (_) {}
+                // auto-switch to OPUS mode for convenience
+                setMode('llm');
+            }
+            _refreshProxyInfo();
+            setMode(state.mode);  // re-sync state label
         }
 
         // ── ESC handler ─────────────────────────────────────
@@ -23271,26 +23382,38 @@ function _sonarEqnRender(panel) {
                 console.warn('[MDA.AI] modal not in DOM');
                 return;
             }
-            if (closeBtn)   closeBtn.addEventListener('click', () => toggle(false));
-            if (dismissBtn) dismissBtn.addEventListener('click', () => toggle(false));
-            if (refreshBtn) refreshBtn.addEventListener('click', refreshRules);
-            if (btnGen)     btnGen.addEventListener('click', generateOpusAnalysis);
-            if (btnClear)   btnClear.addEventListener('click', clearAll);
-            if (modeRules)  modeRules.addEventListener('click', () => setMode('rules'));
-            if (modeLlm)    modeLlm.addEventListener('click', () => {
+            if (closeBtn)    closeBtn.addEventListener('click', () => toggle(false));
+            if (dismissBtn)  dismissBtn.addEventListener('click', () => toggle(false));
+            if (refreshBtn)  refreshBtn.addEventListener('click', refreshRules);
+            if (btnGen)      btnGen.addEventListener('click', generateOpusAnalysis);
+            if (btnClear)    btnClear.addEventListener('click', clearAll);
+            if (settingsBtn) settingsBtn.addEventListener('click', openSettings);
+            if (modeRules)   modeRules.addEventListener('click', () => setMode('rules'));
+            if (modeLlm)     modeLlm.addEventListener('click', () => {
                 if (!MDA.cfg.aiProxyUrl) {
                     try { if (typeof addLog === 'function') {
-                        addLog('[AI] LLM mode requires aiProxyUrl (Cloudflare Worker) — running in mock mode', '#fbbf24');
+                        addLog('[AI] LLM mode requires aiProxyUrl — กรุณาตั้งค่าผ่าน ⚙ Settings', '#fbbf24');
                     }} catch (_) {}
                 }
                 setMode('llm');
             });
-            setMode('rules');
+
+            // v14.0.4 — auto-load saved proxy URL from localStorage
+            const loaded = _loadProxyFromStorage();
+            if (loaded) {
+                try { if (typeof addLog === 'function') {
+                    addLog('[AI] Proxy URL restored · ' + _shortProxy(loaded), '#86efac');
+                }} catch (_) {}
+                setMode('llm');
+            } else {
+                setMode('rules');
+            }
+            _refreshProxyInfo();
             renderAlerts();
             renderTaxonomy();
             renderRuleSynthesis();
             renderForceRecommendations();
-            console.log('[MDA.AI] v14.0.3 initialized · classifier active · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
+            console.log('[MDA.AI] v14.0.4 initialized · classifier active · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
         }
 
         // expose

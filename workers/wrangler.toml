@@ -1,0 +1,22 @@
+# ════════════════════════════════════════════════════════════════════
+# THE SHIELD 2.0 — UDC Simulator v14.0.4
+# Cloudflare Workers config (ai-proxy)
+# ──────────────────────────────────────────────────────────────────────
+# Edit name / account_id ให้ตรงกับบัญชี Cloudflare ของคุณก่อน deploy
+# Secrets ไม่อยู่ในไฟล์นี้ — set ผ่าน `wrangler secret put ANTHROPIC_API_KEY`
+# ════════════════════════════════════════════════════════════════════
+
+name = "shield-ai-proxy"
+main = "ai-proxy.js"
+compatibility_date = "2025-05-01"
+
+# (optional) account_id = "YOUR_CLOUDFLARE_ACCOUNT_ID"
+
+# (optional) custom domain / route — uncomment ถ้าใช้ Custom Domain
+# routes = [
+#   { pattern = "ai-proxy.example.com/*", custom_domain = true }
+# ]
+
+# ตัวแปรไม่ลับ — ปรับค่าได้ตรงนี้ (API key ห้ามอยู่ที่นี่)
+[vars]
+DEFAULT_MODEL = "claude-opus-4-20250514"
