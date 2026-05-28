@@ -5315,10 +5315,52 @@ out geom;`;
     }
 }
 
+// ── Approximate Gulf of Thailand routes (v13.0.10) ──
+// OSM แทบไม่มีเส้นเคเบิ้ลที่ map ไว้ในอ่าวไทย (โดยเฉพาะรอบสัตหีบ/ศรีราชา) เพราะ
+// เส้นทางจริงของ AAG/APG/SMW-5 ภายใน EEZ ไทย เป็นข้อมูลกึ่งลับ — เลยเสริม
+// "เส้นประมาณการ" ของอ่าวไทย จากการ์ดสาธารณะ TeleGeography + landing stations
+// แยกสไตล์ชัดเจน (เส้นบาง dotted + label "ประมาณการ") ไม่ปนกับ OSM จริง
+const APPROX_GULF_ROUTES = [
+    { name:'Si Racha → Songkhla → Kelantan (ประมาณการ)', color:'#4ade80', coords:[
+        [13.115,100.915],[12.850,100.500],[12.100,99.950],[11.000,99.550],[10.200,99.400],
+        [9.100,99.500],[8.000,99.800],[7.000,100.500],[6.200,101.800],[6.100,102.200] ]},
+    { name:'Si Racha → Singapore (East Malay, ประมาณการ)', color:'#f87171', coords:[
+        [13.115,100.915],[12.200,100.800],[10.500,101.000],[8.000,101.800],
+        [6.000,103.000],[3.500,104.500],[1.500,104.800],[1.270,103.850] ]},
+    { name:'Si Racha → SCS ผ่าน Cà Mau (ประมาณการ)', color:'#7c3aed', coords:[
+        [13.115,100.915],[12.200,101.500],[10.500,102.500],[8.500,104.200],
+        [7.500,105.500],[6.000,107.000] ]},
+    { name:'Si Racha → Vietnam East / SCS (ประมาณการ)', color:'#e879f9', coords:[
+        [13.115,100.915],[12.400,101.800],[11.000,103.200],[9.500,104.800],
+        [8.500,106.500],[10.500,108.500] ]},
+    { name:'Rayong → Lower Gulf → Singapore (ประมาณการ)', color:'#eab308', coords:[
+        [12.650,101.250],[11.500,101.400],[9.500,102.200],[7.000,103.200],
+        [4.000,104.500],[1.500,104.500],[1.300,104.300] ]},
+    { name:'AAG: Si Racha → Pacific (ประมาณการ)', color:'#06b6d4', coords:[
+        [13.115,100.915],[12.400,101.500],[10.500,103.500],[8.500,105.500],
+        [10.000,109.000],[12.000,113.000] ]}
+];
+
+function renderApproxGulfRoutes() {
+    for (const r of APPROX_GULF_ROUTES) {
+        const line = L.polyline(r.coords, {
+            color: r.color, weight: 2.2, dashArray: '2,6',  // dotted (different from OSM dashed)
+            opacity: 0.88
+        });
+        line.bindTooltip(
+            `📍 ${r.name}<br><span style="opacity:.7;font-size:11px">ประมาณการจาก TeleGeography + landing stations<br>ไม่ใช่พิกัดจริง · ใช้เพื่อ situational awareness</span>`,
+            {sticky:true}
+        );
+        cableRouteGroup.addLayer(line);
+    }
+    addLog('CABLE', `เสริมเส้นประมาณการอ่าวไทย ${APPROX_GULF_ROUTES.length} เส้น (TeleGeography-based)`);
+}
+
 (async function initCables() {
     // STATIC-FIRST — render snapshot ทันที (instant, no network)
     if (window.MDA_CABLES_STATIC && Array.isArray(window.MDA_CABLES_STATIC.elements)) {
         renderCableWays(window.MDA_CABLES_STATIC.elements, 'static snapshot (OSM/ODbL)');
+        renderApproxGulfRoutes();
         return;
     }
     // Fallback: live Overpass
@@ -5329,6 +5371,7 @@ out geom;`;
     } else {
         addLog('CABLE', 'โหลดเส้นเคเบิ้ลล้มเหลว (offline?)');
     }
+    renderApproxGulfRoutes();  // เสมอ — ไม่ขึ้นกับ OSM
 })();
 
 // Toggle A button — Landing Station
