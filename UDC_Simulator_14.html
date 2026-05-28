@@ -8,6 +8,22 @@
                 + AI Domain ชั้น meta-intelligence สำหรับ situational reasoning (Decision Support Only)
 
   v14 changelog:
+    · [v14.0.5] AI · Migrate to Cloudflare Workers AI (free tier — replace Anthropic API)
+        - workers/ai-proxy.js: ใช้ env.AI.run() binding แทน fetch ไป api.anthropic.com
+        - Default model: @cf/meta/llama-3.3-70b-instruct-fp8-fast (Thai-capable, fast)
+        - Model allow-list: Llama 3.3/3.1, DeepSeek R1, Qwen 2.5, Mistral Small 3.1
+        - Workers AI free quota: 10,000 neurons/วัน (~50-200 analyses/day)
+        - No secret required — ใช้ account-level binding อัตโนมัติ
+        - HTML labels: "Claude Opus" → "Workers AI" / "claude-opus-mock" → "llama-3.3-mock"
+    · [v14.0.4] AI · Real Cloudflare Worker hookup (Anthropic Claude Opus path — deprecated by v14.0.5)
+        - workers/ai-proxy.js + wrangler.toml + DEPLOY.md (Anthropic API relay)
+        - generateOpusAnalysis: real path → Worker → returned text/usage/latency
+        - mock fallback ถ้า Worker error/timeout
+        - ⚙ Settings button: ตั้ง proxy URL runtime (localStorage persistence)
+    · [v14.0.3] AI · Rule-based classifier (offline R1-R6 + co-incident scoring)
+        - 5-class threat taxonomy → real-time score → severity tag → modal feed
+    · [v14.0.2] AI · Move to MODAL OVERLAY pattern (header button left of Reset)
+        - 3 sections: Rule-Based · Opus Analysis · Force Deployment
     · [v14.0.1] AI DOMAIN — Skeleton (decision-support, human-in-the-loop)
         - MDA.AI namespace (cfg, state, taxonomy 5-class, alerts queue, mock generator)
         - Floating draggable panel #mda-ai-panel (augmented-ui, OSIRIS theme)
@@ -3663,7 +3679,7 @@
     <div class="mda-ai-toolbar">
         <span style="color:#94a3b8;">MODE:</span>
         <span class="mda-ai-mode-pill on"    id="mda-ai-mode-rules"   title="Rule-based offline · 5-class taxonomy + alerts">⚙ RULES</span>
-        <span class="mda-ai-mode-pill off"   id="mda-ai-mode-llm"     title="LLM (Claude Opus ผ่าน Cloudflare Worker) · disabled (ยังไม่ตั้ง proxy)">✨ OPUS</span>
+        <span class="mda-ai-mode-pill off"   id="mda-ai-mode-llm"     title="LLM (Workers AI · Llama 3.3 70B ผ่าน Cloudflare Worker) · disabled (ยังไม่ตั้ง proxy)">✨ OPUS</span>
         <span class="mda-ai-mode-pill off"   id="mda-ai-settings-btn" title="ตั้งค่า Cloudflare Worker proxy URL">⚙ Settings</span>
         <span class="mda-ai-toolbar-spacer"></span>
         <span class="mda-ai-toolbar-info">PROXY: <span id="mda-ai-proxy-info" style="color:#fbbf24;">not set</span></span>
@@ -3753,11 +3769,11 @@
                 </div>
                 <div id="mda-ai-opus-narr" class="mda-ai-opus-narr empty">
                     — กดปุ่ม "✨ Run Opus Analysis" เพื่อให้ AI วิเคราะห์เชิงลึก —
-                    (mock pipeline · จะเชื่อมต่อ Claude API ผ่าน Cloudflare Worker ใน v14.0.4)
+                    (mock pipeline · ตั้งค่า ⚙ Settings เพื่อเชื่อมต่อ Workers AI · Llama 3.3 70B)
                 </div>
                 <div class="mda-ai-opus-meta">
                     <span id="mda-ai-opus-latency">--ms</span> ·
-                    <span class="mda-ai-model-badge" id="mda-ai-opus-model">claude-opus-mock</span>
+                    <span class="mda-ai-model-badge" id="mda-ai-opus-model">llama-3.3-mock</span>
                 </div>
             </div>
 
@@ -22497,14 +22513,14 @@ function _sonarEqnRender(panel) {
              ④ Environmental       — เฮอร์ริเคน · seismic · spill
              ⑤ Hybrid (multi-vec)  — รวม 2 ชนิดขึ้นไปพร้อมกัน
          • ผังวิเคราะห์: rule-engine (offline) → optional LLM judge
-           (Claude API ผ่าน Cloudflare Worker, proxy = null = mock)
+           (Workers AI · Llama 3.3 70B ผ่าน Cloudflare Worker, proxy = null = mock)
          • อ้างอิงนโยบาย: ศรชล. แผน 5 ปี 2566-2570 (One Marine Chart
            + Big Data + AI Process), MDAWG 01/2025, NATO Mainsail
            (Feb 2025), DoD Directive 3000.09 (2023), IMO MASS Code
            (effective 1 ก.ค. 2569 — III-A Autonomy Levels), PDPA
          • ผลลัพธ์เป็น "Decision Support" ไม่ใช่ autonomous decision
        ════════════════════════════════════════════════════════════ */
-    MDA.cfg.aiProxyUrl  = null;     // Cloudflare Worker URL สำหรับ Claude API
+    MDA.cfg.aiProxyUrl  = null;     // Cloudflare Worker URL สำหรับ Workers AI (Llama 3.3)
     MDA.cfg.aiMockMode  = true;     // true = ใช้ rule-engine + canned briefing
     MDA.cfg.aiTickMs    = 18_000;   // mock alert tick (~18s)
     MDA.cfg.aiMaxAlerts = 30;       // เก็บ alert ล่าสุดสูงสุด
@@ -22944,8 +22960,8 @@ function _sonarEqnRender(panel) {
         }
 
         // ── § 2 OPUS DEEP ANALYSIS ────────────────────────
-        // Mock pipeline — จำลอง Claude Opus call (2s loading + canned narrative)
-        // ใน v14.0.4 จะแทนด้วย real call → Cloudflare Worker → Claude API
+        // Mock pipeline — canned narrative จาก state (2s loading)
+        // v14.0.5+ จะแทนด้วย real call → Cloudflare Worker → Workers AI (Llama 3.3 70B)
         function _opusNarrativeFromState() {
             const t = state.taxonomy;
             const total = t.kinetic + t.asymmetric + t.cyber + t.environmental + t.hybrid;
@@ -23015,10 +23031,10 @@ function _sonarEqnRender(panel) {
                 <div class="mda-ai-opus-loading">
                     <div class="mda-ai-spinner"></div>
                     <div>${wantReal
-                        ? 'กำลังเรียก Claude Opus ผ่าน Worker …'
+                        ? 'กำลังเรียก Workers AI (Llama 3.3) ผ่าน Worker …'
                         : 'กำลังประมวลผล mock pipeline …'}</div>
                     <div style="font-size:9px;color:#94a3b8;letter-spacing:0.10em;">
-                        ${wantReal ? 'live · anthropic /v1/messages' : 'offline · narrative-from-state'}
+                        ${wantReal ? 'live · cloudflare workers ai' : 'offline · narrative-from-state'}
                     </div>
                 </div>`;
             if (opusTokens) opusTokens.textContent = '…';
@@ -23028,7 +23044,7 @@ function _sonarEqnRender(panel) {
 
             // upstream result holders
             let narrative   = null;
-            let modelLabel  = 'claude-opus-mock';
+            let modelLabel  = 'llama-3.3-mock';
             let serverLat   = null;
             let usage       = null;
             let errMsg      = null;
@@ -23050,7 +23066,7 @@ function _sonarEqnRender(panel) {
                         console.warn('[MDA.AI] Worker returned error', r.status, j);
                     } else if (j && j.text) {
                         narrative  = j.text;
-                        modelLabel = j.model || 'claude-opus';
+                        modelLabel = j.model || 'llama-3.3-70b';
                         serverLat  = (typeof j.latency_ms === 'number') ? j.latency_ms : null;
                         usage      = j.usage || null;
                         source     = 'real';
@@ -23218,7 +23234,7 @@ function _sonarEqnRender(panel) {
             renderForceRecommendations();
             if (opusNarr) {
                 opusNarr.classList.add('empty');
-                opusNarr.textContent = '— กดปุ่ม "✨ Run Opus Analysis" เพื่อให้ AI วิเคราะห์เชิงลึก —\n(mock pipeline · จะเชื่อมต่อ Claude API ผ่าน Cloudflare Worker ใน v14.0.4)';
+                opusNarr.textContent = '— กดปุ่ม "✨ Run Opus Analysis" เพื่อให้ AI วิเคราะห์เชิงลึก —\n(mock pipeline · ตั้งค่า ⚙ Settings เพื่อเชื่อมต่อ Workers AI · Llama 3.3 70B)';
             }
             if (opusTokens)  opusTokens.textContent  = '--';
             if (opusLatency) opusLatency.textContent = '--ms';
@@ -23254,7 +23270,7 @@ function _sonarEqnRender(panel) {
             }
             if (modeState) {
                 modeState.textContent = (state.mode === 'llm')
-                    ? (MDA.cfg.aiProxyUrl ? 'online · Claude Opus' : 'llm · proxy=null (mock)')
+                    ? (MDA.cfg.aiProxyUrl ? 'online · Workers AI' : 'llm · proxy=null (mock)')
                     : 'offline · rules-only';
             }
             _refreshProxyInfo();
@@ -23302,7 +23318,7 @@ function _sonarEqnRender(panel) {
         function openSettings() {
             const cur = MDA.cfg.aiProxyUrl || '';
             const msg = [
-                'Cloudflare Worker URL สำหรับ Claude Opus relay',
+                'Cloudflare Worker URL สำหรับ Workers AI (Llama 3.3) relay',
                 '',
                 'รูปแบบ: https://shield-ai-proxy.<your-subdomain>.workers.dev',
                 '(ปล่อยว่างเพื่อล้างค่า · ใช้ mock mode)',
@@ -23413,7 +23429,7 @@ function _sonarEqnRender(panel) {
             renderTaxonomy();
             renderRuleSynthesis();
             renderForceRecommendations();
-            console.log('[MDA.AI] v14.0.4 initialized · classifier active · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
+            console.log('[MDA.AI] v14.0.5 initialized · classifier active · provider=cloudflare-workers-ai · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
         }
 
         // expose

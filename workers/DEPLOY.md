@@ -1,10 +1,12 @@
 # THE SHIELD 2.0 · AI Proxy — Deploy Guide
 
-Cloudflare Workers · v14.0.4
+Cloudflare Workers AI · v14.0.5
 
-ตัวกลาง (relay) ระหว่าง UDC Simulator (client) → Claude Opus API
-เก็บ `ANTHROPIC_API_KEY` เป็น Worker Secret เท่านั้น — ป้องกัน key
-หลุดสู่ public repo
+ตัวกลาง (relay) ระหว่าง UDC Simulator (client) → Cloudflare Workers AI
+(Llama 3.3 70B / DeepSeek R1 / Qwen 2.5 — เลือกได้จาก client)
+
+**ฟรี 100%** — ไม่ต้อง API key ภายนอก, ใช้ Cloudflare account binding
+(โควต้าฟรี: 10,000 neurons/วัน · ≈ หลายร้อย analysis/วัน)
 
 ---
 
@@ -25,34 +27,7 @@ wrangler login
 
 ---
 
-## 2) ตั้ง API Key (Worker Secret)
-
-```bash
-cd workers
-wrangler secret put ANTHROPIC_API_KEY
-```
-
-เมื่อ wrangler ขอ value ให้วาง API key จาก https://console.anthropic.com
-
-หมายเหตุ:
-- Key ไม่ปรากฏใน `wrangler.toml`, ไม่ปรากฏใน git
-- ใช้ `wrangler secret list` ตรวจสอบว่า secret ถูก set แล้ว
-- หากต้องการลบ: `wrangler secret delete ANTHROPIC_API_KEY`
-
----
-
-## 3) (ทางเลือก) ปรับ `wrangler.toml`
-
-ดู `workers/wrangler.toml`:
-
-- `name`        — เปลี่ยนได้ตามต้องการ (default: `shield-ai-proxy`)
-- `account_id`  — ปกติ wrangler หาเองได้; uncomment ถ้ามีหลายบัญชี
-- `routes`      — uncomment ถ้าจะใช้ Custom Domain แทน `*.workers.dev`
-- `[vars] DEFAULT_MODEL` — เปลี่ยนรุ่น Opus ได้
-
----
-
-## 4) Deploy
+## 2) Deploy (ไม่ต้องตั้ง secret ใดๆ)
 
 ```bash
 cd workers
@@ -62,17 +37,37 @@ wrangler deploy
 ผลลัพธ์ตัวอย่าง:
 
 ```
- Total Upload: 7.92 KiB / gzip: 2.43 KiB
+ Your Worker has access to the following bindings:
+ - AI:
+   - Name: AI
+ Total Upload: 8.21 KiB / gzip: 2.51 KiB
  Uploaded shield-ai-proxy (1.42 sec)
  Published shield-ai-proxy (0.30 sec)
    https://shield-ai-proxy.<your-subdomain>.workers.dev
 ```
 
+ครั้งแรกอาจถามว่าจะสร้าง Worker ใหม่ไหม → ตอบ **Yes**
+
 **คัดลอก URL** ที่ได้ — จะใช้ตั้งใน UDC Simulator
+
+> 💡 **ไม่มี secret** — Workers AI binding ใช้ Cloudflare account context อัตโนมัติ
+> ไม่ต้องสมัครบัญชี Anthropic / Google / Groq ใดๆ
 
 ---
 
-## 5) ตรวจสอบ Worker ทำงาน
+## 3) (ทางเลือก) ปรับ `wrangler.toml`
+
+ดู `workers/wrangler.toml`:
+
+- `name`         — เปลี่ยนได้ตามต้องการ (default: `shield-ai-proxy`)
+- `account_id`   — ปกติ wrangler หาเองได้; uncomment ถ้ามีหลายบัญชี
+- `routes`       — uncomment ถ้าจะใช้ Custom Domain แทน `*.workers.dev`
+- `[vars] DEFAULT_MODEL` — เปลี่ยน model ฟรีตัวอื่นใน Workers AI ได้
+- `[ai] binding = "AI"`  — **ห้ามลบ** — เป็น Workers AI binding
+
+---
+
+## 4) ตรวจสอบ Worker ทำงาน
 
 ### Health check (GET)
 
@@ -86,8 +81,17 @@ curl https://shield-ai-proxy.<your-subdomain>.workers.dev/health
 {
   "ok": true,
   "service": "shield-ai-proxy",
-  "version": "14.0.4",
-  "model_default": "claude-opus-4-20250514"
+  "version": "14.0.5",
+  "provider": "cloudflare-workers-ai",
+  "model_default": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+  "models_allowed": [
+    "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+    "@cf/meta/llama-3.1-70b-instruct",
+    "@cf/meta/llama-3.1-8b-instruct",
+    "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b",
+    "@cf/qwen/qwen2.5-coder-32b-instruct",
+    "@cf/mistralai/mistral-small-3.1-24b-instruct"
+  ]
 }
 ```
 
@@ -105,32 +109,54 @@ curl -X POST https://shield-ai-proxy.<your-subdomain>.workers.dev \
 ```
 
 ควรได้ JSON `{ text, model, usage, latency_ms, version }`
+**Latency ปกติ:** 1-4 วินาที (เร็วกว่า Claude Opus มาก)
 
 ---
 
-## 6) ตั้งค่าใน UDC Simulator
+## 5) ตั้งค่าใน UDC Simulator
 
 1. เปิด `UDC_Simulator_14.html`
 2. คลิกปุ่ม 🧠 AI ใน header → modal เปิด
-3. ใน toolbar คลิก ⚙ (เกียร์)
-4. วาง URL ของ Worker ที่ได้จากขั้นตอน 4
-5. คลิก mode pill `OPUS` → จะเปลี่ยนเป็น `online · Claude Opus`
-6. คลิก `✨ Run Opus Analysis` → จะเรียก Claude จริงผ่าน Worker
+3. ใน toolbar คลิก ⚙ Settings
+4. วาง URL ของ Worker ที่ได้จากขั้นตอน 2
+5. คลิก mode pill `OPUS` → จะเปลี่ยนเป็น `online · Workers AI`
+6. คลิก `✨ Run Opus Analysis` → จะเรียก Llama 3.3 จริงผ่าน Worker
 
 URL จะถูก save ใน `localStorage` (key: `shield_ai_proxy_url`)
 ครั้งต่อไปเปิด simulator จะดึงค่ามาใช้อัตโนมัติ
 
 ---
 
-## 7) Endpoints
+## 6) Endpoints
 
 | Method | Path     | Body                                | Response |
 |--------|----------|-------------------------------------|----------|
-| GET    | `/health`| —                                   | `{ ok, version, model_default }` |
+| GET    | `/health`| —                                   | `{ ok, version, model_default, models_allowed }` |
 | POST   | `/`      | `{ taxonomy, alerts, model? }`      | `{ text, model, usage, latency_ms }` |
 | OPTIONS| `/*`     | —                                   | CORS preflight (204) |
 
 Rate limit: 30 req/min ต่อ IP (in-memory, per-isolate)
+
+---
+
+## 7) เลือก Model อื่น (ทางเลือก)
+
+ส่ง `model` ใน POST body — ต้องอยู่ใน allow-list:
+
+```bash
+curl -X POST https://shield-ai-proxy.<your-subdomain>.workers.dev \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b",
+    "taxonomy": {"kinetic":2,"asymmetric":0,"cyber":1,"environmental":0,"hybrid":0},
+    "alerts": []
+  }'
+```
+
+**Model ที่แนะนำตามงาน:**
+- `llama-3.3-70b-instruct-fp8-fast` ⭐ default — ดีสุดสำหรับ Thai + เร็ว
+- `deepseek-r1-distill-qwen-32b` — มี chain-of-thought reasoning (ช้ากว่าแต่ตอบลึก)
+- `llama-3.1-8b-instruct` — เร็วสุด (สำหรับ live demo) คุณภาพต่ำลงบ้าง
 
 ---
 
@@ -156,9 +182,21 @@ wrangler tail
 
 ---
 
-## 10) Security Notes
+## 10) ตรวจสอบ Neuron Quota
 
-- API key อยู่ใน Worker Secret — **ห้าม** commit key สู่ git
+ที่ Cloudflare Dashboard → Workers AI → Analytics
+- Free plan: **10,000 neurons/วัน**
+- 1 analysis ≈ 50-200 neurons (ขึ้นกับ model + token count)
+- ≈ 50-200 analysis/วัน บน free tier
+
+ถ้าโควต้าหมด: Worker จะตอบ 500 พร้อม error message
+จากนั้นรอ reset ตอนเที่ยงคืน UTC (07:00 ICT)
+
+---
+
+## 11) Security Notes
+
+- **ไม่มี API key** ต้องเก็บ — Workers AI ใช้ account binding
 - ตอนนี้ `Access-Control-Allow-Origin: *` — ใครเรียก endpoint ก็ได้
   ถ้าต้องการ harden ให้แก้ใน `ai-proxy.js`:
   ```js
@@ -167,3 +205,13 @@ wrangler tail
   ```
 - Rate limit เป็น in-memory (per-isolate) — เหมาะ demo
   สำหรับ production แนะนำใช้ Cloudflare Durable Objects หรือ KV
+
+---
+
+## 12) ถ้าจะลบ Worker
+
+```bash
+wrangler delete
+```
+
+(ไม่มี secret ที่ต้องลบเพราะ Workers AI ไม่ใช้ secret)

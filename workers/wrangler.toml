@@ -1,9 +1,9 @@
 # ════════════════════════════════════════════════════════════════════
-# THE SHIELD 2.0 — UDC Simulator v14.0.4
-# Cloudflare Workers config (ai-proxy)
+# THE SHIELD 2.0 — UDC Simulator v14.0.5
+# Cloudflare Workers config (ai-proxy) — Workers AI binding
 # ──────────────────────────────────────────────────────────────────────
-# Edit name / account_id ให้ตรงกับบัญชี Cloudflare ของคุณก่อน deploy
-# Secrets ไม่อยู่ในไฟล์นี้ — set ผ่าน `wrangler secret put ANTHROPIC_API_KEY`
+# ไม่ต้องใช้ secret ใดๆ — Workers AI ใช้ account-level binding อัตโนมัติ
+# ฟรี 10,000 neurons/วัน (Cloudflare Free plan)
 # ════════════════════════════════════════════════════════════════════
 
 name = "shield-ai-proxy"
@@ -17,6 +17,11 @@ compatibility_date = "2025-05-01"
 #   { pattern = "ai-proxy.example.com/*", custom_domain = true }
 # ]
 
-# ตัวแปรไม่ลับ — ปรับค่าได้ตรงนี้ (API key ห้ามอยู่ที่นี่)
+# Workers AI binding — ทำให้ env.AI พร้อมใช้งานใน worker
+# ดู: https://developers.cloudflare.com/workers-ai/configuration/bindings/
+[ai]
+binding = "AI"
+
+# ตัวแปรไม่ลับ — ปรับค่าได้ตรงนี้
 [vars]
-DEFAULT_MODEL = "claude-opus-4-20250514"
+DEFAULT_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
