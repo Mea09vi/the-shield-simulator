@@ -22562,10 +22562,216 @@ function _sonarEqnRender(panel) {
             btnClear   = $('mda-ai-clear');
         }
 
-        // ── threat seeds ─────────────────────────────────────
-        // ตัวอย่าง mock alerts — มาจาก rule-engine จำลอง
-        // ในเฟส v14.0.3+ จะแทนด้วย real Bi-LSTM + AISViz
-        const SEEDS = [
+        /* ════════════════════════════════════════════════════════════
+           v14.0.3 · A2 THREAT CLASSIFIER (real rule engine)
+           ──────────────────────────────────────────────────────────────
+           แทนที่ random SEEDS ด้วย rule engine ที่อ่าน state จริงจากระบบ:
+             • MDA.AIS / window.aisShips      → ships array
+             • MDA.AISViz / window.MDA_AISVIZ → anomaly count
+             • MDA.weather / window.seaState  → WMO sea state 0-9
+             • MDA.cyber / window.gnssJitter  → GNSS jitter 0-1
+           Rules (R1-R6):
+             R1 KINETIC      — unknown ship < MEZ_NM from UDC
+             R2 ASYMMETRIC   — AIS gap >= AIS_GAP_MIN
+             R3 ENVIRONMENT  — sea state >= SEA_STATE_HIGH
+             R4 CYBER-PHYS   — GNSS jitter >= GNSS_JITTER_TH
+             R5 ASYMMETRIC   — AISViz anomaly count > 0
+             R6 HYBRID       — co-incident 3+ vectors OR (asym + cyber)
+           confidence ∈ [0.40, 0.99]; severity derived from confidence
+           ════════════════════════════════════════════════════════════ */
+        const classifier = {
+            cfg: {
+                UDC_LAT: 12.692,     // Sattahip UDC center
+                UDC_LON: 100.892,
+                MEZ_NM: 1.5,         // Maritime Exclusion Zone (~ UNCLOS safety zone)
+                AIS_GAP_MIN: 10,     // นาที — เกณฑ์ asymmetric gap
+                SEA_STATE_HIGH: 3,   // WMO scale ≥ 3 = ROV degraded
+                GNSS_JITTER_TH: 0.5  // 0..1 normalized
+            },
+
+            // ── data gathering (defensive, ทุก source ใช้ try/catch) ───
+            _gatherShips() {
+                const ships = [];
+                try {
+                    // ลองหลาย source ตามลำดับ
+                    const srcs = [
+                        window.MDA && window.MDA.AIS && window.MDA.AIS.state && window.MDA.AIS.state.ships,
+                        window.aisShips,
+                        window.MDA_AIS && window.MDA_AIS.ships,
+                        window.shipsRegistry
+                    ];
+                    for (const s of srcs) {
+                        if (!s) continue;
+                        const arr = Array.isArray(s) ? s : (s.values ? [...s.values()] : Object.values(s));
+                        for (const sh of arr) {
+                            if (!sh || sh.lat == null || sh.lon == null) continue;
+                            ships.push({
+                                mmsi: sh.mmsi || sh.id || '?',
+                                lat: +sh.lat, lon: +sh.lon,
+                                speed: +(sh.speed || sh.sog || 0),
+                                course: +(sh.course || sh.cog || 0),
+                                flag: sh.flag || sh.country || null,
+                                lastSeenMs: +(sh.lastSeenMs || sh.ts || Date.now())
+                            });
+                        }
+                        if (ships.length) break;
+                    }
+                } catch (_) {}
+                return ships;
+            },
+            _gatherAisViz() {
+                try {
+                    const v = window.MDA && window.MDA.AISViz;
+                    if (v && typeof v.anomalyCount === 'function') return v.anomalyCount();
+                    if (v && v.state && Array.isArray(v.state.anomalies)) return v.state.anomalies.length;
+                    if (window.aisVizAnomalies && Array.isArray(window.aisVizAnomalies)) return window.aisVizAnomalies.length;
+                } catch (_) {}
+                return 0;
+            },
+            _gatherSeaState() {
+                try {
+                    if (window.MDA && window.MDA.weather && window.MDA.weather.seaState != null) return +window.MDA.weather.seaState;
+                    if (window.seaState != null) return +window.seaState;
+                    if (window.MDA_OCEANO && window.MDA_OCEANO.seaState != null) return +window.MDA_OCEANO.seaState;
+                } catch (_) {}
+                return null;
+            },
+            _gatherGnss() {
+                try {
+                    if (window.MDA && window.MDA.cyber && window.MDA.cyber.gnssJitter != null) return +window.MDA.cyber.gnssJitter;
+                    if (window.gnssJitter != null) return +window.gnssJitter;
+                } catch (_) {}
+                return null;
+            },
+            gather() {
+                return {
+                    now: Date.now(),
+                    ships: this._gatherShips(),
+                    aisViz: this._gatherAisViz(),
+                    seaState: this._gatherSeaState(),
+                    gnssJitter: this._gatherGnss()
+                };
+            },
+
+            // ── helpers ──────────────────────────────────────────────
+            _distNm(lat, lon) {
+                // haversine → NM
+                const R = 3440.065;  // Earth radius in nautical miles
+                const toRad = x => x * Math.PI / 180;
+                const dLat = toRad(lat - this.cfg.UDC_LAT);
+                const dLon = toRad(lon - this.cfg.UDC_LON);
+                const a = Math.sin(dLat/2)**2 +
+                          Math.cos(toRad(this.cfg.UDC_LAT)) * Math.cos(toRad(lat)) *
+                          Math.sin(dLon/2)**2;
+                return 2 * R * Math.asin(Math.min(1, Math.sqrt(a)));
+            },
+            _sevFromConf(c) {
+                return c >= 0.80 ? 'crit' : c >= 0.60 ? 'warn' : 'info';
+            },
+
+            // ── evaluate rules → alerts[] ────────────────────────────
+            evaluate(snap) {
+                const out = [];
+                const cfg = this.cfg;
+
+                // R1 + R2 — ship-level rules
+                for (const s of snap.ships) {
+                    const d = this._distNm(s.lat, s.lon);
+                    // R1: KINETIC — unknown vessel inside MEZ
+                    if (d <= cfg.MEZ_NM && (!s.flag || /unknown|n\/a|\?/i.test(s.flag))) {
+                        const conf = Math.max(0.55, Math.min(0.95,
+                            0.60 + (1 - d / cfg.MEZ_NM) * 0.30));
+                        out.push({
+                            sev: this._sevFromConf(conf),
+                            tag: 'KINETIC', tax: 'kinetic',
+                            msg: `เรือไม่ระบุสัญชาติ MMSI ${s.mmsi} ระยะ ${d.toFixed(2)} NM · COG ${Math.round(s.course)}° · SOG ${s.speed.toFixed(1)} kn`,
+                            conf
+                        });
+                    }
+                    // R2: ASYMMETRIC — AIS gap
+                    const gapMin = (snap.now - s.lastSeenMs) / 60000;
+                    if (gapMin >= cfg.AIS_GAP_MIN) {
+                        const conf = Math.max(0.50, Math.min(0.95,
+                            0.55 + Math.min(gapMin / 60, 1) * 0.35));
+                        out.push({
+                            sev: this._sevFromConf(conf),
+                            tag: 'ASYMMETRIC', tax: 'asymmetric',
+                            msg: `AIS gap ${gapMin.toFixed(0)} นาที · MMSI ${s.mmsi} · last pos ${s.lat.toFixed(3)}/${s.lon.toFixed(3)}`,
+                            conf
+                        });
+                    }
+                }
+
+                // R3: ENVIRONMENT — sea state
+                if (snap.seaState != null && snap.seaState >= cfg.SEA_STATE_HIGH) {
+                    const conf = Math.max(0.70, Math.min(0.98, 0.75 + (snap.seaState - cfg.SEA_STATE_HIGH) * 0.05));
+                    out.push({
+                        sev: snap.seaState >= 5 ? 'warn' : 'info',
+                        tag: 'ENVIRONMENT', tax: 'environmental',
+                        msg: `Sea state ${snap.seaState} (WMO) · ROV/sonar degraded · TL penalty +${(snap.seaState * 0.6).toFixed(1)} dB`,
+                        conf
+                    });
+                }
+
+                // R4: CYBER-PHYS — GNSS jitter
+                if (snap.gnssJitter != null && snap.gnssJitter >= cfg.GNSS_JITTER_TH) {
+                    const conf = Math.max(0.55, Math.min(0.95, 0.55 + snap.gnssJitter * 0.35));
+                    out.push({
+                        sev: this._sevFromConf(conf),
+                        tag: 'CYBER-PHYS', tax: 'cyber',
+                        msg: `GNSS pseudo-range jitter ${(snap.gnssJitter * 100).toFixed(0)}% · possible spoofing signature`,
+                        conf
+                    });
+                }
+
+                // R5: ASYMMETRIC — AISViz anomaly
+                if (snap.aisViz > 0) {
+                    const conf = Math.max(0.60, Math.min(0.95, 0.65 + Math.min(snap.aisViz / 10, 1) * 0.25));
+                    out.push({
+                        sev: this._sevFromConf(conf),
+                        tag: 'ASYMMETRIC', tax: 'asymmetric',
+                        msg: `AISViz anomaly: ${snap.aisViz} เรือมี trajectory ผิดปกติ (MMSI swap / formation drift)`,
+                        conf
+                    });
+                }
+
+                // R6: HYBRID — co-incident vectors
+                const taxesPresent = new Set(out.map(a => a.tax));
+                const hasAsym = taxesPresent.has('asymmetric');
+                const hasCyber = taxesPresent.has('cyber');
+                const hasKin = taxesPresent.has('kinetic');
+                if (taxesPresent.size >= 3 || (hasAsym && hasCyber) || (hasKin && hasCyber)) {
+                    const vectors = [...taxesPresent].join(' + ');
+                    const conf = Math.max(0.65, Math.min(0.95, 0.70 + (taxesPresent.size - 1) * 0.06));
+                    out.push({
+                        sev: 'crit',
+                        tag: 'HYBRID', tax: 'hybrid',
+                        msg: `Co-incident vectors: ${vectors} → Hybrid grey-zone pattern (multi-domain)`,
+                        conf
+                    });
+                }
+
+                // return ordered, deduped (one per taxonomy per tick to avoid spam)
+                const seen = new Set();
+                return out
+                    .sort((a, b) => b.conf - a.conf)
+                    .filter(a => seen.has(a.tax) ? false : (seen.add(a.tax), true));
+            },
+
+            tick() {
+                try {
+                    const snap = this.gather();
+                    return this.evaluate(snap);
+                } catch (e) {
+                    console.warn('[MDA.AI.classifier] tick error, falling back to demo seeds', e);
+                    return [];
+                }
+            }
+        };
+
+        // ── DEMO SEEDS (fallback when no real data — e.g. cold start, demo) ─
+        // ใช้เมื่อ classifier.tick() return [] (ไม่มี ships / sensors)
+        const DEMO_SEEDS = [
             { sev:'warn', tag:'KINETIC',       tax:'kinetic',
               msg:'พบเรือไม่ระบุสัญชาติเข้าใกล้ MEZ 1.4 NM · COG 270° · SOG 9.2 kn', conf:0.71 },
             { sev:'crit', tag:'ASYMMETRIC',    tax:'asymmetric',
@@ -22613,14 +22819,28 @@ function _sonarEqnRender(panel) {
             if (lastUpdate) lastUpdate.textContent = stamp.ts;
         }
 
+        // ── tick scheduler ──────────────────────────────────────
+        // v14.0.3: ลอง classifier ก่อน → ถ้าได้ alert จริงใช้เลย
+        //          ถ้าไม่มี data จริง → fallback ไป DEMO_SEEDS (demo mode)
         function _mockTick() {
             if (!state.open) return;
             if (state.mode !== 'rules') return;
-            const seed = SEEDS[Math.floor(Math.random() * SEEDS.length)];
-            // jitter confidence ±0.05
+
+            // step 1 — try real classifier
+            const real = classifier.tick();
+            if (real && real.length > 0) {
+                // กระจาย alert — ส่งทีละครั้งต่อ tick (round-robin top-conf)
+                const idx = (state._tickIdx = (state._tickIdx || 0) % real.length);
+                state._tickIdx++;
+                pushAlert(real[idx]);
+                return;
+            }
+
+            // step 2 — fallback to DEMO_SEEDS (cold start / demo mode)
+            const seed = DEMO_SEEDS[Math.floor(Math.random() * DEMO_SEEDS.length)];
             const conf = Math.max(0.40, Math.min(0.99,
                 seed.conf + (Math.random() - 0.5) * 0.10));
-            pushAlert(Object.assign({}, seed, { conf }));
+            pushAlert(Object.assign({}, seed, { conf, _demo: true }));
         }
 
         // ── render ───────────────────────────────────────────
@@ -23070,7 +23290,7 @@ function _sonarEqnRender(panel) {
             renderTaxonomy();
             renderRuleSynthesis();
             renderForceRecommendations();
-            console.log('[MDA.AI] v14.0.2 initialized · modal mode · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
+            console.log('[MDA.AI] v14.0.3 initialized · classifier active · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
         }
 
         // expose
@@ -23085,6 +23305,7 @@ function _sonarEqnRender(panel) {
             generateBriefing: generateOpusAnalysis,  // alias (back-compat)
             refreshRules,
             clearAll,
+            classifier,                              // v14.0.3 — expose for debug/test
             state
         };
     })();
