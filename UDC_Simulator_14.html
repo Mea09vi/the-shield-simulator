@@ -8,6 +8,12 @@
                 + AI Domain ชั้น meta-intelligence สำหรับ situational reasoning (Decision Support Only)
 
   v14 changelog:
+    · [v14.0.7] AI · Default model switch (gemini-2.0-flash → gemini-2.5-flash)
+        - Google ย้าย gemini-2.0-flash ไป paid tier ปี 2025 (free_tier_requests = 0)
+          → default LLM ของ simulator + Worker เปลี่ยนเป็น 2.5-flash ที่ยังฟรี
+        - Dropdown UI: 2.5-flash ขึ้นเป็นตัวแรก (default) · 2.0-flash ติด ⚠ paid
+        - Worker allow-list ถอด gemini-1.5-* ออก (Google deprecate จาก v1beta)
+        - Smoke-test ยืนยัน: 2.5-flash latency ~8s · in=622/out=60/total=2118
     · [v14.0.6] AI · Multi-provider LLM router + ขยาย UI (Workers AI + Google Gemini)
         - Modal: ขยาย 880→1280px · grid columns 1fr·1.6fr·1fr (narrative กว้างขึ้น +60%)
           alerts max-height 220→320px · force-list max-height 380→480px
@@ -3728,9 +3734,9 @@
         <span style="color:#94a3b8;margin-left:8px;">MODEL:</span>
         <select id="mda-ai-model-select" class="mda-ai-model-select" title="เลือก LLM model (Workers AI / Gemini) · บันทึกใน localStorage">
             <optgroup label="── Google Gemini ──">
-                <option value="gemini-2.0-flash">💎 Gemini 2.0 Flash (free · 15 RPM)</option>
-                <option value="gemini-2.5-flash">💠 Gemini 2.5 Flash (balanced)</option>
+                <option value="gemini-2.5-flash">💠 Gemini 2.5 Flash (default · free ~10 RPM)</option>
                 <option value="gemini-2.5-pro">🔮 Gemini 2.5 Pro (best · limited)</option>
+                <option value="gemini-2.0-flash">💎 Gemini 2.0 Flash (⚠ ต้องผูก billing)</option>
             </optgroup>
             <optgroup label="── Cloudflare Workers AI ──">
                 <option value="@cf/meta/llama-3.3-70b-instruct-fp8-fast">⚡ Llama 3.3 70B (fast+smart)</option>
@@ -22581,7 +22587,7 @@ function _sonarEqnRender(panel) {
     MDA.cfg.aiMockMode  = true;     // true = ใช้ rule-engine + canned briefing
     MDA.cfg.aiTickMs    = 18_000;   // mock alert tick (~18s)
     MDA.cfg.aiMaxAlerts = 30;       // เก็บ alert ล่าสุดสูงสุด
-    MDA.cfg.aiModel     = 'gemini-2.0-flash';  // v14.0.6 — default LLM (Gemini 2.0 Flash · 15 RPM free)
+    MDA.cfg.aiModel     = 'gemini-2.5-flash';  // v14.0.7 — default LLM (2.0 ถูกย้ายไป paid · 2.5 ยังฟรี)
 
     MDA.AI = (function () {
         // ── state ───────────────────────────────────────────
@@ -23085,7 +23091,7 @@ function _sonarEqnRender(panel) {
 
             const proxy = MDA.cfg.aiProxyUrl;
             const wantReal = (state.mode === 'llm') && !!proxy && !MDA.cfg.aiMockMode;
-            const selectedModel = MDA.cfg.aiModel || 'gemini-2.0-flash';
+            const selectedModel = MDA.cfg.aiModel || 'gemini-2.5-flash';
             const provider = _providerOf(selectedModel);
             const providerLabel = provider === 'google-gemini'
                 ? 'Google Gemini'
@@ -23558,7 +23564,7 @@ function _sonarEqnRender(panel) {
             renderTaxonomy();
             renderRuleSynthesis();
             renderForceRecommendations();
-            console.log('[MDA.AI] v14.0.6 initialized · classifier active · multi-provider (Workers AI + Gemini) · model=' + MDA.cfg.aiModel + ' · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
+            console.log('[MDA.AI] v14.0.7 initialized · classifier active · multi-provider (Workers AI + Gemini) · default=2.5-flash · model=' + MDA.cfg.aiModel + ' · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
         }
 
         // expose

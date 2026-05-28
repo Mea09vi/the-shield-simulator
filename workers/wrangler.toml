@@ -1,5 +1,5 @@
 # ════════════════════════════════════════════════════════════════════
-# THE SHIELD 2.0 — UDC Simulator v14.0.6
+# THE SHIELD 2.0 — UDC Simulator v14.0.7
 # Cloudflare Workers config (ai-proxy) — Multi-provider:
 #   • Workers AI binding (Llama 3.3, DeepSeek, etc. · ฟรี neuron quota)
 #   • Google Gemini (REST · ต้องตั้ง GEMINI_API_KEY เป็น secret)
@@ -8,6 +8,9 @@
 #   1. wrangler login
 #   2. (optional · ถ้าจะใช้ Gemini)  wrangler secret put GEMINI_API_KEY
 #   3. wrangler deploy
+#
+# v14.0.7 note: default model = gemini-2.5-flash (Google ย้าย 2.0-flash
+#   ไป paid tier ปี 2025 · 1.5-* ถูก deprecate จาก v1beta)
 # ════════════════════════════════════════════════════════════════════
 
 name = "shield-ai-proxy"
@@ -28,7 +31,7 @@ binding = "AI"
 
 # ตัวแปรไม่ลับ — ปรับค่าได้ตรงนี้
 [vars]
-DEFAULT_MODEL = "gemini-2.0-flash"
+DEFAULT_MODEL = "gemini-2.5-flash"
 
 # ─── Secrets (DO NOT commit ค่าจริง — ใช้ wrangler secret put) ───────
 # GEMINI_API_KEY  → จาก https://aistudio.google.com/apikey

@@ -1,13 +1,14 @@
 # THE SHIELD 2.0 · AI Proxy — Deploy Guide
 
-Multi-provider AI relay · v14.0.6
+Multi-provider AI relay · v14.0.7
 
 ตัวกลาง (relay) ระหว่าง UDC Simulator (client) → LLM provider 2 ราย:
 
-| Provider              | Models                                                    | Cost                          |
-|-----------------------|-----------------------------------------------------------|-------------------------------|
-| Cloudflare Workers AI | `@cf/meta/llama-3.3-70b-fp8`, DeepSeek R1, Qwen 2.5 ฯลฯ   | ฟรี · 10,000 neurons/วัน      |
-| Google Gemini         | `gemini-2.0-flash` (default), `gemini-2.5-flash/pro`      | ฟรี · 15 RPM (Flash)          |
+| Provider              | Models                                                    | Cost                                |
+|-----------------------|-----------------------------------------------------------|-------------------------------------|
+| Cloudflare Workers AI | `@cf/meta/llama-3.3-70b-fp8`, DeepSeek R1, Qwen 2.5 ฯลฯ   | ฟรี · 10,000 neurons/วัน            |
+| Google Gemini         | `gemini-2.5-flash` (default), `gemini-2.5-pro`            | ฟรี ~10 RPM (2.5-flash)             |
+| Google Gemini (paid)  | `gemini-2.0-flash`                                        | ⚠ ต้องผูก billing (free=0 ปี 2025) |
 
 Worker จะเลือก provider อัตโนมัติจาก model id ที่ client ส่งมา:
 - prefix `@cf/`     → Workers AI (ใช้ binding · ไม่ต้องมี API key)
@@ -34,7 +35,7 @@ wrangler login
 
 ## 2) (ทางเลือก) ตั้ง Gemini API key
 
-ถ้าจะใช้ Gemini (default ของ v14.0.6) ต้องเอา API key มาก่อน:
+ถ้าจะใช้ Gemini (default ของ v14.0.7) ต้องเอา API key มาก่อน:
 
 1. ไปที่ <https://aistudio.google.com/apikey>
 2. ล็อกอินด้วย Google account
@@ -45,8 +46,12 @@ wrangler login
 ```bash
 cd workers
 wrangler secret put GEMINI_API_KEY
-# วาง key ตอนถาม → กด Enter
+# กด Enter หลังพิมพ์คำสั่ง → รอ prompt "Enter a secret value:" → ค่อยวาง key
 ```
+
+> ⚠ **ระวัง**: อย่าวาง key ต่อท้าย `wrangler secret put GEMINI_API_KEY` ในบรรทัดเดียว
+> เพราะค่า key จะกลายเป็นส่วนหนึ่งของ **ชื่อ** secret (ไม่ใช่ค่า) → Worker หาไม่เจอ
+> และ key จะรั่วผ่าน `wrangler secret list` (ต้อง revoke + สร้างใหม่ทันที)
 
 ตรวจสอบ:
 
@@ -118,7 +123,7 @@ curl https://shield-ai-proxy.<your-subdomain>.workers.dev/health
 {
   "ok": true,
   "service": "shield-ai-proxy",
-  "version": "14.0.6",
+  "version": "14.0.7",
   "providers": {
     "cloudflare-workers-ai": {
       "configured": true,
@@ -126,10 +131,10 @@ curl https://shield-ai-proxy.<your-subdomain>.workers.dev/health
     },
     "google-gemini": {
       "configured": true,
-      "models": ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-pro", "..."]
+      "models": ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash"]
     }
   },
-  "model_default": "gemini-2.0-flash",
+  "model_default": "gemini-2.5-flash",
   "models_allowed": ["..."]
 }
 ```
@@ -142,7 +147,7 @@ curl https://shield-ai-proxy.<your-subdomain>.workers.dev/health
 curl -X POST https://shield-ai-proxy.<your-subdomain>.workers.dev \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "gemini-2.0-flash",
+    "model": "gemini-2.5-flash",
     "taxonomy": {"kinetic":1,"asymmetric":1,"cyber":0,"environmental":0,"hybrid":0},
     "alerts": [
       {"severity":"warn","tag":"KINETIC","msg":"test contact","conf":0.7,"ts":"00:00:00"}
@@ -165,9 +170,10 @@ curl -X POST https://shield-ai-proxy.<your-subdomain>.workers.dev \
 ทั้งสอง endpoint ตอบ JSON `{ text, model, provider, usage, latency_ms, version }`
 
 **Latency ปกติ:**
-- Gemini 2.0 Flash: ~1-2 วินาที
-- Workers AI Llama 3.3: ~2-4 วินาที
+- Gemini 2.5 Flash: ~6-9 วินาที (รวม thinking tokens)
+- Workers AI Llama 3.3: ~2-10 วินาที
 - Gemini 2.5 Pro: ~3-6 วินาที
+- Gemini 2.0 Flash: ~1-2 วินาที (ต้องผูก billing)
 
 ---
 
@@ -206,9 +212,10 @@ Rate limit: 30 req/min ต่อ IP (in-memory, per-isolate)
 ส่ง `model` ใน POST body — ต้องอยู่ใน allow-list ของ Worker:
 
 **Google Gemini** (ต้องตั้ง `GEMINI_API_KEY`)
-- `gemini-2.0-flash` ⭐ default — ฟรี 15 RPM · เร็วและคุณภาพดี
-- `gemini-2.5-flash` — balanced
+- `gemini-2.5-flash` ⭐ default — ฟรี ~10 RPM · balanced + มี thinking tokens
 - `gemini-2.5-pro` — best quality (quota ต่ำกว่า · ใช้สำหรับงาน final review)
+- `gemini-2.0-flash` — ⚠ Google ย้ายไป paid tier (free_tier_requests = 0 ตั้งแต่ 2025) · ต้องผูก billing
+- ~~`gemini-1.5-flash` / `gemini-1.5-pro`~~ — Google deprecated จาก v1beta ตั้งแต่ปี 2025
 
 **Cloudflare Workers AI** (ไม่ต้องมี key)
 - `@cf/meta/llama-3.3-70b-instruct-fp8-fast` — ดีสุดสำหรับ Thai
@@ -250,7 +257,8 @@ wrangler tail
 
 ### Google Gemini
 - Dashboard: <https://aistudio.google.com/apikey>
-- Free tier `gemini-2.0-flash`: **15 RPM / 1,500 RPD / 1M TPM**
+- Free tier `gemini-2.5-flash`: **~10 RPM / 250 RPD / 250k TPM** (Tier 0)
+- `gemini-2.0-flash` Free tier = 0 → ต้องอัปเป็น Tier 1+ (ผูก billing) ถึงจะใช้ได้
 - โควต้าหมด: API คืน 429 · Worker forward ต่อให้ client
 - รายละเอียด: <https://ai.google.dev/gemini-api/docs/rate-limits>
 

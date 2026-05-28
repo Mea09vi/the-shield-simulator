@@ -8,8 +8,9 @@
                • prefix `gemini-`     → Google Gemini REST API (Generative Language)
 
    Why     : รองรับทั้ง Workers AI (ฟรีทั้งหมด, neuron quota) และ Gemini
-             (free tier 15 RPM สำหรับ gemini-2.0-flash) — เปลี่ยน model จาก
-             client ผ่าน `body.model` ได้โดยไม่ต้องแก้ Worker
+             (free tier 10 RPM สำหรับ gemini-2.5-flash · Google ย้าย 2.0
+             ไป paid tier ปี 2025) — เปลี่ยน model จาก client ผ่าน
+             `body.model` ได้โดยไม่ต้องแก้ Worker
 
    Endpoints
    ─────────
@@ -27,9 +28,9 @@
      • @cf/meta/llama-3.1-8b-instruct (เร็วสุด)
 
      [Google Gemini · generativelanguage.googleapis.com]
-     • gemini-2.0-flash  (default Gemini · ฟรี 15 RPM)
-     • gemini-2.5-flash  (balanced)
+     • gemini-2.5-flash  (default Gemini · ฟรี ~10 RPM)
      • gemini-2.5-pro    (best quality · limited)
+     • gemini-2.0-flash  ⚠ ต้องผูก billing (free_tier_requests = 0 ตั้งแต่ 2025)
      ดู models: https://ai.google.dev/gemini-api/docs/models
 
    Security
@@ -50,8 +51,8 @@
      5. คัดลอก URL (xxx.workers.dev) → UDC Simulator ผ่านปุ่ม ⚙
    ════════════════════════════════════════════════════════════════════ */
 
-const VERSION = '14.0.6';
-const DEFAULT_MODEL = 'gemini-2.0-flash';  // v14.0.6 — default = Gemini Flash (free 15 RPM)
+const VERSION = '14.0.7';
+const DEFAULT_MODEL = 'gemini-2.5-flash';  // v14.0.7 — Google ย้าย 2.0-flash ไป paid tier · 2.5-flash ยังฟรี
 const MAX_TOKENS = 1500;
 const GEMINI_TIMEOUT_MS = 30_000;
 
@@ -66,11 +67,10 @@ const WORKERS_AI_MODELS = new Set([
 ]);
 
 const GEMINI_MODELS = new Set([
-    'gemini-2.0-flash',
-    'gemini-2.5-flash',
-    'gemini-2.5-pro',
-    'gemini-1.5-flash',
-    'gemini-1.5-pro',
+    'gemini-2.5-flash',   // default · free tier
+    'gemini-2.5-pro',     // higher quality · limited quota
+    'gemini-2.0-flash',   // ⚠ ต้องผูก billing — free_tier_requests = 0 ตั้งแต่ 2025
+    // 'gemini-1.5-*' deprecated จาก v1beta · ถอดออกตั้งแต่ v14.0.7
 ]);
 
 const ALLOWED_MODELS = new Set([...WORKERS_AI_MODELS, ...GEMINI_MODELS]);
