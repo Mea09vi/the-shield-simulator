@@ -1,12 +1,17 @@
 # THE SHIELD 2.0 · AI Proxy — Deploy Guide
 
-Cloudflare Workers AI · v14.0.5
+Multi-provider AI relay · v14.0.6
 
-ตัวกลาง (relay) ระหว่าง UDC Simulator (client) → Cloudflare Workers AI
-(Llama 3.3 70B / DeepSeek R1 / Qwen 2.5 — เลือกได้จาก client)
+ตัวกลาง (relay) ระหว่าง UDC Simulator (client) → LLM provider 2 ราย:
 
-**ฟรี 100%** — ไม่ต้อง API key ภายนอก, ใช้ Cloudflare account binding
-(โควต้าฟรี: 10,000 neurons/วัน · ≈ หลายร้อย analysis/วัน)
+| Provider              | Models                                                    | Cost                          |
+|-----------------------|-----------------------------------------------------------|-------------------------------|
+| Cloudflare Workers AI | `@cf/meta/llama-3.3-70b-fp8`, DeepSeek R1, Qwen 2.5 ฯลฯ   | ฟรี · 10,000 neurons/วัน      |
+| Google Gemini         | `gemini-2.0-flash` (default), `gemini-2.5-flash/pro`      | ฟรี · 15 RPM (Flash)          |
+
+Worker จะเลือก provider อัตโนมัติจาก model id ที่ client ส่งมา:
+- prefix `@cf/`     → Workers AI (ใช้ binding · ไม่ต้องมี API key)
+- prefix `gemini-`  → Gemini REST (ต้องตั้ง `GEMINI_API_KEY` เป็น secret)
 
 ---
 
@@ -27,7 +32,40 @@ wrangler login
 
 ---
 
-## 2) Deploy (ไม่ต้องตั้ง secret ใดๆ)
+## 2) (ทางเลือก) ตั้ง Gemini API key
+
+ถ้าจะใช้ Gemini (default ของ v14.0.6) ต้องเอา API key มาก่อน:
+
+1. ไปที่ <https://aistudio.google.com/apikey>
+2. ล็อกอินด้วย Google account
+3. กด **Create API key** → คัดลอกค่า
+
+ตั้งเป็น Cloudflare secret (ไม่อยู่ในไฟล์ใดๆ ของ repo):
+
+```bash
+cd workers
+wrangler secret put GEMINI_API_KEY
+# วาง key ตอนถาม → กด Enter
+```
+
+ตรวจสอบ:
+
+```bash
+wrangler secret list
+# → [{ "name": "GEMINI_API_KEY", "type": "secret_text" }]
+```
+
+> 💡 **ถ้าไม่ตั้ง GEMINI_API_KEY** → model `gemini-*` จะคืน error 500
+> Workers AI models (`@cf/...`) ยังใช้ได้ปกติ ไม่ต้องการ key
+
+ลบ secret (ถ้าต้องการ):
+```bash
+wrangler secret delete GEMINI_API_KEY
+```
+
+---
+
+## 3) Deploy
 
 ```bash
 cd workers
@@ -40,7 +78,9 @@ wrangler deploy
  Your Worker has access to the following bindings:
  - AI:
    - Name: AI
- Total Upload: 8.21 KiB / gzip: 2.51 KiB
+ - Secret:
+   - GEMINI_API_KEY: (hidden)
+ Total Upload: 11.4 KiB / gzip: 3.62 KiB
  Uploaded shield-ai-proxy (1.42 sec)
  Published shield-ai-proxy (0.30 sec)
    https://shield-ai-proxy.<your-subdomain>.workers.dev
@@ -50,24 +90,21 @@ wrangler deploy
 
 **คัดลอก URL** ที่ได้ — จะใช้ตั้งใน UDC Simulator
 
-> 💡 **ไม่มี secret** — Workers AI binding ใช้ Cloudflare account context อัตโนมัติ
-> ไม่ต้องสมัครบัญชี Anthropic / Google / Groq ใดๆ
-
 ---
 
-## 3) (ทางเลือก) ปรับ `wrangler.toml`
+## 4) (ทางเลือก) ปรับ `wrangler.toml`
 
 ดู `workers/wrangler.toml`:
 
 - `name`         — เปลี่ยนได้ตามต้องการ (default: `shield-ai-proxy`)
 - `account_id`   — ปกติ wrangler หาเองได้; uncomment ถ้ามีหลายบัญชี
 - `routes`       — uncomment ถ้าจะใช้ Custom Domain แทน `*.workers.dev`
-- `[vars] DEFAULT_MODEL` — เปลี่ยน model ฟรีตัวอื่นใน Workers AI ได้
+- `[vars] DEFAULT_MODEL` — เปลี่ยน default model ได้ (server-side default)
 - `[ai] binding = "AI"`  — **ห้ามลบ** — เป็น Workers AI binding
 
 ---
 
-## 4) ตรวจสอบ Worker ทำงาน
+## 5) ตรวจสอบ Worker ทำงาน
 
 ### Health check (GET)
 
@@ -81,26 +118,31 @@ curl https://shield-ai-proxy.<your-subdomain>.workers.dev/health
 {
   "ok": true,
   "service": "shield-ai-proxy",
-  "version": "14.0.5",
-  "provider": "cloudflare-workers-ai",
-  "model_default": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
-  "models_allowed": [
-    "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
-    "@cf/meta/llama-3.1-70b-instruct",
-    "@cf/meta/llama-3.1-8b-instruct",
-    "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b",
-    "@cf/qwen/qwen2.5-coder-32b-instruct",
-    "@cf/mistralai/mistral-small-3.1-24b-instruct"
-  ]
+  "version": "14.0.6",
+  "providers": {
+    "cloudflare-workers-ai": {
+      "configured": true,
+      "models": ["@cf/meta/llama-3.3-70b-instruct-fp8-fast", "..."]
+    },
+    "google-gemini": {
+      "configured": true,
+      "models": ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-pro", "..."]
+    }
+  },
+  "model_default": "gemini-2.0-flash",
+  "models_allowed": ["..."]
 }
 ```
 
-### Smoke test (POST)
+> `providers.google-gemini.configured: false` หมายถึงยังไม่ได้ตั้ง `GEMINI_API_KEY`
+
+### Smoke test (POST · Gemini default)
 
 ```bash
 curl -X POST https://shield-ai-proxy.<your-subdomain>.workers.dev \
   -H "Content-Type: application/json" \
   -d '{
+    "model": "gemini-2.0-flash",
     "taxonomy": {"kinetic":1,"asymmetric":1,"cyber":0,"environmental":0,"hybrid":0},
     "alerts": [
       {"severity":"warn","tag":"KINETIC","msg":"test contact","conf":0.7,"ts":"00:00:00"}
@@ -108,59 +150,74 @@ curl -X POST https://shield-ai-proxy.<your-subdomain>.workers.dev \
   }'
 ```
 
-ควรได้ JSON `{ text, model, usage, latency_ms, version }`
-**Latency ปกติ:** 1-4 วินาที (เร็วกว่า Claude Opus มาก)
-
----
-
-## 5) ตั้งค่าใน UDC Simulator
-
-1. เปิด `UDC_Simulator_14.html`
-2. คลิกปุ่ม 🧠 AI ใน header → modal เปิด
-3. ใน toolbar คลิก ⚙ Settings
-4. วาง URL ของ Worker ที่ได้จากขั้นตอน 2
-5. คลิก mode pill `OPUS` → จะเปลี่ยนเป็น `online · Workers AI`
-6. คลิก `✨ Run Opus Analysis` → จะเรียก Llama 3.3 จริงผ่าน Worker
-
-URL จะถูก save ใน `localStorage` (key: `shield_ai_proxy_url`)
-ครั้งต่อไปเปิด simulator จะดึงค่ามาใช้อัตโนมัติ
-
----
-
-## 6) Endpoints
-
-| Method | Path     | Body                                | Response |
-|--------|----------|-------------------------------------|----------|
-| GET    | `/health`| —                                   | `{ ok, version, model_default, models_allowed }` |
-| POST   | `/`      | `{ taxonomy, alerts, model? }`      | `{ text, model, usage, latency_ms }` |
-| OPTIONS| `/*`     | —                                   | CORS preflight (204) |
-
-Rate limit: 30 req/min ต่อ IP (in-memory, per-isolate)
-
----
-
-## 7) เลือก Model อื่น (ทางเลือก)
-
-ส่ง `model` ใน POST body — ต้องอยู่ใน allow-list:
+### Smoke test (POST · Workers AI)
 
 ```bash
 curl -X POST https://shield-ai-proxy.<your-subdomain>.workers.dev \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b",
+    "model": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
     "taxonomy": {"kinetic":2,"asymmetric":0,"cyber":1,"environmental":0,"hybrid":0},
     "alerts": []
   }'
 ```
 
-**Model ที่แนะนำตามงาน:**
-- `llama-3.3-70b-instruct-fp8-fast` ⭐ default — ดีสุดสำหรับ Thai + เร็ว
-- `deepseek-r1-distill-qwen-32b` — มี chain-of-thought reasoning (ช้ากว่าแต่ตอบลึก)
-- `llama-3.1-8b-instruct` — เร็วสุด (สำหรับ live demo) คุณภาพต่ำลงบ้าง
+ทั้งสอง endpoint ตอบ JSON `{ text, model, provider, usage, latency_ms, version }`
+
+**Latency ปกติ:**
+- Gemini 2.0 Flash: ~1-2 วินาที
+- Workers AI Llama 3.3: ~2-4 วินาที
+- Gemini 2.5 Pro: ~3-6 วินาที
 
 ---
 
-## 8) อัพเดท Worker
+## 6) ตั้งค่าใน UDC Simulator
+
+1. เปิด `UDC_Simulator_14.html`
+2. คลิกปุ่ม 🧠 AI ใน header → modal เปิด
+3. ใน toolbar:
+   - คลิก ⚙ **Settings** → วาง URL ของ Worker (จากขั้น 3)
+   - dropdown **MODEL** → เลือก provider/model ที่ต้องการ
+4. คลิก mode pill `LLM` → จะเปลี่ยนเป็น `online · <provider>`
+5. คลิก `✨ Run LLM Analysis` → จะเรียก provider ที่เลือกผ่าน Worker
+
+URL/model จะถูก save ใน `localStorage`:
+- `shield_ai_proxy_url`  → Worker URL
+- `shield_ai_model`      → model id ที่เลือก
+
+ครั้งต่อไปเปิด simulator จะดึงค่ามาใช้อัตโนมัติ
+
+---
+
+## 7) Endpoints
+
+| Method | Path     | Body                                       | Response |
+|--------|----------|--------------------------------------------|----------|
+| GET    | `/health`| —                                          | `{ ok, version, providers, model_default, models_allowed }` |
+| POST   | `/`      | `{ taxonomy, alerts, model? }`             | `{ text, model, provider, usage, latency_ms, version }` |
+| OPTIONS| `/*`     | —                                          | CORS preflight (204) |
+
+Rate limit: 30 req/min ต่อ IP (in-memory, per-isolate)
+
+---
+
+## 8) เลือก Model
+
+ส่ง `model` ใน POST body — ต้องอยู่ใน allow-list ของ Worker:
+
+**Google Gemini** (ต้องตั้ง `GEMINI_API_KEY`)
+- `gemini-2.0-flash` ⭐ default — ฟรี 15 RPM · เร็วและคุณภาพดี
+- `gemini-2.5-flash` — balanced
+- `gemini-2.5-pro` — best quality (quota ต่ำกว่า · ใช้สำหรับงาน final review)
+
+**Cloudflare Workers AI** (ไม่ต้องมี key)
+- `@cf/meta/llama-3.3-70b-instruct-fp8-fast` — ดีสุดสำหรับ Thai
+- `@cf/deepseek-ai/deepseek-r1-distill-qwen-32b` — chain-of-thought reasoning
+- `@cf/meta/llama-3.1-8b-instruct` — เร็วสุด (สำหรับ live demo)
+
+---
+
+## 9) อัพเดท Worker
 
 แก้ `workers/ai-proxy.js` แล้ว run อีกครั้ง:
 
@@ -169,10 +226,11 @@ wrangler deploy
 ```
 
 URL เดิมไม่เปลี่ยน — UI ไม่ต้องตั้งค่าใหม่
+Secrets จะคงอยู่ระหว่าง deploy
 
 ---
 
-## 9) Tail logs (debug)
+## 10) Tail logs (debug)
 
 ```bash
 wrangler tail
@@ -182,21 +240,29 @@ wrangler tail
 
 ---
 
-## 10) ตรวจสอบ Neuron Quota
+## 11) ตรวจสอบ Quota
 
-ที่ Cloudflare Dashboard → Workers AI → Analytics
+### Cloudflare Workers AI
+- Dashboard → Workers AI → Analytics
 - Free plan: **10,000 neurons/วัน**
-- 1 analysis ≈ 50-200 neurons (ขึ้นกับ model + token count)
-- ≈ 50-200 analysis/วัน บน free tier
+- 1 analysis ≈ 50-200 neurons → ≈ 50-200 analysis/วัน
+- โควต้าหมด: Worker คืน 500 พร้อม error · รอ reset ตอนเที่ยงคืน UTC (07:00 ICT)
 
-ถ้าโควต้าหมด: Worker จะตอบ 500 พร้อม error message
-จากนั้นรอ reset ตอนเที่ยงคืน UTC (07:00 ICT)
+### Google Gemini
+- Dashboard: <https://aistudio.google.com/apikey>
+- Free tier `gemini-2.0-flash`: **15 RPM / 1,500 RPD / 1M TPM**
+- โควต้าหมด: API คืน 429 · Worker forward ต่อให้ client
+- รายละเอียด: <https://ai.google.dev/gemini-api/docs/rate-limits>
 
 ---
 
-## 11) Security Notes
+## 12) Security Notes
 
-- **ไม่มี API key** ต้องเก็บ — Workers AI ใช้ account binding
+- **Workers AI**: ไม่มี secret — ใช้ account binding
+- **Gemini**: `GEMINI_API_KEY` เก็บเป็น Cloudflare secret (ไม่อยู่ใน repo / client)
+  - **อย่า** commit key ลง git
+  - **อย่า** ใส่ key ใน HTML/JS ใดๆ ของ client
+  - ถ้า key รั่ว: revoke ที่ <https://aistudio.google.com/apikey> → สร้างใหม่ → `wrangler secret put GEMINI_API_KEY` อีกรอบ
 - ตอนนี้ `Access-Control-Allow-Origin: *` — ใครเรียก endpoint ก็ได้
   ถ้าต้องการ harden ให้แก้ใน `ai-proxy.js`:
   ```js
@@ -208,10 +274,9 @@ wrangler tail
 
 ---
 
-## 12) ถ้าจะลบ Worker
+## 13) ถ้าจะลบ Worker
 
 ```bash
+wrangler secret delete GEMINI_API_KEY   # (ถ้าตั้งไว้)
 wrangler delete
 ```
-
-(ไม่มี secret ที่ต้องลบเพราะ Workers AI ไม่ใช้ secret)

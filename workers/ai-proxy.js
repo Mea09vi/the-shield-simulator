@@ -1,50 +1,62 @@
 /* ════════════════════════════════════════════════════════════════════
-   THE SHIELD 2.0 — UDC Simulator v14.0.5
-   AI Proxy Worker · Cloudflare Workers AI (binding-based)
+   THE SHIELD 2.0 — UDC Simulator v14.0.6
+   AI Proxy Worker · Multi-provider (Cloudflare Workers AI + Google Gemini)
    ──────────────────────────────────────────────────────────────────────
-   Purpose : ตัวกลาง (relay) ระหว่าง client (UDC Simulator) กับ
-             Cloudflare Workers AI (Llama 3.3 70B / DeepSeek R1)
-   Why     : ฟรีในตัว Cloudflare — ไม่ต้องสมัครบัญชี API ภายนอก
-             ไม่ต้องเก็บ API key แยก (ใช้ `env.AI` binding)
+   Purpose : ตัวกลาง (relay) ระหว่าง client (UDC Simulator) กับ LLM provider
+             หลายเจ้า — เลือก provider โดยอัตโนมัติจาก model id ที่ส่งมา:
+               • prefix `@cf/`        → Cloudflare Workers AI (binding)
+               • prefix `gemini-`     → Google Gemini REST API (Generative Language)
+
+   Why     : รองรับทั้ง Workers AI (ฟรีทั้งหมด, neuron quota) และ Gemini
+             (free tier 15 RPM สำหรับ gemini-2.0-flash) — เปลี่ยน model จาก
+             client ผ่าน `body.model` ได้โดยไม่ต้องแก้ Worker
 
    Endpoints
    ─────────
-     POST /              → forward เป็น Workers AI binding call
-                           (รับ body: { taxonomy, alerts, model? })
-                           ส่งกลับ: { text, model, usage, latency_ms }
-     GET  /health        → liveness probe { ok: true, version, model_default }
+     POST /              → router → Workers AI หรือ Gemini ตาม model
+                           body: { taxonomy, alerts, model? }
+                           response: { text, model, provider, usage, latency_ms }
+     GET  /health        → liveness probe + providers status
      OPTIONS /*          → CORS preflight
 
-   Models (ที่ใช้ได้ฟรี — เลือกจาก client ผ่าน body.model)
+   Models (allow-list — ป้องกัน client ส่ง model ที่ไม่รองรับ)
    ─────────────────────────────────────────────────────────────────────
-     • @cf/meta/llama-3.3-70b-instruct-fp8-fast  ← default (ดีสุดสำหรับ Thai)
+     [Cloudflare Workers AI · env.AI binding]
+     • @cf/meta/llama-3.3-70b-instruct-fp8-fast  (default WAI · ดีสำหรับไทย)
      • @cf/deepseek-ai/deepseek-r1-distill-qwen-32b (มี reasoning)
-     • @cf/qwen/qwen2.5-coder-32b-instruct
-     • @cf/meta/llama-3.1-70b-instruct
-     ดู models list: https://developers.cloudflare.com/workers-ai/models/
+     • @cf/meta/llama-3.1-8b-instruct (เร็วสุด)
+
+     [Google Gemini · generativelanguage.googleapis.com]
+     • gemini-2.0-flash  (default Gemini · ฟรี 15 RPM)
+     • gemini-2.5-flash  (balanced)
+     • gemini-2.5-pro    (best quality · limited)
+     ดู models: https://ai.google.dev/gemini-api/docs/models
 
    Security
    ────────
-     • ไม่มี secret — Workers AI ใช้ account-level binding อัตโนมัติ
-     • CORS ตอบกลับ Allow-Origin: * (รองรับทั้ง file:// และ http)
-     • Rate limit ขั้นต้น 30 req/min per IP (in-memory map · per-isolate)
-     • Cloudflare บังคับ neuron quota เอง (free: 10,000 neurons/วัน)
+     • Workers AI: account-level binding (ไม่ต้องเก็บ secret)
+     • Gemini: ใช้ GEMINI_API_KEY เป็น Cloudflare secret
+       (`wrangler secret put GEMINI_API_KEY`) — ไม่อยู่ใน client code
+     • CORS: Allow-Origin: * (รองรับ file:// และ http://)
+     • Rate limit: 30 req/min per IP (in-memory per-isolate)
+     • Cloudflare neuron quota (free: 10,000/วัน) + Gemini RPM quota แยกกัน
 
    Deploy
    ──────
-     1. ติดตั้ง wrangler:           npm i -g wrangler
-     2. login:                      wrangler login
-     3. deploy:                     wrangler deploy
-        (ไม่ต้องตั้ง secret ใดๆ — ใช้ binding อัตโนมัติ)
-     4. คัดลอก URL (xxx.workers.dev) → ตั้งใน UDC Simulator ผ่านปุ่ม ⚙
+     1. npm i -g wrangler
+     2. wrangler login
+     3. (ถ้าจะใช้ Gemini)  wrangler secret put GEMINI_API_KEY
+     4. wrangler deploy
+     5. คัดลอก URL (xxx.workers.dev) → UDC Simulator ผ่านปุ่ม ⚙
    ════════════════════════════════════════════════════════════════════ */
 
-const VERSION = '14.0.5';
-const DEFAULT_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
+const VERSION = '14.0.6';
+const DEFAULT_MODEL = 'gemini-2.0-flash';  // v14.0.6 — default = Gemini Flash (free 15 RPM)
 const MAX_TOKENS = 1500;
+const GEMINI_TIMEOUT_MS = 30_000;
 
-// allow-list สำหรับ model — กัน client ส่ง model ที่ไม่รองรับ
-const ALLOWED_MODELS = new Set([
+// allow-list สำหรับ model — กัน client ส่ง model อะไรก็ได้
+const WORKERS_AI_MODELS = new Set([
     '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
     '@cf/meta/llama-3.1-70b-instruct',
     '@cf/meta/llama-3.1-8b-instruct',
@@ -53,7 +65,24 @@ const ALLOWED_MODELS = new Set([
     '@cf/mistralai/mistral-small-3.1-24b-instruct',
 ]);
 
-// ── rate limit (simple, per-isolate in-memory) ───────────────────────
+const GEMINI_MODELS = new Set([
+    'gemini-2.0-flash',
+    'gemini-2.5-flash',
+    'gemini-2.5-pro',
+    'gemini-1.5-flash',
+    'gemini-1.5-pro',
+]);
+
+const ALLOWED_MODELS = new Set([...WORKERS_AI_MODELS, ...GEMINI_MODELS]);
+
+function providerOf(modelId) {
+    if (!modelId) return null;
+    if (WORKERS_AI_MODELS.has(modelId)) return 'cloudflare-workers-ai';
+    if (GEMINI_MODELS.has(modelId))     return 'google-gemini';
+    return null;
+}
+
+// ── rate limit (per-isolate in-memory) ────────────────────────────────
 const RL_BUCKET = new Map();  // ip → [timestamps...]
 const RL_WINDOW_MS = 60_000;
 const RL_LIMIT = 30;
@@ -105,7 +134,7 @@ function buildSystemPrompt() {
         '',
         'รูปแบบคำตอบ (ใช้ภาษาไทยเป็นหลัก คำศัพท์เทคนิคใช้ภาษาอังกฤษ):',
         '',
-        '🧠 OPUS ANALYSIS · <hh:mm:ss>',
+        '🧠 LLM ANALYSIS · <hh:mm:ss>',
         '═══════════════════════════════════════════',
         '',
         '🔍 บริบทเชิงระบบ:',
@@ -153,35 +182,14 @@ function buildUserPrompt(payload) {
     return lines.join('\n');
 }
 
-// ── main handler ─────────────────────────────────────────────────────
-async function handleOpusAnalysis(request, env) {
+// ── provider: Cloudflare Workers AI ──────────────────────────────────
+async function callWorkersAi(env, model, system, userMsg) {
     if (!env.AI) {
-        return jsonResponse({
-            error: 'AI binding not configured — ตรวจสอบว่า wrangler.toml มี [ai] binding'
-        }, 500);
+        return { error: 'AI binding not configured — wrangler.toml ต้องมี [ai] binding', status: 500 };
     }
 
-    let payload;
-    try {
-        payload = await request.json();
-    } catch (_) {
-        return jsonResponse({ error: 'Invalid JSON body' }, 400);
-    }
-
-    // เลือก model — ถ้า client ส่ง model มา ต้องอยู่ใน allow-list เท่านั้น
-    let model = payload.model || DEFAULT_MODEL;
-    if (!ALLOWED_MODELS.has(model)) {
-        model = DEFAULT_MODEL;
-    }
-
-    const system = buildSystemPrompt();
-    const userMsg = buildUserPrompt(payload);
-
-    const t0 = Date.now();
     let aiResult;
     try {
-        // Workers AI binding call — ไม่ต้อง fetch HTTP
-        // ดู spec: https://developers.cloudflare.com/workers-ai/configuration/bindings/
         aiResult = await env.AI.run(model, {
             messages: [
                 { role: 'system', content: system },
@@ -191,18 +199,11 @@ async function handleOpusAnalysis(request, env) {
             temperature: 0.7
         });
     } catch (e) {
-        return jsonResponse({
-            error: 'Workers AI call failed',
-            detail: String(e && e.message || e),
-            model
-        }, 502);
+        return { error: 'Workers AI call failed', detail: String(e && e.message || e), status: 502 };
     }
 
-    const latency_ms = Date.now() - t0;
-
     // Workers AI response shape:
-    //   { response: 'text...', usage: { prompt_tokens, completion_tokens, total_tokens } }
-    // หรือบางรุ่นอาจเป็น { result: { response: '...' } }
+    //   { response: '...', usage: { prompt_tokens, completion_tokens, total_tokens } }
     const text = (aiResult && (aiResult.response || aiResult.result?.response)) || '';
     const rawUsage = aiResult?.usage || aiResult?.result?.usage || null;
 
@@ -214,19 +215,165 @@ async function handleOpusAnalysis(request, env) {
     } : null;
 
     if (!text) {
+        return { error: 'Empty response from Workers AI', raw: aiResult, status: 502 };
+    }
+
+    return {
+        text,
+        usage,
+        stop_reason: aiResult?.stop_reason || null
+    };
+}
+
+// ── provider: Google Gemini ──────────────────────────────────────────
+// Generative Language API · v1beta · generateContent
+// https://ai.google.dev/api/generate-content
+async function callGemini(env, model, system, userMsg) {
+    const key = env.GEMINI_API_KEY;
+    if (!key) {
+        return {
+            error: 'GEMINI_API_KEY ไม่ได้ตั้ง — เพิ่ม secret: wrangler secret put GEMINI_API_KEY',
+            status: 500
+        };
+    }
+
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`;
+
+    const body = {
+        // system instruction (Gemini แยกจาก contents)
+        systemInstruction: { parts: [{ text: system }] },
+        contents: [
+            { role: 'user', parts: [{ text: userMsg }] }
+        ],
+        generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: MAX_TOKENS,
+            topP: 0.95
+        },
+        // ปิด safety filter ระดับเข้มสุด — เนื้อหา military analysis อาจโดน block
+        safetySettings: [
+            { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_ONLY_HIGH' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH',       threshold: 'BLOCK_ONLY_HIGH' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_ONLY_HIGH' }
+        ]
+    };
+
+    // AbortController สำหรับ timeout
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), GEMINI_TIMEOUT_MS);
+
+    let resp, data;
+    try {
+        resp = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+            signal: ctrl.signal
+        });
+        data = await resp.json().catch(() => null);
+    } catch (e) {
+        clearTimeout(tid);
+        const isAbort = e && (e.name === 'AbortError' || /abort/i.test(String(e.message || '')));
+        return {
+            error: isAbort ? 'Gemini timeout' : 'Gemini call failed',
+            detail: String(e && e.message || e),
+            status: isAbort ? 504 : 502
+        };
+    }
+    clearTimeout(tid);
+
+    if (!resp.ok) {
+        const msg = (data && data.error && (data.error.message || data.error.status)) || ('HTTP ' + resp.status);
+        return { error: 'Gemini API error', detail: msg, raw: data, status: resp.status };
+    }
+
+    // ดึงข้อความจาก response.candidates[0].content.parts[*].text
+    const candidate = data && data.candidates && data.candidates[0];
+    if (!candidate) {
+        return { error: 'No candidates in Gemini response', raw: data, status: 502 };
+    }
+    const finishReason = candidate.finishReason || null;
+    const parts = candidate.content && candidate.content.parts;
+    const text = Array.isArray(parts)
+        ? parts.map(p => p.text || '').join('').trim()
+        : '';
+
+    if (!text) {
+        return {
+            error: 'Empty response from Gemini',
+            detail: finishReason === 'SAFETY' ? 'Blocked by safety filter' : (finishReason || 'unknown'),
+            raw: data,
+            status: 502
+        };
+    }
+
+    // Normalize usage → input/output_tokens (Anthropic-compatible)
+    const um = data.usageMetadata || {};
+    const usage = {
+        input_tokens:  um.promptTokenCount     ?? null,
+        output_tokens: um.candidatesTokenCount ?? null,
+        total_tokens:  um.totalTokenCount      ?? null
+    };
+
+    return {
+        text,
+        usage,
+        stop_reason: finishReason
+    };
+}
+
+// ── main router ──────────────────────────────────────────────────────
+async function handleAnalysis(request, env) {
+    let payload;
+    try {
+        payload = await request.json();
+    } catch (_) {
+        return jsonResponse({ error: 'Invalid JSON body' }, 400);
+    }
+
+    // เลือก model — ถ้า client ส่ง model มา ต้องอยู่ใน allow-list
+    let model = payload.model || DEFAULT_MODEL;
+    if (!ALLOWED_MODELS.has(model)) {
+        model = DEFAULT_MODEL;
+    }
+    const provider = providerOf(model);
+    if (!provider) {
+        return jsonResponse({ error: 'Unknown provider for model: ' + model }, 400);
+    }
+
+    const system = buildSystemPrompt();
+    const userMsg = buildUserPrompt(payload);
+
+    const t0 = Date.now();
+    let result;
+    if (provider === 'cloudflare-workers-ai') {
+        result = await callWorkersAi(env, model, system, userMsg);
+    } else if (provider === 'google-gemini') {
+        result = await callGemini(env, model, system, userMsg);
+    } else {
+        return jsonResponse({ error: 'No handler for provider: ' + provider }, 500);
+    }
+    const latency_ms = Date.now() - t0;
+
+    // ถ้า provider คืน error → ส่งต่อด้วย status ของ provider
+    if (result.error) {
         return jsonResponse({
-            error: 'Empty response from Workers AI',
-            raw: aiResult,
+            error: result.error,
+            detail: result.detail || null,
             model,
-            latency_ms
-        }, 502);
+            provider,
+            latency_ms,
+            version: VERSION
+        }, result.status || 502);
     }
 
     return jsonResponse({
-        text,
+        text: result.text,
         model,
-        usage,
-        stop_reason: aiResult?.stop_reason || null,
+        provider,
+        usage: result.usage || null,
+        stop_reason: result.stop_reason || null,
         latency_ms,
         version: VERSION
     });
@@ -248,7 +395,16 @@ export default {
                 ok: true,
                 service: 'shield-ai-proxy',
                 version: VERSION,
-                provider: 'cloudflare-workers-ai',
+                providers: {
+                    'cloudflare-workers-ai': {
+                        configured: !!env.AI,
+                        models: Array.from(WORKERS_AI_MODELS)
+                    },
+                    'google-gemini': {
+                        configured: !!env.GEMINI_API_KEY,
+                        models: Array.from(GEMINI_MODELS)
+                    }
+                },
                 model_default: DEFAULT_MODEL,
                 models_allowed: Array.from(ALLOWED_MODELS)
             });
@@ -264,7 +420,7 @@ export default {
                     window_ms: RL_WINDOW_MS
                 }, 429);
             }
-            return handleOpusAnalysis(request, env);
+            return handleAnalysis(request, env);
         }
 
         return jsonResponse({ error: 'Method not allowed' }, 405);

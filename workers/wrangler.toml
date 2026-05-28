@@ -1,9 +1,13 @@
 # ════════════════════════════════════════════════════════════════════
-# THE SHIELD 2.0 — UDC Simulator v14.0.5
-# Cloudflare Workers config (ai-proxy) — Workers AI binding
+# THE SHIELD 2.0 — UDC Simulator v14.0.6
+# Cloudflare Workers config (ai-proxy) — Multi-provider:
+#   • Workers AI binding (Llama 3.3, DeepSeek, etc. · ฟรี neuron quota)
+#   • Google Gemini (REST · ต้องตั้ง GEMINI_API_KEY เป็น secret)
 # ──────────────────────────────────────────────────────────────────────
-# ไม่ต้องใช้ secret ใดๆ — Workers AI ใช้ account-level binding อัตโนมัติ
-# ฟรี 10,000 neurons/วัน (Cloudflare Free plan)
+# Setup:
+#   1. wrangler login
+#   2. (optional · ถ้าจะใช้ Gemini)  wrangler secret put GEMINI_API_KEY
+#   3. wrangler deploy
 # ════════════════════════════════════════════════════════════════════
 
 name = "shield-ai-proxy"
@@ -24,4 +28,12 @@ binding = "AI"
 
 # ตัวแปรไม่ลับ — ปรับค่าได้ตรงนี้
 [vars]
-DEFAULT_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+DEFAULT_MODEL = "gemini-2.0-flash"
+
+# ─── Secrets (DO NOT commit ค่าจริง — ใช้ wrangler secret put) ───────
+# GEMINI_API_KEY  → จาก https://aistudio.google.com/apikey
+#                   ตั้งค่า: wrangler secret put GEMINI_API_KEY
+#                   ลบ:      wrangler secret delete GEMINI_API_KEY
+#
+# ถ้าไม่ตั้ง GEMINI_API_KEY: model `gemini-*` จะคืน error 500
+# (Workers AI models `@cf/...` ยังใช้ได้ปกติ — ใช้ binding ไม่ต้องมี key)

@@ -8,6 +8,24 @@
                 + AI Domain ชั้น meta-intelligence สำหรับ situational reasoning (Decision Support Only)
 
   v14 changelog:
+    · [v14.0.6] AI · Multi-provider LLM router + ขยาย UI (Workers AI + Google Gemini)
+        - Modal: ขยาย 880→1280px · grid columns 1fr·1.6fr·1fr (narrative กว้างขึ้น +60%)
+          alerts max-height 220→320px · force-list max-height 380→480px
+          narrative box min-height 100→200px · max-height 320→480px
+        - OPUS → LLM rebrand: pill, header §2, button text, log tags, model label, comments
+        - Model selector dropdown ใน toolbar (2 optgroups: Gemini + Workers AI · 6 models)
+          • Google Gemini: 2.0-flash (default · ฟรี 15 RPM) · 2.5-flash · 2.5-pro
+          • Cloudflare WAI: llama-3.3-70b-fp8-fast · deepseek-r1-32b · llama-3.1-8b
+          เก็บ localStorage key `shield_ai_model` (allow-list ทั้ง client + server)
+        - workers/ai-proxy.js: router แยก provider จาก model prefix
+          • `@cf/`     → callWorkersAi(env.AI binding)
+          • `gemini-`  → callGemini(REST · ใช้ env.GEMINI_API_KEY secret)
+          normalize usage → input/output_tokens (Anthropic-compatible shape)
+          response เพิ่ม field `provider` · /health เพิ่ม providers status
+        - DEPLOY.md: เพิ่มขั้น `wrangler secret put GEMINI_API_KEY` (จาก AI Studio)
+          ตาราง model · 2× smoke-test (Gemini + WAI) · quota หมายเหตุทั้ง 2 providers
+        - generateOpusAnalysis: ส่ง `model: MDA.cfg.aiModel` ใน body · provider-aware
+          loading message + caveats footer · log tag เปลี่ยน Opus→LLM
     · [v14.0.5] AI · Migrate to Cloudflare Workers AI (free tier — replace Anthropic API)
         - workers/ai-proxy.js: ใช้ env.AI.run() binding แทน fetch ไป api.anthropic.com
         - Default model: @cf/meta/llama-3.3-70b-instruct-fp8-fast (Thai-capable, fast)
@@ -2705,9 +2723,9 @@
             position: fixed;
             top: 50%; left: 50%;
             transform: translate(-50%,-50%) scale(0.92);
-            width: 880px;
-            max-width: calc(100vw - 60px);
-            max-height: calc(100vh - 60px);
+            width: 1280px;
+            max-width: calc(100vw - 40px);
+            max-height: calc(100vh - 40px);
             z-index: 8000;
             background: linear-gradient(180deg, rgba(8,21,37,0.98) 0%, rgba(6,16,30,0.98) 100%);
             border: 1.5px solid rgba(168,85,247,0.55);
@@ -2805,18 +2823,44 @@
             box-shadow: 0 0 10px rgba(168,85,247,0.45);
         }
         #mda-ai-modal .mda-ai-mode-pill.off { opacity: 0.55; }
+        /* v14.0.6 — model selector */
+        #mda-ai-modal .mda-ai-model-select {
+            background: rgba(15,23,42,0.85);
+            color: #ede9fe;
+            border: 1px solid rgba(168,85,247,0.45);
+            border-radius: 12px;
+            padding: 3px 8px;
+            font-size: 10.5px;
+            font-family: 'Share Tech Mono', 'Consolas', monospace;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            outline: none;
+            transition: all .15s;
+            min-width: 220px;
+        }
+        #mda-ai-modal .mda-ai-model-select:hover,
+        #mda-ai-modal .mda-ai-model-select:focus {
+            border-color: #c4b5fd;
+            box-shadow: 0 0 10px rgba(168,85,247,0.45);
+            background: rgba(15,23,42,0.95);
+        }
+        #mda-ai-modal .mda-ai-model-select option,
+        #mda-ai-modal .mda-ai-model-select optgroup {
+            background: #0f172a;
+            color: #e9d5ff;
+        }
         #mda-ai-modal .mda-ai-toolbar-spacer { flex: 1; }
         #mda-ai-modal .mda-ai-toolbar-info {
             font-size: 9.5px; color: #94a3b8;
             letter-spacing: 0.12em;
         }
 
-        /* ─── Modal body: 3-column grid (sections) ─── */
+        /* ─── Modal body: 3-column grid (sections) — v14.0.6 middle col ×1.6 ─── */
         #mda-ai-modal .mda-ai-body {
             flex: 1;
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
+            grid-template-columns: 1fr 1.6fr 1fr;
+            gap: 14px;
             padding: 14px 18px;
             overflow-y: auto;
             scrollbar-width: thin;
@@ -2962,18 +3006,18 @@
         #mda-ai-modal .mda-ai-tax-row.crit > .mda-ai-tax-val { color: #fca5a5; }
         #mda-ai-modal .mda-ai-tax-row.warn > .mda-ai-tax-val { color: #fcd34d; }
 
-        /* ─── Opus narrative ─── */
+        /* ─── LLM narrative (v14.0.6 enlarged) ─── */
         #mda-ai-modal .mda-ai-opus-narr {
             font-family: 'Sarabun', sans-serif;
-            font-size: 11.5px;
-            line-height: 1.6;
+            font-size: 12.5px;
+            line-height: 1.65;
             color: #e9d5ff;
             background: linear-gradient(180deg, rgba(76,29,149,0.12), rgba(17,24,39,0.55));
-            padding: 9px 11px;
-            border-radius: 4px;
+            padding: 12px 14px;
+            border-radius: 5px;
             border: 1px solid rgba(168,85,247,0.30);
-            min-height: 120px;
-            max-height: 280px;
+            min-height: 200px;
+            max-height: 480px;
             overflow-y: auto;
             white-space: pre-wrap;
         }
@@ -3020,7 +3064,7 @@
         /* ─── Force deployment recommendations ─── */
         #mda-ai-modal .mda-ai-force-list {
             display: flex; flex-direction: column; gap: 6px;
-            max-height: 380px;
+            max-height: 480px;
             overflow-y: auto;
         }
         #mda-ai-modal .mda-ai-force-item {
@@ -3670,17 +3714,30 @@
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span>🧠 AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v14.0.2 · HITL · บทที่ 2</span>
+            <span class="mda-ai-sub">v14.0.6 · HITL · multi-LLM · บทที่ 2</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC">✕</button>
     </div>
 
-    <!-- ─── Toolbar (mode pills + state) ─── -->
+    <!-- ─── Toolbar (mode pills + model selector + state) — v14.0.6 ─── -->
     <div class="mda-ai-toolbar">
         <span style="color:#94a3b8;">MODE:</span>
         <span class="mda-ai-mode-pill on"    id="mda-ai-mode-rules"   title="Rule-based offline · 5-class taxonomy + alerts">⚙ RULES</span>
-        <span class="mda-ai-mode-pill off"   id="mda-ai-mode-llm"     title="LLM (Workers AI · Llama 3.3 70B ผ่าน Cloudflare Worker) · disabled (ยังไม่ตั้ง proxy)">✨ OPUS</span>
+        <span class="mda-ai-mode-pill off"   id="mda-ai-mode-llm"     title="LLM (Multi-provider · Workers AI / Google Gemini · ผ่าน Cloudflare Worker) · disabled (ยังไม่ตั้ง proxy)">✨ LLM</span>
         <span class="mda-ai-mode-pill off"   id="mda-ai-settings-btn" title="ตั้งค่า Cloudflare Worker proxy URL">⚙ Settings</span>
+        <span style="color:#94a3b8;margin-left:8px;">MODEL:</span>
+        <select id="mda-ai-model-select" class="mda-ai-model-select" title="เลือก LLM model (Workers AI / Gemini) · บันทึกใน localStorage">
+            <optgroup label="── Google Gemini ──">
+                <option value="gemini-2.0-flash">💎 Gemini 2.0 Flash (free · 15 RPM)</option>
+                <option value="gemini-2.5-flash">💠 Gemini 2.5 Flash (balanced)</option>
+                <option value="gemini-2.5-pro">🔮 Gemini 2.5 Pro (best · limited)</option>
+            </optgroup>
+            <optgroup label="── Cloudflare Workers AI ──">
+                <option value="@cf/meta/llama-3.3-70b-instruct-fp8-fast">⚡ Llama 3.3 70B (fast+smart)</option>
+                <option value="@cf/deepseek-ai/deepseek-r1-distill-qwen-32b">🧠 DeepSeek R1 32B (reasoning)</option>
+                <option value="@cf/meta/llama-3.1-8b-instruct">🚀 Llama 3.1 8B (fastest)</option>
+            </optgroup>
+        </select>
         <span class="mda-ai-toolbar-spacer"></span>
         <span class="mda-ai-toolbar-info">PROXY: <span id="mda-ai-proxy-info" style="color:#fbbf24;">not set</span></span>
         <span class="mda-ai-toolbar-info">STATE: <span id="mda-ai-mode-state" style="color:#7dd3fc;">offline-mock</span></span>
@@ -3703,7 +3760,7 @@
                     <span>▾ ALERTS · live stream</span>
                     <span class="mda-ai-sec-count" id="mda-ai-alert-count">0</span>
                 </div>
-                <div id="mda-ai-alerts" style="max-height:220px;overflow-y:auto;">
+                <div id="mda-ai-alerts" style="max-height:320px;overflow-y:auto;">
                     <div class="mda-ai-alert info">
                         <div class="mda-ai-alert-head">
                             <span class="mda-ai-alert-tag">INFO</span><span>--</span>
@@ -3755,11 +3812,11 @@
             </div>
         </div>
 
-        <!-- ╔══ § 2 · AI DEEP ANALYSIS (OPUS) ══╗ -->
+        <!-- ╔══ § 2 · AI DEEP ANALYSIS (LLM) ══╗ -->
         <div class="mda-ai-col opus">
             <div class="mda-ai-col-head">
                 <span class="mda-ai-col-tag">§ 2</span>
-                <span>AI DEEP ANALYSIS · OPUS</span>
+                <span>AI DEEP ANALYSIS · LLM</span>
             </div>
 
             <div class="mda-ai-section">
@@ -3768,12 +3825,12 @@
                     <span class="mda-ai-sec-count" id="mda-ai-opus-tokens">--</span>
                 </div>
                 <div id="mda-ai-opus-narr" class="mda-ai-opus-narr empty">
-                    — กดปุ่ม "✨ Run Opus Analysis" เพื่อให้ AI วิเคราะห์เชิงลึก —
-                    (mock pipeline · ตั้งค่า ⚙ Settings เพื่อเชื่อมต่อ Workers AI · Llama 3.3 70B)
+                    — กดปุ่ม "✨ Run LLM Analysis" เพื่อให้ AI วิเคราะห์เชิงลึก —
+                    (mock pipeline · เลือก Model + ตั้งค่า ⚙ Settings เพื่อเชื่อมต่อ Workers AI / Gemini)
                 </div>
                 <div class="mda-ai-opus-meta">
                     <span id="mda-ai-opus-latency">--ms</span> ·
-                    <span class="mda-ai-model-badge" id="mda-ai-opus-model">llama-3.3-mock</span>
+                    <span class="mda-ai-model-badge" id="mda-ai-opus-model">llm-mock</span>
                 </div>
             </div>
 
@@ -3783,7 +3840,7 @@
                     <span class="mda-ai-sec-count" id="mda-ai-opus-conf">--</span>
                 </div>
                 <div id="mda-ai-opus-caveats" style="font-family:'Sarabun',sans-serif;font-size:10.5px;line-height:1.5;color:#cbd5e1;">
-                    <span style="color:#64748b;font-style:italic;">— ยังไม่มีการประเมิน — รอเรียก Opus —</span>
+                    <span style="color:#64748b;font-style:italic;">— ยังไม่มีการประเมิน — รอเรียก LLM —</span>
                 </div>
             </div>
         </div>
@@ -3830,7 +3887,7 @@
 
     <!-- ─── Action bar ─── -->
     <div class="mda-ai-actions">
-        <button class="mda-ai-btn" id="mda-ai-gen">✨ Run Opus Analysis</button>
+        <button class="mda-ai-btn" id="mda-ai-gen">✨ Run LLM Analysis</button>
         <button class="mda-ai-btn secondary" id="mda-ai-refresh">🔄 Refresh Rules</button>
         <span class="mda-ai-actions-spacer"></span>
         <button class="mda-ai-btn secondary" id="mda-ai-clear">🧹 Clear All</button>
@@ -22520,10 +22577,11 @@ function _sonarEqnRender(panel) {
            (effective 1 ก.ค. 2569 — III-A Autonomy Levels), PDPA
          • ผลลัพธ์เป็น "Decision Support" ไม่ใช่ autonomous decision
        ════════════════════════════════════════════════════════════ */
-    MDA.cfg.aiProxyUrl  = null;     // Cloudflare Worker URL สำหรับ Workers AI (Llama 3.3)
+    MDA.cfg.aiProxyUrl  = null;     // Cloudflare Worker URL สำหรับ Workers AI (Llama 3.3) / Gemini
     MDA.cfg.aiMockMode  = true;     // true = ใช้ rule-engine + canned briefing
     MDA.cfg.aiTickMs    = 18_000;   // mock alert tick (~18s)
     MDA.cfg.aiMaxAlerts = 30;       // เก็บ alert ล่าสุดสูงสุด
+    MDA.cfg.aiModel     = 'gemini-2.0-flash';  // v14.0.6 — default LLM (Gemini 2.0 Flash · 15 RPM free)
 
     MDA.AI = (function () {
         // ── state ───────────────────────────────────────────
@@ -22546,6 +22604,7 @@ function _sonarEqnRender(panel) {
         let modal, backdrop, headerBtn, closeBtn, dismissBtn, refreshBtn;
         let modeRules, modeLlm, modeState, lastUpdate;
         let settingsBtn, proxyInfo;
+        let modelSelect;  // v14.0.6 — LLM model selector dropdown
         let alertList, alertCount, taxTotal, taxRule;
         let ruleSynth, ruleLevel;
         let opusNarr, opusMeta, opusTokens, opusLatency, opusModel, opusConf, opusCaveats;
@@ -22565,6 +22624,7 @@ function _sonarEqnRender(panel) {
             lastUpdate = $('mda-ai-last-update');
             settingsBtn= $('mda-ai-settings-btn');
             proxyInfo  = $('mda-ai-proxy-info');
+            modelSelect= $('mda-ai-model-select');
             alertList  = $('mda-ai-alerts');
             alertCount = $('mda-ai-alert-count');
             taxTotal   = $('mda-ai-tax-total');
@@ -22959,9 +23019,10 @@ function _sonarEqnRender(panel) {
             ruleSynth.innerHTML = parts.join('');
         }
 
-        // ── § 2 OPUS DEEP ANALYSIS ────────────────────────
+        // ── § 2 LLM DEEP ANALYSIS ─────────────────────────
         // Mock pipeline — canned narrative จาก state (2s loading)
-        // v14.0.5+ จะแทนด้วย real call → Cloudflare Worker → Workers AI (Llama 3.3 70B)
+        // v14.0.6 — real call → Cloudflare Worker → Workers AI (Llama 3.3 / DeepSeek / Llama 3.1)
+        //                                       → Google Gemini (2.0 Flash / 2.5 Pro)
         function _opusNarrativeFromState() {
             const t = state.taxonomy;
             const total = t.kinetic + t.asymmetric + t.cyber + t.environmental + t.hybrid;
@@ -23024,6 +23085,11 @@ function _sonarEqnRender(panel) {
 
             const proxy = MDA.cfg.aiProxyUrl;
             const wantReal = (state.mode === 'llm') && !!proxy && !MDA.cfg.aiMockMode;
+            const selectedModel = MDA.cfg.aiModel || 'gemini-2.0-flash';
+            const provider = _providerOf(selectedModel);
+            const providerLabel = provider === 'google-gemini'
+                ? 'Google Gemini'
+                : (provider === 'cloudflare-workers-ai' ? 'Workers AI' : 'LLM');
 
             // Loading state (honest message based on path)
             opusNarr.classList.remove('empty');
@@ -23031,10 +23097,10 @@ function _sonarEqnRender(panel) {
                 <div class="mda-ai-opus-loading">
                     <div class="mda-ai-spinner"></div>
                     <div>${wantReal
-                        ? 'กำลังเรียก Workers AI (Llama 3.3) ผ่าน Worker …'
+                        ? ('กำลังเรียก ' + providerLabel + ' (' + selectedModel + ') ผ่าน Worker …')
                         : 'กำลังประมวลผล mock pipeline …'}</div>
                     <div style="font-size:9px;color:#94a3b8;letter-spacing:0.10em;">
-                        ${wantReal ? 'live · cloudflare workers ai' : 'offline · narrative-from-state'}
+                        ${wantReal ? ('live · ' + provider) : 'offline · narrative-from-state'}
                     </div>
                 </div>`;
             if (opusTokens) opusTokens.textContent = '…';
@@ -23044,7 +23110,7 @@ function _sonarEqnRender(panel) {
 
             // upstream result holders
             let narrative   = null;
-            let modelLabel  = 'llama-3.3-mock';
+            let modelLabel  = selectedModel + '-mock';
             let serverLat   = null;
             let usage       = null;
             let errMsg      = null;
@@ -23056,6 +23122,7 @@ function _sonarEqnRender(panel) {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
+                            model: selectedModel,           // v14.0.6 — chosen provider/model
                             taxonomy: state.taxonomy,
                             alerts: state.alerts.slice(0, 12)
                         })
@@ -23066,7 +23133,7 @@ function _sonarEqnRender(panel) {
                         console.warn('[MDA.AI] Worker returned error', r.status, j);
                     } else if (j && j.text) {
                         narrative  = j.text;
-                        modelLabel = j.model || 'llama-3.3-70b';
+                        modelLabel = j.model || selectedModel;
                         serverLat  = (typeof j.latency_ms === 'number') ? j.latency_ms : null;
                         usage      = j.usage || null;
                         source     = 'real';
@@ -23075,7 +23142,7 @@ function _sonarEqnRender(panel) {
                     }
                 } catch (e) {
                     errMsg = String(e && e.message || e);
-                    console.warn('[MDA.AI] Opus proxy call failed, falling back to mock', e);
+                    console.warn('[MDA.AI] LLM proxy call failed, falling back to mock', e);
                 }
             }
 
@@ -23135,7 +23202,7 @@ function _sonarEqnRender(panel) {
 
             try { if (typeof addLog === 'function') {
                 const tag = source === 'real' ? 'LIVE' : (source === 'fallback' ? 'FALLBACK' : 'MOCK');
-                addLog('[AI] Opus ' + tag + ' · ' + latency + 'ms · ' + modelLabel + (usage ? (' · ' + usage.output_tokens + ' tok') : ''),
+                addLog('[AI] LLM ' + tag + ' · ' + latency + 'ms · ' + modelLabel + (usage ? (' · ' + usage.output_tokens + ' tok') : ''),
                        source === 'real' ? '#86efac' : (source === 'fallback' ? '#fca5a5' : '#c4b5fd'));
             }} catch (_) {}
         }
@@ -23234,14 +23301,14 @@ function _sonarEqnRender(panel) {
             renderForceRecommendations();
             if (opusNarr) {
                 opusNarr.classList.add('empty');
-                opusNarr.textContent = '— กดปุ่ม "✨ Run Opus Analysis" เพื่อให้ AI วิเคราะห์เชิงลึก —\n(mock pipeline · ตั้งค่า ⚙ Settings เพื่อเชื่อมต่อ Workers AI · Llama 3.3 70B)';
+                opusNarr.textContent = '— กดปุ่ม "✨ Run LLM Analysis" เพื่อให้ AI วิเคราะห์เชิงลึก —\n(mock pipeline · เลือก Model + ตั้งค่า ⚙ Settings เพื่อเชื่อมต่อ Workers AI / Gemini)';
             }
             if (opusTokens)  opusTokens.textContent  = '--';
             if (opusLatency) opusLatency.textContent = '--ms';
             if (opusConf)    opusConf.textContent    = '--';
-            if (opusCaveats) opusCaveats.innerHTML = '<span style="color:#64748b;font-style:italic;">— ยังไม่มีการประเมิน — รอเรียก Opus —</span>';
+            if (opusCaveats) opusCaveats.innerHTML = '<span style="color:#64748b;font-style:italic;">— ยังไม่มีการประเมิน — รอเรียก LLM —</span>';
             try { if (typeof addLog === 'function') {
-                addLog('[AI] State cleared (alerts + taxonomy + opus)', '#7dd3fc');
+                addLog('[AI] State cleared (alerts + taxonomy + llm)', '#7dd3fc');
             }} catch (_) {}
         }
 
@@ -23278,6 +23345,18 @@ function _sonarEqnRender(panel) {
 
         // ── v14.0.4 · proxy URL settings (localStorage) ─────
         const LS_KEY_PROXY = 'shield_ai_proxy_url';
+        // ── v14.0.6 · LLM model selector (localStorage) ─────
+        const LS_KEY_MODEL = 'shield_ai_model';
+        const ALLOWED_MODELS = [
+            // Google Gemini
+            'gemini-2.0-flash',
+            'gemini-2.5-flash',
+            'gemini-2.5-pro',
+            // Cloudflare Workers AI
+            '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
+            '@cf/deepseek-ai/deepseek-r1-distill-qwen-32b',
+            '@cf/meta/llama-3.1-8b-instruct'
+        ];
 
         function _shortProxy(u) {
             if (!u) return 'not set';
@@ -23315,6 +23394,32 @@ function _sonarEqnRender(panel) {
             } catch (_) { /* ignore */ }
         }
 
+        // v14.0.6 — model selector helpers
+        function _loadModelFromStorage() {
+            try {
+                const saved = localStorage.getItem(LS_KEY_MODEL);
+                if (saved && ALLOWED_MODELS.indexOf(saved) !== -1) {
+                    MDA.cfg.aiModel = saved;
+                    return saved;
+                }
+            } catch (_) { /* localStorage unavailable */ }
+            return null;
+        }
+
+        function _saveModelToStorage(id) {
+            try {
+                if (id) localStorage.setItem(LS_KEY_MODEL, id);
+                else    localStorage.removeItem(LS_KEY_MODEL);
+            } catch (_) { /* ignore */ }
+        }
+
+        function _providerOf(modelId) {
+            if (!modelId) return 'unknown';
+            if (modelId.indexOf('gemini') === 0) return 'google-gemini';
+            if (modelId.indexOf('@cf/') === 0)   return 'cloudflare-workers-ai';
+            return 'unknown';
+        }
+
         function openSettings() {
             const cur = MDA.cfg.aiProxyUrl || '';
             const msg = [
@@ -23337,7 +23442,7 @@ function _sonarEqnRender(panel) {
                 MDA.cfg.aiProxyUrl = trimmed.replace(/\/+$/, '');  // strip trailing slash
                 _saveProxyToStorage(MDA.cfg.aiProxyUrl);
                 try { addLog('[AI] Proxy URL set · ' + _shortProxy(MDA.cfg.aiProxyUrl), '#86efac'); } catch (_) {}
-                // auto-switch to OPUS mode for convenience
+                // auto-switch to LLM mode for convenience
                 setMode('llm');
             }
             _refreshProxyInfo();
@@ -23425,11 +23530,35 @@ function _sonarEqnRender(panel) {
                 setMode('rules');
             }
             _refreshProxyInfo();
+
+            // v14.0.6 — auto-load saved model + wire up change listener
+            _loadModelFromStorage();
+            if (modelSelect) {
+                // sync UI to current model (validated against ALLOWED_MODELS)
+                if (ALLOWED_MODELS.indexOf(MDA.cfg.aiModel) !== -1) {
+                    modelSelect.value = MDA.cfg.aiModel;
+                }
+                modelSelect.addEventListener('change', (e) => {
+                    const id = (e.target && e.target.value || '').trim();
+                    if (ALLOWED_MODELS.indexOf(id) === -1) {
+                        try { addLog('[AI] Unknown model rejected: ' + id, '#fbbf24'); } catch (_) {}
+                        e.target.value = MDA.cfg.aiModel;
+                        return;
+                    }
+                    MDA.cfg.aiModel = id;
+                    _saveModelToStorage(id);
+                    const prov = _providerOf(id);
+                    try { addLog('[AI] Model switched · ' + id + ' (' + prov + ')', '#c4b5fd'); } catch (_) {}
+                    // update model label in narrative box (placeholder until next run)
+                    if (opusModel) opusModel.textContent = id;
+                });
+            }
+
             renderAlerts();
             renderTaxonomy();
             renderRuleSynthesis();
             renderForceRecommendations();
-            console.log('[MDA.AI] v14.0.5 initialized · classifier active · provider=cloudflare-workers-ai · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
+            console.log('[MDA.AI] v14.0.6 initialized · classifier active · multi-provider (Workers AI + Gemini) · model=' + MDA.cfg.aiModel + ' · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
         }
 
         // expose
