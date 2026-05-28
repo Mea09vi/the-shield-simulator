@@ -2752,6 +2752,18 @@
                 <span style="width:30px"></span>
             </div>
             <!-- SeaVision JSON import (action buttons) -->
+            <div class="mda-lp-row mda-lp-action" data-mda-action="sv-key" title="ตั้งค่า SeaVision x-api-key สำหรับดึงข้อมูลอัตโนมัติ">
+                <span class="bullet" style="background:#818cf8"></span>
+                <span class="label">🔑 SeaVision API Key</span>
+                <span class="count" id="mda-sv-key-label">KEY</span>
+                <span class="mda-arrow">›</span>
+            </div>
+            <div class="mda-lp-row" data-mda-action="sv-live" data-sync-btn="svLiveBtn" title="ดึงข้อมูลเรือสดจาก SeaVision API อัตโนมัติ">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#818cf8"></span>📡 SeaVision Live API</span>
+                <span class="count" id="mda-cnt-svlive">--</span>
+                <span class="mda-sw"></span>
+            </div>
             <div class="mda-lp-row mda-lp-action" data-mda-action="sv-import" title="Import ไฟล์ JSON จาก SeaVision">
                 <span class="bullet" style="background:#0ea5e9"></span>
                 <span class="label">📂 Import SeaVision JSON</span>
@@ -3326,9 +3338,13 @@
                       style="display:inline-block;margin:0 4px;padding:2px 7px;border-radius:4px;
                              font-size:10px;font-family:'Share Tech Mono',monospace;background:rgba(71,85,105,.45);
                              color:#94a3b8;border:1px solid rgba(148,163,184,.4);">SIM</span>
+                <button id="svKeyBtn" class="sv-key-btn" title="ตั้งค่า SeaVision x-api-key สำหรับดึงข้อมูลอัตโนมัติ"
+                        onclick="setupSeaVisionKey()">🔑 Key</button>
+                <button id="svLiveBtn" class="sv-key-btn" title="ดึงข้อมูลเรือสดจาก SeaVision API อัตโนมัติ"
+                        onclick="toggleSeaVisionLive()">📡 Live API</button>
                 <button id="svImportBtn" class="sv-key-btn" title="Import ไฟล์ JSON ที่ export จาก SeaVision"
-                        onclick="document.getElementById('svImportInput').click()">📂 Import</button>
-                <button id="svResetBtn" class="sv-key-btn sv-reset-btn" title="ล้างข้อมูล SeaVision JSON ที่นำเข้าทั้งหมด"
+                        onclick="document.getElementById('svImportInput').click()">📂 File</button>
+                <button id="svResetBtn" class="sv-key-btn sv-reset-btn" title="ล้างข้อมูล SeaVision ทั้งหมด"
                         onclick="resetSVImport()">🗑 Reset</button>
                 <span class="mh-divider"></span>
                 <button id="dive3dBtn" class="dive3d-btn" title="3D Underwater Dive View — มุมมองใต้น้ำ 3 มิติ"
@@ -5220,69 +5236,82 @@ cableLandingGroup.addLayer(clsChumphonMarker);
 cableLandingGroup.addLayer(clsRayongMarker);
 
 // ── Cable Routes (Extended Gulf of Thailand Reach) ──
-// 🟢 Green — ชลบุรี → ชุมพร → นราธิวาส/มาเลเซีย
+// [v13.0.8] แก้ waypoints ให้อยู่ในน่านน้ำจริง — อิงแนวชายฝั่งจาก OSM + TeleGeography
+// (เส้นทางยังเป็น "ประมาณการ" เพราะพิกัดจริงเป็นความลับ — แต่ไม่ตัดผ่านแผ่นดินอีกแล้ว)
+
+// 🟢 Green — Si Racha CLS → ออกอ่าวไทยฝั่งตะวันตก → Songkhla/Narathiwat → Kelantan, MY
+//   เลียบชายฝั่งฝั่งตะวันตกของอ่าวไทย (Phetchaburi → Chumphon → Surat → Songkhla)
 const greenRoute = L.polyline([
-    [13.115, 100.915],
-    [12.800, 100.050],
-    [12.650, 100.200],
-    [11.500,  99.800],
-    [10.450,  99.250],
-    [ 8.000,  99.500],
-    [ 6.000, 100.200]
+    [13.115, 100.915],  // Si Racha CLS
+    [12.850, 100.500],  // offshore ชะอำ (ห่างฝั่ง ~25 km)
+    [12.100,  99.950],  // offshore หัวหิน
+    [11.000,  99.550],  // offshore ประจวบฯ
+    [10.200,  99.400],  // offshore ชุมพร
+    [ 9.100,  99.500],  // offshore สุราษฎร์ฯ
+    [ 8.000,  99.800],  // offshore นครศรีธรรมราช
+    [ 7.000, 100.500],  // offshore สงขลา
+    [ 6.200, 101.800],  // offshore นราธิวาส
+    [ 6.100, 102.200]   // ชายแดน MY (Kelantan)
 ], {color:'#4ade80', weight:2.5, dashArray:'8,5', opacity:0.92})
-    .bindTooltip('🟢 Green — ชลบุรี → ชุมพร → นราธิวาส/มาเลเซีย', {sticky:true});
+    .bindTooltip('🟢 Green — Si Racha → Songkhla → Kelantan (MY)', {sticky:true});
 
-// 🔴 Red — Main Trunk 1 → สิงคโปร์
+// 🔴 Red — Si Racha → กลางอ่าวไทย → ออกช่องอ่าวไทย-SCS → Singapore (เส้น Pahang offshore)
 const redRoute = L.polyline([
-    [13.115, 100.915],
-    [12.500, 100.500],
-    [11.800, 100.250],
-    [10.800, 100.100],
-    [ 8.500, 100.800],
-    [ 5.000, 102.500]
+    [13.115, 100.915],  // Si Racha CLS
+    [12.200, 100.800],  // mid-gulf
+    [10.500, 101.000],  // mid-gulf ลึก
+    [ 8.000, 101.800],  // ออกจากปากอ่าว
+    [ 6.000, 103.000],  // offshore Kelantan (ใน SCS แล้ว)
+    [ 3.500, 104.500],  // offshore Pahang
+    [ 1.500, 104.800],  // เข้าสิงคโปร์ทางตะวันออก
+    [ 1.270, 103.850]   // Singapore landing
 ], {color:'#f87171', weight:2.5, dashArray:'8,5', opacity:0.92})
-    .bindTooltip('🔴 Red — Main Trunk 1 → สิงคโปร์', {sticky:true});
+    .bindTooltip('🔴 Red — Si Racha → Singapore (East Malay coast)', {sticky:true});
 
-// 🟣 Dark Purple — Main Trunk 2 → ทะเลจีนใต้ตอนล่าง
+// 🟣 Dark Purple — Si Racha → ผ่านน่านน้ำกัมพูชา → SCS ใต้เวียดนาม
 const darkPurpleRoute = L.polyline([
-    [13.115, 100.915],
-    [12.350, 100.620],
-    [10.850, 100.400],
-    [ 8.000, 101.200],
-    [ 4.500, 103.000]
+    [13.115, 100.915],  // Si Racha CLS
+    [12.200, 101.500],  // mid-eastern gulf (ตราด offshore)
+    [10.500, 102.500],  // offshore Sihanoukville
+    [ 8.500, 104.200],  // ใต้ Phú Quốc / west of Cà Mau
+    [ 7.500, 105.500],  // ใต้แหลม Cà Mau (SCS)
+    [ 6.000, 107.000]   // SCS เปิด
 ], {color:'#7c3aed', weight:2.5, dashArray:'8,5', opacity:0.92})
-    .bindTooltip('🟣 Dark Purple — Main Trunk 2 → ทะเลจีนใต้ตอนล่าง', {sticky:true});
+    .bindTooltip('🟣 Dark Purple — Si Racha → SCS ผ่าน Cà Mau', {sticky:true});
 
-// 🌸 Fuchsia — Eastern Loop → เวียดนาม/ทะเลจีนใต้
+// 🌸 Fuchsia — Si Racha → ออก SCS ผ่าน Cà Mau → ฝั่งตะวันออกเวียดนาม
 const fuchsiaRoute = L.polyline([
-    [13.115, 100.915],
-    [12.100, 100.750],
-    [10.850, 100.600],
-    [ 8.000, 102.000],
-    [ 4.500, 104.500]
+    [13.115, 100.915],  // Si Racha CLS
+    [12.400, 101.800],  // offshore ตราด
+    [11.000, 103.200],  // ใต้ Sihanoukville
+    [ 9.500, 104.800],  // offshore Cà Mau
+    [ 8.500, 106.500],  // SCS
+    [10.500, 108.500]   // ฝั่งตะวันออกเวียดนาม (Phan Thiết offshore)
 ], {color:'#e879f9', weight:2.5, dashArray:'8,5', opacity:0.92})
-    .bindTooltip('🌸 Fuchsia — Eastern Loop → เวียดนาม/ทะเลจีนใต้', {sticky:true});
+    .bindTooltip('🌸 Fuchsia — Si Racha → Vietnam East / SCS', {sticky:true});
 
-// 🟡 Gold — ระยอง → อ่าวไทยตอนล่าง
+// 🟡 Gold — Rayong CLS → กลางอ่าวไทย → Singapore (เส้นสำรอง)
 const goldRoute = L.polyline([
-    [12.650, 101.250],
-    [11.800, 101.050],
-    [10.850, 101.200],
-    [ 8.500, 102.800],
-    [ 5.000, 104.000]
+    [12.650, 101.250],  // Rayong CLS
+    [11.500, 101.400],  // offshore Klaeng/Trat
+    [ 9.500, 102.200],  // mid-southern gulf
+    [ 7.000, 103.200],  // offshore Pattani
+    [ 4.000, 104.500],  // east Malay
+    [ 1.500, 104.500],  // east Tioman
+    [ 1.300, 104.300]   // Singapore (east approach)
 ], {color:'#eab308', weight:2.5, dashArray:'8,5', opacity:0.92})
-    .bindTooltip('🟡 Gold — ระยอง → อ่าวไทยตอนล่าง → สิงคโปร์', {sticky:true});
+    .bindTooltip('🟡 Gold — Rayong → Lower Gulf → Singapore', {sticky:true});
 
-// 🩵 AAG — International → มหาสมุทรแปซิฟิก
+// 🩵 AAG — Si Racha → SCS → Pacific (เลี่ยงจุด Cà Mau ลงใต้)
 const aagRoute = L.polyline([
-    [13.115, 100.915],
-    [12.850, 100.880],
-    [12.680, 100.860],
-    [11.500, 101.100],
-    [ 9.000, 102.500],
-    [ 6.000, 104.500]
+    [13.115, 100.915],  // Si Racha CLS
+    [12.400, 101.500],  // mid-eastern gulf
+    [10.500, 103.500],  // offshore กัมพูชา
+    [ 8.500, 105.500],  // ใต้เวียดนาม (Cà Mau offshore)
+    [10.000, 109.000],  // SCS ตะวันออกเวียดนาม
+    [12.000, 113.000]   // SCS เปิด — มุ่ง Guam/Pacific
 ], {color:'#06b6d4', weight:2.5, dashArray:'8,5', opacity:0.92})
-    .bindTooltip('🩵 AAG — Asia-America Gateway → มหาสมุทรแปซิฟิก', {sticky:true});
+    .bindTooltip('🩵 AAG — Asia-America Gateway → Pacific', {sticky:true});
 
 cableRouteGroup.addLayer(greenRoute);
 cableRouteGroup.addLayer(redRoute);
@@ -6824,6 +6853,215 @@ function importSVExport(file) {
     };
     reader.readAsText(file);
 }
+
+// ── SeaVision Automated API Integration (CORS bypassed via proxy) ──
+let svLiveActive = false;
+let svLiveTimer = null;
+const SV_POLL_MS = 60000; // poll every 60s
+
+function setupSeaVisionKey() {
+    const oldKey = localStorage.getItem('seavision-api-key') || '';
+    const key = prompt("กรุณากรอก SeaVision x-api-key (ได้จากหน้าโปรไฟล์ SeaVision ของคุณ):", oldKey);
+    if (key !== null) {
+        localStorage.setItem('seavision-api-key', key.trim());
+        addLog('🔑 SeaVision API Key: บันทึกข้อมูลกุญแจสำเร็จ', '#818cf8');
+        updateSeaVisionButtons();
+    }
+}
+
+function updateSeaVisionButtons() {
+    const key = localStorage.getItem('seavision-api-key');
+    const keyBtn = document.getElementById('svKeyBtn');
+    if (keyBtn) {
+        if (key) {
+            keyBtn.style.borderColor = '#818cf8';
+            keyBtn.style.color = '#c7d2fe';
+            keyBtn.textContent = '🔑 Key Saved';
+        } else {
+            keyBtn.style.borderColor = 'rgba(129,140,248,.35)';
+            keyBtn.style.color = '#818cf8';
+            keyBtn.textContent = '🔑 Key';
+        }
+    }
+    const mdaLabel = document.getElementById('mda-sv-key-label');
+    if (mdaLabel) {
+        mdaLabel.textContent = key ? 'SAVED' : 'KEY';
+        mdaLabel.style.color = key ? '#c7d2fe' : '#818cf8';
+    }
+}
+
+async function fetchSeaVisionLive() {
+    const key = localStorage.getItem('seavision-api-key');
+    if (!key) {
+        addLog('[SeaVision] ✗ ไม่พบ API Key กรุณากดปุ่ม Key เพื่อบันทึกก่อน', '#ef4444');
+        if (svLiveActive) toggleSeaVisionLive();
+        return;
+    }
+    
+    const btn = document.getElementById('svLiveBtn');
+    if (btn) btn.textContent = '📡 ดึงข้อมูล...';
+    
+    const lat = 12.66;
+    const lng = 100.9;
+    const radius = 100;
+    const age = 12;
+    
+    const isLocalServer = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    let url = '';
+    if (isLocalServer) {
+        url = `/seavision-api/vessels?latitude=${lat}&longitude=${lng}&radius=${radius}&age=${age}`;
+    } else {
+        url = `https://api.seavision.volpe.dot.gov/v1/vessels?latitude=${lat}&longitude=${lng}&radius=${radius}&age=${age}`;
+    }
+    
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
+        
+        const res = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'x-api-key': key
+            },
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+        }
+        
+        const list = await res.json();
+        if (!Array.isArray(list)) {
+            throw new Error('ข้อมูลไม่อยู่ในรูปแบบอาเรย์');
+        }
+        
+        if (!aisLiveActive) {
+            aisLiveActive = true;
+            aisRealMode   = true;
+            aisLayerGroup.addTo(map);
+            const toggleBtn = document.getElementById('aisToggleBtn');
+            if (toggleBtn) {
+                toggleBtn.classList.add('ais-live');
+                toggleBtn.textContent = '📡 AIS LIVE ●';
+            }
+        }
+        
+        let count = 0, skipped = 0, replaced = 0;
+        
+        list.forEach(raw => {
+            const mmsi = String(raw.mmsi || '').trim();
+            const latVal  = parseFloat(raw.latitude  || 0);
+            const lngVal  = parseFloat(raw.longitude || 0);
+            if (!mmsi || !latVal || !lngVal) { skipped++; return; }
+            
+            const nx = (lngVal - LNG_LEFT) / (LNG_RIGHT - LNG_LEFT);
+            const ny = (LAT_TOP - latVal)  / (LAT_TOP   - LAT_BOT);
+            if (landMaskReady && nx>=0&&nx<=1&&ny>=0&&ny<=1 && isOnLand(nx,ny)) { skipped++; return; }
+            
+            const wasReplaced = !!aisRealVessels[mmsi];
+            if (wasReplaced) replaced++;
+            
+            let tc = 0;
+            const vt = String(raw.vesselType || '').toLowerCase();
+            if (vt.includes('tanker')) tc = 80;
+            else if (vt.includes('cargo')) tc = 70;
+            else if (vt.includes('passenger')) tc = 60;
+            else if (vt.includes('fishing')) tc = 30;
+            else if (vt.includes('tug') || vt.includes('tow')) tc = 52;
+            else if (vt.includes('military') || vt.includes('naval') || vt.includes('government')) tc = 35;
+            else if (vt.includes('pleasure') || vt.includes('yacht')) tc = 37;
+            else if (vt.includes('search') || vt.includes('rescue')) tc = 51;
+            
+            const v = {
+                mmsi,
+                lat: latVal,
+                lng: lngVal,
+                name: raw.name || mmsi,
+                flag: _mmsiFlag(mmsi),
+                callsign: raw.callSign || '',
+                type: raw.vesselType || _aisTypeName(tc),
+                typeCode: tc,
+                cog: parseFloat(raw.COG || 0),
+                sog: parseFloat(raw.SOG || 0),
+                heading: parseFloat(raw.heading || raw.COG || 0),
+                length: parseFloat(raw.length || _shipLengthByType(tc)),
+                beam: parseFloat(raw.beam || 0),
+                imo: raw.imoNumber || '',
+                dest: raw.cargo || '',
+                status: raw.navStatus || 'Underway',
+                color: _aisTypeColor(tc),
+                age: 'Live',
+                timeOfFix: raw.timeOfFix || '',
+                lastSeen: Date.now(),
+                fromSVExport: true,
+                fromSeaVision: true,
+            };
+            
+            aisRealVessels[mmsi] = v;
+            count++;
+        });
+        
+        aisVesselData = Object.values(aisRealVessels);
+        renderAISVessels();
+        
+        const badge = document.getElementById('ais-live-count');
+        if (badge) badge.textContent = '●' + Object.keys(aisRealVessels).length;
+        
+        const mdaCnt = document.getElementById('mda-cnt-svlive');
+        if (mdaCnt) mdaCnt.textContent = count;
+        
+        if (btn) btn.textContent = '📡 Live API ●';
+        _aisSetSourceTag(`SV LIVE ${count}`, '#818cf8');
+        addLog(`[SeaVision-API] ✓ โหลดเรือสำเร็จ ${count} ลำ (skip ${skipped}, แทนที่ ${replaced})`, '#818cf8');
+        saveAISCache();
+    } catch (err) {
+        console.error("SeaVision API fetch error:", err);
+        addLog(`[SeaVision-API] ✗ ดึงข้อมูลขัดข้อง: ${err.message}`, '#ef4444');
+        if (btn) btn.textContent = '📡 Live API';
+        
+        const mdaCnt = document.getElementById('mda-cnt-svlive');
+        if (mdaCnt) mdaCnt.textContent = 'ERR';
+        
+        if (!isLocalServer) {
+            addLog(`[SeaVision-API] 💡 แนะนำเปิดโปรแกรมผ่าน start-server.bat เพื่อเลี่ยง CORS block`, '#fbbf24');
+        }
+    }
+}
+
+function toggleSeaVisionLive() {
+    const btn = document.getElementById('svLiveBtn');
+    if (!btn) return;
+    
+    if (!svLiveActive) {
+        const key = localStorage.getItem('seavision-api-key');
+        if (!key) {
+            setupSeaVisionKey();
+            if (!localStorage.getItem('seavision-api-key')) return;
+        }
+        
+        svLiveActive = true;
+        btn.classList.add('ais-live');
+        btn.textContent = '📡 Live API ●';
+        
+        fetchSeaVisionLive();
+        svLiveTimer = setInterval(fetchSeaVisionLive, SV_POLL_MS);
+    } else {
+        svLiveActive = false;
+        if (svLiveTimer) {
+            clearInterval(svLiveTimer);
+            svLiveTimer = null;
+        }
+        btn.classList.remove('ais-live');
+        btn.textContent = '📡 Live API';
+        
+        const mdaCnt = document.getElementById('mda-cnt-svlive');
+        if (mdaCnt) mdaCnt.textContent = '--';
+        
+        addLog('[SeaVision-API] หยุดการสืบค้นข้อมูลอัตโนมัติ', '#475569');
+    }
+}
+
 
 // เดาความยาวเรือจาก typeCode (ใช้เมื่อ SeaVision ไม่ส่ง length มา)
 function _shipLengthByType(tc) {
@@ -19402,6 +19640,9 @@ buildLandElevCanvas();
 // Init GFW API Mock client
 GfwClientMock.init();
 
+// Init SeaVision button states
+updateSeaVisionButtons();
+
 // ═══════════════════════════════════════════════════════════════
 //  [v10] ACOUSTIC RAY TRACING — 3D rays through SVP (Snell's law)
 // ───────────────────────────────────────────────────────────────
@@ -20901,11 +21142,11 @@ function _sonarEqnRender(panel) {
             return '';
         }
 
-        // ── Pick current-hour index from hourly arrays
+        // ── Pick current-hour index from hourly arrays (Asia/Bangkok timezone matched)
         function getCurrentHourIdx(times) {
             if (!times || !times.length) return 0;
-            const now = new Date();
-            const nowStr = now.toISOString().slice(0, 13); // "YYYY-MM-DDTHH"
+            // Get local date/time in Asia/Bangkok timezone in YYYY-MM-DDTHH format
+            const nowStr = new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Bangkok' }).slice(0, 13).replace(' ', 'T');
             let idx = times.findIndex(t => t.startsWith(nowStr));
             return idx < 0 ? 0 : idx;
         }
@@ -20994,11 +21235,11 @@ function _sonarEqnRender(panel) {
                 const idx = getCurrentHourIdx(h.time);
 
                 const d = {
-                    time: h.time ? h.time[idx].replace('T', ' ') : null,
-                    wh:   h.wave_height      ? h.wave_height[idx]      : null,
-                    wd:   h.wave_direction   ? h.wave_direction[idx]   : null,
-                    wp:   h.wave_period      ? h.wave_period[idx]      : null,
-                    wwh:  h.wind_wave_height ? h.wind_wave_height[idx] : null,
+                    time: (h.time && h.time[idx]) ? h.time[idx].replace('T', ' ') : null,
+                    wh:   (h.wave_height && h.wave_height[idx] != null) ? h.wave_height[idx] : null,
+                    wd:   (h.wave_direction && h.wave_direction[idx] != null) ? h.wave_direction[idx] : null,
+                    wp:   (h.wave_period && h.wave_period[idx] != null) ? h.wave_period[idx] : null,
+                    wwh:  (h.wind_wave_height && h.wind_wave_height[idx] != null) ? h.wind_wave_height[idx] : null,
                 };
 
                 MDA.data.marineWx = d;
@@ -21213,7 +21454,6 @@ function _sonarEqnRender(panel) {
             for (const base of MIRRORS) {
                 const url = `${base}?data=${encodeURIComponent(_Q)}`;
                 try {
-                    const r = await MDA.util.fetchJSON ? null : null; // placeholder
                     const resp = await fetchTO(url, 8000, { mode: 'cors' });
                     if (!resp.ok) { errs.push(`${base.split('/')[2]}: HTTP ${resp.status}`); continue; }
                     const j = await resp.json();
@@ -21591,6 +21831,8 @@ function _sonarEqnRender(panel) {
             'ais-anomaly': () => window.toggleAisAnomaly  && window.toggleAisAnomaly(),
             'dive3d'     : () => window.toggle3DView      && window.toggle3DView(),
             'audio'      : () => window.toggleAudio       && window.toggleAudio(),
+            'sv-key'     : () => window.setupSeaVisionKey && window.setupSeaVisionKey(),
+            'sv-live'    : () => window.toggleSeaVisionLive && window.toggleSeaVisionLive(),
             'sv-import'  : () => { const i=document.getElementById('svImportInput'); if(i) i.click(); },
             'sv-reset'   : () => window.resetSVImport     && window.resetSVImport(),
             // HSV-Ext (v11 B1–B7)
