@@ -2435,6 +2435,73 @@
         /* v12.5-E: #udc-reset-btn ย้ายเข้า header จึงต้องแสดงตลอด (ไม่ผูกกับ mda-mode) */
 
         /* ════════════════════════════════════════════════════════════════
+           v14.0.2 — Standalone AI DOMAIN button (Decision-Support Modal)
+           วางใน header flex ทางซ้ายของ #udc-reset-btn · violet/cyan theme
+           ──────────────────────────────────────────────────────────── */
+        #udc-ai-btn {
+            position: relative;
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 11px;
+            background: rgba(8,4,28,0.78);
+            border: 1px solid rgba(168,85,247,.55);
+            border-radius: 5px;
+            color: #c4b5fd;
+            font-family: 'Share Tech Mono', 'Consolas', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.4px;
+            cursor: pointer;
+            user-select: none;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow:
+                0 2px 8px rgba(0,0,0,.35),
+                0 0 0 1px rgba(168,85,247,.18) inset,
+                0 0 14px rgba(168,85,247,.12);
+            transition: background .15s, border-color .15s, box-shadow .15s, transform .15s, color .15s;
+        }
+        #udc-ai-btn:hover {
+            background: rgba(168,85,247,.18);
+            border-color: #a78bfa;
+            color: #ede9fe;
+            box-shadow:
+                0 4px 22px rgba(168,85,247,.45),
+                0 0 0 1px rgba(168,85,247,.40) inset,
+                0 0 24px rgba(168,85,247,.35);
+            transform: translateY(-1px);
+        }
+        #udc-ai-btn:active { transform: translateY(0); }
+        #udc-ai-btn.active {
+            background: rgba(168,85,247,.26);
+            border-color: #c4b5fd;
+            color: #f5f3ff;
+            box-shadow:
+                0 0 0 1px rgba(196,181,253,.55) inset,
+                0 0 24px rgba(168,85,247,.55);
+        }
+        #udc-ai-btn .uab-icon {
+            display: inline-block;
+            font-size: 12px;
+            filter: drop-shadow(0 0 4px rgba(168,85,247,.7));
+            transition: transform .35s ease;
+        }
+        #udc-ai-btn:hover .uab-icon { transform: scale(1.18) rotate(-6deg); }
+        #udc-ai-btn .uab-pulse {
+            position: absolute; top: 50%; right: 6px;
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: #a78bfa;
+            transform: translateY(-50%);
+            box-shadow: 0 0 8px #a78bfa, 0 0 14px rgba(168,85,247,.7);
+            animation: uabPulse 1.8s ease-in-out infinite;
+            opacity: .85;
+        }
+        @keyframes uabPulse {
+            0%,100% { opacity: .35; transform: translateY(-50%) scale(.85); }
+            50%     { opacity: 1;   transform: translateY(-50%) scale(1.25); }
+        }
+
+        /* ════════════════════════════════════════════════════════════════
            v12.5-E — Standalone RESET button (Emergency Drill)
            ย้ายเข้า header flex (แทนที่ .badge-v4 เดิม) · with confirmation modal
            ──────────────────────────────────────────────────────────── */
@@ -2598,246 +2665,457 @@
         }
 
         /* ════════════════════════════════════════════════════════════════
-           [v14.0.1] AI DOMAIN — floating draggable panel
+           [v14.0.2] AI DOMAIN — MODAL OVERLAY (replaces floating panel)
            ────────────────────────────────────────────────────────────────
+           Pattern : PV ship modal (#pvShipModal) — blurred backdrop focus mode
+           Layout  : centered, 3 sections (Rule-Based + Opus Analysis + Force)
            Decision Support Only · Human-in-the-Loop required
-           ระบบ AI ผู้ช่วยวิเคราะห์สถานการณ์ (ไม่ใช่ autonomous decision)
            ════════════════════════════════════════════════════════════════ */
-        #mda-ai-panel {
-            position: fixed;
-            top: 80px;
-            right: 16px;
-            width: 360px;
-            max-height: calc(100vh - 140px);
+        #mda-ai-modal-backdrop {
             display: none;
-            flex-direction: column;
-            background: linear-gradient(180deg, rgba(8,21,37,0.96) 0%, rgba(6,16,30,0.96) 100%);
-            border: 1px solid var(--mda-edge, rgba(0,212,255,0.32));
-            border-radius: 6px;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 7998;
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            animation: aibFade 0.18s ease-out;
+        }
+        #mda-ai-modal-backdrop.active { display: block; }
+        @keyframes aibFade {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        #mda-ai-modal {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%) scale(0.92);
+            width: 880px;
+            max-width: calc(100vw - 60px);
+            max-height: calc(100vh - 60px);
+            z-index: 8000;
+            background: linear-gradient(180deg, rgba(8,21,37,0.98) 0%, rgba(6,16,30,0.98) 100%);
+            border: 1.5px solid rgba(168,85,247,0.55);
+            border-radius: 10px;
             box-shadow:
-                0 0 24px rgba(0,212,255,0.18),
-                0 8px 32px rgba(0,0,0,0.55),
-                inset 0 1px 0 rgba(125,211,252,0.10);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+                0 24px 64px rgba(0,0,0,0.65),
+                0 0 36px rgba(168,85,247,0.30),
+                inset 0 1px 0 rgba(196,181,253,0.14);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             font-family: 'Share Tech Mono', 'Consolas', monospace;
             color: #cbd5e1;
-            z-index: 9100;
-            user-select: none;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition:
+                opacity .22s ease,
+                visibility .22s ease,
+                transform .22s ease;
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
         }
-        #mda-ai-panel.open { display: flex; }
-        #mda-ai-panel .mda-ai-head {
+        #mda-ai-modal.show {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translate(-50%,-50%) scale(1);
+        }
+        #mda-ai-modal .mda-ai-head {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 8px 12px;
-            background: linear-gradient(90deg, rgba(125,211,252,0.10), rgba(168,85,247,0.10));
-            border-bottom: 1px solid var(--mda-edge, rgba(0,212,255,0.28));
-            cursor: move;
+            padding: 12px 18px;
+            background: linear-gradient(90deg, rgba(125,211,252,0.10) 0%, rgba(168,85,247,0.18) 50%, rgba(125,211,252,0.10) 100%);
+            border-bottom: 1px solid rgba(168,85,247,0.40);
         }
-        #mda-ai-panel .mda-ai-title {
-            font-size: 12px; font-weight: 700; letter-spacing: 1.5px;
-            color: #c4b5fd;
-            text-shadow: 0 0 6px rgba(167,139,250,0.55);
-            display: flex; align-items: center; gap: 6px;
+        #mda-ai-modal .mda-ai-title {
+            font-size: 14px; font-weight: 700; letter-spacing: 1.8px;
+            color: #ede9fe;
+            text-shadow: 0 0 8px rgba(167,139,250,0.65);
+            display: flex; align-items: center; gap: 10px;
         }
-        #mda-ai-panel .mda-ai-title .mda-ai-dot {
-            width: 7px; height: 7px; border-radius: 50%;
+        #mda-ai-modal .mda-ai-title .mda-ai-dot {
+            width: 9px; height: 9px; border-radius: 50%;
             background: #a78bfa;
-            box-shadow: 0 0 8px #a78bfa, 0 0 14px rgba(167,139,250,0.55);
+            box-shadow: 0 0 10px #a78bfa, 0 0 18px rgba(167,139,250,0.65);
             animation: aiPulse 1.6s ease-in-out infinite;
+        }
+        #mda-ai-modal .mda-ai-title .mda-ai-sub {
+            font-size: 10px; color: #c4b5fd; opacity: 0.7;
+            letter-spacing: 1.2px;
+            font-weight: 400;
+            margin-left: 8px;
         }
         @keyframes aiPulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50%      { opacity: 0.45; transform: scale(0.78); }
         }
-        #mda-ai-panel .mda-ai-close {
+        #mda-ai-modal .mda-ai-close {
             background: transparent;
-            border: 1px solid rgba(168,85,247,0.32);
+            border: 1px solid rgba(168,85,247,0.40);
             color: #c4b5fd;
-            font-size: 12px;
-            width: 22px; height: 22px; line-height: 18px; padding: 0;
-            border-radius: 3px;
+            font-size: 14px;
+            width: 28px; height: 28px; line-height: 24px; padding: 0;
+            border-radius: 4px;
             cursor: pointer;
+            transition: all .15s;
         }
-        #mda-ai-panel .mda-ai-close:hover {
-            background: rgba(168,85,247,0.18); color: #fff;
-            box-shadow: 0 0 8px rgba(168,85,247,0.45);
+        #mda-ai-modal .mda-ai-close:hover {
+            background: rgba(168,85,247,0.22); color: #fff;
+            box-shadow: 0 0 12px rgba(168,85,247,0.55);
+            border-color: #c4b5fd;
         }
-        #mda-ai-panel .mda-ai-toolbar {
-            display: flex; align-items: center; gap: 8px;
-            padding: 6px 12px;
-            border-bottom: 1px solid rgba(125,211,252,0.12);
-            background: rgba(15,23,42,0.4);
-            font-size: 10px; letter-spacing: 0.08em;
+        #mda-ai-modal .mda-ai-toolbar {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 18px;
+            border-bottom: 1px solid rgba(125,211,252,0.18);
+            background: rgba(15,23,42,0.45);
+            font-size: 10px; letter-spacing: 0.10em;
         }
-        #mda-ai-panel .mda-ai-mode-pill {
-            display: inline-flex; align-items: center; gap: 4px;
-            padding: 2px 8px;
+        #mda-ai-modal .mda-ai-mode-pill {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 3px 10px;
             border: 1px solid rgba(125,211,252,0.32);
-            border-radius: 10px;
-            font-size: 9.5px;
+            border-radius: 12px;
+            font-size: 10px;
             color: #7dd3fc;
             cursor: pointer;
-            background: rgba(15,23,42,0.4);
+            background: rgba(15,23,42,0.55);
+            transition: all .15s;
         }
-        #mda-ai-panel .mda-ai-mode-pill.on {
-            background: rgba(168,85,247,0.18);
-            border-color: rgba(168,85,247,0.55);
-            color: #e9d5ff;
-            box-shadow: 0 0 8px rgba(168,85,247,0.40);
+        #mda-ai-modal .mda-ai-mode-pill.on {
+            background: rgba(168,85,247,0.22);
+            border-color: rgba(168,85,247,0.65);
+            color: #ede9fe;
+            box-shadow: 0 0 10px rgba(168,85,247,0.45);
         }
-        #mda-ai-panel .mda-ai-mode-pill.off {
-            opacity: 0.6;
+        #mda-ai-modal .mda-ai-mode-pill.off { opacity: 0.55; }
+        #mda-ai-modal .mda-ai-toolbar-spacer { flex: 1; }
+        #mda-ai-modal .mda-ai-toolbar-info {
+            font-size: 9.5px; color: #94a3b8;
+            letter-spacing: 0.12em;
         }
-        #mda-ai-panel .mda-ai-body {
-            flex: 1; overflow-y: auto;
-            padding: 8px 12px 6px;
+
+        /* ─── Modal body: 3-column grid (sections) ─── */
+        #mda-ai-modal .mda-ai-body {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            padding: 14px 18px;
+            overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: rgba(125,211,252,0.35) transparent;
+            scrollbar-color: rgba(168,85,247,0.40) transparent;
         }
-        #mda-ai-panel .mda-ai-body::-webkit-scrollbar { width: 6px; }
-        #mda-ai-panel .mda-ai-body::-webkit-scrollbar-thumb {
-            background: rgba(125,211,252,0.35); border-radius: 3px;
+        #mda-ai-modal .mda-ai-body::-webkit-scrollbar { width: 7px; }
+        #mda-ai-modal .mda-ai-body::-webkit-scrollbar-thumb {
+            background: rgba(168,85,247,0.40); border-radius: 3px;
         }
-        #mda-ai-panel .mda-ai-section {
-            margin-bottom: 10px;
+        #mda-ai-modal .mda-ai-col {
+            display: flex; flex-direction: column; gap: 10px;
+            min-width: 0;  /* allow shrink */
         }
-        #mda-ai-panel .mda-ai-sec-head {
-            font-size: 10px; letter-spacing: 0.12em;
+        #mda-ai-modal .mda-ai-col-head {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 10px; letter-spacing: 0.18em;
+            text-transform: uppercase;
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid;
+            background: rgba(15,23,42,0.65);
+        }
+        #mda-ai-modal .mda-ai-col-head .mda-ai-col-tag {
+            font-weight: 700;
+            padding: 1px 5px;
+            border-radius: 2px;
+            font-size: 9px;
+            letter-spacing: 0.10em;
+        }
+        #mda-ai-modal .mda-ai-col.rule .mda-ai-col-head {
+            color: #7dd3fc;
+            border-color: rgba(125,211,252,0.45);
+            box-shadow: inset 0 0 12px rgba(125,211,252,0.10);
+        }
+        #mda-ai-modal .mda-ai-col.rule .mda-ai-col-tag {
+            background: rgba(125,211,252,0.22);
+            color: #e0f2fe;
+        }
+        #mda-ai-modal .mda-ai-col.opus .mda-ai-col-head {
+            color: #c4b5fd;
+            border-color: rgba(168,85,247,0.55);
+            box-shadow: inset 0 0 12px rgba(168,85,247,0.15);
+        }
+        #mda-ai-modal .mda-ai-col.opus .mda-ai-col-tag {
+            background: rgba(168,85,247,0.28);
+            color: #f5f3ff;
+        }
+        #mda-ai-modal .mda-ai-col.force .mda-ai-col-head {
+            color: #fcd34d;
+            border-color: rgba(252,211,77,0.45);
+            box-shadow: inset 0 0 12px rgba(252,211,77,0.10);
+        }
+        #mda-ai-modal .mda-ai-col.force .mda-ai-col-tag {
+            background: rgba(252,211,77,0.22);
+            color: #fef9c3;
+        }
+        #mda-ai-modal .mda-ai-section {
+            background: rgba(15,23,42,0.55);
+            border: 1px solid rgba(125,211,252,0.14);
+            border-radius: 4px;
+            padding: 8px 10px;
+        }
+        #mda-ai-modal .mda-ai-sec-head {
+            font-size: 9.5px; letter-spacing: 0.14em;
             color: #94a3b8;
             border-bottom: 1px solid rgba(125,211,252,0.16);
-            padding-bottom: 3px;
+            padding-bottom: 4px;
             margin-bottom: 6px;
             text-transform: uppercase;
             display: flex; justify-content: space-between; align-items: center;
         }
-        #mda-ai-panel .mda-ai-sec-head .mda-ai-sec-count {
+        #mda-ai-modal .mda-ai-sec-head .mda-ai-sec-count {
             color: #7dd3fc;
             font-weight: 700;
         }
-        #mda-ai-panel .mda-ai-alert {
+        #mda-ai-modal .mda-ai-alert {
             padding: 6px 8px;
             margin-bottom: 5px;
             border-left: 3px solid #475569;
-            background: rgba(15,23,42,0.55);
+            background: rgba(8,15,28,0.65);
             border-radius: 0 3px 3px 0;
             font-size: 10.5px;
-            line-height: 1.4;
+            line-height: 1.45;
             color: #e2e8f0;
             transition: background 0.2s;
         }
-        #mda-ai-panel .mda-ai-alert:hover { background: rgba(15,23,42,0.85); }
-        #mda-ai-panel .mda-ai-alert.crit {
+        #mda-ai-modal .mda-ai-alert:hover { background: rgba(8,15,28,0.95); }
+        #mda-ai-modal .mda-ai-alert.crit {
             border-left-color: #ef4444;
-            background: rgba(239,68,68,0.08);
+            background: rgba(239,68,68,0.10);
         }
-        #mda-ai-panel .mda-ai-alert.warn {
+        #mda-ai-modal .mda-ai-alert.warn {
             border-left-color: #f59e0b;
-            background: rgba(245,158,11,0.06);
+            background: rgba(245,158,11,0.08);
         }
-        #mda-ai-panel .mda-ai-alert.info {
+        #mda-ai-modal .mda-ai-alert.info {
             border-left-color: #38bdf8;
         }
-        #mda-ai-panel .mda-ai-alert-head {
+        #mda-ai-modal .mda-ai-alert-head {
             display: flex; justify-content: space-between;
             font-size: 9px; letter-spacing: 0.08em;
             color: #94a3b8; margin-bottom: 2px;
         }
-        #mda-ai-panel .mda-ai-alert-head .mda-ai-alert-tag {
+        #mda-ai-modal .mda-ai-alert-head .mda-ai-alert-tag {
             font-weight: 700; letter-spacing: 0.12em;
         }
-        #mda-ai-panel .mda-ai-alert.crit .mda-ai-alert-tag { color: #fca5a5; }
-        #mda-ai-panel .mda-ai-alert.warn .mda-ai-alert-tag { color: #fcd34d; }
-        #mda-ai-panel .mda-ai-alert.info .mda-ai-alert-tag { color: #7dd3fc; }
-        #mda-ai-panel .mda-ai-alert-body { color: #cbd5e1; }
-        #mda-ai-panel .mda-ai-alert-conf {
+        #mda-ai-modal .mda-ai-alert.crit .mda-ai-alert-tag { color: #fca5a5; }
+        #mda-ai-modal .mda-ai-alert.warn .mda-ai-alert-tag { color: #fcd34d; }
+        #mda-ai-modal .mda-ai-alert.info .mda-ai-alert-tag { color: #7dd3fc; }
+        #mda-ai-modal .mda-ai-alert-body { color: #cbd5e1; }
+        #mda-ai-modal .mda-ai-alert-conf {
             display: inline-block;
             margin-top: 3px;
             padding: 1px 5px;
             font-size: 8.5px;
             border-radius: 2px;
-            background: rgba(125,211,252,0.10);
+            background: rgba(125,211,252,0.12);
             color: #7dd3fc;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.08em;
         }
-        #mda-ai-panel .mda-ai-tax-grid {
+        #mda-ai-modal .mda-ai-tax-grid {
             display: grid;
             grid-template-columns: 1fr auto;
-            gap: 3px 8px;
+            gap: 4px 8px;
             font-size: 10px;
-            background: rgba(15,23,42,0.55);
-            padding: 6px 8px;
-            border-radius: 3px;
-            border: 1px solid rgba(125,211,252,0.12);
         }
-        #mda-ai-panel .mda-ai-tax-row {
+        #mda-ai-modal .mda-ai-tax-row {
             display: contents;
         }
-        #mda-ai-panel .mda-ai-tax-row > .mda-ai-tax-label {
+        #mda-ai-modal .mda-ai-tax-row > .mda-ai-tax-label {
             color: #cbd5e1;
-            display: flex; align-items: center; gap: 5px;
+            display: flex; align-items: center; gap: 6px;
         }
-        #mda-ai-panel .mda-ai-tax-row > .mda-ai-tax-label .mda-ai-tax-swatch {
-            width: 8px; height: 8px; border-radius: 1px; display: inline-block;
+        #mda-ai-modal .mda-ai-tax-row > .mda-ai-tax-label .mda-ai-tax-swatch {
+            width: 9px; height: 9px; border-radius: 2px; display: inline-block;
         }
-        #mda-ai-panel .mda-ai-tax-row > .mda-ai-tax-val {
+        #mda-ai-modal .mda-ai-tax-row > .mda-ai-tax-val {
             text-align: right;
             font-weight: 700;
             color: #7dd3fc;
             font-variant-numeric: tabular-nums;
         }
-        #mda-ai-panel .mda-ai-tax-row.crit > .mda-ai-tax-val { color: #fca5a5; }
-        #mda-ai-panel .mda-ai-tax-row.warn > .mda-ai-tax-val { color: #fcd34d; }
-        #mda-ai-panel .mda-ai-briefing {
-            font-size: 10.5px;
-            line-height: 1.5;
-            color: #e2e8f0;
-            background: rgba(15,23,42,0.55);
-            padding: 7px 9px;
-            border-radius: 3px;
-            border: 1px dashed rgba(168,85,247,0.32);
+        #mda-ai-modal .mda-ai-tax-row.crit > .mda-ai-tax-val { color: #fca5a5; }
+        #mda-ai-modal .mda-ai-tax-row.warn > .mda-ai-tax-val { color: #fcd34d; }
+
+        /* ─── Opus narrative ─── */
+        #mda-ai-modal .mda-ai-opus-narr {
+            font-family: 'Sarabun', sans-serif;
+            font-size: 11.5px;
+            line-height: 1.6;
+            color: #e9d5ff;
+            background: linear-gradient(180deg, rgba(76,29,149,0.12), rgba(17,24,39,0.55));
+            padding: 9px 11px;
+            border-radius: 4px;
+            border: 1px solid rgba(168,85,247,0.30);
+            min-height: 120px;
+            max-height: 280px;
+            overflow-y: auto;
             white-space: pre-wrap;
-            min-height: 48px;
-            max-height: 160px;
+        }
+        #mda-ai-modal .mda-ai-opus-narr.empty {
+            color: #94a3b8;
+            font-style: italic;
+            display: flex; align-items: center; justify-content: center;
+            text-align: center;
+        }
+        #mda-ai-modal .mda-ai-opus-loading {
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 10px;
+            padding: 22px 12px;
+            color: #c4b5fd;
+            font-size: 11px;
+            letter-spacing: 0.10em;
+            text-align: center;
+        }
+        #mda-ai-modal .mda-ai-opus-loading .mda-ai-spinner {
+            width: 28px; height: 28px;
+            border: 2.5px solid rgba(168,85,247,0.20);
+            border-top-color: #a78bfa;
+            border-radius: 50%;
+            animation: aiSpin 0.85s linear infinite;
+        }
+        @keyframes aiSpin {
+            to { transform: rotate(360deg); }
+        }
+        #mda-ai-modal .mda-ai-opus-meta {
+            font-size: 9px; color: #94a3b8;
+            letter-spacing: 0.10em;
+            margin-top: 5px;
+            text-align: right;
+        }
+        #mda-ai-modal .mda-ai-opus-meta .mda-ai-model-badge {
+            color: #c4b5fd; font-weight: 700;
+            padding: 1px 5px;
+            background: rgba(168,85,247,0.18);
+            border-radius: 2px;
+            margin-left: 5px;
+        }
+
+        /* ─── Force deployment recommendations ─── */
+        #mda-ai-modal .mda-ai-force-list {
+            display: flex; flex-direction: column; gap: 6px;
+            max-height: 380px;
             overflow-y: auto;
         }
-        #mda-ai-panel .mda-ai-briefing .mda-ai-briefing-empty {
-            color: #64748b; font-style: italic;
+        #mda-ai-modal .mda-ai-force-item {
+            background: rgba(8,15,28,0.65);
+            border: 1px solid rgba(252,211,77,0.20);
+            border-left: 3px solid #fcd34d;
+            border-radius: 0 3px 3px 0;
+            padding: 7px 9px;
+            font-size: 10.5px;
+            line-height: 1.45;
         }
-        #mda-ai-panel .mda-ai-actions {
-            display: flex; gap: 6px; margin-top: 6px;
+        #mda-ai-modal .mda-ai-force-item.high {
+            border-left-color: #ef4444;
+            border-color: rgba(239,68,68,0.25);
+            background: rgba(239,68,68,0.06);
         }
-        #mda-ai-panel .mda-ai-btn {
-            flex: 1;
-            padding: 5px 8px;
-            background: rgba(168,85,247,0.10);
-            border: 1px solid rgba(168,85,247,0.40);
+        #mda-ai-modal .mda-ai-force-item.med {
+            border-left-color: #f59e0b;
+            border-color: rgba(245,158,11,0.25);
+            background: rgba(245,158,11,0.06);
+        }
+        #mda-ai-modal .mda-ai-force-head {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 3px;
+            font-size: 9px; letter-spacing: 0.10em;
+            color: #94a3b8;
+        }
+        #mda-ai-modal .mda-ai-force-head .mda-ai-force-prio {
+            font-weight: 700;
+            padding: 1px 5px;
+            border-radius: 2px;
+            font-size: 8.5px;
+        }
+        #mda-ai-modal .mda-ai-force-item.high .mda-ai-force-prio {
+            background: rgba(239,68,68,0.22); color: #fca5a5;
+        }
+        #mda-ai-modal .mda-ai-force-item.med .mda-ai-force-prio {
+            background: rgba(245,158,11,0.20); color: #fcd34d;
+        }
+        #mda-ai-modal .mda-ai-force-item.low .mda-ai-force-prio {
+            background: rgba(125,211,252,0.18); color: #7dd3fc;
+        }
+        #mda-ai-modal .mda-ai-force-title {
+            font-weight: 700; color: #fef9c3;
+            font-size: 11px;
+            margin-bottom: 2px;
+            letter-spacing: 0.04em;
+        }
+        #mda-ai-modal .mda-ai-force-body {
+            color: #cbd5e1;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 10.5px;
+            line-height: 1.5;
+        }
+        #mda-ai-modal .mda-ai-force-meta {
+            margin-top: 4px;
+            font-size: 9px;
+            color: #7dd3fc;
+            letter-spacing: 0.08em;
+        }
+
+        /* ─── Action bar ─── */
+        #mda-ai-modal .mda-ai-actions {
+            display: flex; gap: 8px;
+            padding: 10px 18px;
+            border-top: 1px solid rgba(125,211,252,0.18);
+            background: rgba(15,23,42,0.55);
+        }
+        #mda-ai-modal .mda-ai-btn {
+            padding: 7px 14px;
+            background: rgba(168,85,247,0.12);
+            border: 1px solid rgba(168,85,247,0.45);
             color: #c4b5fd;
             font-family: inherit;
-            font-size: 10px;
-            letter-spacing: 0.08em;
+            font-size: 10.5px;
+            letter-spacing: 0.10em;
             cursor: pointer;
-            border-radius: 3px;
+            border-radius: 4px;
+            transition: all .15s;
         }
-        #mda-ai-panel .mda-ai-btn:hover {
-            background: rgba(168,85,247,0.22);
+        #mda-ai-modal .mda-ai-btn:hover {
+            background: rgba(168,85,247,0.26);
             color: #fff;
-            box-shadow: 0 0 8px rgba(168,85,247,0.40);
+            box-shadow: 0 0 12px rgba(168,85,247,0.45);
+            transform: translateY(-1px);
         }
-        #mda-ai-panel .mda-ai-btn.secondary {
-            background: rgba(125,211,252,0.06);
-            border-color: rgba(125,211,252,0.32);
+        #mda-ai-modal .mda-ai-btn.secondary {
+            background: rgba(125,211,252,0.08);
+            border-color: rgba(125,211,252,0.40);
             color: #7dd3fc;
         }
-        #mda-ai-panel .mda-ai-btn.secondary:hover {
-            background: rgba(125,211,252,0.18);
+        #mda-ai-modal .mda-ai-btn.secondary:hover {
+            background: rgba(125,211,252,0.22);
             color: #fff;
-            box-shadow: 0 0 8px rgba(125,211,252,0.40);
+            box-shadow: 0 0 12px rgba(125,211,252,0.45);
         }
-        #mda-ai-panel .mda-ai-watermark {
-            padding: 5px 12px;
+        #mda-ai-modal .mda-ai-btn.danger {
+            background: rgba(239,68,68,0.08);
+            border-color: rgba(239,68,68,0.40);
+            color: #fca5a5;
+        }
+        #mda-ai-modal .mda-ai-btn.danger:hover {
+            background: rgba(239,68,68,0.22);
+            color: #fff;
+            box-shadow: 0 0 12px rgba(239,68,68,0.45);
+        }
+        #mda-ai-modal .mda-ai-actions-spacer { flex: 1; }
+        #mda-ai-modal .mda-ai-watermark {
+            padding: 6px 18px;
             font-size: 9px;
-            letter-spacing: 0.10em;
+            letter-spacing: 0.12em;
             color: #fde047;
             background: repeating-linear-gradient(
                 -45deg,
@@ -2847,6 +3125,11 @@
             text-align: center;
             font-weight: 700;
             text-shadow: 0 0 5px rgba(250,204,21,0.45);
+        }
+        /* Narrow viewport → stack columns */
+        @media (max-width: 980px) {
+            #mda-ai-modal { width: calc(100vw - 40px); }
+            #mda-ai-modal .mda-ai-body { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -3140,20 +3423,8 @@
         </div>
     </div>
 
-    <!-- [v14.0.1] 🧠 AI DOMAIN — meta-intelligence layer (decision support · HITL) -->
-    <div class="mda-lp-group" data-group="ai">
-        <div class="mda-lp-group-head">
-            <span class="mda-lp-group-name"><span class="mda-lp-chev">▾</span> 🧠 AI DOMAIN · v14</span>
-        </div>
-        <div class="mda-lp-group-body">
-            <div class="mda-lp-row" data-mda-action="ai-domain" data-sync-btn="aiDomainBtn" title="AI Decision-Support Panel · 5-class threat taxonomy · alerts · briefing (HITL)">
-                <span class="bullet"></span>
-                <span class="label"><span class="swatch" style="background:#a78bfa"></span>🧠 AI Assistance</span>
-                <span class="count" id="mda-cnt-ai">OFF</span>
-                <span class="mda-sw"></span>
-            </div>
-        </div>
-    </div>
+    <!-- [v14.0.2] 🧠 AI DOMAIN row REMOVED from layer panel — promoted to header button (#udc-ai-btn) -->
+    <!--          กดปุ่ม AI ใน header → เปิด Modal แบบเดียวกับ PV ship modal (focus mode, blurred backdrop) -->
 
     <!-- ⚙ ACTIONS — 3D Dive · SFX · Refresh -->
     <div class="mda-lp-group" data-group="actions">
@@ -3368,89 +3639,187 @@
      ──────────────────────────────────────────────────────────────────
      ผู้ช่วยวิเคราะห์สถานการณ์ + 5-class threat taxonomy (บทที่ 2)
      แสดง: alerts (rule-based) + taxonomy heat + briefing (Claude / mock)
+     [v14.0.2] เปลี่ยนจาก floating panel → MODAL OVERLAY (focus mode)
+              pattern เดียวกับ #pvShipModal (เน้นความสำคัญด้วย backdrop blur)
+              3 sections: Rule-Based · Opus Analysis · Force Deployment
      ════════════════════════════════════════════════════════════════ -->
-<div id="mda-ai-panel" role="dialog" aria-label="AI Domain Panel">
-    <div class="mda-ai-head" id="mda-ai-head" title="ลากเพื่อย้าย panel · double-click เพื่อ reset ตำแหน่ง">
+<!-- Backdrop (blurred background, click-to-close) -->
+<div id="mda-ai-modal-backdrop" onclick="window.toggleAIDomain && window.toggleAIDomain(false)"></div>
+
+<!-- Main modal -->
+<div id="mda-ai-modal" role="dialog" aria-label="AI Decision-Support Modal" aria-modal="true">
+
+    <!-- ─── Header ─── -->
+    <div class="mda-ai-head">
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
-            <span>🧠 AI DOMAIN · v14</span>
+            <span>🧠 AI DECISION-SUPPORT</span>
+            <span class="mda-ai-sub">v14.0.2 · HITL · บทที่ 2</span>
         </div>
-        <button class="mda-ai-close" id="mda-ai-close" title="ปิด panel">✕</button>
+        <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC">✕</button>
     </div>
 
+    <!-- ─── Toolbar (mode pills + state) ─── -->
     <div class="mda-ai-toolbar">
         <span style="color:#94a3b8;">MODE:</span>
-        <span class="mda-ai-mode-pill on"    id="mda-ai-mode-rules"   title="Rule-based offline (ไม่ใช้ network)">⚙ RULES</span>
-        <span class="mda-ai-mode-pill off"   id="mda-ai-mode-llm"     title="LLM (Claude API ผ่าน Cloudflare Worker) · disabled (ยังไม่ตั้ง proxy)">✨ LLM</span>
-        <span style="flex:1;"></span>
-        <span style="color:#64748b;" id="mda-ai-mode-state">offline</span>
+        <span class="mda-ai-mode-pill on"    id="mda-ai-mode-rules"   title="Rule-based offline · 5-class taxonomy + alerts">⚙ RULES</span>
+        <span class="mda-ai-mode-pill off"   id="mda-ai-mode-llm"     title="LLM (Claude Opus ผ่าน Cloudflare Worker) · disabled (ยังไม่ตั้ง proxy)">✨ OPUS</span>
+        <span class="mda-ai-toolbar-spacer"></span>
+        <span class="mda-ai-toolbar-info">STATE: <span id="mda-ai-mode-state" style="color:#7dd3fc;">offline-mock</span></span>
+        <span class="mda-ai-toolbar-info">UPDATED: <span id="mda-ai-last-update" style="color:#7dd3fc;">--:--:--</span></span>
     </div>
 
+    <!-- ─── Body (3 columns: Rule / Opus / Force) ─── -->
     <div class="mda-ai-body">
 
-        <!-- SECTION 1 · ALERTS (rule-based stream) -->
-        <div class="mda-ai-section">
-            <div class="mda-ai-sec-head">
-                <span>▾ ALERTS · live</span>
-                <span class="mda-ai-sec-count" id="mda-ai-alert-count">0</span>
+        <!-- ╔══ § 1 · RULE-BASED SUMMARY ══╗ -->
+        <div class="mda-ai-col rule">
+            <div class="mda-ai-col-head">
+                <span class="mda-ai-col-tag">§ 1</span>
+                <span>RULE-BASED SUMMARY</span>
             </div>
-            <div id="mda-ai-alerts">
-                <div class="mda-ai-alert info">
-                    <div class="mda-ai-alert-head">
-                        <span class="mda-ai-alert-tag">INFO</span><span>--</span>
+
+            <!-- alerts -->
+            <div class="mda-ai-section">
+                <div class="mda-ai-sec-head">
+                    <span>▾ ALERTS · live stream</span>
+                    <span class="mda-ai-sec-count" id="mda-ai-alert-count">0</span>
+                </div>
+                <div id="mda-ai-alerts" style="max-height:220px;overflow-y:auto;">
+                    <div class="mda-ai-alert info">
+                        <div class="mda-ai-alert-head">
+                            <span class="mda-ai-alert-tag">INFO</span><span>--</span>
+                        </div>
+                        <div class="mda-ai-alert-body">รอข้อมูลจาก rule-engine · mock generator เริ่มทำงานเมื่อเปิด modal</div>
                     </div>
-                    <div class="mda-ai-alert-body">รอข้อมูลจาก rule-engine · mock generator เริ่มทำงานเมื่อ panel เปิด</div>
+                </div>
+            </div>
+
+            <!-- taxonomy -->
+            <div class="mda-ai-section">
+                <div class="mda-ai-sec-head">
+                    <span>▾ 5-CLASS TAXONOMY</span>
+                    <span class="mda-ai-sec-count" id="mda-ai-tax-total">0</span>
+                </div>
+                <div class="mda-ai-tax-grid" id="mda-ai-tax-grid">
+                    <div class="mda-ai-tax-row" data-class="kinetic">
+                        <span class="mda-ai-tax-label"><span class="mda-ai-tax-swatch" style="background:#ef4444"></span>① Physical-Kinetic</span>
+                        <span class="mda-ai-tax-val" id="mda-ai-tax-kinetic">0</span>
+                    </div>
+                    <div class="mda-ai-tax-row" data-class="asymmetric">
+                        <span class="mda-ai-tax-label"><span class="mda-ai-tax-swatch" style="background:#f59e0b"></span>② Asymmetric / Grey</span>
+                        <span class="mda-ai-tax-val" id="mda-ai-tax-asymmetric">0</span>
+                    </div>
+                    <div class="mda-ai-tax-row" data-class="cyber">
+                        <span class="mda-ai-tax-label"><span class="mda-ai-tax-swatch" style="background:#a78bfa"></span>③ Cyber-Physical</span>
+                        <span class="mda-ai-tax-val" id="mda-ai-tax-cyber">0</span>
+                    </div>
+                    <div class="mda-ai-tax-row" data-class="environmental">
+                        <span class="mda-ai-tax-label"><span class="mda-ai-tax-swatch" style="background:#22d3ee"></span>④ Environmental</span>
+                        <span class="mda-ai-tax-val" id="mda-ai-tax-environmental">0</span>
+                    </div>
+                    <div class="mda-ai-tax-row" data-class="hybrid">
+                        <span class="mda-ai-tax-label"><span class="mda-ai-tax-swatch" style="background:#ec4899"></span>⑤ Hybrid</span>
+                        <span class="mda-ai-tax-val" id="mda-ai-tax-hybrid">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- rule synth -->
+            <div class="mda-ai-section">
+                <div class="mda-ai-sec-head">
+                    <span>▾ RULE SYNTHESIS</span>
+                    <span class="mda-ai-sec-count" id="mda-ai-rule-level">LOW</span>
+                </div>
+                <div id="mda-ai-rule-synth" style="font-family:'Sarabun',sans-serif;font-size:10.5px;line-height:1.5;color:#cbd5e1;">
+                    <span style="color:#64748b;font-style:italic;">— rule-based summary จะอัพเดทเมื่อมี alert ใหม่ —</span>
                 </div>
             </div>
         </div>
 
-        <!-- SECTION 2 · THREAT TAXONOMY (5-class, บทที่ 2 หน้า 47-50) -->
-        <div class="mda-ai-section">
-            <div class="mda-ai-sec-head">
-                <span>▾ THREAT TAXONOMY · บทที่ 2</span>
-                <span class="mda-ai-sec-count" id="mda-ai-tax-total">0</span>
+        <!-- ╔══ § 2 · AI DEEP ANALYSIS (OPUS) ══╗ -->
+        <div class="mda-ai-col opus">
+            <div class="mda-ai-col-head">
+                <span class="mda-ai-col-tag">§ 2</span>
+                <span>AI DEEP ANALYSIS · OPUS</span>
             </div>
-            <div class="mda-ai-tax-grid" id="mda-ai-tax-grid">
-                <div class="mda-ai-tax-row" data-class="kinetic">
-                    <span class="mda-ai-tax-label"><span class="mda-ai-tax-swatch" style="background:#ef4444"></span>① Physical-Kinetic</span>
-                    <span class="mda-ai-tax-val" id="mda-ai-tax-kinetic">0</span>
+
+            <div class="mda-ai-section">
+                <div class="mda-ai-sec-head">
+                    <span>▾ NARRATIVE ASSESSMENT</span>
+                    <span class="mda-ai-sec-count" id="mda-ai-opus-tokens">--</span>
                 </div>
-                <div class="mda-ai-tax-row" data-class="asymmetric">
-                    <span class="mda-ai-tax-label"><span class="mda-ai-tax-swatch" style="background:#f59e0b"></span>② Asymmetric / Grey-Zone</span>
-                    <span class="mda-ai-tax-val" id="mda-ai-tax-asymmetric">0</span>
+                <div id="mda-ai-opus-narr" class="mda-ai-opus-narr empty">
+                    — กดปุ่ม "✨ Run Opus Analysis" เพื่อให้ AI วิเคราะห์เชิงลึก —
+                    (mock pipeline · จะเชื่อมต่อ Claude API ผ่าน Cloudflare Worker ใน v14.0.4)
                 </div>
-                <div class="mda-ai-tax-row" data-class="cyber">
-                    <span class="mda-ai-tax-label"><span class="mda-ai-tax-swatch" style="background:#a78bfa"></span>③ Cyber-Physical</span>
-                    <span class="mda-ai-tax-val" id="mda-ai-tax-cyber">0</span>
+                <div class="mda-ai-opus-meta">
+                    <span id="mda-ai-opus-latency">--ms</span> ·
+                    <span class="mda-ai-model-badge" id="mda-ai-opus-model">claude-opus-mock</span>
                 </div>
-                <div class="mda-ai-tax-row" data-class="environmental">
-                    <span class="mda-ai-tax-label"><span class="mda-ai-tax-swatch" style="background:#22d3ee"></span>④ Environmental</span>
-                    <span class="mda-ai-tax-val" id="mda-ai-tax-environmental">0</span>
+            </div>
+
+            <div class="mda-ai-section" style="border-color:rgba(168,85,247,0.22);">
+                <div class="mda-ai-sec-head">
+                    <span>▾ CONFIDENCE & CAVEATS</span>
+                    <span class="mda-ai-sec-count" id="mda-ai-opus-conf">--</span>
                 </div>
-                <div class="mda-ai-tax-row" data-class="hybrid">
-                    <span class="mda-ai-tax-label"><span class="mda-ai-tax-swatch" style="background:#ec4899"></span>⑤ Hybrid (multi-vector)</span>
-                    <span class="mda-ai-tax-val" id="mda-ai-tax-hybrid">0</span>
+                <div id="mda-ai-opus-caveats" style="font-family:'Sarabun',sans-serif;font-size:10.5px;line-height:1.5;color:#cbd5e1;">
+                    <span style="color:#64748b;font-style:italic;">— ยังไม่มีการประเมิน — รอเรียก Opus —</span>
                 </div>
             </div>
         </div>
 
-        <!-- SECTION 3 · BRIEFING (LLM-as-judge placeholder) -->
-        <div class="mda-ai-section">
-            <div class="mda-ai-sec-head">
-                <span>▾ SITUATION BRIEFING</span>
-                <span class="mda-ai-sec-count" id="mda-ai-brief-time">--</span>
+        <!-- ╔══ § 3 · FORCE DEPLOYMENT RECOMMENDATIONS ══╗ -->
+        <div class="mda-ai-col force">
+            <div class="mda-ai-col-head">
+                <span class="mda-ai-col-tag">§ 3</span>
+                <span>FORCE DEPLOYMENT</span>
             </div>
-            <div class="mda-ai-briefing" id="mda-ai-briefing">
-                <span class="mda-ai-briefing-empty">— ยังไม่มีการประเมินสถานการณ์ — กด "Generate" เพื่อให้ AI สรุปสภาพแวดล้อมปัจจุบัน</span>
+
+            <div class="mda-ai-section">
+                <div class="mda-ai-sec-head">
+                    <span>▾ PRIORITY-RANKED ACTIONS</span>
+                    <span class="mda-ai-sec-count" id="mda-ai-force-count">0</span>
+                </div>
+                <div id="mda-ai-force-list" class="mda-ai-force-list">
+                    <div class="mda-ai-force-item low">
+                        <div class="mda-ai-force-head">
+                            <span>WAITING</span>
+                            <span class="mda-ai-force-prio">P--</span>
+                        </div>
+                        <div class="mda-ai-force-title">— ยังไม่มีคำแนะนำ —</div>
+                        <div class="mda-ai-force-body">รอข้อมูล taxonomy + alerts ก่อนเสนอแนวทาง deploy</div>
+                    </div>
+                </div>
             </div>
-            <div class="mda-ai-actions">
-                <button class="mda-ai-btn" id="mda-ai-gen">✨ Generate Briefing</button>
-                <button class="mda-ai-btn secondary" id="mda-ai-clear">🧹 Clear</button>
+
+            <div class="mda-ai-section" style="border-color:rgba(252,211,77,0.22);">
+                <div class="mda-ai-sec-head">
+                    <span>▾ DEPLOY-READY ASSETS</span>
+                    <span class="mda-ai-sec-count" id="mda-ai-assets-avail">--</span>
+                </div>
+                <div id="mda-ai-assets-list" style="font-family:'Sarabun',sans-serif;font-size:10.5px;line-height:1.6;color:#cbd5e1;">
+                    <div>· <b style="color:#7dd3fc;">PV (Patrol Vessel):</b> เรือตรวจการณ์ไกลฝั่ง · 1-3 ลำ</div>
+                    <div>· <b style="color:#7dd3fc;">GUUV:</b> ยานใต้น้ำไร้คนขับ · 0-2 ลำ</div>
+                    <div>· <b style="color:#7dd3fc;">Survey Vessel:</b> เรือสำรวจ HYPACK · 1 ลำ</div>
+                    <div>· <b style="color:#7dd3fc;">DAS Sensor:</b> Distributed Acoustic Sensing · ออนไลน์</div>
+                </div>
             </div>
         </div>
 
     </div>
 
+    <!-- ─── Action bar ─── -->
+    <div class="mda-ai-actions">
+        <button class="mda-ai-btn" id="mda-ai-gen">✨ Run Opus Analysis</button>
+        <button class="mda-ai-btn secondary" id="mda-ai-refresh">🔄 Refresh Rules</button>
+        <span class="mda-ai-actions-spacer"></span>
+        <button class="mda-ai-btn secondary" id="mda-ai-clear">🧹 Clear All</button>
+        <button class="mda-ai-btn danger" id="mda-ai-dismiss">✕ Close</button>
+    </div>
+
+    <!-- ─── HITL watermark ─── -->
     <div class="mda-ai-watermark">
         🤖 AI ASSISTED · HUMAN-IN-THE-LOOP REQUIRED · ไม่ใช่ระบบตัดสินใจอัตโนมัติ
     </div>
@@ -3486,6 +3855,11 @@
     </div>
     <div style="display:flex;gap:10px;align-items:center;">
         <span class="sys-status-pill"><span class="dot"></span>SYSTEM OPERATIONAL</span>
+        <!-- v14.0.2: ปุ่ม AI DOMAIN — ซ้ายของ RESET — เปิด AI Decision-Support Modal -->
+        <div id="udc-ai-btn" title="🧠 AI Decision-Support · Rule-Based + Opus Analysis + Force Deployment" onclick="window.toggleAIDomain && window.toggleAIDomain()">
+            <span class="uab-icon">🧠</span><span>AI</span>
+            <span class="uab-pulse"></span>
+        </div>
         <!-- v12.5-E: ปุ่ม RESET แทนตำแหน่ง .badge-v4 เดิม (Emergency Drill, with modal) -->
         <div id="udc-reset-btn" title="Reset all systems · Emergency Drill">
             <span class="urb-icon">⟳</span><span>RESET</span>
@@ -22144,34 +22518,53 @@ function _sonarEqnRender(panel) {
                 environmental: 0, hybrid: 0
             },
             lastBriefing: null,
+            lastOpus: null,
+            opusBusy: false,
             mockTimer: null
         };
 
         // ── DOM refs (lazy) ─────────────────────────────────
         const $ = id => document.getElementById(id);
-        let panel, head, body, closeBtn, modeRules, modeLlm, modeState;
-        let alertList, alertCount, taxTotal, brief, briefTime, btnGen, btnClear;
+        let modal, backdrop, headerBtn, closeBtn, dismissBtn, refreshBtn;
+        let modeRules, modeLlm, modeState, lastUpdate;
+        let alertList, alertCount, taxTotal, taxRule;
+        let ruleSynth, ruleLevel;
+        let opusNarr, opusMeta, opusTokens, opusLatency, opusModel, opusConf, opusCaveats;
+        let forceList, forceCount, assetsAvail;
+        let btnGen, btnClear;
 
         function bindDom() {
-            panel      = $('mda-ai-panel');
-            head       = $('mda-ai-head');
-            body       = panel ? panel.querySelector('.mda-ai-body') : null;
+            modal      = $('mda-ai-modal');
+            backdrop   = $('mda-ai-modal-backdrop');
+            headerBtn  = $('udc-ai-btn');
             closeBtn   = $('mda-ai-close');
+            dismissBtn = $('mda-ai-dismiss');
+            refreshBtn = $('mda-ai-refresh');
             modeRules  = $('mda-ai-mode-rules');
             modeLlm    = $('mda-ai-mode-llm');
             modeState  = $('mda-ai-mode-state');
+            lastUpdate = $('mda-ai-last-update');
             alertList  = $('mda-ai-alerts');
             alertCount = $('mda-ai-alert-count');
             taxTotal   = $('mda-ai-tax-total');
-            brief      = $('mda-ai-briefing');
-            briefTime  = $('mda-ai-brief-time');
+            ruleSynth  = $('mda-ai-rule-synth');
+            ruleLevel  = $('mda-ai-rule-level');
+            opusNarr   = $('mda-ai-opus-narr');
+            opusTokens = $('mda-ai-opus-tokens');
+            opusLatency= $('mda-ai-opus-latency');
+            opusModel  = $('mda-ai-opus-model');
+            opusConf   = $('mda-ai-opus-conf');
+            opusCaveats= $('mda-ai-opus-caveats');
+            forceList  = $('mda-ai-force-list');
+            forceCount = $('mda-ai-force-count');
+            assetsAvail= $('mda-ai-assets-avail');
             btnGen     = $('mda-ai-gen');
             btnClear   = $('mda-ai-clear');
         }
 
         // ── threat seeds ─────────────────────────────────────
         // ตัวอย่าง mock alerts — มาจาก rule-engine จำลอง
-        // ในเฟส v14.0.2-v14.1.0 จะแทนด้วย real Bi-LSTM + AISViz
+        // ในเฟส v14.0.3+ จะแทนด้วย real Bi-LSTM + AISViz
         const SEEDS = [
             { sev:'warn', tag:'KINETIC',       tax:'kinetic',
               msg:'พบเรือไม่ระบุสัญชาติเข้าใกล้ MEZ 1.4 NM · COG 270° · SOG 9.2 kn', conf:0.71 },
@@ -22215,6 +22608,9 @@ function _sonarEqnRender(panel) {
             } catch (_) {}
             renderAlerts();
             renderTaxonomy();
+            renderRuleSynthesis();
+            renderForceRecommendations();
+            if (lastUpdate) lastUpdate.textContent = stamp.ts;
         }
 
         function _mockTick() {
@@ -22269,7 +22665,6 @@ function _sonarEqnRender(panel) {
             Object.keys(map).forEach(k => {
                 if (map[k]) map[k].textContent = t[k] || 0;
                 total += (t[k] || 0);
-                // mark heat class on parent row
                 const row = map[k] && map[k].closest('.mda-ai-tax-row');
                 if (row) {
                     row.classList.remove('warn', 'crit');
@@ -22280,93 +22675,308 @@ function _sonarEqnRender(panel) {
             if (taxTotal) taxTotal.textContent = total;
         }
 
-        // ── briefing (mock / LLM hook) ───────────────────────
-        async function generateBriefing() {
-            if (!brief) return;
-            const ts = _now();
-            // counts snapshot
+        // ── § 1 RULE SYNTHESIS ─────────────────────────────
+        function _ruleLevel() {
+            const t = state.taxonomy;
+            if (t.hybrid >= 2 || (t.cyber >= 1 && t.asymmetric >= 2)) return 'HIGH';
+            if (t.kinetic >= 1 || t.hybrid >= 1)                     return 'ELEVATED';
+            const total = t.kinetic + t.asymmetric + t.cyber + t.environmental + t.hybrid;
+            if (total > 0) return 'ROUTINE';
+            return 'LOW';
+        }
+
+        function renderRuleSynthesis() {
+            if (!ruleSynth) return;
             const t = state.taxonomy;
             const total = t.kinetic + t.asymmetric + t.cyber + t.environmental + t.hybrid;
-            const recent = state.alerts.slice(0, 5);
+            const lvl = _ruleLevel();
+            const recent = state.alerts.slice(0, 3);
 
-            // Mock / rule-based summary (offline)
-            const lines = [];
-            lines.push(`╔ AI SITUATION BRIEFING · ${ts}`);
-            lines.push(`╟ Mode: ${state.mode === 'llm' ? 'LLM (Claude)' : 'Rule-Engine (offline)'}`);
-            lines.push(`╟ Alerts รวม ${state.alerts.length} เหตุการณ์ · Taxonomy รวม ${total} hits`);
-            if (total > 0) {
-                lines.push('╟ ─ การจำแนกภัยคุกคาม ─');
-                if (t.kinetic)       lines.push(`╟  ① Kinetic       : ${t.kinetic}`);
-                if (t.asymmetric)    lines.push(`╟  ② Asymmetric    : ${t.asymmetric}`);
-                if (t.cyber)         lines.push(`╟  ③ Cyber-Phys    : ${t.cyber}`);
-                if (t.environmental) lines.push(`╟  ④ Environmental : ${t.environmental}`);
-                if (t.hybrid)        lines.push(`╟  ⑤ Hybrid        : ${t.hybrid}`);
+            if (ruleLevel) {
+                ruleLevel.textContent = lvl;
+                ruleLevel.style.color = (lvl === 'HIGH') ? '#fca5a5'
+                                     : (lvl === 'ELEVATED') ? '#fcd34d'
+                                     : (lvl === 'ROUTINE') ? '#7dd3fc'
+                                     : '#94a3b8';
             }
-            if (recent.length) {
-                lines.push('╟ ─ เหตุการณ์ล่าสุด ─');
-                recent.forEach((a, i) => {
-                    lines.push(`╟  ${i+1}. [${a.tag}] ${a.msg.substring(0, 70)}${a.msg.length > 70 ? '…' : ''}`);
-                });
-            }
-            // Recommendations (rule-derived)
-            lines.push('╟ ─ ข้อเสนอแนะ (HITL) ─');
-            if (t.hybrid >= 2 || (t.cyber >= 1 && t.asymmetric >= 2)) {
-                lines.push('╟  ▸ ระดับเหตุการณ์: HIGH · พิจารณายกระดับ ROE ตามแนว NATO Mainsail');
-                lines.push('╟  ▸ เปิด Sensor Fusion เต็มรูปแบบ + แจ้ง ศรชล. ภาค 1');
-            } else if (t.kinetic >= 1) {
-                lines.push('╟  ▸ ระดับเหตุการณ์: ELEVATED · ติดตาม contact อย่างใกล้ชิด');
-                lines.push('╟  ▸ ตรวจสอบ UNCLOS Art.60(5) safety zone 500 m รอบ UDC');
-            } else if (total > 0) {
-                lines.push('╟  ▸ ระดับเหตุการณ์: ROUTINE · เฝ้าระวังตามแผนปกติ');
+
+            const parts = [];
+            parts.push(`<div><b style="color:${lvl==='HIGH'?'#fca5a5':lvl==='ELEVATED'?'#fcd34d':'#7dd3fc'};">ระดับสถานการณ์: ${lvl}</b></div>`);
+            parts.push(`<div style="margin-top:4px;">รวม alerts ${state.alerts.length} เหตุการณ์ · taxonomy hits ${total}</div>`);
+
+            if (lvl === 'HIGH') {
+                parts.push(`<div style="margin-top:6px;color:#fca5a5;">▸ พิจารณายกระดับ ROE ตามแนว NATO Mainsail (Feb 2025)</div>`);
+                parts.push(`<div style="color:#fca5a5;">▸ เปิด Sensor Fusion เต็มรูปแบบ + แจ้ง ศรชล. ภาค 1</div>`);
+            } else if (lvl === 'ELEVATED') {
+                parts.push(`<div style="margin-top:6px;color:#fcd34d;">▸ ติดตาม contact อย่างใกล้ชิด</div>`);
+                parts.push(`<div style="color:#fcd34d;">▸ ตรวจสอบ UNCLOS Art.60(5) safety zone 500 m รอบ UDC</div>`);
+            } else if (lvl === 'ROUTINE') {
+                parts.push(`<div style="margin-top:6px;color:#7dd3fc;">▸ เฝ้าระวังตามแผนปกติ · บันทึก audit log</div>`);
             } else {
-                lines.push('╟  ▸ ไม่มีเหตุการณ์ผิดปกติ · เฝ้าระวังปกติ');
+                parts.push(`<div style="margin-top:6px;color:#94a3b8;font-style:italic;">— ไม่มีเหตุการณ์ผิดปกติ —</div>`);
             }
-            lines.push('╚ END — Decision Support Only · ต้องการการตัดสินใจจากมนุษย์');
+            ruleSynth.innerHTML = parts.join('');
+        }
 
-            const text = lines.join('\n');
+        // ── § 2 OPUS DEEP ANALYSIS ────────────────────────
+        // Mock pipeline — จำลอง Claude Opus call (2s loading + canned narrative)
+        // ใน v14.0.4 จะแทนด้วย real call → Cloudflare Worker → Claude API
+        function _opusNarrativeFromState() {
+            const t = state.taxonomy;
+            const total = t.kinetic + t.asymmetric + t.cyber + t.environmental + t.hybrid;
+            const lvl = _ruleLevel();
+            const recent = state.alerts.slice(0, 5);
+            const ts = _now();
 
-            // Optional: real Claude via Cloudflare Worker
+            const dominant = Object.keys(t).sort((a,b) => t[b] - t[a])[0];
+            const dominantLabel = {
+                kinetic: 'Physical-Kinetic',
+                asymmetric: 'Asymmetric / Grey-Zone',
+                cyber: 'Cyber-Physical',
+                environmental: 'Environmental',
+                hybrid: 'Hybrid (multi-vector)'
+            }[dominant];
+
+            // canned narrative (mock Opus)
+            let narr = '';
+            narr += `🧠 OPUS ANALYSIS · ${ts}\n`;
+            narr += `═══════════════════════════════════════════\n\n`;
+
+            if (total === 0) {
+                narr += 'จากการวิเคราะห์ข้อมูลล่าสุด ระบบยังไม่พบเหตุการณ์ผิดปกติที่ต้องดำเนินการในขณะนี้ ';
+                narr += 'สภาพแวดล้อมโดยรวมอยู่ในสถานะปลอดภัย เซ็นเซอร์ทั้งหมดออนไลน์ และไม่มีสัญญาณบ่งชี้ภัยคุกคาม\n\n';
+                narr += '▸ แนะนำให้คงระดับเฝ้าระวังปัจจุบัน (Routine Watch)\n';
+                narr += '▸ ใช้โอกาสนี้ตรวจสอบ DAS calibration และ AIS coverage';
+            } else {
+                narr += `🔍 บริบทเชิงระบบ:\n`;
+                narr += `ในห้วงเวลาปฏิบัติการล่าสุด ระบบตรวจจับเหตุการณ์รวม ${state.alerts.length} ครั้ง โดยมีการจำแนกตาม taxonomy ทั้ง 5 มิติรวม ${total} hits  `;
+                narr += `ภัยที่เด่นที่สุดคือกลุ่ม "${dominantLabel}" (${t[dominant]} ครั้ง) ซึ่งสะท้อนรูปแบบ ${dominant === 'hybrid' ? 'การโจมตีหลายช่องทางพร้อมกัน' : dominant === 'asymmetric' ? 'การปฏิบัติการในเขตเทาผ่านเรือพลเรือน' : dominant === 'cyber' ? 'การรบกวนเซ็นเซอร์เชิง electromagnetic' : dominant === 'kinetic' ? 'การเคลื่อนไหวเชิง physical ใกล้พื้นที่ MEZ' : 'ผลกระทบจากสภาพแวดล้อมต่อ ops'}\n\n`;
+
+                narr += `📊 การประเมินความเสี่ยง:\n`;
+                if (lvl === 'HIGH') {
+                    narr += `🔴 ระดับ HIGH — ตรวจพบรูปแบบ multi-vector ที่บ่งชี้ภัยคุกคามแบบ coordinated  `;
+                    narr += `ความเร่งด่วนในการตัดสินใจอยู่ในระดับสูง  ผู้บัญชาการควรพิจารณายกระดับ ROE ตาม NATO Mainsail (Feb 2025) `;
+                    narr += `และพิจารณาแจ้ง ศรชล. ภาค 1 เพื่อ inter-agency coordination ภายใต้ พ.ร.บ.ผลประโยชน์ฯ 2562\n\n`;
+                } else if (lvl === 'ELEVATED') {
+                    narr += `🟡 ระดับ ELEVATED — มีสัญญาณ kinetic / hybrid ที่ต้องเฝ้าระวังเข้มข้น  `;
+                    narr += `ยังไม่ถึงเกณฑ์ยกระดับ ROE แต่ควรเตรียมพร้อมและทบทวน UNCLOS Art.60(5) safety zone 500 m รอบ UDC\n\n`;
+                } else {
+                    narr += `🟢 ระดับ ROUTINE — เหตุการณ์อยู่ในวิสัยปกติ ไม่ต้องดำเนินการนอกแผนงานปัจจุบัน\n\n`;
+                }
+
+                narr += `⚖️ ข้อพิจารณาทางกฎหมาย:\n`;
+                narr += `▸ UNCLOS Art.60(5) — รักษา safety zone 500 m รอบโครงสร้างกลางทะเล\n`;
+                narr += `▸ พ.ร.บ.เขตปลอดภัยฯ 2478 — บังคับใช้ได้ในน่านน้ำไทย\n`;
+                narr += `▸ PDPA — กรณีบันทึก AIS ของเรือพลเรือน ต้อง anonymize ก่อนเก็บถาวร\n\n`;
+
+                narr += `🛡️ ข้อจำกัดของการประเมิน (caveats):\n`;
+                narr += `▸ ระบบนี้เป็น Decision Support เท่านั้น — การตัดสินใจสุดท้ายต้องผ่าน Human-in-the-Loop ตาม DoD Directive 3000.09 (2023)\n`;
+                narr += `▸ ค่าความเชื่อมั่น (confidence) เฉลี่ย ${state.alerts.length ? (state.alerts.reduce((s,a) => s+a.conf, 0)/state.alerts.length*100).toFixed(0) : '--'}% — ยังไม่ผ่านเกณฑ์ autonomous action ตาม IMO MASS Code Level III-A`;
+            }
+            return narr;
+        }
+
+        async function generateOpusAnalysis() {
+            if (!opusNarr) return;
+            if (state.opusBusy) return;
+            state.opusBusy = true;
+
+            // Loading state
+            opusNarr.classList.remove('empty');
+            opusNarr.innerHTML = `
+                <div class="mda-ai-opus-loading">
+                    <div class="mda-ai-spinner"></div>
+                    <div>กำลังเรียก Claude Opus ผ่าน proxy …</div>
+                    <div style="font-size:9px;color:#94a3b8;letter-spacing:0.10em;">(mock pipeline · 2.0s)</div>
+                </div>`;
+            if (opusTokens) opusTokens.textContent = '…';
+            if (opusLatency) opusLatency.textContent = 'pending';
+
+            const t0 = performance.now();
+
+            // try real proxy first if configured
             const proxy = MDA.cfg.aiProxyUrl;
+            let narrative = null;
+            let modelLabel = 'claude-opus-mock';
+
             if (state.mode === 'llm' && proxy && !MDA.cfg.aiMockMode) {
-                brief.textContent = 'กำลังเรียก Claude API ผ่าน Worker …';
                 try {
                     const r = await fetch(proxy, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            mode: 'briefing',
-                            taxonomy: t,
-                            alerts: recent
+                            mode: 'opus-analysis',
+                            taxonomy: state.taxonomy,
+                            alerts: state.alerts.slice(0, 10)
                         })
                     });
                     const j = await r.json();
-                    brief.textContent = j.text || text;
+                    narrative = j.text || null;
+                    modelLabel = j.model || 'claude-opus';
                 } catch (e) {
-                    brief.textContent = text + '\n\n[!] LLM call failed — fallback rules';
+                    console.warn('[MDA.AI] Opus proxy call failed, falling back to mock', e);
                 }
-            } else {
-                brief.textContent = text;
             }
-            state.lastBriefing = { ts, text };
-            if (briefTime) briefTime.textContent = ts;
+
+            // mock delay (real or fallback)
+            await new Promise(res => setTimeout(res, 2000));
+            if (!narrative) {
+                narrative = _opusNarrativeFromState();
+            }
+
+            const latency = Math.round(performance.now() - t0);
+
+            // render
+            opusNarr.innerHTML = '';
+            opusNarr.textContent = narrative;
+            opusNarr.classList.remove('empty');
+
+            const tok = Math.round(narrative.length / 4);  // rough token count
+            const conf = state.alerts.length
+                ? (state.alerts.reduce((s,a) => s+a.conf, 0) / state.alerts.length * 100).toFixed(0) + '%'
+                : '--';
+
+            if (opusTokens)  opusTokens.textContent  = '~' + tok + ' tok';
+            if (opusLatency) opusLatency.textContent = latency + 'ms';
+            if (opusModel)   opusModel.textContent   = modelLabel;
+            if (opusConf)    opusConf.textContent    = conf;
+
+            // caveats
+            if (opusCaveats) {
+                const t = state.taxonomy;
+                const total = t.kinetic + t.asymmetric + t.cyber + t.environmental + t.hybrid;
+                const lvl = _ruleLevel();
+                const parts = [];
+                parts.push(`<div>· เกณฑ์ความเชื่อมั่น: <b style="color:#c4b5fd;">${conf}</b> · samples: <b>${state.alerts.length}</b></div>`);
+                parts.push(`<div>· Decision Support — ผ่าน HITL ตาม <b>DoD 3000.09</b></div>`);
+                if (lvl === 'HIGH') parts.push(`<div style="color:#fca5a5;">· แนะนำ <b>2-person rule</b> ก่อนเปลี่ยน posture</div>`);
+                if (state.mode === 'rules' || !proxy) parts.push(`<div style="color:#94a3b8;font-style:italic;">· mock mode — proxy ${proxy ? 'available' : 'null'}</div>`);
+                opusCaveats.innerHTML = parts.join('');
+            }
+
+            state.lastOpus = { ts: _now(), narrative, latency, model: modelLabel };
+            state.opusBusy = false;
+
             try { if (typeof addLog === 'function') {
-                addLog('[AI] Generated situation briefing (' + state.mode + ')', '#c4b5fd');
+                addLog('[AI] Opus analysis complete · ' + latency + 'ms · ' + modelLabel, '#c4b5fd');
             }} catch (_) {}
         }
 
-        function clearBriefing() {
-            if (brief) {
-                brief.innerHTML = '<span class="mda-ai-briefing-empty">— ยังไม่มีการประเมินสถานการณ์ — กด "Generate" เพื่อให้ AI สรุปสภาพแวดล้อมปัจจุบัน</span>';
+        // ── § 3 FORCE DEPLOYMENT RECOMMENDATIONS ──────────
+        function _buildForceRecs() {
+            const t = state.taxonomy;
+            const lvl = _ruleLevel();
+            const recs = [];
+
+            if (t.hybrid >= 2 || (t.cyber >= 1 && t.asymmetric >= 2)) {
+                recs.push({
+                    prio: 'P1', cls: 'high', cat: 'COMMAND',
+                    title: 'ยกระดับ ROE + แจ้ง ศรชล. ภาค 1',
+                    body: 'พบรูปแบบ Hybrid multi-vector · ต้อง coordination ข้ามหน่วยตาม พ.ร.บ.ผลประโยชน์ฯ 2562',
+                    meta: 'NATO Mainsail Feb-2025 · 2-person rule'
+                });
             }
-            if (briefTime) briefTime.textContent = '--';
+            if (t.kinetic >= 2 || t.hybrid >= 1) {
+                recs.push({
+                    prio: 'P1', cls: 'high', cat: 'SURFACE',
+                    title: 'PV — 2 ลำ สู่ MEZ perimeter',
+                    body: 'ส่งเรือตรวจการณ์ 2 ลำคุม sector 270° ระยะ 1.5 NM จาก UDC',
+                    meta: 'UNCLOS Art.60(5) safety zone 500m'
+                });
+            } else if (t.kinetic >= 1) {
+                recs.push({
+                    prio: 'P2', cls: 'med', cat: 'SURFACE',
+                    title: 'PV — 1 ลำ สู่ contact bearing',
+                    body: 'เรือตรวจการณ์ shadow contact ที่ COG 270° · ระยะ 1.5 NM',
+                    meta: 'พ.ร.บ.เขตปลอดภัยฯ 2478'
+                });
+            }
+            if (t.cyber >= 1) {
+                recs.push({
+                    prio: 'P2', cls: 'med', cat: 'CYBER',
+                    title: 'GNSS resilience mode + Spoofing flag',
+                    body: 'เปิดโหมด multi-constellation + บันทึก pseudo-range jitter เพื่อ forensics',
+                    meta: 'ITU R-REC-M.1371 + MMSI cross-check'
+                });
+            }
+            if (t.asymmetric >= 2) {
+                recs.push({
+                    prio: 'P2', cls: 'med', cat: 'SUBSURFACE',
+                    title: 'GUUV — 1 ลำ patrol submarine cable',
+                    body: 'ส่ง GUUV สำรวจข้อต่อ cable ที่อยู่ใกล้กลุ่มเรือต้องสงสัย · เปิด DAS realtime',
+                    meta: 'WADER + AISViz cross-ref'
+                });
+            }
+            if (t.environmental >= 1) {
+                recs.push({
+                    prio: 'P3', cls: 'low', cat: 'OPS',
+                    title: 'Survey Vessel — postpone deep-water ops',
+                    body: 'sea state สูงเกินเกณฑ์ HYPACK · เลื่อน multibeam survey · ปรับ ROV depth limit',
+                    meta: 'WMO sea state ≥ 4'
+                });
+            }
+            if (recs.length === 0) {
+                recs.push({
+                    prio: 'P--', cls: 'low', cat: 'ROUTINE',
+                    title: 'คงระดับเฝ้าระวังปกติ',
+                    body: 'ไม่มีสัญญาณภัยคุกคาม · ใช้โอกาสนี้ทบทวน calibration + audit log',
+                    meta: 'Routine watch · ศรชล. 5-yr plan 2566-70'
+                });
+            }
+            return recs;
+        }
+
+        function renderForceRecommendations() {
+            if (!forceList) return;
+            const recs = _buildForceRecs();
+            if (forceCount) forceCount.textContent = recs.length;
+            if (assetsAvail) {
+                // available count is mock-static for now
+                assetsAvail.textContent = (state.mode === 'rules') ? 'READY' : 'STANDBY';
+            }
+            forceList.innerHTML = recs.map(r => `
+                <div class="mda-ai-force-item ${r.cls}">
+                    <div class="mda-ai-force-head">
+                        <span>${_escape(r.cat)}</span>
+                        <span class="mda-ai-force-prio">${_escape(r.prio)}</span>
+                    </div>
+                    <div class="mda-ai-force-title">${_escape(r.title)}</div>
+                    <div class="mda-ai-force-body">${_escape(r.body)}</div>
+                    <div class="mda-ai-force-meta">📎 ${_escape(r.meta)}</div>
+                </div>`).join('');
         }
 
         function clearAll() {
             state.alerts.length = 0;
             state.taxonomy = { kinetic:0, asymmetric:0, cyber:0, environmental:0, hybrid:0 };
+            state.lastOpus = null;
             renderAlerts();
             renderTaxonomy();
-            clearBriefing();
+            renderRuleSynthesis();
+            renderForceRecommendations();
+            if (opusNarr) {
+                opusNarr.classList.add('empty');
+                opusNarr.textContent = '— กดปุ่ม "✨ Run Opus Analysis" เพื่อให้ AI วิเคราะห์เชิงลึก —\n(mock pipeline · จะเชื่อมต่อ Claude API ผ่าน Cloudflare Worker ใน v14.0.4)';
+            }
+            if (opusTokens)  opusTokens.textContent  = '--';
+            if (opusLatency) opusLatency.textContent = '--ms';
+            if (opusConf)    opusConf.textContent    = '--';
+            if (opusCaveats) opusCaveats.innerHTML = '<span style="color:#64748b;font-style:italic;">— ยังไม่มีการประเมิน — รอเรียก Opus —</span>';
+            try { if (typeof addLog === 'function') {
+                addLog('[AI] State cleared (alerts + taxonomy + opus)', '#7dd3fc');
+            }} catch (_) {}
+        }
+
+        function refreshRules() {
+            // force one mock tick + re-render
+            renderAlerts();
+            renderTaxonomy();
+            renderRuleSynthesis();
+            renderForceRecommendations();
+            if (state.mode === 'rules') _mockTick();
+            try { if (typeof addLog === 'function') {
+                addLog('[AI] Rule engine refresh · ' + state.alerts.length + ' alerts', '#7dd3fc');
+            }} catch (_) {}
         }
 
         // ── mode toggle ─────────────────────────────────────
@@ -22382,111 +22992,98 @@ function _sonarEqnRender(panel) {
             }
             if (modeState) {
                 modeState.textContent = (state.mode === 'llm')
-                    ? (MDA.cfg.aiProxyUrl ? 'online · Claude' : 'llm · proxy=null')
-                    : 'offline · rules';
+                    ? (MDA.cfg.aiProxyUrl ? 'online · Claude Opus' : 'llm · proxy=null (mock)')
+                    : 'offline · rules-only';
             }
         }
 
-        // ── drag ────────────────────────────────────────────
-        function makeDraggable() {
-            if (!panel || !head) return;
-            let drag = false, ox = 0, oy = 0;
-            head.addEventListener('mousedown', e => {
-                if (e.target.id === 'mda-ai-close') return;
-                drag = true;
-                const r = panel.getBoundingClientRect();
-                ox = e.clientX - r.left; oy = e.clientY - r.top;
-                e.preventDefault();
-            });
-            document.addEventListener('mousemove', e => {
-                if (!drag) return;
-                let nx = e.clientX - ox, ny = e.clientY - oy;
-                nx = Math.max(0, Math.min(nx, window.innerWidth  - panel.offsetWidth));
-                ny = Math.max(0, Math.min(ny, window.innerHeight - panel.offsetHeight));
-                panel.style.left = nx + 'px';
-                panel.style.top  = ny + 'px';
-                panel.style.right = 'auto';
-            });
-            document.addEventListener('mouseup', () => { drag = false; });
-            // double-click reset
-            head.addEventListener('dblclick', () => {
-                panel.style.left = '';
-                panel.style.top  = '80px';
-                panel.style.right = '16px';
-            });
+        // ── ESC handler ─────────────────────────────────────
+        function _onKey(e) {
+            if (e.key === 'Escape' && state.open) {
+                toggle(false);
+            }
         }
 
         // ── public toggle ───────────────────────────────────
         function toggle(force) {
             bindDom();
-            if (!panel) return;
+            if (!modal || !backdrop) return;
             const want = (typeof force === 'boolean') ? force : !state.open;
             state.open = want;
-            panel.classList.toggle('open', want);
-            // sync layer-panel chip + count
-            const cnt = $('mda-cnt-ai');
-            if (cnt) cnt.textContent = want ? 'ON' : 'OFF';
-            const row = document.querySelector('#mda-layerpanel .mda-lp-row[data-mda-action="ai-domain"]');
-            if (row) {
-                row.classList.toggle('on', want);
-                const sw = row.querySelector('.mda-sw');
-                if (sw) sw.classList.toggle('on', want);
-            }
+
+            // sync modal + backdrop (PV-modal pattern)
+            modal.classList.toggle('show', want);
+            backdrop.classList.toggle('active', want);
+
+            // sync header button visual state
+            if (headerBtn) headerBtn.classList.toggle('active', want);
+
             if (want) {
-                renderAlerts(); renderTaxonomy(); setMode(state.mode);
+                renderAlerts();
+                renderTaxonomy();
+                renderRuleSynthesis();
+                renderForceRecommendations();
+                setMode(state.mode);
+                if (lastUpdate) lastUpdate.textContent = _now();
                 if (!state.mockTimer) {
                     state.mockTimer = setInterval(_mockTick, MDA.cfg.aiTickMs);
-                    // seed one alert immediately
-                    setTimeout(_mockTick, 600);
+                    setTimeout(_mockTick, 600);  // seed
                 }
+                document.addEventListener('keydown', _onKey);
                 try { if (typeof addLog === 'function') {
-                    addLog('[AI] Domain ON · rule-engine ทำงาน · HITL required', '#c4b5fd');
+                    addLog('[AI] Decision-Support Modal OPEN · rule-engine active · HITL required', '#c4b5fd');
                 }} catch (_) {}
             } else {
                 if (state.mockTimer) {
                     clearInterval(state.mockTimer);
                     state.mockTimer = null;
                 }
+                document.removeEventListener('keydown', _onKey);
                 try { if (typeof addLog === 'function') {
-                    addLog('[AI] Domain OFF', '#64748b');
+                    addLog('[AI] Decision-Support Modal CLOSED', '#64748b');
                 }} catch (_) {}
             }
         }
 
         function init() {
             bindDom();
-            if (!panel) {
-                console.warn('[MDA.AI] panel not in DOM');
+            if (!modal) {
+                console.warn('[MDA.AI] modal not in DOM');
                 return;
             }
-            if (closeBtn)  closeBtn.addEventListener('click', () => toggle(false));
-            if (btnGen)    btnGen.addEventListener('click', generateBriefing);
-            if (btnClear)  btnClear.addEventListener('click', clearAll);
-            if (modeRules) modeRules.addEventListener('click', () => setMode('rules'));
-            if (modeLlm)   modeLlm.addEventListener('click', () => {
+            if (closeBtn)   closeBtn.addEventListener('click', () => toggle(false));
+            if (dismissBtn) dismissBtn.addEventListener('click', () => toggle(false));
+            if (refreshBtn) refreshBtn.addEventListener('click', refreshRules);
+            if (btnGen)     btnGen.addEventListener('click', generateOpusAnalysis);
+            if (btnClear)   btnClear.addEventListener('click', clearAll);
+            if (modeRules)  modeRules.addEventListener('click', () => setMode('rules'));
+            if (modeLlm)    modeLlm.addEventListener('click', () => {
                 if (!MDA.cfg.aiProxyUrl) {
                     try { if (typeof addLog === 'function') {
-                        addLog('[AI] LLM mode requires aiProxyUrl (Cloudflare Worker) — staying in rules mode', '#fbbf24');
+                        addLog('[AI] LLM mode requires aiProxyUrl (Cloudflare Worker) — running in mock mode', '#fbbf24');
                     }} catch (_) {}
                 }
                 setMode('llm');
             });
-            makeDraggable();
             setMode('rules');
             renderAlerts();
             renderTaxonomy();
-            console.log('[MDA.AI] v14.0.1 initialized · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
+            renderRuleSynthesis();
+            renderForceRecommendations();
+            console.log('[MDA.AI] v14.0.2 initialized · modal mode · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
         }
 
         // expose
-        window.toggleAIDomain = () => toggle();
+        window.toggleAIDomain = (force) => toggle(force);
 
         return {
             name: 'AI',
             init,
             toggle,
             pushAlert,
-            generateBriefing,
+            generateOpusAnalysis,
+            generateBriefing: generateOpusAnalysis,  // alias (back-compat)
+            refreshRules,
             clearAll,
             state
         };
@@ -22695,8 +23292,8 @@ function _sonarEqnRender(panel) {
             'sv-live'    : () => window.toggleSeaVisionLive && window.toggleSeaVisionLive(),
             'sv-import'  : () => { const i=document.getElementById('svImportInput'); if(i) i.click(); },
             'sv-reset'   : () => window.resetSVImport     && window.resetSVImport(),
-            // [v14.0.1] AI DOMAIN — decision-support panel (human-in-the-loop)
-            'ai-domain'  : () => window.toggleAIDomain    && window.toggleAIDomain(),
+            // [v14.0.2] AI DOMAIN — moved to header button #udc-ai-btn (toggleAIDomain global retained)
+            // ai-domain layer-panel row removed; ดูปุ่ม AI ใน header (ซ้ายของ RESET)
             // HSV-Ext (v11 B1–B7)
             'hsv-swath'    : () => hsvFlip('swath'),
             'hsv-fls'      : () => hsvFlip('fls'),
@@ -22715,10 +23312,10 @@ function _sonarEqnRender(panel) {
                 const ov = document.getElementById('dive3d');
                 return !!(ov && ov.classList.contains('active'));
             }
-            // [v14.0.1] aiDomainBtn → check panel.open (no real button exists)
+            // [v14.0.2] aiDomainBtn → check modal.show (was panel.open in v14.0.1)
             if (btnId === 'aiDomainBtn') {
-                const p = document.getElementById('mda-ai-panel');
-                return !!(p && p.classList.contains('open'));
+                const m = document.getElementById('mda-ai-modal');
+                return !!(m && m.classList.contains('show'));
             }
             // audioBtn → uses .audio-on
             if (btnId === 'audioBtn') {
