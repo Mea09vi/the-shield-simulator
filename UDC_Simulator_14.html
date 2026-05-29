@@ -8,6 +8,19 @@
                 + AI Domain ชั้น meta-intelligence สำหรับ situational reasoning (Decision Support Only)
 
   v14 changelog:
+    · [v14.0.8] STABILITY · P0 bug-fix wave — security · reliability · 3D memory · network · logic
+        - P0-1/2 Security : เพิ่ม escapeHtml() กลาง + ปิด XSS ทุกจุดที่ฉีดข้อมูลภายนอกเข้า DOM
+          (GDELT events · AIS popup · model label · addLog/addEngLog)
+        - P0-3 Lifecycle  : แก้ timer/listener leak + boot guard กัน requestAnimationFrame ซ้อน 2 ลูป
+        - P0-4 2D reliab. : updateTide/fullscreen เช็ค DOM ก่อนใช้ · เรียก syncCanvasSize() แทน
+          การอ้าง `canvas` ที่ไม่มีตัวแปร (เดิม ReferenceError ตอนสลับ fullscreen)
+        - P0-5 3D memory  : _disposeObject3D() คืน geometry + material + texture ครบทุกช่องทุกเฟรม
+          (กัน GPU texture leak ใน d3_dynGroup / d3_droneGroup)
+        - P0-6 Network    : fetchTO() timeout + AbortController ครอบ fetch ภายนอกทุกตัว · เช็ค r.ok
+          ก่อน parse · USGS ข้าม feature ที่ geometry=null (เดิม throw ทิ้งทั้งชุด)
+        - P0-7 Logic      : SONAR_DETECT_NY fail-closed กัน NaN bypass (เดิม detect ทุกระยะ) ·
+          aviation gnd เช็ค typeof s.gs (เดิม null<1=true → เครื่องที่บินอยู่ถูกตีว่า ON GROUND)
+        - ทำภายใต้ข้อจำกัด single-file · การแตกไฟล์ + object pooling เลื่อนไปเวอร์ชัน model final
     · [v14.0.7] AI · Default model switch (gemini-2.0-flash → gemini-2.5-flash)
         - Google ย้าย gemini-2.0-flash ไป paid tier ปี 2025 (free_tier_requests = 0)
           → default LLM ของ simulator + Worker เปลี่ยนเป็น 2.5-flash ที่ยังฟรี
@@ -108,7 +121,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE SHIELD 2.0 | UDC Multi-Domain Awareness Simulator v13</title>
+    <title>THE SHIELD 2.0 | UDC Multi-Domain Awareness Simulator v14.0.8</title>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
       Leaflet.js คือไลบรารีแผนที่แบบ Open-Source ที่ใช้กันอย่างแพร่หลายใน
@@ -8127,25 +8140,34 @@ function makeAISPopup(v) {
         'Tanker':'#ef4444', 'Passenger':'#a78bfa', 'Fishing':'#22c55e',
         'Tug':'#00d4ff', 'Offshore':'#38bdf8', 'Naval/Govt':'#64ffda',
     };
-    const tc = typeColors[v.type] || '#94a3b8';
-    const etaTxt  = v.eta  ? v.eta  : '—';
-    const destTxt = v.dest ? v.dest : '—';
-    const imoTxt  = v.imo  ? v.imo  : '—';
+    const tc = typeColors[v.type] || '#94a3b8';   // hex จาก map คงที่ → ปลอดภัยใน style
+    // ── escape ฟิลด์ string จากภายนอก (WS/Kpler/SeaVision/import) กัน XSS ──
+    const etaTxt  = escapeHtml(v.eta  ? v.eta  : '—');
+    const destTxt = escapeHtml(v.dest ? v.dest : '—');
+    const imoTxt  = escapeHtml(v.imo  ? v.imo  : '—');
+    const flagTxt   = escapeHtml(v.flag);
+    const nameTxt   = escapeHtml(v.name);
+    const mmsiTxt   = escapeHtml(v.mmsi);
+    const typeTxt   = escapeHtml(v.type);
+    const statusTxt = escapeHtml(v.status);
+    const cogTxt    = escapeHtml(v.cog);
+    const ageTxt    = escapeHtml(v.age || '');
+    const cacheAgeTxt = escapeHtml(v.cacheAgeMin);
     return `
     <div style="background:rgba(2,10,25,.97);border:1px solid ${tc}44;border-radius:8px;
                 padding:10px 13px;font-family:'Share Tech Mono',monospace;min-width:210px;
                 box-shadow:0 0 20px ${tc}33;">
       <div style="color:${tc};font-size:12px;font-weight:bold;letter-spacing:1px;
                   margin-bottom:7px;border-bottom:1px solid ${tc}30;padding-bottom:5px;">
-          ${v.flag} ${v.name}
+          ${flagTxt} ${nameTxt}
       </div>
       <div style="display:grid;grid-template-columns:70px 1fr;row-gap:3px;font-size:10px;">
-        <span style="color:#475569;">MMSI</span>   <span style="color:#e2e8f0;">${v.mmsi}</span>
+        <span style="color:#475569;">MMSI</span>   <span style="color:#e2e8f0;">${mmsiTxt}</span>
         <span style="color:#475569;">IMO</span>    <span style="color:#e2e8f0;">${imoTxt}</span>
-        <span style="color:#475569;">TYPE</span>   <span style="color:${tc};">${v.type}</span>
+        <span style="color:#475569;">TYPE</span>   <span style="color:${tc};">${typeTxt}</span>
         <span style="color:#475569;">LENGTH</span> <span style="color:#e2e8f0;">${v.length > 0 ? v.length + ' m' : '—'}</span>
-        <span style="color:#475569;">STATUS</span> <span style="color:#22c55e;">${v.status}</span>
-        <span style="color:#475569;">COG</span>    <span style="color:#38bdf8;">${v.cog}°</span>
+        <span style="color:#475569;">STATUS</span> <span style="color:#22c55e;">${statusTxt}</span>
+        <span style="color:#475569;">COG</span>    <span style="color:#38bdf8;">${cogTxt}°</span>
         <span style="color:#475569;">SOG</span>    <span style="color:#38bdf8;">${v.sog.toFixed(1)} kt</span>
         <span style="color:#475569;">DEST</span>   <span style="color:#e2e8f0;">${destTxt}</span>
         <span style="color:#475569;">ETA</span>    <span style="color:#e2e8f0;">${etaTxt}</span>
@@ -8153,7 +8175,7 @@ function makeAISPopup(v) {
       </div>
       <div style="margin-top:7px;padding-top:5px;border-top:1px solid ${tc}20;
                   font-size:9px;color:rgba(255,255,255,.25);text-align:right;">
-          ${v.fromSVExport ? `🟣 SeaVision EXPORT · ${v.age||''}` : v.fromSeaVision ? '🟣 SeaVision SNAP' : v.fromCache ? `🟡 CACHE · ${v.cacheAgeMin} นาทีที่แล้ว` : v.lastSeen ? '🟢 AISStream LIVE' : '🔵 SIM'} · ${new Date().toLocaleTimeString('th-TH')}
+          ${v.fromSVExport ? `🟣 SeaVision EXPORT · ${ageTxt}` : v.fromSeaVision ? '🟣 SeaVision SNAP' : v.fromCache ? `🟡 CACHE · ${cacheAgeTxt} นาทีที่แล้ว` : v.lastSeen ? '🟢 AISStream LIVE' : '🔵 SIM'} · ${new Date().toLocaleTimeString('th-TH')}
       </div>
     </div>`;
 }
@@ -8596,6 +8618,7 @@ function startSimulatedAIS() {
         btn.classList.add('ais-live');
         btn.textContent = '📡 AIS SIM';
         addLog(`[AIS] ⚠ Simulation mode — ${aisVesselData.length} ลำ (AISStream ไม่พร้อม)`, '#f59e0b');
+        if (aisUpdateTimer) clearInterval(aisUpdateTimer);   // กัน interval เดิมรั่ว ก่อน reassign
         aisUpdateTimer = setInterval(function() {
             driftAISVessels();
             addLog(`[AIS] ↻ sim drift ${aisVesselData.length} vessels`, '#334155');
@@ -10423,15 +10446,20 @@ function updateTide() {
     else                       { stateText='น้ำขึ้น (สูงมาก)';stateCls='s-warn';}
 
     // ── DOM updates ──
+    // guard: ถ้า tide panel ยังไม่ถูก render (เช่นโหมด MDA-only) ให้ข้าม
+    // — กัน getElementById(null).style ทำให้ updateTide throw แล้ว animate loop ตายทั้งลูป
+    const tGauge = document.getElementById('tide-gauge-fill');
+    if (!tGauge) return;
     const pct = (tideLevel - TIDE_MIN) / (TIDE_MAX - TIDE_MIN) * 100;
     const gaugeCol = tideLevel < 1.2 ? '#38bdf8' : tideLevel < 2.4 ? '#22c55e' : '#fbbf24';
-    document.getElementById('tide-gauge-fill').style.width    = pct + '%';
-    document.getElementById('tide-gauge-fill').style.background = gaugeCol;
-    document.getElementById('tide-val').textContent           = tideLevel.toFixed(2) + ' m';
-    document.getElementById('tide-state').textContent         = stateText;
-    document.getElementById('tide-state').className           = 'val ' + stateCls;
-    document.getElementById('tide-trend').textContent         = trending ? '↑ ขึ้น' : '↓ ลง';
-    document.getElementById('tide-trend').style.color         = trending ? '#22c55e' : '#38bdf8';
+    tGauge.style.width      = pct + '%';
+    tGauge.style.background = gaugeCol;
+    const elTval = document.getElementById('tide-val');
+    if (elTval) elTval.textContent = tideLevel.toFixed(2) + ' m';
+    const elState = document.getElementById('tide-state');
+    if (elState) { elState.textContent = stateText; elState.className = 'val ' + stateCls; }
+    const elTrend = document.getElementById('tide-trend');
+    if (elTrend) { elTrend.textContent = trending ? '↑ ขึ้น' : '↓ ลง'; elTrend.style.color = trending ? '#22c55e' : '#38bdf8'; }
 
     // Acoustic env label (uses combined effectiveMod)
     const acouText = effectiveMod >= 1.04 ? 'CALM'
@@ -10440,19 +10468,19 @@ function updateTide() {
                    : effectiveMod >= 0.60 ? 'HIGH NOISE'
                    : 'SEA NOISE';
     const acouCls  = effectiveMod >= 0.95 ? 's-ok' : effectiveMod >= 0.80 ? 's-warn' : 's-alert';
-    document.getElementById('tide-acoustic').textContent = acouText;
-    document.getElementById('tide-acoustic').className   = 'val ' + acouCls;
-    document.getElementById('tide-detect').textContent   = lbl;
-    document.getElementById('tide-detect').className     = 'val ' + (effectiveMod >= 0.95 ? 's-ok' : effectiveMod >= 0.80 ? 's-warn' : 's-alert');
+    const elAcou = document.getElementById('tide-acoustic');
+    if (elAcou) { elAcou.textContent = acouText; elAcou.className = 'val ' + acouCls; }
+    const elDetect = document.getElementById('tide-detect');
+    if (elDetect) { elDetect.textContent = lbl; elDetect.className = 'val ' + (effectiveMod >= 0.95 ? 's-ok' : effectiveMod >= 0.80 ? 's-warn' : 's-alert'); }
 
     // ── Detection Modifier panel (Tide+SS combined) ──
     const modBarWidth = Math.round(((effectiveMod - 0.40) / (1.12 - 0.40)) * 100);
-    document.getElementById('det-mod-bar').style.width      = Math.min(100, Math.max(0, modBarWidth)) + '%';
-    document.getElementById('det-mod-bar').style.background = col;
-    document.getElementById('det-mod-val').textContent      = '×' + effectiveMod.toFixed(2);
-    document.getElementById('det-mod-val').style.color      = col;
-    document.getElementById('det-mod-label').textContent    = lbl;
-    document.getElementById('det-mod-label').style.color    = col;
+    const elModBar = document.getElementById('det-mod-bar');
+    if (elModBar) { elModBar.style.width = Math.min(100, Math.max(0, modBarWidth)) + '%'; elModBar.style.background = col; }
+    const elModVal = document.getElementById('det-mod-val');
+    if (elModVal) { elModVal.textContent = '×' + effectiveMod.toFixed(2); elModVal.style.color = col; }
+    const elModLbl = document.getElementById('det-mod-label');
+    if (elModLbl) { elModLbl.textContent = lbl; elModLbl.style.color = col; }
 
     // ── Mini range bars (Tide × SS combined) ──
     const hydroNm   = (6.0  * effectiveMod).toFixed(1);
@@ -10464,15 +10492,15 @@ function updateTide() {
     [
         ['dm-hydro-bar', hydroPct, col], ['dm-sonar-bar', sonarPct, col], ['dm-fls-bar', flsPct, col]
     ].forEach(([id, w, c]) => {
-        document.getElementById(id).style.width      = w + '%';
-        document.getElementById(id).style.background = c;
+        const b = document.getElementById(id);
+        if (b) { b.style.width = w + '%'; b.style.background = c; }
     });
-    document.getElementById('dm-hydro-v').textContent = hydroNm + 'nm';
-    document.getElementById('dm-sonar-v').textContent = sonarNm + 'nm';
-    document.getElementById('dm-fls-v').textContent   = flsM + 'm';
-    document.getElementById('dm-hydro-v').style.color = col;
-    document.getElementById('dm-sonar-v').style.color = col;
-    document.getElementById('dm-fls-v').style.color   = col;
+    const elHv = document.getElementById('dm-hydro-v');
+    if (elHv) { elHv.textContent = hydroNm + 'nm'; elHv.style.color = col; }
+    const elSv = document.getElementById('dm-sonar-v');
+    if (elSv) { elSv.textContent = sonarNm + 'nm'; elSv.style.color = col; }
+    const elFv = document.getElementById('dm-fls-v');
+    if (elFv) { elFv.textContent = flsM + 'm'; elFv.style.color = col; }
 
     // ── Event log: เมื่อข้ามเกณฑ์ระดับ ──
     const newLvl = lbl;
@@ -11837,9 +11865,15 @@ function toggleSeismicChart() {
     const shown = panel.getAttribute('data-shown') === '1';
     if (shown) {
         panel.removeAttribute('data-shown');
+        if (window.Helicorder) Helicorder.stop();   // หยุด 1Hz render timer ตอนซ่อน (กัน CPU รั่ว)
     } else {
+        const wasBooted = initSeismicChart._heliBooted;
         panel.setAttribute('data-shown', '1');
         initSeismicChart();
+        if (wasBooted && window.Helicorder) {        // re-show: timer ถูก stop ไปตอนซ่อน → start ใหม่ (init เคลียร์ของเดิมเอง)
+            const heli = document.getElementById('seisHelicorder');
+            if (heli) { try { Helicorder.init(heli); } catch (e) {} }
+        }
     }
     if (btn) btn.classList.toggle('active', !shown);
 }
@@ -12029,9 +12063,9 @@ function updateAirDefense() {
                 best.frozen = true; best.active = false;
                 v.killCount = (v.killCount || 0) + 1;
                 addLog(`🚀 ${v.label} → ${best.label} [ESSM] HIT — สกัด UAV สำเร็จ`, '#22c55e');
-                addEngLog(`<span style="color:#22c55e;">✓ ${v.label}→${best.label} [ESSM] HIT</span>`);
+                addEngLog(`<span style="color:#22c55e;">✓ ${escapeHtml(v.label)}→${escapeHtml(best.label)} [ESSM] HIT</span>`);
             } else {
-                addEngLog(`<span style="color:#f59e0b;">✗ ${v.label}→${best.label} [ESSM] MISS</span>`);
+                addEngLog(`<span style="color:#f59e0b;">✗ ${escapeHtml(v.label)}→${escapeHtml(best.label)} [ESSM] MISS</span>`);
             }
         }
     });
@@ -12060,7 +12094,7 @@ function updateAirDefense() {
                 best.frozen = true; best.active = false;
                 tm.killCount = (tm.killCount || 0) + 1;
                 addLog(`🔫 สอ.รฝ. ${tm.label} → ${best.label} — ยิงโดรนเล็กตก (ปืนลูกซอง)`, '#39ff8c');
-                addEngLog(`<span style="color:#39ff8c;">✓ สอ.รฝ.${tm.label}→${best.label} HARD-KILL</span>`);
+                addEngLog(`<span style="color:#39ff8c;">✓ สอ.รฝ.${escapeHtml(tm.label)}→${escapeHtml(best.label)} HARD-KILL</span>`);
             }
         }
     });
@@ -16725,6 +16759,29 @@ function buildReconModel() {
     pod.position.y=-0.5; g.add(pod);
     return g;
 }
+
+// ── [v14.0.8] dispose helper — คืน GPU memory ให้ครบ: geometry + material + texture maps ทุกช่อง ──
+//   เดิม cleanup loop dispose แค่ geometry/material แต่ลืม texture (.map ฯลฯ) ทำให้ CanvasTexture
+//   ของ sprite ป้ายชื่อ / wake / sonar-ping ที่ถูกสร้างใหม่ทุกเฟรม รั่วสะสมใน GPU เรื่อย ๆ
+//   ทุก texture ที่เข้า dynamic group ถูกสร้างสด ๆ ต่อครั้ง (ไม่มี shared/cached) → dispose ได้ปลอดภัย
+const _THREE_TEX_SLOTS = ['map','alphaMap','aoMap','bumpMap','displacementMap',
+    'emissiveMap','envMap','lightMap','metalnessMap','normalMap','roughnessMap',
+    'specularMap','gradientMap'];
+function _disposeMaterial(mat) {
+    if (!mat) return;
+    for (const k of _THREE_TEX_SLOTS) {
+        const t = mat[k];
+        if (t && typeof t.dispose === 'function') t.dispose();
+    }
+    if (typeof mat.dispose === 'function') mat.dispose();
+}
+function _disposeObject3D(o) {
+    if (o.geometry && typeof o.geometry.dispose === 'function') o.geometry.dispose();
+    const m = o.material;
+    if (Array.isArray(m)) m.forEach(_disposeMaterial);
+    else if (m) _disposeMaterial(m);
+}
+
 function update3DDrones() {
     if (typeof threats==='undefined' || !d3_scene) return;
     if (!d3_droneGroup) {
@@ -16735,10 +16792,7 @@ function update3DDrones() {
     // ล้าง + dispose ลูกทุกตัว แล้วสร้างใหม่จากโดรนที่ active
     while(d3_droneGroup.children.length){
         const c=d3_droneGroup.children.pop();
-        c.traverse(o=>{
-            if(o.geometry) o.geometry.dispose();
-            if(o.material) o.material.dispose();
-        });
+        c.traverse(_disposeObject3D);
     }
     const tm=performance.now()*0.001;
     threats.forEach(t=>{
@@ -17725,10 +17779,7 @@ function update3DEntities() {
     if (!d3_dynGroup) return;
     while(d3_dynGroup.children.length){
         const c = d3_dynGroup.children.pop();
-        c.traverse(o=>{
-            if(o.geometry) o.geometry.dispose();
-            if(o.material) o.material.dispose();
-        });
+        c.traverse(_disposeObject3D);
     }
     // (UDC + cables เป็น static — สร้างใน init3D แล้ว)
     // ── Guardian UUVs + PSR volume ──
@@ -18593,10 +18644,10 @@ function animate() {
                             v.state = 'PATROL'; v.engTarget = null; v.redirected = false;
                             const domLabel = t.type === 'uuv' ? '🌊 ASW' : '🔫';
                             addLog(`${domLabel} ${v.label} → ${t.label} [${wepName}] HIT — NEUTRALIZED`, '#22c55e');
-                            addEngLog(`<span style="color:#22c55e;">✓ ${v.label}→${t.label} [${wepName}] HIT</span>`);
+                            addEngLog(`<span style="color:#22c55e;">✓ ${escapeHtml(v.label)}→${escapeHtml(t.label)} [${escapeHtml(wepName)}] HIT</span>`);
                             setSensor('as-patrol','ENGAGE','s-alert');
                         } else {
-                            addEngLog(`<span style="color:#f59e0b;">✗ ${v.label}→${t.label} [${wepName}] MISS</span>`);
+                            addEngLog(`<span style="color:#f59e0b;">✗ ${escapeHtml(v.label)}→${escapeHtml(t.label)} [${escapeHtml(wepName)}] MISS</span>`);
                         }
                     }
                     // sel===null: อยู่นอกระยะอาวุธทั้งหมด → ปล่อยให้ INTERCEPT ปิดระยะ
@@ -18860,7 +18911,9 @@ function animate() {
             if (t.type!=='uuv') return;          // GUUV passive sonar: ใต้น้ำเท่านั้น (surface/drone ไม่ trigger FLS popup)
             const dx=t.nx-g.nx, dy=t.ny-g.ny;
             const dist=Math.sqrt(dx*dx+dy*dy);
-            if (dist >= SONAR_DETECT_NY) return;
+            // กัน fail-open: ถ้า SONAR_DETECT_NY เป็น NaN (effectiveMod คำนวณผิด) → dist>=NaN เป็น false เสมอ
+            // จะกลายเป็น detect ทุก threat ไม่ว่าระยะเท่าใด → บังคับ fail-closed: ระยะคำนวณไม่ได้ = ไม่ detect
+            if (!Number.isFinite(SONAR_DETECT_NY) || dist >= SONAR_DETECT_NY) return;
 
             // Forward-hemisphere check: threat ต้องไม่อยู่ใน blind stern zone (±45° ด้านหลัง)
             // คำนวณทิศทาง GUUV จาก waypoint/redirect target ปัจจุบัน
@@ -18962,9 +19015,16 @@ function animate() {
 }
 
 // Trigger initial draw after map tiles have loaded
-map.once('load', ()=>{ syncCanvasSize(); animate(); });
-// Fallback: also start after small delay in case tiles are cached
-setTimeout(()=>{ if(frame===0){ syncCanvasSize(); animate(); } }, 500);
+let _animBooted = false;
+function _startAnimationOnce() {
+    if (_animBooted) return;   // กัน rAF loop ซ้อน 2 ลูป (ถ้าทั้ง load event และ fallback ยิงพร้อมกัน)
+    _animBooted = true;
+    syncCanvasSize();
+    animate();
+}
+map.once('load', _startAnimationOnce);
+// Fallback: also start after small delay in case tiles are cached / load ไม่ยิง
+setTimeout(_startAnimationOnce, 500);
 
 // ═══════════════════════════════════════════════════════════════
 //  [ส่วนที่ 33] หมวด ช — ส่วนแสดงผล + วงรอบจำลอง
@@ -18996,6 +19056,26 @@ setTimeout(()=>{ if(frame===0){ syncCanvasSize(); animate(); } }, 500);
 //    ไฟสัญญาณ (Indicator) + แถบสถานะ (Status Bar) เปลี่ยนสี
 //    ok=เขียว · warn=เหลือง · crit=แดง → เห็นภาพรวมสถานการณ์ทันที
 // ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// 🛡️ Security helpers (v14.0.8) — กัน XSS จากข้อมูลภายนอก
+//    escapeHtml(): แปลงอักขระพิเศษก่อนยัดเข้า innerHTML
+//                  (ใช้ได้ทั้ง element-content และ attribute เพราะ escape ทั้ง " และ ')
+//    safeUrl():    อนุญาตเฉพาะ http(s) — กัน javascript:/data: ใน href
+//    NOTE: function declaration → hoisted ใช้ได้ทุกที่ในสคริปต์นี้
+// ═══════════════════════════════════════════════════════════════
+function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+function safeUrl(u) {
+    const s = String(u == null ? '' : u).trim();
+    return /^https?:\/\//i.test(s) ? s : '';
+}
 function updateStatus(html,color='#64ffda') {
     document.getElementById('statusBox').innerHTML=`<span style="color:${color}">${html}</span>`;
 }
@@ -19003,7 +19083,9 @@ function addLog(msg,color='#8892b0') {
     const log=document.getElementById('eventLog');
     const now=new Date();
     const time=[now.getHours(),now.getMinutes(),now.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');
-    log.innerHTML+=`<span style="color:var(--teal)">${time}</span> <span style="color:${color}">${msg}</span><br>`;
+    log.innerHTML+=`<span style="color:var(--teal)">${time}</span> <span style="color:${color}">${escapeHtml(msg)}</span><br>`;
+    // ── ring-buffer: เก็บไม่เกิน 200 บรรทัด กัน DOM โตไม่จำกัด ──
+    while (log.childNodes.length > 400) log.removeChild(log.firstChild);
     log.scrollTop=log.scrollHeight;
 }
 function setSensor(id,text,cls) {
@@ -19406,7 +19488,7 @@ function scenarioSurface() {
         updateStatus('✓ [ROE COMPLETE] ตรวจค้นเสร็จสิ้น — ปล่อยตัว<br>[PV-01] กลับ Search Pattern<br>[STATUS] ปกติ','#39ff14');
         t.frozen=false; t.tnx=1.1; t.tny=-0.1; t.speed=0.0005;
         const pvSr=closestPatrol(t.nx,t.ny); if(pvSr){pvSr.redirected=false;}
-        setTimeout(()=>{t.active=false;},6000);
+        T(6000,()=>{t.active=false;});   // wrap ใน T() → ถูกเคลียร์เมื่อ reset scenario (กัน stray timeout)
         showOutcome({result:'✓ ROE COMPLETE — VESSEL RELEASED', color:'#ffd700',
             rows:[['ภัยคุกคาม','SUSPECT-VESSEL-1 (Surface Intrusion)'],
                   ['ผลการสกัด','ตรวจค้น (Boarding) — เรือประมง ปล่อยตัว'],
@@ -20383,12 +20465,9 @@ function toggleFullscreen() {
         btn.classList.toggle('active', isFs);
         // ปรับ font ขนาดเล็กลงเมื่อ label ยาว
         btn.style.fontSize = isFs ? '10px' : '13px';
-        // Refresh canvas size เมื่อ viewport เปลี่ยน
-        if (canvas) {
-            setTimeout(() => {
-                canvas.width  = canvas.offsetWidth;
-                canvas.height = canvas.offsetHeight;
-            }, 120);
+        // Refresh canvas size เมื่อ viewport เปลี่ยน (เดิมอ้าง `canvas` ที่ไม่มี → ReferenceError)
+        if (typeof syncCanvasSize === 'function') {
+            setTimeout(syncCanvasSize, 120);
         }
     }
 }));
@@ -21444,7 +21523,9 @@ function _sonarEqnRender(panel) {
                     const alt    = s.alt_baro;       // feet (or "ground")
                     const altM   = (typeof alt === 'number') ? Math.round(alt * 0.3048) : null;
                     const gs     = s.gs;             // knots
-                    const gnd    = (alt === 'ground' || s.gs < 1);
+                    // s.gs อาจเป็น null (ไม่มีข้อมูลความเร็ว) → null < 1 = true ใน JS
+                    // เครื่องบินที่บินอยู่แต่ไม่มี GS จะถูกตีว่า "ON GROUND" ผิด → เช็ค typeof ก่อน
+                    const gnd    = (alt === 'ground' || (typeof s.gs === 'number' && s.gs < 1));
                     const call   = (s.flight || '').trim() || s.hex || '?';
                     const reg    = s.r || '';
                     const typ    = s.t || '';
@@ -21636,15 +21717,19 @@ function _sonarEqnRender(panel) {
                 const j = await fetchJSON(URL_USGS, 'seismic', MDA.cfg.cacheTTL.seismic);
                 const allFeats = j.features || [];
                 usgsRaw = allFeats.map(f => {
-                    const [lon, lat, depth] = f.geometry.coordinates;
-                    const mag = f.properties.mag || 0;
-                    f.properties.source = 'USGS';
+                    // USGS บางเหตุการณ์มี geometry = null → ข้ามเฉพาะ feature นั้น (เดิม throw ทิ้งทั้งชุด)
+                    const coords = f && f.geometry && f.geometry.coordinates;
+                    if (!coords || coords.length < 2) return null;
+                    const [lon, lat, depth] = coords;
+                    const props = f.properties || (f.properties = {});
+                    const mag = props.mag || 0;
+                    props.source = 'USGS';
                     const impact = MDA.util.computeUDCImpact({
-                        lat, lon, depth, mag,
-                        place: f.properties.place || ''
+                        lat, lon, depth: depth || 0, mag,
+                        place: props.place || ''
                     });
-                    return { feat: f, lon, lat, depth, mag, impact, source: 'USGS' };
-                });
+                    return { feat: f, lon, lat, depth: depth || 0, mag, impact, source: 'USGS' };
+                }).filter(Boolean);
             } catch (e) {
                 console.warn('[MDA·Seismic·USGS] fetch fail:', e.message);
                 if (!tmdRaw.length) { setBadge('seismic', 'ERR', 'crit'); return; }
@@ -22153,7 +22238,8 @@ function _sonarEqnRender(panel) {
 
         async function refresh() {
             try {
-                const r   = await fetch(URL, { cache: 'no-store' });
+                const r   = await fetchTO(URL, 12000, { cache: 'no-store' });   // timeout 12s กัน fetch ค้าง
+                if (!r.ok) throw new Error('HTTP ' + r.status);                 // กัน parse error HTML เป็นข้อมูลเสีย
                 const j   = await r.json();
                 const h   = j.hourly || {};
                 const idx = getCurrentHourIdx(h.time);
@@ -22545,11 +22631,13 @@ function _sonarEqnRender(panel) {
             }
             body.innerHTML = list.map(x => {
                 const cls = x.lvl === 'crit' ? 'crit' : (x.lvl === 'warn' ? 'warn' : 'info');
-                const link = x.url ? ` <a href="${x.url}" target="_blank" style="color:var(--cyan)">↗</a>` : '';
+                // ── escape ข้อมูล GDELT (title/url/msg ภายนอก) กัน XSS ──
+                const u = safeUrl(x.url);
+                const link = u ? ` <a href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer" style="color:var(--cyan)">↗</a>` : '';
                 return `<div class="mda-if-item ${cls}">
-                    <div class="mda-if-t">${x.icon} ${x.t}${link}</div>
-                    <div class="mda-if-m">${x.msg || ''}</div>
-                    <div class="mda-if-s">${x.src}${x.time ? ' · ' + x.time : ''}</div>
+                    <div class="mda-if-t">${x.icon} ${escapeHtml(x.t)}${link}</div>
+                    <div class="mda-if-m">${escapeHtml(x.msg || '')}</div>
+                    <div class="mda-if-s">${escapeHtml(x.src)}${x.time ? ' · ' + escapeHtml(x.time) : ''}</div>
                 </div>`;
             }).join('');
         }
@@ -23123,6 +23211,8 @@ function _sonarEqnRender(panel) {
             let source      = 'mock';     // 'real' | 'fallback' | 'mock'
 
             if (wantReal) {
+                const _aiCtl = new AbortController();
+                const _aiTO  = setTimeout(() => _aiCtl.abort(), 45000);   // LLM ช้าได้ → timeout 45s กัน UI ค้างที่ 'pending'
                 try {
                     const r = await fetch(proxy, {
                         method: 'POST',
@@ -23131,7 +23221,8 @@ function _sonarEqnRender(panel) {
                             model: selectedModel,           // v14.0.6 — chosen provider/model
                             taxonomy: state.taxonomy,
                             alerts: state.alerts.slice(0, 12)
-                        })
+                        }),
+                        signal: _aiCtl.signal
                     });
                     const j = await r.json().catch(() => null);
                     if (!r.ok) {
@@ -23147,8 +23238,10 @@ function _sonarEqnRender(panel) {
                         errMsg = 'empty response from Worker';
                     }
                 } catch (e) {
-                    errMsg = String(e && e.message || e);
+                    errMsg = (e && e.name === 'AbortError') ? 'timeout (45s)' : String(e && e.message || e);
                     console.warn('[MDA.AI] LLM proxy call failed, falling back to mock', e);
+                } finally {
+                    clearTimeout(_aiTO);
                 }
             }
 
@@ -23194,7 +23287,7 @@ function _sonarEqnRender(panel) {
                 parts.push(`<div>· Decision Support — ผ่าน HITL ตาม <b>DoD 3000.09</b> / <b>MASS Code III-A</b></div>`);
                 if (lvl === 'HIGH') parts.push(`<div style="color:#fca5a5;">· แนะนำ <b>2-person rule</b> ก่อนเปลี่ยน posture</div>`);
                 if (source === 'real') {
-                    parts.push(`<div style="color:#86efac;">· live · ${modelLabel} · ${usage ? (usage.input_tokens + ' in / ' + usage.output_tokens + ' out') : 'usage n/a'}</div>`);
+                    parts.push(`<div style="color:#86efac;">· live · ${escapeHtml(modelLabel)} · ${usage ? (usage.input_tokens + ' in / ' + usage.output_tokens + ' out') : 'usage n/a'}</div>`);
                 } else if (source === 'fallback') {
                     parts.push(`<div style="color:#fca5a5;">· proxy failed — fallback to mock · ${errMsg || 'unknown error'}</div>`);
                 } else {
@@ -23564,7 +23657,7 @@ function _sonarEqnRender(panel) {
             renderTaxonomy();
             renderRuleSynthesis();
             renderForceRecommendations();
-            console.log('[MDA.AI] v14.0.7 initialized · classifier active · multi-provider (Workers AI + Gemini) · default=2.5-flash · model=' + MDA.cfg.aiModel + ' · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
+            console.log('[MDA.AI] v14.0.8 initialized · classifier active · multi-provider (Workers AI + Gemini) · default=2.5-flash · model=' + MDA.cfg.aiModel + ' · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
         }
 
         // expose
@@ -24335,7 +24428,13 @@ function _sonarEqnRender(panel) {
         }
     }
 
+    function stopTimers() {
+        // เคลียร์ poll interval ทั้งหมด (กัน timer ซ้อนเวลาเรียก startTimers ซ้ำ)
+        Object.keys(MDA.timers).forEach(k => { clearInterval(MDA.timers[k]); delete MDA.timers[k]; });
+    }
+    MDA.stopTimers = stopTimers;   // เผื่อให้ teardown จากภายนอกได้
     function startTimers() {
+        stopTimers();   // idempotent — ล้างของเดิมก่อนเสมอ
         MDA.timers.aviation = setInterval(() => MDA.Aviation.refresh().then(() => MDA.Fusion.render()), MDA.cfg.poll.aviation);
         MDA.timers.seismic  = setInterval(() => MDA.Seismic.refresh().then(()  => MDA.Fusion.render()), MDA.cfg.poll.seismic);
         MDA.timers.space    = setInterval(() => MDA.SpaceWx.refresh().then(()  => MDA.Fusion.render()), MDA.cfg.poll.space);
@@ -24344,7 +24443,10 @@ function _sonarEqnRender(panel) {
     }
 
     // ── BOOT
+    let _mdaBooted = false;
     function boot() {
+        if (_mdaBooted) { console.warn('[MDA] boot() ถูกเรียกซ้ำ — ข้าม'); return; }  // idempotency guard
+        _mdaBooted = true;
         document.body.classList.add('mda-mode');  // เปิด UI overlay
         addInlineCSS();
         wireUp();
