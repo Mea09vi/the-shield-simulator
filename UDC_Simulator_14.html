@@ -81,6 +81,11 @@
     · MDA Maritime Environment group — แถบ MDA ใหม่ (🌊 MARITIME ENV)
       รวม OpenSeaMap toggle + Marine Weather toggle ไว้ด้วยกัน
 
+  v12 changelog — Antigravity Edition (refinement build → กลายเป็น trunk ของ v13):
+    · build ขัดเกลาต่อจาก v12 The Shield 2.0 (+~380 บรรทัด) — เก็บงาน MDA/UI/เสถียรภาพ
+    · เป็นสายหลัก (mainline) ที่ v13 นำไปต่อยอด
+    · "Antigravity" = ชื่อรหัส build ไม่ใช่ฟีเจอร์ในโค้ด (ปรากฏเฉพาะใน title/header)
+
   v12 (The Shield 2.0) changelog — Major Upgrade:
     · MDA Module ๕ ส่วน: Aviation (OpenSky) · Seismic (USGS) · Space Wx (NOAA SWPC)
       · GDELT Events · Intel Fusion Panel (rule-based briefing)
@@ -97,12 +102,81 @@
     · Note [v13]: Open-Meteo Marine API — wave/wind data (CC-BY 4.0, ไม่ต้องใช้ key)
                   OpenSeaMap — IALA seamark tiles (CC-BY-SA)
 
+  ── changelog ย้อนหลัง v11–v01 (reconstructed) ──────────────────────
+  สร้างจากการเทียบไฟล์เก่าใน _เวอร์ชันเก่า/ (title · header · โครงสร้าง section ·
+  ไลบรารี CDN · ขนาดไฟล์) เพราะ v01–v09 และ v11 ไม่มี changelog ฝังในตัว
+  (มีเฉพาะ v10/v12/v13 — คงข้อความเดิมไว้ตามต้นฉบับ)
+
+  v11 changelog — Augmented Tactical Edition:
+    · Augmented UI: เพิ่ม augmented-ui@2.0.0 — panel แบบ clip-path ตัดมุม (HUD สไตล์ tactical)
+    · AIS Heatmap: เพิ่ม leaflet.heat@0.2.0 — แปลงความหนาแน่น track เรือเป็น heat layer
+    · Oceanography: WOA23 Sound Velocity Profile + ADCP (กระแสน้ำแยกตามชั้นความลึก)
+    · Survey: เพิ่ม workflow วางแนวสำรวจสไตล์ HYPACK (survey line / coverage)
+    · Anomaly Detection: เครื่องมือตรวจจับความผิดปกติของ contact/track (rule-based)
+    · Sensor Frustum: ต่อยอด frustum จากคณิตศาสตร์ (v09) → ฉาย sensor coverage ลงบน
+      map projection จริง (v11.5)
+    · ขนาดไฟล์ ~15.5k → ~16.8k บรรทัด
+
   v10 changelog (ต่อยอดจาก v09 Antigravity):
     · 3D Dive: เปลี่ยนความสูงเกาะจาก sine-wave สังเคราะห์ → DEM จริงจาก MapTiler
       ครอบคลุม play area ทั้งหมด (รวม MEZ 5nm) ที่ความละเอียด 256×256 (~190 m/cell)
       เกาะคราม/แสมสาร/จวง/แผ่นดินใหญ่ฝั่งระยอง-ชลบุรี แสดงระดับความสูงตามจริง
     · Data: pre-baked offline (single-file philosophy) — ไม่ต้องต่อเน็ตเพิ่ม
     · Attribution: © MapTiler © OpenStreetMap contributors (terrain DEM)
+
+  v09 changelog — Antigravity Edition (refinement build → กลายเป็น trunk ของ v10):
+    · build ขัดเกลาต่อจาก v09 3D Dive (+~210 บรรทัด) — เก็บงาน 3D / กล้อง / เสถียรภาพ
+    · เป็นสายหลักที่ v10 นำไปต่อยอด (header v10 ระบุ "ต่อยอดจาก v09 Antigravity")
+    · "Antigravity" = ชื่อรหัส build ไม่ใช่ฟีเจอร์ในโค้ด
+
+  v09 changelog — 3D Dive Edition:
+    · 3D Engine: เพิ่ม Three.js r128 + WebGLRenderer — โหมดดำน้ำ 3 มิติครั้งแรกของโปรเจกต์
+    · Post-processing: Bloom + SSAO (มิติความลึก/แสงใต้น้ำสมจริงขึ้น)
+    · Occlusion: เริ่มระบบบังสายตา (line-of-sight) เบื้องต้น — พัฒนาเต็มใน v10 (DEM raycast)
+    · Frustum: วางพื้นฐานคณิตศาสตร์ view frustum (นำไปฉายลง map ใน v11)
+    · ทดลอง Water.js แล้วถอดออก (v09.4 — reflection ทำให้ภาพอมม่วง)
+    · ก้าวกระโดดจาก ~11.3k → ~14.4k บรรทัด (จากการเพิ่ม 3D)
+
+  v08 changelog — ASW Edition:
+    · ธีมหลัก: Anti-Submarine Warfare — ตรรกะ/ศัพท์ ASW เพิ่มขึ้นมากเป็นจุดเด่นของรุ่น
+    · Minefield: เพิ่มระบบสนามทุ่นระเบิดครั้งแรก
+    · Sonobuoy: เพิ่มทุ่นโซนาร์ (sonobuoy) สำหรับตรวจจับเรือดำน้ำ
+    · ต่อยอดบนชั้นข้อมูล GIS เดิม (ปะการังเทียม = acoustic clutter, เขตปลอดภัย)
+    · ขนาดไฟล์ ~9.5k → ~11.3k บรรทัด
+
+  v07 changelog:
+    · ขยายต่อจาก v06 บนโครงสร้าง 4 ส่วนเดิม เพิ่มความละเอียด logic ASW/sonar และข้อมูลสภาพแวดล้อม
+    · ขนาดไฟล์ ~7.2k → ~9.5k บรรทัด
+
+  v06 changelog:
+    · ชั้นข้อมูล GIS ครบ 4 ส่วน — แผนที่ Leaflet/CartoDB Dark Matter (ศูนย์กลางเกาะคราม
+      12.700°N 100.820°E, zoom 11 ~50 nm) · หมุดปะการังเทียมกลุ่ม A–F (ฐานข้อมูลปะการังเทียม
+      ไทย พ.ศ.2521–2551, เป็น acoustic clutter) · เขตปลอดภัยทางทหาร (พรก. บ้านค่าย, ROE) ·
+      พื้นที่ปฏิบัติการกองเรือ (Fleet Operational Zone)
+    · ขนาดไฟล์โตขึ้นมากจากฐานข้อมูลปะการังเทียม/ภูมิศาสตร์จริง (~5.2k → ~7.2k บรรทัด)
+
+  v05 changelog:
+    · Sonar Equation: เพิ่ม SONAR_DETECT — โมเดลความน่าจะเป็นการตรวจจับด้วยสมการโซนาร์ครั้งแรก
+    · Chart.js 4.4.1: เพิ่มกราฟ "Tide Level vs Detection Modifier" (ผลของระดับน้ำต่อการตรวจจับ)
+    · ขยายจาก v04 อย่างมาก (~2.4k → ~5.2k บรรทัด)
+    · หมายเหตุ: <title> ในไฟล์เขียน "v06" คลาดเคลื่อน แต่ลำดับจริงคือ v05 (ยึดชื่อไฟล์เป็นหลัก)
+
+  v04 changelog — GIS Simulator (เปลี่ยนสถาปัตยกรรมครั้งใหญ่):
+    · Leaflet 1.9.4: เปลี่ยนจาก canvas ล้วน → แผนที่ GIS แบบ interactive (canvas overlay ทับแผนที่)
+    · เปลี่ยนชื่อโปรเจกต์ "UDC Defense Simulator" → "UDC GIS Simulator"
+    · UI badge สีม่วง (badge-v4) ระบุรุ่น
+    · ฐานสถาปัตยกรรม GIS ที่ทุกเวอร์ชันต่อยอดมาจนถึงปัจจุบัน (~1.1k → ~2.4k บรรทัด)
+
+  v03 changelog — Defense Simulator (canvas):
+    · build canvas ล้วนรุ่นสุดท้ายก่อนเปลี่ยนเป็น GIS ใน v04
+    · ปรับปรุงต่อจาก v02 (~1.08k → ~1.14k บรรทัด)
+
+  v02 changelog — Defense Simulator (canvas):
+    · ต่อยอด simulator บน HTML5 Canvas จาก v01 (~0.93k → ~1.08k บรรทัด)
+
+  v01 changelog — Defense Simulator (รุ่นเริ่มต้น):
+    · จุดเริ่มต้นของโปรเจกต์ "UDC Defense Simulator" — HTML5 Canvas ล้วน (ยังไม่มีแผนที่)
+    · จำลองเป้า/เขต/โซนาร์ วาดบน canvas (~0.93k บรรทัด)
 
   การใช้งาน: เปิดไฟล์นี้ในเว็บบราวเซอร์ที่รองรับ HTML5
              (Chrome / Edge / Firefox รุ่นล่าสุด) โดยไม่ต้องติดตั้งโปรแกรมเพิ่มเติม
