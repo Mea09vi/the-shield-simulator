@@ -51,10 +51,10 @@
      5. คัดลอก URL (xxx.workers.dev) → UDC Simulator ผ่านปุ่ม ⚙
    ════════════════════════════════════════════════════════════════════ */
 
-const VERSION = '14.0.7';
+const VERSION = '14.0.9';
 const DEFAULT_MODEL = 'gemini-2.5-flash';  // v14.0.7 — Google ย้าย 2.0-flash ไป paid tier · 2.5-flash ยังฟรี
-const MAX_TOKENS = 1500;
-const GEMINI_TIMEOUT_MS = 30_000;
+const MAX_TOKENS = 3000;                    // v14.0.9 — assessment-grade output ต้องการพื้นที่มากขึ้น (1500→3000)
+const GEMINI_TIMEOUT_MS = 45_000;           // v14.0.9 — output ยาวขึ้น → เผื่อเวลา 30→45s
 
 // allow-list สำหรับ model — กัน client ส่ง model อะไรก็ได้
 const WORKERS_AI_MODELS = new Set([
@@ -117,48 +117,82 @@ function jsonResponse(obj, status = 200, extraHeaders = {}) {
 // ── prompt builder ───────────────────────────────────────────────────
 function buildSystemPrompt() {
     return [
-        'คุณคือนักวิเคราะห์ Maritime Domain Awareness (MDA) ของกองทัพเรือไทย',
-        'ทำหน้าที่ช่วยผู้บัญชาการเรือ/ศูนย์ปฏิบัติการประเมินภัยคุกคามทางทะเลรอบ',
-        'Undersea Data Center (UDC) ที่สัตหีบ น่านน้ำไทย',
+        'คุณคือนักวิเคราะห์ข่าวกรองทางทะเล (Maritime Domain Awareness · MDA) ระดับอาวุโสของกองทัพเรือไทย',
+        'ทำหน้าที่ All-Source Intelligence Analyst ช่วยผู้บัญชาการศูนย์ปฏิบัติการประเมินภัยคุกคามรอบ',
+        'Undersea Data Center (UDC) ที่สัตหีบ อ่าวไทยตอนบน — ใกล้ฐานทัพเรือสัตหีบและสนามบินอู่ตะเภา (U-Tapao/VTBU)',
         '',
-        'ขอบเขตและกฎ:',
-        '- ผลลัพธ์ของคุณเป็น Decision Support ไม่ใช่ autonomous decision',
-        '  (สอดคล้องกับ DoD Directive 3000.09 และ IMO MASS Code Level III-A)',
-        '- อ้างอิงกรอบกฎหมาย: UNCLOS Art.60(5) safety zone 500 m,',
-        '  พ.ร.บ.เขตปลอดภัย 2478, พ.ร.บ.ผลประโยชน์ฯ 2562 (ศรชล.),',
-        '  PDPA เมื่อพูดถึงข้อมูลพลเรือน',
-        '- กล่าวถึงนโยบายอ้างอิง: ศรชล. 5-year plan 2566-2570,',
-        '  MDAWG 01/2025, NATO Mainsail (ก.พ.2025)',
-        '- Taxonomy 5 มิติ: Physical-Kinetic, Asymmetric/Grey-Zone,',
-        '  Cyber-Physical, Environmental, Hybrid',
+        '════ หลักการวิเคราะห์ (ปฏิบัติอย่างเคร่งครัด) ════',
+        '1) ใช้กรอบ Intelligence Preparation of the Operational Environment (IPOE) และ',
+        '   วิเคราะห์แบบ structured analytic techniques — เสนอ "สมมติฐานที่แข่งขันกัน"',
+        '   (Analysis of Competing Hypotheses) ไม่ฟันธงเกินหลักฐาน',
+        '2) ทุกครั้งต้องระบุ MLCOA (Most Likely COA) และ MDCOA (Most Dangerous COA)',
+        '3) แยกแยะ "ข้อเท็จจริงจากเซ็นเซอร์" ออกจาก "การอนุมาน" ของคุณอย่างชัดเจน',
+        '4) ระบุระดับความเชื่อมั่น (confidence: High/Moderate/Low) ของแต่ละข้อสรุป',
+        '   พร้อมเหตุผล และชี้ "ช่องว่างข่าวกรอง" (Intelligence Gaps / PIR) ที่ต้องเติม',
+        '5) สำคัญมาก — ให้ความสนใจฟิลด์ data_mode:',
+        '   • data_mode=real  → วิเคราะห์ตามจริง',
+        '   • data_mode=demo  → ข้อมูลเป็น SYNTHETIC/สาธิต ห้ามรายงานเสมือนภัยจริง',
+        '     ต้องขึ้นต้นด้วยคำเตือนว่าเป็น demo และใช้ภาษาเชิงสาธิต/ฝึก',
+        '6) พิจารณา "บริบทหลายโดเมน" (context) ที่แนบมา แม้ source นั้นจะไม่ได้ trigger alert:',
+        '   Aviation(OpenSky), Seismic(USGS), Space-Wx(NOAA Kp), Marine-Wx, OSINT(GDELT), GNSS health',
+        '   — เชื่อมโยงข้าม domain เพื่อหา pattern (เช่น Kp สูง→GNSS degrade อาจปะปนกับ spoofing)',
+        '   — ระวัง false positive: อากาศยานบินต่ำ/ช้าใกล้ AOI อาจเป็น traffic เข้าออกอู่ตะเภา',
         '',
-        'รูปแบบคำตอบ (ใช้ภาษาไทยเป็นหลัก คำศัพท์เทคนิคใช้ภาษาอังกฤษ):',
+        '════ ขอบเขตอำนาจและกฎหมาย ════',
+        '- ผลลัพธ์ของคุณเป็น Decision Support เท่านั้น ไม่ใช่ autonomous decision',
+        '  (DoD Directive 3000.09 · 2023 และ IMO MASS Code Level III-A — human-in-the-loop)',
+        '- อ้างกรอบกฎหมายเฉพาะเจาะจงตามสถานการณ์: UNCLOS Art.60(5) safety zone 500 m,',
+        '  พ.ร.บ.เขตปลอดภัยฯ 2478, พ.ร.บ.การรักษาผลประโยชน์ของชาติทางทะเลฯ 2562 (ศรชล.),',
+        '  PDPA (ข้อมูลพลเรือน), หลัก proportionality/necessity ในการใช้กำลัง',
+        '- นโยบายอ้างอิง: ศรชล. 5-year plan 2566-2570, MDAWG 01/2025, NATO Mainsail (ก.พ.2025)',
+        '- Taxonomy 5 มิติ: Physical-Kinetic, Asymmetric/Grey-Zone, Cyber-Physical, Environmental, Hybrid',
         '',
-        '🧠 LLM ANALYSIS · <hh:mm:ss>',
+        '════ รูปแบบคำตอบ (ภาษาไทยหลัก · ศัพท์เทคนิคภาษาอังกฤษ · ใช้ทุกหัวข้อ) ════',
+        '',
+        '🧠 LLM ANALYSIS · <hh:mm:ss>  | DATA: <REAL|DEMO>',
         '═══════════════════════════════════════════',
         '',
-        '🔍 บริบทเชิงระบบ:',
-        '<2-3 บรรทัด สรุปสถานการณ์โดยรวม>',
+        '🌐 ภาพรวมหลายโดเมน (Multi-Domain Picture):',
+        '<สรุปสถานะแต่ละ source ที่มีข้อมูล: AIS/Surface, Aviation, Seismic, Space-Wx, Marine-Wx, OSINT, GNSS — เป็น bullet สั้น>',
         '',
-        '📊 การประเมินความเสี่ยง:',
-        '<ระดับ HIGH/ELEVATED/ROUTINE + คำแนะนำต่อ ROE>',
+        '🔍 บริบทเชิงระบบ (Systemic Context):',
+        '<3-5 บรรทัด เชื่อมโยงสัญญาณข้าม domain · ระบุ dominant threat และเหตุผล>',
         '',
-        '⚖️ ข้อพิจารณาทางกฎหมาย:',
-        '<2-3 bullets — อ้าง law/policy อย่างเฉพาะเจาะจง>',
+        '📊 การประเมินความเสี่ยงรายมิติ (Risk by Dimension):',
+        '<ให้คะแนน/ระดับแต่ละมิติใน taxonomy ที่มี hit + ระดับรวม HIGH/ELEVATED/ROUTINE + นัยต่อ ROE>',
         '',
-        '🛡️ ข้อจำกัด (caveats):',
-        '<HITL, confidence, MASS Code level>',
+        '🎯 สมมติฐานภัยคุกคาม (Threat Hypotheses):',
+        '▸ MLCOA (น่าจะเป็นที่สุด): <...> — confidence <H/M/L>',
+        '▸ MDCOA (อันตรายที่สุด): <...> — indicator ที่ต้องเฝ้า',
         '',
-        'ตอบเฉพาะเนื้อหาตามรูปแบบข้างต้น ห้ามใส่ preamble หรือคำทักทาย'
+        '🛠️ ข้อเสนอแนะการปฏิบัติ (Recommended Actions):',
+        '<bullet ผูกกับกำลัง: Patrol Vessel / Guardian UUV / CAP helo / sensor posture — เรียงตามลำดับความสำคัญ>',
+        '',
+        '📡 ช่องว่างข่าวกรอง (Intelligence Gaps / PIR):',
+        '<2-4 bullets — ข้อมูลอะไรขาด ต้องเก็บเพิ่มอะไรเพื่อยืนยัน/ตัดสมมติฐาน>',
+        '',
+        '⚖️ ข้อพิจารณาทางกฎหมาย (Legal Considerations):',
+        '<2-4 bullets — อ้าง law/policy เฉพาะเจาะจงตามสถานการณ์จริง ไม่ใช่ลอกทั้งชุด>',
+        '',
+        '🛡️ ข้อจำกัดและความเชื่อมั่น (Caveats & Confidence):',
+        '<HITL · confidence โดยรวม + เหตุผล · MASS Code level · เตือน demo ถ้า data_mode=demo>',
+        '',
+        'ตอบเฉพาะเนื้อหาตามรูปแบบข้างต้น เป็นภาษาไทยเชิงวิชาชีพทหาร ห้าม preamble/คำทักทาย',
+        'เขียนให้ลึกและเชื่อมโยงหลักฐาน — หลีกเลี่ยงการพูดกว้างๆ ซ้ำ template'
     ].join('\n');
 }
 
 function buildUserPrompt(payload) {
     const tax = payload.taxonomy || {};
     const alerts = (payload.alerts || []).slice(0, 12);
+    const ctx = payload.context || null;
+    const dataMode = (payload.dataMode === 'real') ? 'real' : (payload.dataMode === 'demo' ? 'demo' : (ctx && ctx.dataMode) || 'demo');
     const ts = new Date().toISOString();
     const lines = [
         `[Time UTC] ${ts}`,
+        `[data_mode] ${dataMode}` + (dataMode === 'demo'
+            ? '   ⚠ SYNTHETIC/สาธิต — ไม่มี live source · ห้ามรายงานเสมือนภัยจริง'
+            : '   ✅ REAL — มี live source อย่างน้อย 1 รายการ'),
         '',
         '[Threat Taxonomy counts]',
         `- Physical-Kinetic        : ${tax.kinetic || 0}`,
@@ -166,19 +200,69 @@ function buildUserPrompt(payload) {
         `- Cyber-Physical          : ${tax.cyber || 0}`,
         `- Environmental           : ${tax.environmental || 0}`,
         `- Hybrid (multi-vector)   : ${tax.hybrid || 0}`,
-        '',
-        '[Recent alerts] (sorted newest first)'
+        ''
     ];
+
+    // ── v14.0.9 · multi-domain context (source ที่ไม่ได้ trigger alert ก็ส่งให้ AI เห็น) ──
+    if (ctx) {
+        lines.push('[Multi-Domain Context] (บริบทดิบจากทุก source — ใช้เชื่อมโยงข้าม domain)');
+        const ais = ctx.ais || {};
+        lines.push(`- AIS/Surface : ships=${ais.ships || 0}, anomalies=${ais.anomalies || 0}`);
+
+        const av = ctx.aviation;
+        if (av && av.count) {
+            let s = `- Aviation    : tracks=${av.count}, near_AOI=${av.nearAOI}, low_slow=${av.lowSlow}`;
+            if (av.nearest) s += `, nearest=${av.nearest.call}@${av.nearest.distNm}NM` +
+                (av.nearest.altFt != null ? `/${av.nearest.altFt}ft` : '') +
+                (av.nearest.gsKn != null ? `/${av.nearest.gsKn}kn` : '');
+            s += '  (หมายเหตุ: บินต่ำ/ช้าใกล้ AOI อาจเป็น traffic อู่ตะเภา — อย่าด่วนสรุปเป็นภัย)';
+            lines.push(s);
+        } else lines.push('- Aviation    : no data (OpenSky off/empty)');
+
+        const se = ctx.seismic;
+        if (se && se.count) {
+            let s = `- Seismic     : events=${se.count}, max_M=${se.maxMag}`;
+            if (se.nearest) s += `, nearest=M${se.nearest.mag} "${se.nearest.place}" @${se.nearest.distNm}NM` +
+                (se.nearest.depthKm != null ? `/depth ${se.nearest.depthKm}km` : '');
+            lines.push(s);
+        } else lines.push('- Seismic     : no events');
+
+        const sw = ctx.spaceWx;
+        if (sw && sw.kp != null) lines.push(`- Space-Wx    : Kp=${sw.kp} (${sw.level})` + (sw.kp >= 5 ? '  → GNSS/HF degradation likely' : ''));
+        else lines.push('- Space-Wx    : no Kp data');
+
+        const mw = ctx.marineWx, env = ctx.env || {};
+        if (mw && mw.waveHt != null) lines.push(`- Marine-Wx   : Hs=${mw.waveHt}m` + (mw.wavePeriod != null ? `, T=${mw.wavePeriod}s` : '') + (env.seaState != null ? `, sea_state=${env.seaState}` : ''));
+        else if (env.seaState != null) lines.push(`- Marine-Wx   : sea_state=${env.seaState}`);
+        else lines.push('- Marine-Wx   : no wave data');
+
+        const gd = ctx.gdelt;
+        if (gd && gd.count) {
+            lines.push(`- OSINT/GDELT : items=${gd.count}`);
+            (gd.topTitles || []).slice(0, 3).forEach(ti => lines.push(`    · ${String(ti).slice(0, 110)}`));
+        } else lines.push('- OSINT/GDELT : no notable items');
+
+        if (env.gnssJitter != null) lines.push(`- GNSS health : jitter=${Math.round(env.gnssJitter * 100)}%` + (env.gnssJitter >= 0.5 ? '  → possible spoofing signature' : ''));
+        lines.push('');
+    } else {
+        lines.push('[Multi-Domain Context] (ไม่ได้แนบมา — วิเคราะห์จาก taxonomy/alerts เท่านั้น)');
+        lines.push('');
+    }
+
+    lines.push('[Recent alerts] (sorted newest first)');
     if (!alerts.length) {
-        lines.push('  (ไม่มี alert ในห้วงเวลานี้ — สภาพการณ์ปกติ)');
+        lines.push('  (ไม่มี alert ในห้วงเวลานี้ — สภาพการณ์ baseline)');
     } else {
         for (const a of alerts) {
             const conf = a.conf != null ? Math.round(a.conf * 100) + '%' : '?';
-            lines.push(`  - [${a.severity || '?'} ${a.tag || '?'}] ${a.msg || ''} (conf ${conf}, ts ${a.ts || '?'})`);
+            const demoFlag = a._demo ? ' [DEMO]' : '';
+            lines.push(`  - [${a.severity || '?'} ${a.tag || '?'}]${demoFlag} ${a.msg || ''} (conf ${conf}, ts ${a.ts || '?'})`);
         }
     }
     lines.push('');
-    lines.push('โปรดให้การวิเคราะห์เชิงลึกตามรูปแบบที่กำหนดในระบบพร้อมท์');
+    lines.push(dataMode === 'demo'
+        ? 'โปรดวิเคราะห์ตามรูปแบบในระบบพร้อมท์ — และเนื่องจาก data_mode=demo ให้ขึ้นต้นด้วยคำเตือนว่าเป็นสถานการณ์สาธิต/ฝึก (synthetic) ใช้ภาษาเชิงฝึก'
+        : 'โปรดให้การวิเคราะห์ all-source เชิงลึกตามรูปแบบที่กำหนดในระบบพร้อมท์ เชื่อมโยงหลักฐานข้าม domain และระบุ MLCOA/MDCOA + PIR');
     return lines.join('\n');
 }
 

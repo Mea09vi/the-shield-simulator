@@ -36,3 +36,6 @@ Thumbs.db
 RTN*Account*.pdf
 *credentials*.json
 *.env
+
+# --- Cloudflare Wrangler local cache (account info — NEVER commit) ---
+.wrangler/
