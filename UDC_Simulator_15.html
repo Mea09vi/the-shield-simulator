@@ -354,6 +354,10 @@
         header .title { font-size:16px; font-weight:700; color:var(--cyan);
             letter-spacing:2px; text-shadow:0 0 12px rgb(var(--cyan-rgb) / .5); }
         header .subtitle { font-size:10px; color:var(--text-muted); margin-top:1px; }
+        /* [v15] ตราราชนาวีบน header หน้าหลัก — ใช้รูปเดียวกับ boot screen (โคลน src ด้วย JS) */
+        header .app-crest { flex:0 0 auto; line-height:0;
+            filter: drop-shadow(0 0 9px rgba(255,200,80,.45)) drop-shadow(0 0 4px rgb(var(--cyan-rgb) / .35)); }
+        header .app-crest img { display:block; height:40px; width:auto; object-fit:contain; }
         .badge    { background:var(--bg-panel); border:1px solid #1a3a5c; border-radius:5px;
             padding:3px 10px; font-family:var(--font-mono), monospace; font-size:10px; color:var(--cyan); }
         /* v12.5-E: .badge-v4 ถูกลบออก — ใช้ปุ่ม RESET แทนตำแหน่งใน header */
@@ -3265,6 +3269,48 @@
             --mda-ok:      #d4d4d4;
         }
 
+        /* THEME 4 · Royal Thai Navy — สีกรมท่า + ทองราชนาวี · เอกลักษณ์ ทร.
+           พาเลตอ้างอิงจริงจาก navy.mi.th (computed styles · มิ.ย. 2026):
+             กรมท่า  #0A1E39 (footer) · #1D2850 · #293D5E (.header-top)
+             ทองราชนาวี #D3A027 (ปุ่ม/accent) · เทากรมท่า #7A8595
+           ฟอนต์ Prompt = ตัวแทนใกล้สุดของ "DB Heavent" ที่เว็บ ทร. ใช้
+           (ทำขึ้นใหม่ตามอัตลักษณ์ — ไม่ได้คัดลอกไฟล์/โค้ดจากเว็บ ทร.) */
+        body[data-theme="royal-thai-navy"] {
+            --bg-dark:    #081a33;   /* กรมท่าเข้ม (≈ footer ลึกขึ้นเล็กน้อย) */
+            --bg-panel:   #112a4b;   /* กรมท่า surface (วงศ์ #1D2850/#293D5E) */
+            --text-main:  #eaf1fc;   /* ขาวนวลอมฟ้า */
+            --text-muted: #9fb1ce;   /* เทากรมท่า (≈ #7A8595 อมฟ้า) */
+            --cyan:       #d3a027;   /* ★ ทองราชนาวี — accent หลัก (แทน cyan) */
+            --green:      #46d38a;   /* เขียวสถานะ OK */
+            --red:        #ff5a52;   /* แดงเตือนภัย */
+            --yellow:     #ffd466;   /* ทองสว่าง · highlight */
+            --amber:      #e0a92a;   /* ทองอำพัน */
+            --orange:     #f08a24;   /* ส้มเตือน */
+            --purple:     #8aa0dc;   /* คราม-ฟ้า · version badge */
+            --teal:       #6fa3da;   /* ฟ้าเหล็ก · secondary (เย็น คู่กับทอง) */
+            /* RGB channels — สำหรับ rgb(var(--x) / alpha) */
+            --cyan-rgb:       211 160 39;
+            --teal-rgb:       111 163 218;
+            --green-rgb:      70 211 138;
+            --red-rgb:        255 90 82;
+            --amber-rgb:      224 169 42;
+            --orange-rgb:     240 138 36;
+            --purple-rgb:     138 160 220;
+            --bg-dark-rgb:    8 26 51;
+            --bg-panel-rgb:   17 42 75;
+            --text-muted-rgb: 159 177 206;
+            /* MDA secondary vars — follow theme */
+            --mda-glass:   rgb(var(--bg-panel-rgb) / .72);
+            --mda-edge:    rgb(var(--cyan-rgb) / .35);
+            --mda-edge-hi: rgb(var(--cyan-rgb) / .85);
+            --mda-amber:   #d3a027;
+            --mda-crit:    #ff5a52;
+            --mda-ok:      #46d38a;
+            /* Typography — เอกลักษณ์ฟอนต์ ทร. (Prompt ≈ DB Heavent · mono คงเดิม) */
+            --font-body:   'Prompt', sans-serif;
+            --font-accent: 'Prompt', sans-serif;
+        }
+
         /* Confirmation modal */
         #udc-reset-confirm {
             position: fixed; inset: 0; z-index: 9999;
@@ -4713,9 +4759,13 @@
 <div class="classification-banner" data-augmented-ui="tl-clip br-clip both">UNCLASSIFIED // FOR TRAINING USE ONLY</div>
 
 <header>
-    <div>
-        <div class="title">⚓ THE SHIELD 2.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v15 · MDA</span></div>
-        <div class="subtitle">Underwater Data Centre Defence · ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live</div>
+    <div style="display:flex;align-items:center;gap:13px;">
+        <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
+        <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
+        <div>
+            <div class="title">THE SHIELD 2.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v15 · MDA</span></div>
+            <div class="subtitle">Underwater Data Centre Defence · ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live</div>
+        </div>
     </div>
     <div style="display:flex;gap:10px;align-items:center;">
         <span class="sys-status-pill"><span class="dot"></span>SYSTEM OPERATIONAL</span>
@@ -21443,6 +21493,18 @@ document.getElementById('bootScreen')?.addEventListener('click', function() {
 });
 runBootSequence();
 
+// [v15] โคลนตราสัญลักษณ์กองทัพเรือจาก boot screen → header หน้าหลัก
+// ใช้ data-URI ภาพเดียวกัน ไม่ทำซ้ำสตริง base64 ในไฟล์ (ไม่เพิ่มขนาดไฟล์)
+(function mirrorCrestToHeader(){
+    try {
+        const bootImg = document.querySelector('#bootScreen .boot-crest img');
+        const appImg  = document.getElementById('appCrest');
+        if (bootImg && appImg && bootImg.getAttribute('src')) {
+            appImg.src = bootImg.getAttribute('src');
+        }
+    } catch (_) {}
+})();
+
 // ═══════════════════════════════════════════════════════════════
 //  [ส่วนที่ 36] หมวด ฌ — บูตและเริ่มต้นระบบ
 //  การเริ่มต้นระบบเมื่อโหลดหน้า · System Initialization (initAssets / updateTide / Pre-frame Setup)
@@ -25670,6 +25732,86 @@ function _sonarEqnRender(panel) {
         // initial sync after a moment
         setTimeout(syncAllActionRows, 600);
 
+        // ════════════════════════════════════════════════════════════
+        //  [v15.1] DEFAULT MULTI-DOMAIN SENSING — ภาพ sensing เริ่มต้น
+        //  ──────────────────────────────────────────────────────────
+        //  ใช้ "การคลิกแถวจริง" (row.click) เป็นกลไก จึง sync ครบทั้ง
+        //  panel · map layer · internal state (MDA.state / v11 / HsvExt)
+        //  โดยไม่ต้องแก้ default ของแต่ละระบบแยกกัน · ทำงานแบบ idempotent
+        //  (คลิกเฉพาะแถวที่สถานะปัจจุบัน ≠ ค่าที่ต้องการ)
+        //
+        //    • อากาศ-อวกาศ  : เปิดทั้งหมด
+        //    • ผิวน้ำ        : เฉพาะ AIS Anomaly + Sea Zones
+        //    • ใต้ผิวน้ำ     : Tide Chart + FLS + ADCP
+        //    • พื้นท้องทะเล  : ทั้งหมด ยกเว้น Elevation + Survey Dashboard
+        //    • ไซเบอร์       : GDELT
+        //    • ฝั่ง-ชายฝั่ง   : IALA Seamarks
+        // ════════════════════════════════════════════════════════════
+        const DEFAULT_SENSING = {
+            // ── อากาศ-อวกาศ (Air & Space) — เปิดทั้งหมด
+            'aviation': true, 'space': true, 'weather': true, 'storm': true,
+            'rain-radar': true, 'gfw': true, 'frustum': true,
+            // ── ผิวน้ำ (Surface) — เฉพาะ AIS Anomaly + Sea Zones
+            'ais-live': false, 'ais-kpler': false, 'ais-heat': false,
+            'ais-anomaly': true, 'sv-live': false, 'zones': true,
+            // ── ใต้ผิวน้ำ (Subsurface) — Tide + FLS + ADCP
+            'tlheat': false, 'tide': true, 'hsv-fls': true, 'hsv-adcp': true, 'hsv-casts': false,
+            // ── พื้นท้องทะเล (Seabed) — ทั้งหมด ยกเว้น Elevation + Survey Dashboard
+            'bathy': true, 'elevation': false, 'hsv-swath': true, 'hsv-hdgcog': true,
+            'hsv-dashboard': false, 'seismic': true,
+            // ── ไซเบอร์-สเปกตรัม (Cyber-EM) — GDELT
+            'gdelt': true, 'cve': false,
+            // ── ฝั่ง-ชายฝั่ง (Littoral) — IALA Seamarks
+            'seamark': true, 'marine-wx': false,
+        };
+        let _presetApplied = false;
+        function applyDefaultSensingPreset() {
+            if (_presetApplied) return;
+            _presetApplied = true;
+            try { syncAllActionRows(); } catch (_) {}   // ให้แถวสะท้อนสถานะ legacy ก่อน diff
+            // ปิด toast ชั่วคราว กันเด้งรัว ๆ ตอน boot (best-effort)
+            const _toast = (typeof window.toast === 'function') ? window.toast : null;
+            if (_toast) { try { window.toast = function () {}; } catch (_) {} }
+            let changed = 0;
+            try {
+                document.querySelectorAll(
+                    '#mda-layerpanel .mda-lp-row[data-mda-layer],' +
+                    '#mda-layerpanel .mda-lp-row[data-mda-action]'
+                ).forEach(function (row) {
+                    var key = row.dataset.mdaLayer || row.dataset.mdaAction;
+                    if (!key || !(key in DEFAULT_SENSING)) return;            // ข้าม row ที่เป็น action ล้วน (sv-key, planner, ฯลฯ)
+                    if (row.classList.contains('on') === DEFAULT_SENSING[key]) return;  // ตรงอยู่แล้ว → ข้าม
+                    try { row.click(); changed++; } catch (e) { console.warn('[preset]', key, e); }
+                });
+            } finally {
+                if (_toast) { try { window.toast = _toast; } catch (_) {} }
+            }
+            try { syncAllActionRows(); } catch (_) {}
+            console.log('[MDA] default multi-domain sensing applied · changed ' + changed + ' layer(s)');
+        }
+        // รันครั้งเดียว เมื่อ v11 toggles + legacy buttons + HsvExt พร้อม
+        (function scheduleDefaultSensing() {
+            var tries = 0;
+            var iv = setInterval(function () {
+                tries++;
+                var ready =
+                    typeof window.toggleSeaZones === 'function' &&
+                    typeof window.toggleTideChart === 'function' &&
+                    typeof HsvExt !== 'undefined' &&
+                    document.getElementById('aisAnomBtn') &&
+                    document.getElementById('seaZonesBtn') &&
+                    document.getElementById('bathyBtn') &&
+                    document.querySelector('#mda-layerpanel .mda-lp-row[data-mda-action]');
+                if (ready) {
+                    clearInterval(iv);
+                    setTimeout(applyDefaultSensingPreset, 250);
+                } else if (tries > 40) {        // ~12s → ยอมแพ้ ใช้ best-effort (กันค้าง)
+                    clearInterval(iv);
+                    applyDefaultSensingPreset();
+                }
+            }, 300);
+        })();
+
         // AIS source indicator — read from legacy #aisSourceTag
         setInterval(() => {
             const src = document.getElementById('aisSourceTag');
@@ -26143,9 +26285,12 @@ function _sonarEqnRender(panel) {
     const STORAGE_PANEL    = 'udc_panel_style';
 
     const THEMES = [
-        { id:'',               name:'CIC Cyan (Default)',  swatch:'#00d4ff', desc:'ของเดิม · น้ำเงิน/ไซแอน' },
-        { id:'tactical-amber', name:'Tactical Amber',      swatch:'#ffb000', desc:'Cold War radar / CRT' },
-        { id:'stealth',        name:'Stealth Mono',        swatch:'#a3a3a3', desc:'ขาว-ดำ · สำหรับ screenshot' },
+        // ── STANDARD ──
+        { id:'',                group:'Standard', name:'CIC Cyan (Default)', swatch:'#00d4ff', desc:'ของเดิม · น้ำเงิน/ไซแอน' },
+        { id:'stealth',         group:'Standard', name:'Stealth Mono',       swatch:'#a3a3a3', desc:'ขาว-ดำ · สำหรับ screenshot' },
+        // ── DEFENSE ──
+        { id:'tactical-amber',  group:'Defense',  name:'Tactical Amber',     swatch:'#ffb000', desc:'Cold War radar / CRT' },
+        { id:'royal-thai-navy', group:'Defense',  name:'Royal Thai Navy',    swatch:'#d3a027', desc:'สีกรมท่า + ทองราชนาวี · เอกลักษณ์ ทร. (อ้างอิง navy.mi.th)' },
     ];
 
     // [Stage 4] Font catalogue — Google Fonts ที่ preload ไว้แล้ว
@@ -26313,7 +26458,16 @@ function _sonarEqnRender(panel) {
         sec1.className = 'utp-section';
         sec1.innerHTML = '<div class="utp-title">⚙ THEME · เลือกรูปแบบจอ</div>' +
                          '<div class="utp-sec-title">🎨 Color</div>';
+        // group-aware rendering — แสดง divider เมื่อเปลี่ยน group (เหมือน Panel Style)
+        let lastThemeGroup = null;
         THEMES.forEach(t => {
+            if (t.group && t.group !== lastThemeGroup) {
+                const hdr = document.createElement('div');
+                hdr.className = 'utp-group';
+                hdr.textContent = t.group;
+                sec1.appendChild(hdr);
+                lastThemeGroup = t.group;
+            }
             const item = document.createElement('div');
             item.className = 'utp-item' + (t.id === currentTheme ? ' active' : '');
             item.dataset.themeId = t.id;
