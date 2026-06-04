@@ -1,11 +1,35 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 2.0 — UDC Multi-Domain Awareness Defense Simulator  (v14)
+  THE SHIELD 2.0 — UDC Multi-Domain Awareness Defense Simulator  (v15)
   ผู้พัฒนา: น.ต.วิศวชิต อินทสุวรรณ์ · THE SHIELD Research Project · หลักสูตรเสนาธิการทหารเรือ
   วัตถุประสงค์: จำลองระบบป้องกัน Underwater Data Center (UDC) ภายใต้กรอบ
                 Multi-Domain Awareness (MDA: Maritime · Air · Land · Cyber · Space · Information · AI)
                 บริเวณเกาะคราม อ่าวสัตหีบ — ผนวก feed OSINT สดจากชั้นข้อมูลทั่วโลก
                 + AI Domain ชั้น meta-intelligence สำหรับ situational reasoning (Decision Support Only)
+
+  v15 changelog:
+    · [v15.1] Multi-Domain restructure + RTN identity + Default Sensing preset:
+        - 6-Domain Sensing Panel (แผงซ้าย) : จัด layer เป็น 6 โดเมนการตรวจจับ + สีองค์กร + ป้ายหน่วย
+          (อากาศ-อวกาศ · ผิวน้ำ · ใต้ผิวน้ำ · พื้นท้องน้ำ · ไซเบอร์ · ฝั่ง)
+        - 7-Domain Threat Board (แผงขวา) : กระดานภัยคุกคาม 7 โดเมน + ปุ่มเปิด AI Decision
+        - Royal Thai Navy theme : ธีมเอกลักษณ์กองทัพเรือไทย (กลุ่ม Defense · palette navy.mi.th ·
+          ฟอนต์ Prompt · ออกแบบใหม่ ไม่ลอกแบบ)
+        - Default Multi-Domain Sensing : preset เปิด layer เริ่มต้นตามภารกิจ (idempotent row.click
+          ขับ 3 subsystem ให้ตรงกัน) — อากาศ-อวกาศ เปิดหมด · ผิวน้ำ เฉพาะ AIS Anomaly+Sea Zone ·
+          ใต้ผิวน้ำ Tide+FLS+ADCP · พื้นท้องน้ำ ทั้งหมดยกเว้น Elevation+Survey Dashboard ·
+          ไซเบอร์ GDELT · ฝั่ง IALA
+        - Bug-fix : aiMockMode ค้าง true (LLM จริงเข้าไม่ถึงเพราะ flag ไม่เคย flip false) → แก้ให้สลับได้
+    · [v15] Multi-Domain Sensing — เพิ่ม 3 live METOC sources เข้า Air & Space group (additive ล้วน):
+        - MDA.Weather   — Open-Meteo Forecast (current): ลม(kt)/ลมกระโชก/ฝน/อุณหภูมิ/เมฆ/
+                          ทัศนวิสัย/ความกดอากาศ เหนืออ่าวสัตหีบ · marker+popup · badge=ลม(kt) ·
+                          warn>=17kt crit>=27kt · poll 15 นาที · CORS, ไม่ใช้ key
+        - MDA.Storm     — GDACS EVENTS4APP: พายุหมุนเขตร้อน (TC) active · marker พิกัดจริง+popup ·
+                          badge=จำนวน TC สีตาม alertlevel (Green/Orange/Red) · poll 30 นาที · ไม่ใช้ key
+        - MDA.RainRadar — RainViewer weather-maps: เรดาร์ฝน nowcast tile overlay (frame ล่าสุด) ·
+                          badge=เวลา frame (HH:MM) · poll 10 นาที · ไม่ใช้ key
+      ทั้ง 3 layer เดิม OFF by default → v15.1 เปิดเป็น default ตาม Default Sensing preset ·
+      lazy-fetch ตอน toggle · prefetch ครั้งเดียวตอน boot ·
+      ไม่แตะ logic v14 — ต่อท้าย layerMap/labelMap/state.on/cfg.poll/data/boot/timers เท่านั้น
 
   v14 changelog:
     · [v14.0.9] MDA.AI · ยกระดับการวิเคราะห์ + Confirm & Deploy (3 ส่วน)
@@ -81,18 +105,6 @@
         - Threat taxonomy ตามบทที่ 2: Physical-Kinetic / Asymmetric / Cyber-Physical / Environmental / Hybrid
         - อ้างอิง: ศรชล. One Marine Chart + Big Data, MDAWG 01/2025, NATO Mainsail (2025),
                   DoD Directive 3000.09, IMO MASS Code (1 ก.ค. 2569)
-
-  v15 changelog:
-    · [v15] Multi-Domain Sensing — เพิ่ม 3 live METOC sources เข้า Air & Space group (additive ล้วน):
-        - MDA.Weather   — Open-Meteo Forecast (current): ลม(kt)/ลมกระโชก/ฝน/อุณหภูมิ/เมฆ/
-                          ทัศนวิสัย/ความกดอากาศ เหนืออ่าวสัตหีบ · marker+popup · badge=ลม(kt) ·
-                          warn>=17kt crit>=27kt · poll 15 นาที · CORS, ไม่ใช้ key
-        - MDA.Storm     — GDACS EVENTS4APP: พายุหมุนเขตร้อน (TC) active · marker พิกัดจริง+popup ·
-                          badge=จำนวน TC สีตาม alertlevel (Green/Orange/Red) · poll 30 นาที · ไม่ใช้ key
-        - MDA.RainRadar — RainViewer weather-maps: เรดาร์ฝน nowcast tile overlay (frame ล่าสุด) ·
-                          badge=เวลา frame (HH:MM) · poll 10 นาที · ไม่ใช้ key
-      ทั้ง 3 layer OFF by default · lazy-fetch ตอน toggle · prefetch ครั้งเดียวตอน boot ·
-      ไม่แตะ logic v14 — ต่อท้าย layerMap/labelMap/state.on/cfg.poll/data/boot/timers เท่านั้น
 
   v13 changelog:
     · OpenSeaMap IALA Seamarks — standalone MDA toggle (Maritime Env group)
