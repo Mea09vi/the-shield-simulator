@@ -8,6 +8,17 @@
                 + AI Domain ชั้น meta-intelligence สำหรับ situational reasoning (Decision Support Only)
 
   v14 changelog:
+    · [v14.0.9] MDA.AI · ยกระดับการวิเคราะห์ + Confirm & Deploy (3 ส่วน)
+        - ส่วน 1 Multi-Domain Context → AI : เดิม AI เห็นแค่ taxonomy 5 ตัว + alert ≤12 บรรทัด
+          ตอนนี้ส่ง context ครบทุก source ที่ import (AIS · Aviation · Seismic · Space-Wx ·
+          Marine-Wx/Oceano · GDELT) เข้า LLM แม้ source นั้นไม่ได้ render บนแผนที่ ·
+          แนบ data_mode (real/demo) กัน AI รายงาน synthetic เสมือนภัยจริง
+        - ส่วน 2 Assessment-grade Analysis : system/user prompt เขียนใหม่แนว IPOE +
+          MLCOA/MDCOA + PIR · output 8 ส่วน (🌐🔍📊🎯🛠️📡⚖️🛡️) · per-alert [DEMO] flag ·
+          GNSS jitter spoofing-signature · U-Tapao false-positive caveat (ai-proxy.js v14.0.9)
+        - ส่วน 3 Confirm & Deploy : ปุ่ม ✅ CONFIRM & DEPLOY ใต้ Force Recommendation —
+          กดแล้ว HITL summary (2-person rule) → วาง PV/GUUV/CAP-Helo ลงแผนที่ทันทีตาม
+          ทิศภัยคุกคามที่ parse จาก alert (fallback 270° seaward) · เคารพ PV_MAX/GUUV_MAX
     · [v14.0.8] STABILITY · P0 bug-fix wave — security · reliability · 3D memory · network · logic
         - P0-1/2 Security : เพิ่ม escapeHtml() กลาง + ปิด XSS ทุกจุดที่ฉีดข้อมูลภายนอกเข้า DOM
           (GDELT events · AIS popup · model label · addLog/addEngLog)
@@ -195,7 +206,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE SHIELD 2.0 | UDC Multi-Domain Awareness Simulator v14.0.8</title>
+    <title>THE SHIELD 2.0 | UDC Multi-Domain Awareness Simulator v14.0.9</title>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
       Leaflet.js คือไลบรารีแผนที่แบบ Open-Source ที่ใช้กันอย่างแพร่หลายใน
@@ -3807,7 +3818,7 @@
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span>🧠 AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v14.0.6 · HITL · multi-LLM · บทที่ 2</span>
+            <span class="mda-ai-sub">v14.0.9 · HITL · multi-LLM · Confirm&amp;Deploy · บทที่ 2</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC">✕</button>
     </div>
@@ -3959,6 +3970,19 @@
                         <div class="mda-ai-force-title">— ยังไม่มีคำแนะนำ —</div>
                         <div class="mda-ai-force-body">รอข้อมูล taxonomy + alerts ก่อนเสนอแนวทาง deploy</div>
                     </div>
+                </div>
+            </div>
+
+            <!-- ✅ CONFIRM & DEPLOY (HITL · 2-person rule) — v14.0.9 -->
+            <div class="mda-ai-section" style="border-color:rgba(34,197,94,0.32);background:rgba(16,185,129,0.05);">
+                <button class="mda-ai-btn" id="mda-ai-confirm-deploy"
+                        style="width:100%;justify-content:center;background:linear-gradient(135deg,rgba(34,197,94,0.22),rgba(16,185,129,0.10));border-color:rgba(34,197,94,0.55);color:#bbf7d0;font-weight:700;letter-spacing:0.3px;opacity:0.5;cursor:not-allowed;"
+                        disabled>
+                    ✅ CONFIRM &amp; DEPLOY — ยืนยันวางกำลังลงแผนที่
+                </button>
+                <div id="mda-ai-deploy-status"
+                     style="margin-top:7px;font-family:'Sarabun',sans-serif;font-size:10.5px;line-height:1.55;color:#94a3b8;">
+                    กด <b style="color:#86efac;">Run LLM Analysis</b> หรือ <b style="color:#7dd3fc;">Refresh Rules</b> เพื่อสร้างคำแนะนำก่อน · ปุ่มจะ active เมื่อมีกำลังให้ deploy
                 </div>
             </div>
 
@@ -9033,6 +9057,94 @@ map.on('click', function(e) {
     });
     addLog(`🛰 วาง ${label} (Hydrographic Survey) ที่ ${e.latlng.lat.toFixed(3)}°N ${e.latlng.lng.toFixed(3)}°E`,'#67e8f9');
 });
+
+// ═══════════════════════════════════════════════════════════════
+//  [v14.0.9] AI CONFIRM & DEPLOY — programmatic force placement
+//  ใช้โดยปุ่ม "✅ Confirm & Deploy" ใน MDA.AI modal เพื่อวางกำลัง
+//  ลงแผนที่ทันทีตามคำแนะนำ AI (HITL · 2-person rule ที่ชั้น UI)
+//  · _geoFromUDC(brg°,rangeNm) → {lat,lng} จากศูนย์ UDC ตาม bearing จริง
+//  · deployPVAt / deployGUUVAt — สะท้อน push-shape เดียวกับ map-click
+// ═══════════════════════════════════════════════════════════════
+function _geoFromUDC(bearingDeg, rangeNm) {
+    const brg = (Number(bearingDeg) || 0) * Math.PI / 180;
+    const r   = Number(rangeNm) || 0;
+    const dLat = r * Math.cos(brg) / 60;
+    const dLng = r * Math.sin(brg) / (60 * Math.cos(UDC_LAT * Math.PI / 180));
+    return { lat: UDC_LAT + dLat, lng: UDC_LNG + dLng };
+}
+
+function deployPVAt(lat, lng, opts) {
+    opts = opts || {};
+    if (patrolVessels.filter(v => v.userPlaced).length >= PV_MAX) {
+        addLog(`⚠️ [AI] PV เต็ม ${PV_MAX} ลำ — deploy ไม่ได้`, '#f59e0b');
+        return null;
+    }
+    let nx = (lng - LNG_LEFT) / (LNG_RIGHT - LNG_LEFT);
+    let ny = (LAT_TOP - lat) / (LAT_TOP - LAT_BOT);
+    nx = Math.max(-0.10, Math.min(1.10, nx));
+    ny = Math.max(-0.10, Math.min(1.10, ny));
+    const shipKey   = opts.ship || pvSelectedShip;
+    const shipCfg   = PV_SHIP_CATALOG[shipKey] || PV_SHIP_CATALOG['naresuan'];
+    const sonarType = shipCfg.sonarType || '—';
+    const wps = generatePVWaypoints(nx, ny);
+    if (!wps || wps.length < 2) { addLog('⚠️ [AI] PV pattern ผิดพลาด', '#f59e0b'); return null; }
+    pvUserCount++;
+    const label = 'PV-U' + pvUserCount;
+    const initHdg = Math.atan2(wps[1].ny - wps[0].ny, wps[1].nx - wps[0].nx);
+    patrolVessels.push({
+        label, sonarType,
+        color:   shipCfg.color || '#64ffda',
+        speed:   shipCfg.speed,
+        shipType: shipKey,
+        hasASW:  shipCfg.hasASW,
+        nx:wps[0].nx, ny:wps[0].ny, waypoints:wps,
+        currentWP:0, heading:initHdg, redirected:false, redirectTarget:null, userPlaced:true,
+        state: 'PATROL', engTarget: null, engTimer: 0, killCount: 0,
+        weapons: JSON.parse(JSON.stringify(shipCfg.weapons)),
+        fuel: 1.0, fuelRate: shipCfg.fuelRate,
+        radarNm: shipCfg.radarNm, flirNm: shipCfg.flirNm, sonarNm: shipCfg.sonarNm || 0,
+        swathHistory: [],
+    });
+    addLog(`🚢 [AI] วาง ${label} [${shipCfg.name}·${sonarType}] @ ${lat.toFixed(3)}°N ${lng.toFixed(3)}°E${opts.note ? ' · ' + opts.note : ''}`, '#64ffda');
+    return label;
+}
+
+function deployGUUVAt(lat, lng, opts) {
+    opts = opts || {};
+    if (guardianUUVs.filter(g => g.userPlaced).length >= GUUV_MAX) {
+        addLog(`⚠️ [AI] GUUV เต็ม ${GUUV_MAX} ลำ — deploy ไม่ได้`, '#f59e0b');
+        return null;
+    }
+    let nx = (lng - LNG_LEFT) / (LNG_RIGHT - LNG_LEFT);
+    let ny = (LAT_TOP - lat) / (LAT_TOP - LAT_BOT);
+    nx = Math.max(-0.10, Math.min(1.10, nx));
+    ny = Math.max(-0.10, Math.min(1.10, ny));
+    guuvUserCount++;
+    const label = 'GUUV-U' + guuvUserCount;
+    const rw = 0.042, rh = 0.055;
+    const wps = [
+        {nx:nx,    ny:ny-rh},   // N apex
+        {nx:nx+rw, ny:ny},      // E
+        {nx:nx,    ny:ny+rh},   // S apex
+        {nx:nx-rw, ny:ny},      // W
+    ];
+    const depths = [20, 35, 50, 35];
+    guardianUUVs.push({
+        label, color:'#00d4ff', speed:0.00038, baseSpeed:0.00038,
+        nx:wps[0].nx, ny:wps[0].ny, waypoints:wps,
+        currentWP:0, redirected:false, redirectTarget:null, userPlaced:true,
+        interceptMode:false, flsTriggered:false, interceptTarget:null,
+        interceptPhase:0, challengeLogged:false,
+        depthBase:35, depthPhase: guuvUserCount * Math.PI/2, wpDepths: depths,
+    });
+    addLog(`🤿 [AI] วาง ${label} @ ${lat.toFixed(3)}°N ${lng.toFixed(3)}°E · Passive+FLS · depth 20–50m${opts.note ? ' · ' + opts.note : ''}`, '#00d4ff');
+    return label;
+}
+
+// expose for MDA.AI confirmDeploy()
+window._geoFromUDC = _geoFromUDC;
+window.deployPVAt  = deployPVAt;
+window.deployGUUVAt = deployGUUVAt;
 
 // ── Canvas right-click → remove nearest user vessel ──
 // Registered via window.addEventListener to avoid TDZ on mapDiv/overlayCanvas
@@ -22778,6 +22890,7 @@ function _sonarEqnRender(panel) {
         let opusNarr, opusMeta, opusTokens, opusLatency, opusModel, opusConf, opusCaveats;
         let forceList, forceCount, assetsAvail;
         let btnGen, btnClear;
+        let confirmBtn, deployStatus;   // v14.0.9 · Confirm & Deploy
 
         function bindDom() {
             modal      = $('mda-ai-modal');
@@ -22809,6 +22922,8 @@ function _sonarEqnRender(panel) {
             assetsAvail= $('mda-ai-assets-avail');
             btnGen     = $('mda-ai-gen');
             btnClear   = $('mda-ai-clear');
+            confirmBtn = $('mda-ai-confirm-deploy');   // v14.0.9
+            deployStatus = $('mda-ai-deploy-status');  // v14.0.9
         }
 
         /* ════════════════════════════════════════════════════════════
@@ -22892,14 +23007,109 @@ function _sonarEqnRender(panel) {
                 } catch (_) {}
                 return null;
             },
+
+            // ── v14.0.9 · multi-domain context gather (ป้อนทุก source ให้ AI) ──
+            // อ่านจาก window.MDA.data.* (modules: aviation/seismic/space/gdelt/marineWx)
+            // แม้ source เหล่านี้ไม่ได้ trigger alert ก็ส่งเป็น "บริบท" ให้ LLM เห็นภาพรวม
+            _gatherAviation() {
+                try {
+                    const a = (window.MDA && window.MDA.data && window.MDA.data.aviation) || [];
+                    if (!Array.isArray(a) || !a.length) return { count: 0, nearAOI: 0, lowSlow: 0, nearest: null };
+                    let nearAOI = 0, lowSlow = 0, nearest = null, nearestNm = Infinity;
+                    for (const f of a) {
+                        if (!f || f.lat == null || f.lon == null) continue;
+                        const d = this._distNm(+f.lat, +f.lon);
+                        if (d < nearestNm) { nearestNm = d; nearest = { d, alt: f.alt_baro, gs: f.gs, call: (f.flight || f.hex || '?') }; }
+                        if (d <= 12) nearAOI++;
+                        const altFt = (typeof f.alt_baro === 'number') ? f.alt_baro : (f.alt_baro === 'ground' ? 0 : null);
+                        if (d <= 15 && altFt != null && altFt > 0 && altFt < 5000 && (f.gs == null || +f.gs < 250)) lowSlow++;
+                    }
+                    return {
+                        count: a.length, nearAOI, lowSlow,
+                        nearest: nearest ? {
+                            distNm: +nearest.d.toFixed(1),
+                            altFt: (typeof nearest.alt === 'number' ? nearest.alt : nearest.alt),
+                            gsKn: nearest.gs != null ? Math.round(+nearest.gs) : null,
+                            call: String(nearest.call || '?').trim()
+                        } : null
+                    };
+                } catch (_) { return { count: 0, nearAOI: 0, lowSlow: 0, nearest: null }; }
+            },
+            _gatherSeismic() {
+                try {
+                    const s = (window.MDA && window.MDA.data && window.MDA.data.seismic) || [];
+                    if (!Array.isArray(s) || !s.length) return { count: 0, maxMag: 0, nearest: null };
+                    let maxMag = 0, nearest = null, nearestNm = Infinity;
+                    for (const f of s) {
+                        const p = (f && f.properties) || f || {};
+                        const mag = +((p.mag != null) ? p.mag : (f && f.mag != null ? f.mag : 0)) || 0;
+                        if (mag > maxMag) maxMag = mag;
+                        const coords = (f && f.geometry && f.geometry.coordinates) || null; // [lon,lat,depth]
+                        if (coords && coords.length >= 2) {
+                            const d = this._distNm(+coords[1], +coords[0]);
+                            if (d < nearestNm) {
+                                nearestNm = d;
+                                nearest = { distNm: +d.toFixed(0), mag: +mag.toFixed(1), place: p.place || '?', depthKm: coords[2] != null ? +(+coords[2]).toFixed(0) : null };
+                            }
+                        }
+                    }
+                    return { count: s.length, maxMag: +maxMag.toFixed(1), nearest };
+                } catch (_) { return { count: 0, maxMag: 0, nearest: null }; }
+            },
+            _gatherSpaceWx() {
+                try {
+                    const sp = (window.MDA && window.MDA.data && window.MDA.data.space) || null;
+                    if (!sp || sp.kp == null) return { kp: null, level: null, time: null };
+                    const kp = +sp.kp;
+                    const level = kp >= 7 ? 'G3+' : kp >= 5 ? 'G1-G2' : kp >= 4 ? 'active' : 'quiet';
+                    return { kp: +kp.toFixed(1), level, time: sp.time || null };
+                } catch (_) { return { kp: null, level: null, time: null }; }
+            },
+            _gatherGdelt() {
+                try {
+                    const g = (window.MDA && window.MDA.data && window.MDA.data.gdelt) || [];
+                    if (!Array.isArray(g) || !g.length) return { count: 0, topTitles: [] };
+                    const topTitles = g.slice(0, 5).map(a => String((a && a.title) || '').slice(0, 120)).filter(Boolean);
+                    return { count: g.length, topTitles };
+                } catch (_) { return { count: 0, topTitles: [] }; }
+            },
+            _gatherMarineWx() {
+                try {
+                    const m = (window.MDA && window.MDA.data && window.MDA.data.marineWx) || null;
+                    if (!m) return null;
+                    return { waveHt: m.wh != null ? +m.wh : null, waveDir: m.wd != null ? +m.wd : null, wavePeriod: m.wp != null ? +m.wp : null, windWaveHt: m.wwh != null ? +m.wwh : null, time: m.time || null };
+                } catch (_) { return null; }
+            },
+            _buildContext(base) {
+                const ctx = {
+                    aviation: this._gatherAviation(),
+                    seismic:  this._gatherSeismic(),
+                    spaceWx:  this._gatherSpaceWx(),
+                    gdelt:    this._gatherGdelt(),
+                    marineWx: this._gatherMarineWx(),
+                    ais:      { ships: (base && base.ships ? base.ships.length : 0), anomalies: (base ? (base.aisViz || 0) : 0) },
+                    env:      { seaState: (base ? base.seaState : null), gnssJitter: (base ? base.gnssJitter : null) }
+                };
+                // dataMode: 'real' ถ้ามี source สดอย่างน้อย 1 ตัว — มิฉะนั้น 'demo' (จะ fallback DEMO_SEEDS)
+                const hasReal =
+                    ctx.ais.ships > 0 || ctx.ais.anomalies > 0 ||
+                    ctx.aviation.count > 0 || ctx.seismic.count > 0 ||
+                    ctx.spaceWx.kp != null || ctx.gdelt.count > 0 ||
+                    ctx.marineWx != null || ctx.env.seaState != null || ctx.env.gnssJitter != null;
+                ctx.dataMode = hasReal ? 'real' : 'demo';
+                return ctx;
+            },
+
             gather() {
-                return {
+                const base = {
                     now: Date.now(),
                     ships: this._gatherShips(),
                     aisViz: this._gatherAisViz(),
                     seaState: this._gatherSeaState(),
                     gnssJitter: this._gatherGnss()
                 };
+                base.context = this._buildContext(base);
+                return base;
             },
 
             // ── helpers ──────────────────────────────────────────────
@@ -22983,6 +23193,45 @@ function _sonarEqnRender(panel) {
                         conf
                     });
                 }
+
+                // ── v14.0.9 · context-driven rules (R7–R10) — อ่านจาก snap.context ──
+                const C = snap.context || {};
+
+                // R7: ENVIRONMENT — seismic / tsunami potential (subsea cable + UDC risk)
+                const seis = C.seismic;
+                if (seis && seis.nearest && seis.maxMag >= 4.5) {
+                    const m = seis.maxMag, dd = seis.nearest.distNm;
+                    const shallow = seis.nearest.depthKm != null && seis.nearest.depthKm <= 70;
+                    const tsunami = m >= 6.5 && shallow && dd <= 600;
+                    const conf = tsunami
+                        ? Math.max(0.85, Math.min(0.97, 0.80 + (m - 6.5) * 0.05))
+                        : Math.max(0.55, Math.min(0.80, 0.50 + (m - 4.5) * 0.08));
+                    out.push({
+                        sev: tsunami ? 'crit' : (m >= 6.0 ? 'warn' : 'info'),
+                        tag: 'ENVIRONMENT', tax: 'environmental',
+                        msg: `แผ่นดินไหว M${m.toFixed(1)} · ${seis.nearest.place} · ระยะ ${dd} NM` +
+                             (seis.nearest.depthKm != null ? ` · ลึก ${seis.nearest.depthKm} km` : '') +
+                             (tsunami ? ' · ⚠ เฝ้าระวัง tsunami กระทบ subsea cable/UDC' : ''),
+                        conf
+                    });
+                }
+
+                // R8: CYBER-PHYS — geomagnetic storm (Kp≥5) → GNSS/HF degradation
+                const sw = C.spaceWx;
+                if (sw && sw.kp != null && sw.kp >= 5) {
+                    const conf = Math.max(0.58, Math.min(0.93, 0.50 + (sw.kp - 5) * 0.10));
+                    out.push({
+                        sev: sw.kp >= 7 ? 'warn' : 'info',
+                        tag: 'CYBER-PHYS', tax: 'cyber',
+                        msg: `Geomagnetic storm Kp ${sw.kp.toFixed(1)} (${sw.level}) · GNSS/HF accuracy degraded · เพิ่มความเสี่ยง spoofing ปะปนสัญญาณธรรมชาติ`,
+                        conf
+                    });
+                }
+
+                // R9 (aviation) + R10 (GDELT) = context-only โดยตั้งใจ —
+                //   สัญญาณกำกวม (เช่น อากาศยานบินต่ำ/ช้าอาจเป็น traffic เข้าอู่ตะเภาที่ติด AOI,
+                //   ข่าว GDELT เป็นบริบทภูมิรัฐศาสตร์) จึงส่งผ่าน snap.context ให้ LLM ตีความ
+                //   แทนการดัน taxonomy (กัน force-rec/auto-deploy ยิงพลาด). ดู C.aviation / C.gdelt
 
                 // R6: HYBRID — co-incident vectors
                 const taxesPresent = new Set(out.map(a => a.tax));
@@ -23191,58 +23440,147 @@ function _sonarEqnRender(panel) {
         // Mock pipeline — canned narrative จาก state (2s loading)
         // v14.0.6 — real call → Cloudflare Worker → Workers AI (Llama 3.3 / DeepSeek / Llama 3.1)
         //                                       → Google Gemini (2.0 Flash / 2.5 Pro)
-        function _opusNarrativeFromState() {
+        function _opusNarrativeFromState(ctx, dataMode) {
             const t = state.taxonomy;
             const total = t.kinetic + t.asymmetric + t.cyber + t.environmental + t.hybrid;
             const lvl = _ruleLevel();
-            const recent = state.alerts.slice(0, 5);
+            const recent = state.alerts.slice(0, 6);
             const ts = _now();
+            const dm = dataMode || state.dataMode || 'demo';
+            const C = ctx || {};
+            const avgConf = state.alerts.length
+                ? (state.alerts.reduce((s,a)=>s+a.conf,0)/state.alerts.length*100).toFixed(0)
+                : null;
 
             const dominant = Object.keys(t).sort((a,b) => t[b] - t[a])[0];
             const dominantLabel = {
-                kinetic: 'Physical-Kinetic',
-                asymmetric: 'Asymmetric / Grey-Zone',
-                cyber: 'Cyber-Physical',
-                environmental: 'Environmental',
-                hybrid: 'Hybrid (multi-vector)'
+                kinetic: 'Physical-Kinetic', asymmetric: 'Asymmetric / Grey-Zone',
+                cyber: 'Cyber-Physical', environmental: 'Environmental', hybrid: 'Hybrid (multi-vector)'
             }[dominant];
 
-            // canned narrative (mock Opus)
+            // ── multi-domain coverage (อ่านจาก context — แสดงแม้ source ไม่ได้ trigger alert) ──
+            const dom = [];
+            const ais = C.ais || {};
+            dom.push(`• AIS/Surface : ${ais.ships||0} contacts` + (ais.anomalies ? ` · ${ais.anomalies} anomaly` : '') + ((ais.ships||0) ? '' : ' — ไม่มี contact ในกรอบ'));
+            const av = C.aviation;
+            if (av && av.count) dom.push(`• Aviation    : ${av.count} tracks · ใกล้ AOI ${av.nearAOI} · low/slow ${av.lowSlow}` + (av.nearest ? ` · ใกล้สุด ${av.nearest.call} ${av.nearest.distNm} NM` + (typeof av.nearest.altFt==='number'?` @ ${av.nearest.altFt} ft`:'') + (av.nearest.gsKn!=null?` ${av.nearest.gsKn} kn`:'') : ''));
+            else dom.push('• Aviation    : ไม่มีข้อมูล (OpenSky ปิด/ว่าง)');
+            const se = C.seismic;
+            if (se && se.count) dom.push(`• Seismic     : ${se.count} events · max M${se.maxMag}` + (se.nearest ? ` · ใกล้สุด M${se.nearest.mag} ${se.nearest.place} ${se.nearest.distNm} NM` + (se.nearest.depthKm!=null?` ลึก ${se.nearest.depthKm} km`:'') : ''));
+            else dom.push('• Seismic     : ไม่มีเหตุการณ์ในห้วงนี้');
+            const sw = C.spaceWx;
+            if (sw && sw.kp != null) dom.push(`• Space-Wx    : Kp ${sw.kp} (${sw.level})` + (sw.kp>=5?' · ⚠ GNSS/HF degraded':''));
+            else dom.push('• Space-Wx    : ไม่มีข้อมูล Kp');
+            const mw = C.marineWx, env = C.env || {};
+            if (mw && mw.waveHt != null) dom.push(`• Marine-Wx   : Hs ${mw.waveHt} m` + (mw.wavePeriod!=null?` · T ${mw.wavePeriod}s`:'') + (env.seaState!=null?` · sea state ${env.seaState}`:''));
+            else if (env.seaState != null) dom.push(`• Marine-Wx   : sea state ${env.seaState}`);
+            else dom.push('• Marine-Wx   : ไม่มีข้อมูลคลื่น');
+            const gd = C.gdelt;
+            if (gd && gd.count) dom.push(`• OSINT/GDELT : ${gd.count} ข่าวความมั่นคง` + (gd.topTitles && gd.topTitles[0] ? ` · “${gd.topTitles[0].slice(0,52)}…”` : ''));
+            else dom.push('• OSINT/GDELT : ไม่มีข่าวเด่น');
+            if (env.gnssJitter != null) dom.push(`• GNSS health : jitter ${(env.gnssJitter*100).toFixed(0)}%` + (env.gnssJitter>=0.5?' · ⚠ spoofing signature':''));
+
             let narr = '';
-            narr += `🧠 OPUS ANALYSIS · ${ts}\n`;
-            narr += `═══════════════════════════════════════════\n\n`;
+            narr += `🧠 LLM ANALYSIS (offline · narrative-from-state) · ${ts}\n`;
+            narr += `═══════════════════════════════════════════\n`;
+            narr += dm === 'real'
+                ? `🟢 DATA PROVENANCE: REAL — สังเคราะห์จาก live sensors/feeds\n\n`
+                : `🟡 DATA PROVENANCE: DEMO/SYNTHETIC — ไม่มี live source · ผลเป็น illustrative เพื่อสาธิตเท่านั้น\n\n`;
+
+            // §A — Multi-domain picture (เสมอ)
+            narr += `🌐 ภาพรวมหลายโดเมน (Multi-Domain Picture):\n`;
+            narr += dom.join('\n') + '\n\n';
 
             if (total === 0) {
-                narr += 'จากการวิเคราะห์ข้อมูลล่าสุด ระบบยังไม่พบเหตุการณ์ผิดปกติที่ต้องดำเนินการในขณะนี้ ';
-                narr += 'สภาพแวดล้อมโดยรวมอยู่ในสถานะปลอดภัย เซ็นเซอร์ทั้งหมดออนไลน์ และไม่มีสัญญาณบ่งชี้ภัยคุกคาม\n\n';
-                narr += '▸ แนะนำให้คงระดับเฝ้าระวังปัจจุบัน (Routine Watch)\n';
-                narr += '▸ ใช้โอกาสนี้ตรวจสอบ DAS calibration และ AIS coverage';
-            } else {
                 narr += `🔍 บริบทเชิงระบบ:\n`;
-                narr += `ในห้วงเวลาปฏิบัติการล่าสุด ระบบตรวจจับเหตุการณ์รวม ${state.alerts.length} ครั้ง โดยมีการจำแนกตาม taxonomy ทั้ง 5 มิติรวม ${total} hits  `;
-                narr += `ภัยที่เด่นที่สุดคือกลุ่ม "${dominantLabel}" (${t[dominant]} ครั้ง) ซึ่งสะท้อนรูปแบบ ${dominant === 'hybrid' ? 'การโจมตีหลายช่องทางพร้อมกัน' : dominant === 'asymmetric' ? 'การปฏิบัติการในเขตเทาผ่านเรือพลเรือน' : dominant === 'cyber' ? 'การรบกวนเซ็นเซอร์เชิง electromagnetic' : dominant === 'kinetic' ? 'การเคลื่อนไหวเชิง physical ใกล้พื้นที่ MEZ' : 'ผลกระทบจากสภาพแวดล้อมต่อ ops'}\n\n`;
-
-                narr += `📊 การประเมินความเสี่ยง:\n`;
-                if (lvl === 'HIGH') {
-                    narr += `🔴 ระดับ HIGH — ตรวจพบรูปแบบ multi-vector ที่บ่งชี้ภัยคุกคามแบบ coordinated  `;
-                    narr += `ความเร่งด่วนในการตัดสินใจอยู่ในระดับสูง  ผู้บัญชาการควรพิจารณายกระดับ ROE ตาม NATO Mainsail (Feb 2025) `;
-                    narr += `และพิจารณาแจ้ง ศรชล. ภาค 1 เพื่อ inter-agency coordination ภายใต้ พ.ร.บ.ผลประโยชน์ฯ 2562\n\n`;
-                } else if (lvl === 'ELEVATED') {
-                    narr += `🟡 ระดับ ELEVATED — มีสัญญาณ kinetic / hybrid ที่ต้องเฝ้าระวังเข้มข้น  `;
-                    narr += `ยังไม่ถึงเกณฑ์ยกระดับ ROE แต่ควรเตรียมพร้อมและทบทวน UNCLOS Art.60(5) safety zone 500 m รอบ UDC\n\n`;
-                } else {
-                    narr += `🟢 ระดับ ROUTINE — เหตุการณ์อยู่ในวิสัยปกติ ไม่ต้องดำเนินการนอกแผนงานปัจจุบัน\n\n`;
-                }
-
-                narr += `⚖️ ข้อพิจารณาทางกฎหมาย:\n`;
-                narr += `▸ UNCLOS Art.60(5) — รักษา safety zone 500 m รอบโครงสร้างกลางทะเล\n`;
-                narr += `▸ พ.ร.บ.เขตปลอดภัยฯ 2478 — บังคับใช้ได้ในน่านน้ำไทย\n`;
-                narr += `▸ PDPA — กรณีบันทึก AIS ของเรือพลเรือน ต้อง anonymize ก่อนเก็บถาวร\n\n`;
-
-                narr += `🛡️ ข้อจำกัดของการประเมิน (caveats):\n`;
-                narr += `▸ ระบบนี้เป็น Decision Support เท่านั้น — การตัดสินใจสุดท้ายต้องผ่าน Human-in-the-Loop ตาม DoD Directive 3000.09 (2023)\n`;
-                narr += `▸ ค่าความเชื่อมั่น (confidence) เฉลี่ย ${state.alerts.length ? (state.alerts.reduce((s,a) => s+a.conf, 0)/state.alerts.length*100).toFixed(0) : '--'}% — ยังไม่ผ่านเกณฑ์ autonomous action ตาม IMO MASS Code Level III-A`;
+                narr += `ไม่พบเหตุการณ์ที่ข้ามเกณฑ์ rule-engine (R1–R8) ในห้วงนี้ — taxonomy ทั้ง 5 มิติเป็น 0  `;
+                narr += `สภาพแวดล้อมโดยรวมอยู่ในสถานะ baseline เซ็นเซอร์รายงานปกติ\n\n`;
+                narr += `📊 การประเมินความเสี่ยง: 🟢 LOW — คงระดับ Routine Watch\n\n`;
+                narr += `📡 ช่องว่างข้อมูล (PIR ที่ควรเติม):\n`;
+                if (!(av && av.count))  narr += `▸ Aviation track ขาด — เปิด OpenSky เพื่อปิด air-picture gap\n`;
+                if (!(sw && sw.kp!=null)) narr += `▸ ไม่มี Kp index — เปิด Space-Wx เพื่อประเมิน GNSS reliability\n`;
+                if (!(ais.ships))        narr += `▸ ไม่มี AIS contact — ตรวจสอบ AIS feed / coverage รอบ UDC\n`;
+                narr += `▸ ยืนยัน DAS calibration และ subsea cable integrity ตามรอบ\n\n`;
+                narr += `🛡️ ข้อจำกัด: Decision Support เท่านั้น · HITL ตาม DoD 3000.09 / IMO MASS Code III-A`;
+                return narr;
             }
+
+            // §B — systemic context
+            narr += `🔍 บริบทเชิงระบบ:\n`;
+            narr += `ห้วงปฏิบัติการล่าสุดตรวจจับ ${state.alerts.length} เหตุการณ์ · taxonomy รวม ${total} hits  `;
+            narr += `ภัยเด่น "${dominantLabel}" (${t[dominant]} ครั้ง)  `;
+            narr += `[K:${t.kinetic} A:${t.asymmetric} C:${t.cyber} E:${t.environmental} H:${t.hybrid}]\n\n`;
+
+            // §C — per-domain risk breakdown
+            narr += `📊 การประเมินความเสี่ยงรายมิติ:\n`;
+            const riskLine = (k, label) => {
+                const n = t[k]; if (!n) return '';
+                const band = n>=5?'🔴 สูง':n>=2?'🟡 ปานกลาง':'🟢 ต่ำ';
+                return `▸ ${label}: ${band} (${n})\n`;
+            };
+            narr += (riskLine('kinetic','Physical-Kinetic') + riskLine('asymmetric','Asymmetric/Grey-Zone') +
+                     riskLine('cyber','Cyber-Physical') + riskLine('environmental','Environmental') +
+                     riskLine('hybrid','Hybrid')) || '▸ (ไม่มี hit รายมิติ)\n';
+            narr += `\n📈 ระดับสถานการณ์รวม: ${lvl==='HIGH'?'🔴 HIGH':lvl==='ELEVATED'?'🟡 ELEVATED':'🟢 ROUTINE'}\n`;
+            if (lvl === 'HIGH') {
+                narr += `ตรวจพบรูปแบบ multi-vector บ่งชี้ coordinated threat — ความเร่งด่วนสูง  `;
+                narr += `พิจารณายกระดับ ROE ตาม NATO Mainsail (ก.พ.2025) และแจ้ง ศรชล.ภาค 1 (พ.ร.บ.ผลประโยชน์ฯ 2562)\n\n`;
+            } else if (lvl === 'ELEVATED') {
+                narr += `มีสัญญาณ kinetic/hybrid ต้องเฝ้าระวังเข้มข้น — ยังไม่ถึงเกณฑ์ยกระดับ ROE  เตรียมพร้อม + ทบทวน safety zone 500 m\n\n`;
+            } else {
+                narr += `เหตุการณ์อยู่ในวิสัยปกติ — เฝ้าระวังตามแผน บันทึก audit log\n\n`;
+            }
+
+            // §D — threat hypotheses (MLCOA / MDCOA)
+            narr += `🎯 สมมติฐานภัยคุกคาม:\n`;
+            let mlcoa, mdcoa;
+            if (t.hybrid >= 1 || (t.cyber>=1 && t.asymmetric>=1)) {
+                mlcoa = 'การ probing เขตเทา — ใช้เรือพลเรือน/EW ทดสอบ reaction time ของ UDC';
+                mdcoa = 'Coordinated grey-zone: spoof GNSS/รบกวนเซ็นเซอร์ บังการเข้าประชิดของหน่วยจู่โจมต่อ MEZ พร้อมกัน';
+            } else if (dominant === 'kinetic') {
+                mlcoa = 'เรือไม่ระบุสัญชาติแล่นผ่าน/หลงเข้าใกล้ MEZ โดยไม่มีเจตนาร้าย';
+                mdcoa = 'Fast inshore attack craft มุ่งเข้า safety zone 500 m เพื่อ kinetic action ต่อโครงสร้าง';
+            } else if (dominant === 'cyber') {
+                mlcoa = 'GNSS/HF degradation จากธรรมชาติ (geomagnetic) หรือ interference ทั่วไป';
+                mdcoa = 'จงใจ spoof ตำแหน่ง บิดเบือน nav ของ UUV/ผิวน้ำฝ่ายเรา หรือปกปิด track เป้าหมาย';
+            } else if (dominant === 'environmental') {
+                mlcoa = 'สภาพคลื่น/แผ่นดินไหวลด ROV-sonar performance ชั่วคราว';
+                mdcoa = 'เหตุ seismic กระทบ subsea cable / เสี่ยง tsunami ต่อ UDC โดยตรง';
+            } else {
+                mlcoa = 'กลุ่มเรือเล็กปฏิบัติการประมง/ผ่านทางตามปกติ';
+                mdcoa = 'Swarm/formation อำพรางเพื่อเข้าประชิดหรือวาง payload ใกล้ข้อต่อ cable';
+            }
+            narr += `▸ MLCOA (น่าจะเป็นที่สุด): ${mlcoa}\n`;
+            narr += `▸ MDCOA (อันตรายที่สุด): ${mdcoa}\n\n`;
+
+            // §E — recommended actions (ผูกกับ §3 Force Deployment)
+            narr += `🛠️ ข้อเสนอแนะการปฏิบัติ:\n`;
+            if (t.kinetic >= 1) narr += `▸ จัด Patrol Vessel intercept/ID เป้าใกล้ MEZ + เปิด FLIR/radar track\n`;
+            if (t.asymmetric >= 1) narr += `▸ ส่ง Guardian UUV ลาดตระเวนใต้น้ำแนว subsea cable + ตรวจ formation\n`;
+            if (t.cyber >= 1 || (sw && sw.kp>=5)) narr += `▸ สลับไป inertial/celestial backup + log GNSS integrity (แยก spoof จาก Kp)\n`;
+            if (t.environmental >= 1) narr += `▸ ปรับ ROV/sonar ops ตาม sea state + เฝ้าระวัง seismic/tsunami bulletin\n`;
+            if (t.hybrid >= 1) narr += `▸ เปิด Sensor Fusion เต็มรูปแบบ + ตั้ง CAP helo + แจ้ง inter-agency\n`;
+            narr += `(ดูรายละเอียด asset/ตำแหน่งใน §3 — กด “Confirm & Deploy” เพื่อวางกำลังบนแผนที่)\n\n`;
+
+            // §F — intelligence gaps / PIR
+            narr += `📡 ช่องว่างข้อมูล (PIR):\n`;
+            if (!(av && av.count)) narr += `▸ ไม่มี air-picture — เปิด Aviation เพื่อตรวจ ISR/low-slow\n`;
+            if (!(ais.ships))      narr += `▸ ไม่มี AIS contact — ตรวจ feed/coverage (เป้าอาจปิด AIS = dark)\n`;
+            if (!(sw && sw.kp!=null)) narr += `▸ ไม่มี Kp — ประเมิน GNSS reliability ไม่ได้\n`;
+            narr += `▸ ยืนยันสัญชาติ/เจตนาเป้าใกล้ MEZ ด้วย EO/IR ก่อนยกระดับ\n\n`;
+
+            // §G — legal (เลือกอ้างตามมิติ)
+            narr += `⚖️ ข้อพิจารณาทางกฎหมาย:\n`;
+            narr += `▸ UNCLOS Art.60(5) — safety zone 500 m รอบโครงสร้างกลางทะเล\n`;
+            if (t.kinetic>=1 || t.hybrid>=1) narr += `▸ พ.ร.บ.เขตปลอดภัยฯ 2478 + ROE: ใช้กำลังตามสัดส่วน (proportionality/necessity)\n`;
+            if (t.asymmetric>=1) narr += `▸ พ.ร.บ.ผลประโยชน์ฯ 2562 — ศรชล. ประสาน inter-agency เขตเทา\n`;
+            narr += `▸ PDPA — anonymize AIS ของเรือพลเรือนก่อนเก็บถาวร\n\n`;
+
+            // §H — caveats
+            narr += `🛡️ ข้อจำกัดของการประเมิน (caveats):\n`;
+            narr += `▸ Decision Support เท่านั้น — ตัดสินใจสุดท้ายผ่าน HITL ตาม DoD Directive 3000.09 (2023)\n`;
+            narr += `▸ confidence เฉลี่ย ${avgConf!=null?avgConf+'%':'--'} — ` + (dm==='real'?'ต่ำกว่าเกณฑ์ autonomous action':'อิง scenario สาธิต ไม่ใช่ข้อมูลจริง') + ` (IMO MASS Code III-A)\n`;
+            narr += `▸ นี่คือ fallback narrative (offline) — เชื่อมต่อ Worker/LLM เพื่อการวิเคราะห์เชิงลึกกว่านี้`;
             return narr;
         }
 
@@ -23284,6 +23622,13 @@ function _sonarEqnRender(panel) {
             let errMsg      = null;
             let source      = 'mock';     // 'real' | 'fallback' | 'mock'
 
+            // v14.0.9 — รวบรวมบริบทหลายโดเมน (Aviation/Seismic/SpaceWx/GDELT/MarineWx + AIS/env)
+            //           ส่งให้ AI แม้ source เหล่านี้ไม่ได้ถูก render บนแผนที่
+            let ctx = null;
+            try { ctx = classifier.gather().context; } catch (_) { ctx = null; }
+            const dataMode = (ctx && ctx.dataMode) || 'demo';
+            state.dataMode = dataMode;
+
             if (wantReal) {
                 const _aiCtl = new AbortController();
                 const _aiTO  = setTimeout(() => _aiCtl.abort(), 45000);   // LLM ช้าได้ → timeout 45s กัน UI ค้างที่ 'pending'
@@ -23294,7 +23639,9 @@ function _sonarEqnRender(panel) {
                         body: JSON.stringify({
                             model: selectedModel,           // v14.0.6 — chosen provider/model
                             taxonomy: state.taxonomy,
-                            alerts: state.alerts.slice(0, 12)
+                            alerts: state.alerts.slice(0, 12),
+                            context: ctx,                   // v14.0.9 — full multi-domain snapshot
+                            dataMode: dataMode              // 'real' | 'demo' (real = มี source สดอย่างน้อย 1)
                         }),
                         signal: _aiCtl.signal
                     });
@@ -23325,7 +23672,7 @@ function _sonarEqnRender(panel) {
                 if (!wantReal) {
                     await new Promise(res => setTimeout(res, 1800));
                 }
-                narrative = _opusNarrativeFromState();
+                narrative = _opusNarrativeFromState(ctx, dataMode);
                 source = wantReal ? 'fallback' : 'mock';
             }
 
@@ -23357,6 +23704,12 @@ function _sonarEqnRender(panel) {
             if (opusCaveats) {
                 const lvl = _ruleLevel();
                 const parts = [];
+                // v14.0.9 — real vs demo provenance badge
+                if (dataMode === 'real') {
+                    parts.push(`<div style="color:#86efac;">· 🟢 <b>REAL DATA</b> — วิเคราะห์จาก live sources (AIS/Aviation/Seismic/Space-Wx/GDELT/Marine-Wx)</div>`);
+                } else {
+                    parts.push(`<div style="color:#fcd34d;">· 🟡 <b>DEMO/SYNTHETIC</b> — ไม่มี live source ในขณะนี้ · ใช้ scenario สาธิต (ผลเป็น illustrative)</div>`);
+                }
                 parts.push(`<div>· เกณฑ์ความเชื่อมั่น: <b style="color:#c4b5fd;">${conf}</b> · samples: <b>${state.alerts.length}</b></div>`);
                 parts.push(`<div>· Decision Support — ผ่าน HITL ตาม <b>DoD 3000.09</b> / <b>MASS Code III-A</b></div>`);
                 if (lvl === 'HIGH') parts.push(`<div style="color:#fca5a5;">· แนะนำ <b>2-person rule</b> ก่อนเปลี่ยน posture</div>`);
@@ -23381,32 +23734,59 @@ function _sonarEqnRender(panel) {
         }
 
         // ── § 3 FORCE DEPLOYMENT RECOMMENDATIONS ──────────
+        // v14.0.9 — แกะ bearing/COG ภัยคุกคามจาก alert (เพื่อวาง PV ทิศที่เหมาะสม)
+        function _threatBearing() {
+            try {
+                for (const a of (state.alerts || [])) {
+                    const s = String(a && a.msg || '');
+                    let m = s.match(/(?:COG|bearing|brg|bearing of|ทิศ(?:ทาง)?|มุ่งหน้า)\s*[:=]?\s*(\d{1,3})/i);
+                    if (m) { const b = parseInt(m[1], 10); if (b >= 0 && b <= 360) return b % 360; }
+                    m = s.match(/(\d{1,3})\s*°/);
+                    if (m) { const b = parseInt(m[1], 10); if (b >= 0 && b <= 360) return b % 360; }
+                }
+            } catch (_) {}
+            return null;
+        }
+
         function _buildForceRecs() {
             const t = state.taxonomy;
             const lvl = _ruleLevel();
             const recs = [];
 
+            // bearing ฐานสำหรับ screen ผิวน้ำ: ใช้ทิศภัยจริงถ้ามี · มิฉะนั้น 270° (seaward channel)
+            const tb  = _threatBearing();
+            const brg = (tb == null) ? 270 : tb;
+            const brgL = (brg + 340) % 360;   // −20°
+            const brgR = (brg + 20)  % 360;   // +20°
+            const brgTxt = (tb == null) ? '270° (ค่าตั้งต้น seaward)' : `${brg}° (จาก contact)`;
+
             if (t.hybrid >= 2 || (t.cyber >= 1 && t.asymmetric >= 2)) {
                 recs.push({
                     prio: 'P1', cls: 'high', cat: 'COMMAND',
-                    title: 'ยกระดับ ROE + แจ้ง ศรชล. ภาค 1',
-                    body: 'พบรูปแบบ Hybrid multi-vector · ต้อง coordination ข้ามหน่วยตาม พ.ร.บ.ผลประโยชน์ฯ 2562',
-                    meta: 'NATO Mainsail Feb-2025 · 2-person rule'
+                    title: 'ยกระดับ ROE + แจ้ง ศรชล. ภาค 1 + CAP',
+                    body: 'พบรูปแบบ Hybrid multi-vector · ต้อง coordination ข้ามหน่วยตาม พ.ร.บ.ผลประโยชน์ฯ 2562 · ขึ้น ฮ. CAP เหนือ UDC',
+                    meta: 'NATO Mainsail Feb-2025 · 2-person rule',
+                    deploy: [{ type: 'HELO_CAP', note: 'CAP เหนือ UDC' }]
                 });
             }
             if (t.kinetic >= 2 || t.hybrid >= 1) {
                 recs.push({
                     prio: 'P1', cls: 'high', cat: 'SURFACE',
                     title: 'PV — 2 ลำ สู่ MEZ perimeter',
-                    body: 'ส่งเรือตรวจการณ์ 2 ลำคุม sector 270° ระยะ 1.5 NM จาก UDC',
-                    meta: 'UNCLOS Art.60(5) safety zone 500m'
+                    body: `ส่งเรือตรวจการณ์ 2 ลำคุม sector ${brgTxt} ระยะ 1.5 NM จาก UDC (กระจาย ±20°)`,
+                    meta: 'UNCLOS Art.60(5) safety zone 500m',
+                    deploy: [
+                        { type: 'PV', bearing: brgL, rangeNm: 1.5, note: 'screen L' },
+                        { type: 'PV', bearing: brgR, rangeNm: 1.5, note: 'screen R' }
+                    ]
                 });
             } else if (t.kinetic >= 1) {
                 recs.push({
                     prio: 'P2', cls: 'med', cat: 'SURFACE',
                     title: 'PV — 1 ลำ สู่ contact bearing',
-                    body: 'เรือตรวจการณ์ shadow contact ที่ COG 270° · ระยะ 1.5 NM',
-                    meta: 'พ.ร.บ.เขตปลอดภัยฯ 2478'
+                    body: `เรือตรวจการณ์ shadow contact ที่ ${brgTxt} · ระยะ 1.5 NM`,
+                    meta: 'พ.ร.บ.เขตปลอดภัยฯ 2478',
+                    deploy: [{ type: 'PV', bearing: brg, rangeNm: 1.5, note: 'shadow contact' }]
                 });
             }
             if (t.cyber >= 1) {
@@ -23415,14 +23795,16 @@ function _sonarEqnRender(panel) {
                     title: 'GNSS resilience mode + Spoofing flag',
                     body: 'เปิดโหมด multi-constellation + บันทึก pseudo-range jitter เพื่อ forensics',
                     meta: 'ITU R-REC-M.1371 + MMSI cross-check'
+                    // CYBER = posture EW/GNSS — ไม่มีการวางกำลังลงแผนที่
                 });
             }
             if (t.asymmetric >= 2) {
                 recs.push({
                     prio: 'P2', cls: 'med', cat: 'SUBSURFACE',
                     title: 'GUUV — 1 ลำ patrol submarine cable',
-                    body: 'ส่ง GUUV สำรวจข้อต่อ cable ที่อยู่ใกล้กลุ่มเรือต้องสงสัย · เปิด DAS realtime',
-                    meta: 'WADER + AISViz cross-ref'
+                    body: 'ส่ง GUUV สำรวจข้อต่อ cable corridor ทิศใต้ (180°) ระยะ 1.8 NM · เปิด DAS realtime',
+                    meta: 'WADER + AISViz cross-ref',
+                    deploy: [{ type: 'GUUV', bearing: 180, rangeNm: 1.8, note: 'south cable corridor' }]
                 });
             }
             if (t.environmental >= 1) {
@@ -23431,6 +23813,7 @@ function _sonarEqnRender(panel) {
                     title: 'Survey Vessel — postpone deep-water ops',
                     body: 'sea state สูงเกินเกณฑ์ HYPACK · เลื่อน multibeam survey · ปรับ ROV depth limit',
                     meta: 'WMO sea state ≥ 4'
+                    // OPS = ชะลอภารกิจ — ไม่ใช่การวางกำลังเพิ่ม
                 });
             }
             if (recs.length === 0) {
@@ -23462,12 +23845,92 @@ function _sonarEqnRender(panel) {
                     <div class="mda-ai-force-body">${_escape(r.body)}</div>
                     <div class="mda-ai-force-meta">📎 ${_escape(r.meta)}</div>
                 </div>`).join('');
+
+            // v14.0.9 — sync ปุ่ม Confirm & Deploy + ข้อความสถานะ
+            const deployN = recs.reduce((n, r) => n + (Array.isArray(r.deploy) ? r.deploy.length : 0), 0);
+            if (confirmBtn) {
+                confirmBtn.disabled = (deployN === 0);
+                confirmBtn.style.opacity = (deployN === 0) ? '0.5' : '1';
+                confirmBtn.style.cursor  = (deployN === 0) ? 'not-allowed' : 'pointer';
+            }
+            // ไม่ทับสถานะถ้าเพิ่ง deploy (locked) — ให้ผู้ใช้เห็นผลค้างไว้จน refresh/clear
+            if (deployStatus && deployStatus.dataset.locked !== '1') {
+                if (deployN === 0) {
+                    _setDeployStatus('— ยังไม่มีกำลังให้ deploy · คงเฝ้าระวังปกติ —', '#94a3b8');
+                } else {
+                    _setDeployStatus(`พร้อม deploy ${deployN} กำลังตามคำแนะนำ — กด ✅ ด้านบนเพื่อยืนยัน (HITL)`, '#7dd3fc');
+                }
+            }
+        }
+
+        function _setDeployStatus(msg, color) {
+            if (!deployStatus) return;
+            deployStatus.textContent = msg;
+            deployStatus.style.color = color || '#94a3b8';
+        }
+
+        // ✅ Confirm & Deploy — วางกำลังตามคำแนะนำ AI ลงแผนที่ทันที (HITL · 2-person rule)
+        function confirmDeploy() {
+            const recs = _buildForceRecs();
+            const actions = [];
+            recs.forEach(r => {
+                if (Array.isArray(r.deploy)) r.deploy.forEach(d => actions.push(Object.assign({ cat: r.cat }, d)));
+            });
+            if (!actions.length) {
+                _setDeployStatus('— ไม่มีคำแนะนำที่ deploy ได้ในขณะนี้ —', '#94a3b8');
+                return;
+            }
+            // HITL confirmation (2-person rule ที่ชั้น UI)
+            const summary = actions.map((a, i) => {
+                const geo = (a.bearing != null) ? ` @ ${Math.round(a.bearing)}° / ${a.rangeNm} NM` : '';
+                return `${i + 1}. ${a.type}${geo}${a.note ? ' · ' + a.note : ''}`;
+            }).join('\n');
+            let ok = true;
+            try {
+                ok = window.confirm('ยืนยันวางกำลังตามคำแนะนำ AI ลงแผนที่?\n(HITL · 2-person rule)\n\n' + summary + '\n\nศูนย์อ้างอิง UDC: ' + UDC_LAT + '°N ' + UDC_LNG + '°E');
+            } catch (_) { ok = true; }
+            if (!ok) { _setDeployStatus('ผู้ใช้ยกเลิกการ deploy', '#fbbf24'); return; }
+
+            let placed = 0, failed = 0, lastGeo = null;
+            const done = [];
+            actions.forEach(a => {
+                try {
+                    if (a.type === 'PV' && typeof window.deployPVAt === 'function') {
+                        const g = window._geoFromUDC(a.bearing, a.rangeNm);
+                        const lab = window.deployPVAt(g.lat, g.lng, { note: a.note });
+                        if (lab) { placed++; lastGeo = g; done.push(lab); } else failed++;
+                    } else if (a.type === 'GUUV' && typeof window.deployGUUVAt === 'function') {
+                        const g = window._geoFromUDC(a.bearing, a.rangeNm);
+                        const lab = window.deployGUUVAt(g.lat, g.lng, { note: a.note });
+                        if (lab) { placed++; lastGeo = g; done.push(lab); } else failed++;
+                    } else if (a.type === 'HELO_CAP') {
+                        const fn = (typeof window.manualCAPHelo === 'function') ? window.manualCAPHelo
+                                 : (typeof manualCAPHelo === 'function') ? manualCAPHelo : null;
+                        if (fn) { fn(); placed++; done.push('CAP'); } else failed++;
+                    } else { failed++; }
+                } catch (e) { failed++; }
+            });
+
+            // โฟกัสแผนที่ไปยังกำลังที่วางล่าสุด
+            try {
+                if (lastGeo && typeof map !== 'undefined' && map && typeof map.flyTo === 'function') {
+                    const z = (typeof map.getZoom === 'function') ? Math.max(map.getZoom(), 12) : 12;
+                    map.flyTo([lastGeo.lat, lastGeo.lng], z, { duration: 0.8 });
+                }
+            } catch (_) {}
+
+            const stamp = (function () { try { return new Date().toLocaleTimeString('th-TH'); } catch (_) { return ''; } })();
+            if (deployStatus) deployStatus.dataset.locked = '1';   // กันถูก auto-render ทับ
+            _setDeployStatus(`✅ Deploy แล้ว ${placed} กำลัง${failed ? ' · ❌ พลาด ' + failed : ''}${done.length ? ' [' + done.join(', ') + ']' : ''} · ${stamp}`, placed ? '#86efac' : '#fbbf24');
+            try { if (typeof toast === 'function') toast(`✅ AI Deploy: วาง ${placed} กำลัง${failed ? ' · พลาด ' + failed : ''}`); } catch (_) {}
+            try { if (typeof addLog === 'function') addLog(`[AI] CONFIRM & DEPLOY → วาง ${placed} กำลัง${failed ? ', พลาด ' + failed : ''}`, '#86efac'); } catch (_) {}
         }
 
         function clearAll() {
             state.alerts.length = 0;
             state.taxonomy = { kinetic:0, asymmetric:0, cyber:0, environmental:0, hybrid:0 };
             state.lastOpus = null;
+            if (deployStatus) deployStatus.dataset.locked = '0';   // v14.0.9 unlock deploy status
             renderAlerts();
             renderTaxonomy();
             renderRuleSynthesis();
@@ -23487,6 +23950,7 @@ function _sonarEqnRender(panel) {
 
         function refreshRules() {
             // force one mock tick + re-render
+            if (deployStatus) deployStatus.dataset.locked = '0';   // v14.0.9 unlock deploy status
             renderAlerts();
             renderTaxonomy();
             renderRuleSynthesis();
@@ -23681,6 +24145,7 @@ function _sonarEqnRender(panel) {
             if (refreshBtn)  refreshBtn.addEventListener('click', refreshRules);
             if (btnGen)      btnGen.addEventListener('click', generateOpusAnalysis);
             if (btnClear)    btnClear.addEventListener('click', clearAll);
+            if (confirmBtn)  confirmBtn.addEventListener('click', confirmDeploy);   // v14.0.9
             if (settingsBtn) settingsBtn.addEventListener('click', openSettings);
             if (modeRules)   modeRules.addEventListener('click', () => setMode('rules'));
             if (modeLlm)     modeLlm.addEventListener('click', () => {
@@ -23731,7 +24196,7 @@ function _sonarEqnRender(panel) {
             renderTaxonomy();
             renderRuleSynthesis();
             renderForceRecommendations();
-            console.log('[MDA.AI] v14.0.8 initialized · classifier active · multi-provider (Workers AI + Gemini) · default=2.5-flash · model=' + MDA.cfg.aiModel + ' · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
+            console.log('[MDA.AI] v14.0.9 initialized · classifier active · multi-domain context→LLM · Confirm&Deploy · multi-provider (Workers AI + Gemini) · default=2.5-flash · model=' + MDA.cfg.aiModel + ' · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
         }
 
         // expose
@@ -23746,6 +24211,7 @@ function _sonarEqnRender(panel) {
             generateBriefing: generateOpusAnalysis,  // alias (back-compat)
             refreshRules,
             clearAll,
+            confirmDeploy,                           // v14.0.9 — Confirm & Deploy
             classifier,                              // v14.0.3 — expose for debug/test
             state
         };

@@ -12,7 +12,13 @@ scripts/_inject_v10.py
 _เวอร์ชันเก่า/
 *Copy*.html
 *.bak
+*.bak_*
 *.before-embed.bak
+
+# --- Local raw data dumps & scratch mockups (NEVER commit — large / WIP) ---
+_data_raw/
+Sim2_UI_Mockup.html
+_RTN_theme_preview.html
 
 # --- Appendix / large binaries we don't want in git ---
 *.docx

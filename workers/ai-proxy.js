@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════════════════════
-   THE SHIELD 2.0 — UDC Simulator v14.0.6
+   THE SHIELD 2.0 — UDC Simulator v15.0.0
    AI Proxy Worker · Multi-provider (Cloudflare Workers AI + Google Gemini)
    ──────────────────────────────────────────────────────────────────────
    Purpose : ตัวกลาง (relay) ระหว่าง client (UDC Simulator) กับ LLM provider
@@ -51,7 +51,7 @@
      5. คัดลอก URL (xxx.workers.dev) → UDC Simulator ผ่านปุ่ม ⚙
    ════════════════════════════════════════════════════════════════════ */
 
-const VERSION = '14.0.9';
+const VERSION = '15.0.0';   // v15.2 — own-force-aware prompt (รับ context.ownForce → buildSystemPrompt/buildUserPrompt)
 const DEFAULT_MODEL = 'gemini-2.5-flash';  // v14.0.7 — Google ย้าย 2.0-flash ไป paid tier · 2.5-flash ยังฟรี
 const MAX_TOKENS = 3000;                    // v14.0.9 — assessment-grade output ต้องการพื้นที่มากขึ้น (1500→3000)
 const GEMINI_TIMEOUT_MS = 45_000;           // v14.0.9 — output ยาวขึ้น → เผื่อเวลา 30→45s
@@ -137,6 +137,9 @@ function buildSystemPrompt() {
         '   Aviation(OpenSky), Seismic(USGS), Space-Wx(NOAA Kp), Marine-Wx, OSINT(GDELT), GNSS health',
         '   — เชื่อมโยงข้าม domain เพื่อหา pattern (เช่น Kp สูง→GNSS degrade อาจปะปนกับ spoofing)',
         '   — ระวัง false positive: อากาศยานบินต่ำ/ช้าใกล้ AOI อาจเป็น traffic เข้าออกอู่ตะเภา',
+        '7) พิจารณา "การวางกำลังฝ่ายเรา" (context.ownForce — PV/GUUV ที่วางแล้ว พร้อม bearing/range/avail):',
+        '   — อย่าเสนอวางกำลังซ้ำใน sector ที่กำลังเดิมคุมอยู่แล้ว · เสนอเสริมเฉพาะช่องว่าง coverage',
+        '   — เคารพเพดานกำลัง (pvAvail/guuvAvail) ห้ามเสนอเกินที่มีจริง · ถ้าเต็มให้เสนอ posture/ROE แทนการวางเพิ่ม',
         '',
         '════ ขอบเขตอำนาจและกฎหมาย ════',
         '- ผลลัพธ์ของคุณเป็น Decision Support เท่านั้น ไม่ใช่ autonomous decision',
@@ -166,7 +169,7 @@ function buildSystemPrompt() {
         '▸ MDCOA (อันตรายที่สุด): <...> — indicator ที่ต้องเฝ้า',
         '',
         '🛠️ ข้อเสนอแนะการปฏิบัติ (Recommended Actions):',
-        '<bullet ผูกกับกำลัง: Patrol Vessel / Guardian UUV / CAP helo / sensor posture — เรียงตามลำดับความสำคัญ>',
+        '<bullet ผูกกับกำลัง: Patrol Vessel / Guardian UUV / CAP helo / sensor posture — คำนึงถึง context.ownForce (ห้ามวางซ้ำ sector ที่คุมแล้ว / ไม่เกินเพดาน) — เรียงตามลำดับความสำคัญ>',
         '',
         '📡 ช่องว่างข่าวกรอง (Intelligence Gaps / PIR):',
         '<2-4 bullets — ข้อมูลอะไรขาด ต้องเก็บเพิ่มอะไรเพื่อยืนยัน/ตัดสมมติฐาน>',
@@ -243,6 +246,16 @@ function buildUserPrompt(payload) {
         } else lines.push('- OSINT/GDELT : no notable items');
 
         if (env.gnssJitter != null) lines.push(`- GNSS health : jitter=${Math.round(env.gnssJitter * 100)}%` + (env.gnssJitter >= 0.5 ? '  → possible spoofing signature' : ''));
+
+        // ── v15.2 · own-force disposition (กำลัง PV/GUUV ที่ผู้ใช้วางบนแผนที่) ──
+        const of = ctx.ownForce;
+        if (of) {
+            let s = `- Own-Force   : PV ${of.pvCount}/${of.pvMax} (avail ${of.pvAvail}), GUUV ${of.guuvCount}/${of.guuvMax} (avail ${of.guuvAvail})`;
+            if (of.pv && of.pv.length)     s += `; PV@[${of.pv.map(u => Math.round(u.bearing) + '°/' + Number(u.rangeNm).toFixed(1) + 'NM').join(', ')}]`;
+            if (of.guuv && of.guuv.length) s += `; GUUV@[${of.guuv.map(u => Math.round(u.bearing) + '°/' + Number(u.rangeNm).toFixed(1) + 'NM').join(', ')}]`;
+            s += '  (อย่าเสนอวางซ้ำ sector ที่คุมแล้ว · ห้ามเกิน avail)';
+            lines.push(s);
+        } else lines.push('- Own-Force   : ไม่มีกำลัง PV/GUUV วางบนแผนที่');
         lines.push('');
     } else {
         lines.push('[Multi-Domain Context] (ไม่ได้แนบมา — วิเคราะห์จาก taxonomy/alerts เท่านั้น)');

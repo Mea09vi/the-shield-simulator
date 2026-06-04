@@ -25,9 +25,9 @@ REM เปิดเบราว์เซอร์หลังจาก server �
 start "" /B cmd /c "timeout /t 2 /nobreak >nul && start http://localhost:8765/UDC_Simulator_13.html"
 
 REM พยายามใช้ python ก่อน → ถ้าไม่มีลอง py launcher
-python -m http.server 8765 2>nul
+python proxy_server.py 2>nul
 if errorlevel 1 (
-    py -3 -m http.server 8765 2>nul
+    py -3 proxy_server.py 2>nul
 )
 if errorlevel 1 (
     echo.
