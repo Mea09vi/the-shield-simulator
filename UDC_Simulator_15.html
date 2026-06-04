@@ -21041,6 +21041,8 @@ function setSVP(type) {
     const svpLogColor = svpColors[type] || '#a78bfa';
     addLog(`[SVP] ${d.label} (×${d.mod.toFixed(2)}) — ${d.desc}`, svpLogColor);
     addLog(`[SVP] Sonar effective: ×${effectiveMod.toFixed(2)} (Tide×SS×SVP) | Naresuan sonar: ${(8.0*svpMod*SS_MODS.sonarRange[seaState]).toFixed(1)}nm`, svpLogColor);
+    // [v15.5·ข-ext] ถ้า HYCOM 4D live กำลังขับ svpMod อยู่ → preset ที่เลือกเป็น baseline (ใช้เมื่อปิด live); HYCOM ยังคุมวงระยะตามจริง
+    if (typeof _o4SvpActive !== 'undefined' && _o4SvpActive) { _o4SvpPreset = svpMod; _o4ApplySvpToSonar(); addLog('[SVP] HYCOM 4D live กำลังขับวงระยะอยู่ — preset ที่เลือกจะใช้เมื่อปิด 4D Ocean', '#94a3b8'); }
 }
 
 // ── setSeasonPreset: กำหนด SVP + Sea State ตามฤดูกาล ─────────
@@ -22049,6 +22051,25 @@ const SonarPhysics = {
 
 function _o4SvpModifier(){var st=(typeof window!=='undefined')?window.OCEAN4D_STATE:null;if(!st||!st.svp||st.svp.length<2)return null;var p=st.svp.filter(function(x){return x&&isFinite(x.c)&&isFinite(x.d);});if(p.length<2)return null;var cSurf=p[0].c,sld=p[0].d,cMax=cSurf;for(var i=1;i<p.length;i++){if(p[i].c>=cMax-0.02){if(p[i].c>cMax)cMax=p[i].c;sld=p[i].d;}else break;}var dz=(p[1].d-p[0].d)||1;var grad=(p[1].c-p[0].c)/dz;var mod=0.90+Math.min(Math.max(sld,0),60)/60*0.25;if(mod<0.85)mod=0.85;if(mod>1.20)mod=1.20;return{mod:+mod.toFixed(3),sld:+sld.toFixed(0),cSurf:+cSurf.toFixed(1),cMax:+cMax.toFixed(1),grad:+grad.toFixed(3),duct:(sld>5),timeISO:st.timeISO,depthM:st.depthSelM,live:true};}
 // [v15.5·ข] HYCOM 4D sound-speed profile → sonar-range SVP modifier (ducting). null=ไม่มีข้อมูลสด → ผู้เรียกใช้ preset เดิม
+// [v15.5·ข-ext] เมื่อมีข้อมูล HYCOM live → ขับ global svpMod ให้วงระยะตรวจจับบนแผนที่ตามความเร็วเสียงจริง; ไม่มี → คืนค่า preset
+let _o4SvpActive=false, _o4SvpPreset=null, _o4SvpLastMod=null;
+function _o4ApplySvpToSonar(){
+    var m=(typeof _o4SvpModifier==='function')?_o4SvpModifier():null;
+    if(m&&isFinite(m.mod)){
+        if(!_o4SvpActive){ _o4SvpPreset=svpMod; _o4SvpActive=true; }
+        svpMod=m.mod;
+        if(typeof SS_MODS!=='undefined'){ ssMod=SS_MODS.hydroRange[seaState]; effectiveMod=(typeof detMod!=='undefined'?detMod:1)*ssMod*svpMod; }
+        if(_o4SvpLastMod===null||Math.abs(_o4SvpLastMod-m.mod)>=0.01){ _o4SvpLastMod=m.mod; try{ addLog('[SVP←HYCOM 4D] วงระยะตรวจจับใช้ความเร็วเสียงจริง ×'+m.mod.toFixed(2)+' ('+(m.duct?'surface duct '+m.sld+'m → ไกลขึ้น':'หักเหลงล่าง → สั้นลง')+')','#22c55e'); }catch(_e){} }
+        return true;
+    } else if(_o4SvpActive){
+        if(_o4SvpPreset!=null) svpMod=_o4SvpPreset;
+        _o4SvpActive=false; _o4SvpPreset=null; _o4SvpLastMod=null;
+        if(typeof SS_MODS!=='undefined'){ ssMod=SS_MODS.hydroRange[seaState]; effectiveMod=(typeof detMod!=='undefined'?detMod:1)*ssMod*svpMod; }
+        try{ addLog('[SVP] กลับใช้ preset (×'+svpMod.toFixed(2)+') — ไม่มีข้อมูล HYCOM live','#94a3b8'); }catch(_e){}
+        return false;
+    }
+    return false;
+}
 // ── ปุ่ม + Panel แสดงการคำนวณ Sonar Equation ──
 const sonarEqnBtn = L.control({ position:'topright' });
 sonarEqnBtn.onAdd = function() {
@@ -22741,7 +22762,7 @@ function _o4Render(){
 }
 
 function _o4Publish(){
-    if(!ocean4dData){ window.OCEAN4D_STATE=null; return; }
+    if(!ocean4dData){ window.OCEAN4D_STATE=null; _o4ApplySvpToSonar(); return; }
     var b=_o4Bounds(), cLat=(b.latBot+b.latTop)/2, cLng=(b.lngL+b.lngR)/2, g=ocean4dData.grid, dm=ocean4dData.dims;
     var svp=[];
     for(var dd=0; dd<dm.nd; dd++){
@@ -22761,6 +22782,7 @@ function _o4Publish(){
         current:(spd!=null?{u:+uVal.toFixed(3),v:+vVal.toFixed(3),speed:+spd.toFixed(3),dirToward:Math.round(dir),depthM:g.depth[o4Depth]}:null),
         at:Date.now()
     };
+    _o4ApplySvpToSonar();   // [v15.5·ข-ext] ขับ svpMod (วงระยะตรวจจับบนแผนที่) จาก HYCOM live
 }
 
 var _O4_THMON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
@@ -22928,7 +22950,7 @@ function toggleOcean4D(){
         ocean4dVisible=false;
         if(ocean4dOverlay){ try{ map.removeLayer(ocean4dOverlay); }catch(e){} ocean4dOverlay=null; }
         if(ocean4dMarkers){ try{ map.removeLayer(ocean4dMarkers); }catch(e){} }
-        _o4RemovePanel(); _o4SyncRow(false); window.OCEAN4D_STATE=null;
+        _o4RemovePanel(); _o4SyncRow(false); window.OCEAN4D_STATE=null; _o4ApplySvpToSonar();
         var chip=document.getElementById('mda-cnt-ocean4d'); if(chip) chip.textContent='—';
         if(typeof addLog==='function') addLog('🌐 4D Ocean: OFF', '#94a3b8');
     } else {
