@@ -1527,10 +1527,12 @@
         .svp-btn.svp-thermo.active { background:rgba(251,191,36,.14);  border-color:var(--amber); color:var(--amber); box-shadow:0 0 6px var(--amber)44; }
         .svp-btn.svp-neg.active    { background:rgb(var(--red-rgb) / .12);   border-color:var(--red); color:var(--red); box-shadow:0 0 6px var(--red)44; }
         .svp-info-row {
-            display:flex; justify-content:space-between; align-items:center;
+            display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center;
+            gap:1px 8px;
             font-family:var(--font-mono), monospace; font-size:10px;
             color:var(--text-muted); margin-top:2px;
         }
+        .svp-info-row > span { white-space:nowrap; }
         /* ── Tide Detection Modifier (A+B combined) ── */
         .det-mod-bar-wrap {
             margin-top:3px; background:var(--bg-dark); height:7px; border-radius:3px;
@@ -2252,6 +2254,120 @@
             color: var(--text-muted); cursor: pointer; padding: 1px 6px;
             border-radius: 3px; font-size: 10px;
         }
+
+        /* ═══════════ [v15.6] SENSING LAYOUT SWITCHER — A/B/C/D (theme option) ═══════════
+         *  สลับ "รูปแบบการจัดวาง sensor" ได้ 4 แบบ · จำค่าใน localStorage['sensingLayout']
+         *  ทำงานแบบ CSS reflow + decorate บน DOM แถวเดิม (ไม่ re-render) → toggle wiring เดิมไม่พัง
+         */
+        /* per-domain accent variable (ใช้ทำกรอบการ์ด/ชิปสีตามโดเมน) */
+        #mda-layerpanel .mda-lp-group[data-domain="air"]     { --dc: #00d4ff; }
+        #mda-layerpanel .mda-lp-group[data-domain="surface"] { --dc: #06b6d4; }
+        #mda-layerpanel .mda-lp-group[data-domain="sub"]     { --dc: #14b8a6; }
+        #mda-layerpanel .mda-lp-group[data-domain="seabed"]  { --dc: #f59e0b; }
+        #mda-layerpanel .mda-lp-group[data-domain="cyber"]   { --dc: #8b5cf6; }
+        #mda-layerpanel .mda-lp-group[data-domain="litt"]    { --dc: #22c55e; }
+        #mda-layerpanel .mda-lp-group[data-domain="tools"]   { --dc: #94a3b8; }
+
+        /* control bar — อยู่ใต้หัว panel (แยกจาก drag-handle เพื่อไม่ให้คลิกแล้วลาก) */
+        #mda-layerpanel .mda-lp-layoutbar {
+            position: sticky; z-index: 5;
+            display: flex; align-items: center; gap: 6px;
+            padding: 5px 10px;
+            background: rgb(var(--bg-panel-rgb) / .97);
+            border-bottom: 1px solid rgb(var(--cyan-rgb) / .12);
+            backdrop-filter: blur(14px) saturate(150%); -webkit-backdrop-filter: blur(14px) saturate(150%);
+        }
+        #mda-layerpanel .mda-lp-segs { display: flex; gap: 3px; flex: 0 0 auto; }
+        #mda-layerpanel .mda-lp-seg {
+            width: 26px; height: 22px; display: flex; align-items: center; justify-content: center;
+            background: rgb(var(--cyan-rgb) / .05); border: 1px solid rgb(var(--cyan-rgb) / .18);
+            color: var(--text-muted); cursor: pointer; border-radius: 4px;
+            font-size: 12px; line-height: 1; padding: 0; transition: all .15s;
+        }
+        #mda-layerpanel .mda-lp-seg:hover { color: var(--cyan); border-color: rgb(var(--cyan-rgb) / .4); background: rgb(var(--cyan-rgb) / .12); }
+        #mda-layerpanel .mda-lp-seg.on {
+            color: var(--bg-dark); background: var(--cyan); border-color: var(--cyan);
+            box-shadow: 0 0 10px rgb(var(--cyan-rgb) / .45);
+        }
+        /* domain strip — เป็น rail (โหมด B) / filter-pills (โหมด C) */
+        #mda-layerpanel .mda-lp-domstrip { display: none; flex: 1; flex-wrap: wrap; gap: 3px; min-width: 0; }
+        #mda-layerpanel .mda-lp-dombtn {
+            width: 24px; height: 22px; display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,.28); border: 1px solid rgba(255,255,255,.12);
+            border-radius: 5px; cursor: pointer; font-size: 12px; line-height: 1; padding: 0;
+            filter: grayscale(.55) opacity(.55); transition: all .15s;
+        }
+        #mda-layerpanel .mda-lp-dombtn:hover { filter: none; transform: translateY(-1px); }
+        #mda-layerpanel .mda-lp-dombtn.on { filter: none; border-color: currentColor; box-shadow: 0 0 8px -2px currentColor; }
+        /* search box (โหมด D) */
+        #mda-layerpanel .mda-lp-search {
+            display: none; flex: 1; min-width: 0;
+            background: rgba(0,0,0,.35); border: 1px solid rgb(var(--cyan-rgb) / .22);
+            border-radius: 5px; color: var(--text-main); font-size: 11px; padding: 3px 8px;
+            font-family: var(--font-body), sans-serif; outline: none;
+        }
+        #mda-layerpanel .mda-lp-search:focus { border-color: rgb(var(--cyan-rgb) / .5); }
+        #mda-layerpanel .mda-lp-search::placeholder { color: var(--text-muted); }
+        /* active-count chip (โหมด D) */
+        #mda-layerpanel .mda-lp-acount {
+            display: none; flex: 0 0 auto;
+            font-family: 'Share Tech Mono', monospace; font-size: 9px;
+            color: var(--cyan); background: rgb(var(--cyan-rgb) / .12);
+            border: 1px solid rgb(var(--cyan-rgb) / .3); border-radius: 10px;
+            padding: 0 7px; line-height: 18px;
+        }
+        #mda-layerpanel[data-layout="D"] .mda-lp-acount { display: inline-block; }
+        /* per-group active badge (โหมด A & D) */
+        #mda-layerpanel .mda-lp-badge {
+            display: none; font-family: 'Share Tech Mono', monospace; font-size: 8.5px;
+            color: var(--cyan); background: rgb(var(--cyan-rgb) / .12);
+            border: 1px solid rgb(var(--cyan-rgb) / .3); border-radius: 10px;
+            padding: 0 6px; line-height: 14px; margin-left: auto;
+        }
+        #mda-layerpanel .mda-lp-badge.dim { color: var(--text-muted); background: rgba(0,0,0,.3); border-color: rgba(255,255,255,.1); }
+        /* visibility utilities driven by switcher JS */
+        #mda-layerpanel .mda-domain-hidden,
+        #mda-layerpanel .mda-search-hide { display: none !important; }
+
+        /* ── MODE A · FRAMED CARDS (default) ── */
+        #mda-layerpanel[data-layout="A"] .mda-lp-group {
+            margin: 7px 8px; border: 1px solid rgb(var(--cyan-rgb) / .15);
+            border-left: 3px solid var(--dc, var(--cyan));
+            border-radius: 8px; overflow: hidden; background: rgb(var(--bg-panel-rgb) / .35);
+        }
+        #mda-layerpanel[data-layout="A"] .mda-lp-group-head {
+            background: linear-gradient(180deg, color-mix(in srgb, var(--dc, var(--cyan)) 16%, transparent), transparent);
+        }
+        #mda-layerpanel[data-layout="A"] .mda-lp-badge { display: inline-block; }
+
+        /* ── MODE B · ICON RAIL (ทีละโดเมน) ── */
+        #mda-layerpanel[data-layout="B"] .mda-lp-domstrip { display: flex; }
+        #mda-layerpanel[data-layout="B"] .mda-lp-group-head { display: none; }
+        #mda-layerpanel[data-layout="B"] .mda-lp-group.collapsed .mda-lp-group-body { max-height: 1200px; padding: 1px 6px 4px; }
+        #mda-layerpanel[data-layout="B"] .mda-lp-org { padding-top: 7px; }
+
+        /* ── MODE C · CHIP GRID (2 คอลัมน์, ซ่อนสวิตช์) ── */
+        #mda-layerpanel[data-layout="C"] .mda-lp-domstrip { display: flex; }
+        #mda-layerpanel[data-layout="C"] .mda-lp-group.collapsed .mda-lp-group-body { max-height: 1200px; padding: 1px 6px 4px; }
+        #mda-layerpanel[data-layout="C"] .mda-lp-org { display: none; }
+        #mda-layerpanel[data-layout="C"] .mda-lp-group-body { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+        #mda-layerpanel[data-layout="C"] .mda-lp-row {
+            grid-template-columns: 1fr; gap: 2px; padding: 5px 7px;
+            border: 1px solid rgb(var(--cyan-rgb) / .12); border-radius: 6px; background: rgba(0,0,0,.22);
+        }
+        #mda-layerpanel[data-layout="C"] .mda-lp-row.on {
+            border-color: var(--dc, var(--cyan));
+            background: color-mix(in srgb, var(--dc, var(--cyan)) 15%, transparent);
+        }
+        #mda-layerpanel[data-layout="C"] .mda-lp-row .mda-sw,
+        #mda-layerpanel[data-layout="C"] .mda-lp-row .bullet { display: none; }
+        #mda-layerpanel[data-layout="C"] .mda-lp-row .count { justify-self: start; }
+
+        /* ── MODE D · SEARCH + ACTIVE COUNT ── */
+        #mda-layerpanel[data-layout="D"] .mda-lp-search { display: block; }
+        #mda-layerpanel[data-layout="D"] .mda-lp-org { display: none; }
+        #mda-layerpanel[data-layout="D"] .mda-lp-badge { display: inline-block; }
+        #mda-layerpanel[data-layout="D"] .mda-lp-group.collapsed .mda-lp-group-body { max-height: 1200px; padding: 1px 6px 4px; }
 
         /* ═══ [v15.5 · #1] Seabed-sediment 2D — legend ลอย (ลากย้ายได้) + popup ธีมเข้ม ═══ */
         .sb-legend2d {
@@ -5063,7 +5179,8 @@
                 </button>
             </div>
             <div class="svp-info-row">
-                <span>🌡 ผิว: <span id="svp-sst">30°C</span></span>
+                <span>🌡 ผิว: <span id="svp-sst">28°C</span></span>
+                <span title="ความเร็วเสียงที่ผิวน้ำ (Mackenzie eq. · S≈32 psu)">🔊 c: <span id="svp-cval" style="color:#22c55e;">1532 m/s</span></span>
                 <span>↕ Thermo: <span id="svp-thermo-depth">—</span></span>
                 <span>SVP×<span id="svp-mod-val" style="color:#a78bfa;">1.15</span></span>
             </div>
@@ -6078,21 +6195,20 @@ window.__basemapDark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{
 window.__basemapSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
     attribution: 'Tiles &copy; Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
     maxZoom: 18,
+    // [v15.2] Esri World_Imagery มี tile จริงถึง ~z16 เหนืออ่าวไทย/น่านน้ำเปิด — ลึกกว่านั้นไม่มี tile → แสดงว่าง
+    //         maxNativeZoom ให้ Leaflet ขยาย (upscale) tile z16 แทนการเว้นว่าง เมื่อ zoom in ลึก
+    maxNativeZoom: 16,
     minZoom: 3,
 }).addTo(map);
-window.__basemapGebco = L.tileLayer('https://tiles.gebco.net/tiles/gebco_latest/{z}/{x}/{y}.png', {
-    attribution: 'GEBCO Compilation Group (2023) GEBCO_2023 Grid',
-    maxZoom: 18,
-    maxNativeZoom: 7,
-});
+// [v15.5f] ถอด GEBCO 2023 basemap ออก (native res แค่ z7 → เบลอเมื่อ zoom เข้าสัตหีบ)
+//          คงไว้ 2 ตัวเลือก: Dark / Satellite (Ocean Base/Voyager ที่ลองใส่ใช้ไม่ได้จริง → ถอด)
 
 // ── Basemap switcher buttons (will appear in right-rail "BASE MAP" section) ──
-// v12.6.4 — ย้ายออกจาก MDA left-panel; 3 ตัวเลือก: Dark / Satellite / GEBCO
+// v12.6.4 — ย้ายออกจาก MDA left-panel · [v15.5f] เหลือ 2 ตัวเลือก: Dark / Satellite
 (function () {
     const BMS = [
         { key: 'dark',  html: '🌑 Dark Matter',  getL: () => window.__basemapDark  },
         { key: 'sat',   html: '🛰 Satellite',      getL: () => window.__basemapSat   },
-        { key: 'gebco', html: '🌊 GEBCO 2023',     getL: () => window.__basemapGebco },
     ];
     let currentKey = 'sat'; // satellite loaded by default
     const allBtns = [];
@@ -6107,7 +6223,7 @@ window.__basemapGebco = L.tileLayer('https://tiles.gebco.net/tiles/gebco_latest/
             L.DomEvent.disableClickPropagation(btn);
             btn.onclick = function () {
                 if (bm.key === currentKey) return;
-                [window.__basemapDark, window.__basemapSat, window.__basemapGebco]
+                [window.__basemapDark, window.__basemapSat]
                     .forEach(l => { if (l && map.hasLayer(l)) map.removeLayer(l); });
                 const lyr = bm.getL();
                 if (lyr) { lyr.addTo(map); lyr.bringToBack(); }
@@ -6955,6 +7071,48 @@ das2ToggleBtn.onAdd = function() {
     return btn;
 };
 das2ToggleBtn.addTo(map);
+
+// ═══════════════════════════════════════════════════════════════
+//  [v15.5] DAS CABLE สาย 3 — UDC → ท่าเรือทุ่งโปรง (Recon นย.)
+// ───────────────────────────────────────────────────────────────
+//  แนวคิด: ลดความเสี่ยง — จุดขึ้นฝั่งที่ "ใกล้ UDC ที่สุด" บนฝั่งตะวันออก
+//          อยู่ในเขตควบคุมของ กองพันลาดตระเวน กองพลนาวิกโยธิน (Recon นย.)
+//          → สายสั้น ~1.2 nm (เทียบสาย 2 อ้อมไป กยพ./ทรภ.1 ~9.1 nm)
+//  ⚠ พิกัดขึ้นฝั่ง (12.700,100.837) = ค่าประมาณจาก OSM (ท่าเรือใกล้ที่สุด)
+//     ยังไม่ใช่ผลสำรวจอุทกศาสตร์ทางการ — ใช้วางแผน/จำลองเท่านั้น
+//  ข้อควรระวังจริง: อ่าวปิด น้ำตื้น (<0.9 ม. ช่วงน้ำลง พ.ค.–ก.ย.) +
+//     แนวปะการัง ~400 ไร่ + ป่าชายเลน ~28 ไร่ → ช่วงขึ้นฝั่งควรเลี่ยงแนว
+//     ปะการัง (อาจใช้ HDD เจาะลอดใต้หาด/ป่าชายเลน)
+// ═══════════════════════════════════════════════════════════════
+// DAS3_COORDS: [lat, lng] — เริ่มจาก UDC → เลี้ยวเข้าแหลมท่าเรือทุ่งโปรง
+//  [v15.5b] ย้ายจุดขึ้นฝั่งขึ้นบนแผ่นดิน (แหลมที่มีท่าเรือ) ตามภาพถ่ายดาวเทียม
+const DAS3_COORDS = [
+    [12.712,   100.820],   // 0 — UDC (ต้นทาง — เชื่อมตรง)
+    [12.70850, 100.82850], // 1 — ออกจาก UDC สู่น้ำลึกฝั่งตะวันออก
+    [12.70520, 100.83250], // 2 — เลี้ยวเข้าหาแหลม
+    [12.70350, 100.83600], // 3 — นอกแหลม (เลี่ยงแนวปะการัง · ยังอยู่ในน้ำ)
+    [12.70280, 100.83790], // 4 — ขึ้นฝั่งแหลมท่าเรือทุ่งโปรง / สถานี Recon นย. (best-estimate)
+];
+
+// Toggle button (canvas-based — เช่นเดียวกับสาย 2) · สีเขียว = Recon นย.
+let das3Visible = true;
+const das3ToggleBtn = L.control({ position: 'topright' });
+das3ToggleBtn.onAdd = function() {
+    const btn = L.DomUtil.create('button', 'safety-zone-toggle-btn');
+    btn.innerHTML = '🔵 DAS สาย 3';
+    btn.title = 'แสดง/ซ่อน DAS Cable สาย 3 → ท่าเรือทุ่งโปรง (Recon นย.)';
+    btn.style.borderColor = 'rgba(56,189,248,0.65)';
+    btn.style.color = '#38bdf8';
+    L.DomEvent.on(btn, 'click', function(e) {
+        L.DomEvent.stopPropagation(e);
+        das3Visible = !das3Visible;
+        btn.style.opacity = das3Visible ? '1' : '0.45';
+        addLog('DAS-3', das3Visible ? 'แสดง Fiber Optic + Power Umbilical → ทุ่งโปรง (Recon นย.)'
+                                    : 'ซ่อน DAS สาย 3');
+    });
+    return btn;
+};
+das3ToggleBtn.addTo(map);
 
 // ═══════════════════════════════════════════════════════════════
 //  [ส่วนที่ 10] หมวด ก — สถาปัตยกรรมพื้นฐาน + ชั้นภูมิศาสตร์
@@ -10106,6 +10264,17 @@ function syncCanvasSize() {
 map.on('resize', syncCanvasSize);
 syncCanvasSize();
 
+// [static-redraw] ขณะ sim freeze (mission end / FLS) loop หลักหยุด — ถ้า map เลื่อน/ซูม/
+// ปรับขนาด เฟรม overlay ที่ค้างจะหลุดตรงกับแผนที่ ทำให้ UDC + entity เลื่อน
+// → วาดทับ 1 เฟรมให้ reproject ตรงกับ map ใหม่ (ทำงานเฉพาะตอน simPaused เท่านั้น)
+function _staticRedraw() {
+    if (typeof simPaused !== 'undefined' && simPaused && typeof animate === 'function') {
+        _forceStaticDraw = true;
+        animate();
+    }
+}
+map.on('move zoom zoomanim viewreset resize', _staticRedraw);
+
 // ═══════════════════════════════════════════════════════════════
 //  [ส่วนที่ 14] หมวด ข — ระบบพิกัด + สถานะส่วนกลาง
 //  ระบบพิกัดทางภูมิศาสตร์ · Geographic Coordinate System (3-way: WGS-84 ↔ nx/ny ↔ pixel)
@@ -10191,7 +10360,7 @@ function haversineNm(lat1, lng1, lat2, lng2) {
 const UDC = { nx: (UDC_LNG - LNG_LEFT) / (LNG_RIGHT - LNG_LEFT),    // ≈ 0.5068
               ny: (LAT_TOP - UDC_LAT) / (LAT_TOP  - LAT_BOT) };     // ≈ 0.4778
 let sweepAngle = 0, frame = 0, timers = [];
-let threats = [], effects = [], cable2Photons = [];
+let threats = [], effects = [], cable2Photons = [], cable3Photons = [];
 let guardianUUVs = [], patrolVessels = [], coastalAssets = [];
 let surveyVessels = [];
 let shoreAATeams  = [];   // [AD] ทีม สอ.รฝ. ปืนลูกซองต่อต้านโดรนบนฝั่ง
@@ -11072,8 +11241,11 @@ const _NM_PER_NY         = (typeof LAT_TOP!=='undefined')
 function _nmToNY(nm) { return nm / _NM_PER_NY; }
 
 // ── Lay a single mine ────────────────────────────────────────
-function layMine(nx, ny, hostile, controlled) {
+let _mineSeq = 0;   // [v15.7] unique mine id (ship-count tracking)
+function layMine(nx, ny, hostile, controlled, opts) {
+    opts = opts || {};
     seaMines.push({
+        id:         ++_mineSeq,
         nx, ny,
         hostile:    !!hostile,
         controlled: !!controlled,
@@ -11081,7 +11253,89 @@ function layMine(nx, ny, hostile, controlled) {
         laidFrame:  (typeof frame!=='undefined') ? frame : 0,
         neutProgress: 0,
         pulse:      Math.random()*6.28,
+        // [v15.7] trap-mine config (controlled mines only) ───────
+        mech:       opts.mech       || 'command',   // command|contact|magnetic|acoustic|pressure|multi
+        targets:    opts.targets    || ['surface','submarine','drone'],
+        countTarget:opts.countTarget|| 1,           // detonate on the Nth qualifying pass
+        sensMult:   opts.sensMult   || 1,           // trigger-radius multiplier (sensitivity)
+        // [v15.9] influence thresholds (กรอกเอง) + ฐานวางทุ่น (depth-dependent)
+        infl:       opts.infl       || { mag:0, ac:0, pr:0 },
+        placement:  (controlled ? _resolvePlacement(opts.placement || 'auto', nx, ny) : 'bottom'),
+        caseDepth:  opts.caseDepth  || 8,           // moored: ความลึกทุ่นลอย (m)
+        bedDepth:   (typeof sampleBathyDepth === 'function') ? Math.abs(sampleBathyDepth(nx, ny)) : 0,
+        countSoFar: 0,
+        _seen:      {},                             // targetRef → already counted this dwell
     });
+}
+
+// ── [v15.7] target discrimination + firing-mechanism gate ────
+function _trapClass(t) {
+    if (t.type === 'uuv' || t.isSubmarine) return 'submarine';
+    if (t.type === 'surface')              return 'surface';
+    if (t.type === 'drone')                return 'drone';
+    return 'bio';                                    // shark/dolphin → never a valid target
+}
+
+// ── [v15.9] INFLUENCE SIGNATURE per contact ──────────────────
+//  ตามคำแนะนำ ผบ.เรือทุ่น: target discrimination ตัดสินจาก "ค่าอิทธิพล"
+//  ที่ผู้ควบคุมตั้งเอง (magnetic nT · acoustic dB · pressure) ทุ่นจะจุดระเบิด
+//  ก็ต่อเมื่อ signature ของเป้าผ่านค่าขั้นต่ำที่กรอกไว้ → กรองเรือประมงเล็ก
+//  ในอ่าวไทยออก เหลือเฉพาะเรือรบ/เรือใหญ่ตามที่ตั้งค่า
+function _influenceSig(t) {
+    if (t._mineSig) return t._mineSig;
+    let mag = 100, ac = 118, pr = 4;                 // default mid contact
+    const cls = _trapClass(t);
+    const L = (t.label || '').toUpperCase();
+    if (cls === 'surface') {
+        const small = /ประมง|FISH|TRAWL|CIVIL|YACHT|SKIFF/.test(L) || (t.spd && t.spd <= 9);
+        const large = /HOSTILE|COMBAT|FRIGATE|CORVETTE|WARSHIP|ATTACK|DDG|FFG/.test(L) || (t.spd && t.spd >= 16);
+        if (small)      { mag = 60;  ac = 114; pr = 3; }   // เรือประมง/พลเรือนเล็ก
+        else if (large) { mag = 360; ac = 137; pr = 15; }  // เรือรบผิวน้ำขนาดใหญ่
+        else            { mag = 180; ac = 126; pr = 8; }   // เรือต้องสงสัย/พาณิชย์กลาง
+    } else if (cls === 'submarine') {
+        const sc = t.subClass;
+        if      (sc === 'SDV')    { mag = 70;  ac = 112; pr = 1; }
+        else if (sc === 'MIDGET') { mag = 130; ac = 121; pr = 2; }
+        else if (sc === 'SSK')    { mag = 200; ac = 130; pr = 3; }
+        else                      { mag = 140; ac = 122; pr = 2; }
+    } else if (cls === 'drone') {
+        mag = 25; ac = 110; pr = 1;                  // USV/UUV เล็ก signature ต่ำ
+    }
+    t._mineSig = { mag, ac, pr };
+    return t._mineSig;
+}
+
+function _trapQualifies(m, t) {
+    const cls = _trapClass(t);
+    if (cls === 'bio') return false;                 // never engage biologics
+    if ((m.targets || []).indexOf(cls) === -1) return false;   // ชนิดเป้าที่เลือก
+    // command = operator authorises · contact = สัมผัสตัวจริง → ไม่ใช้ค่าอิทธิพล
+    if (m.mech === 'command' || m.mech === 'contact') return true;
+    const sig = _influenceSig(t);
+    const inf = m.infl || {};
+    if (m.mech === 'magnetic') return sig.mag >= (inf.mag || 0);
+    if (m.mech === 'acoustic') return sig.ac  >= (inf.ac  || 0);
+    // pressure (PDM) reacts to surface-displacement → surface ships only
+    if (m.mech === 'pressure') return cls === 'surface' && sig.pr >= (inf.pr || 0);
+    if (m.mech === 'multi') {                         // multi-influence: ต้องผ่าน ≥2 ช่อง
+        let n = 0;
+        if (sig.mag >= (inf.mag || 0)) n++;
+        if (sig.ac  >= (inf.ac  || 0)) n++;
+        if (cls === 'surface' && sig.pr >= (inf.pr || 0)) n++;
+        return n >= 2;
+    }
+    return true;
+}
+
+// ── [v15.9] ฐานวางทุ่น: ก้นทะเล (bottom) vs กลางทะเล (moored) ──
+//  ผบ.เรือทุ่น: ทุ่นที่ใช้ในไทยมีทั้งก้นทะเลและกลางทะเล ขึ้นกับความลึกพื้นทะเล
+//  น้ำตื้น → bottom/ground mine · น้ำลึกพอ → moored (ทอดประจำที่)
+const MOORED_MIN_DEPTH_M = 25;
+function _resolvePlacement(mode, nx, ny) {
+    if (mode === 'bottom' || mode === 'moored') return mode;   // บังคับ
+    const d = (typeof sampleBathyDepth === 'function')
+            ? Math.abs(sampleBathyDepth(nx, ny)) : 20;          // auto ตามความลึก
+    return (d > MOORED_MIN_DEPTH_M) ? 'moored' : 'bottom';
 }
 
 // ── Covert Mining scenario — SDV lays hostile minefield ──────
@@ -11128,33 +11382,152 @@ function scenarioMining() {
     });
 }
 
-// ── Lay friendly Controlled Minefield (defensive barrier) ────
-function layControlledMinefield() {
-    if (mineFieldLaid) {
-        addLog('[MIW] ⚠ Controlled minefield ถูกวางแล้ว', '#fbbf24');
-        return;
+// ── [v15.7] Trap-Mine configuration presets ──────────────────
+// แต่ละ preset = ชุดค่า B (กลไกจุดระเบิด) + C (ตรรกะ fuze) + E (รูปแบบสนาม)
+const TRAP_MINE_PRESETS = {
+    'anti-invasion': {
+        label: 'แนวกันยกพลขึ้นบก',
+        desc:  'ขวางการบุกสะเทินน้ำสะเทินบก — ทุ่นก้นทะเลในแนวตื้น ค่าอิทธิพลกว้าง (กันยานยกพล)',
+        mech: 'multi', targets: ['surface','submarine'], countTarget: 1, sensMult: 1.0,
+        infl: { mag: 120, ac: 118, pr: 5 }, placement: 'bottom', caseDepth: 8,
+        pattern: 'barrier', count: 9, spacing: 0.9, orientation: 0,
+    },
+    'chokepoint': {
+        label: 'ซุ่มช่องแคบ',
+        desc:  'ดักช่องทางบังคับ — ทุ่นความดันก้นทะเล กรองเฉพาะเรือใหญ่ ปล่อยเรือนำผ่าน 1 ลำ',
+        mech: 'pressure', targets: ['surface'], countTarget: 2, sensMult: 1.15,
+        infl: { mag: 150, ac: 122, pr: 10 }, placement: 'bottom', caseDepth: 8,
+        pattern: 'cluster', count: 5, spacing: 0.45, orientation: 0,
+    },
+    'anti-sub': {
+        label: 'ต่อต้านเรือดำน้ำ',
+        desc:  'ดักเรือดำน้ำ/SDV — ทุ่นทอดประจำที่กลางทะเล sensor เสียง+แม่เหล็ก เลือกเฉพาะใต้น้ำ',
+        mech: 'multi', targets: ['submarine'], countTarget: 1, sensMult: 1.25,
+        infl: { mag: 110, ac: 118, pr: 1 }, placement: 'moored', caseDepth: 20,
+        pattern: 'multi', count: 8, spacing: 0.7, orientation: 0,
+    },
+};
+// ค่าปัจจุบันที่ใช้วาง (เริ่มจาก preset anti-invasion)
+let trapMineCfg = Object.assign({ preset:'anti-invasion' }, TRAP_MINE_PRESETS['anti-invasion']);
+trapMineCfg.targets = trapMineCfg.targets.slice();              // clone (กัน mutate preset)
+trapMineCfg.infl    = Object.assign({}, trapMineCfg.infl);      // clone influence thresholds
+
+// ── [v15.7] Field geometry — คืน array ของตำแหน่ง {nx,ny} ─────
+function _trapFieldPositions(cfg) {
+    const pos = [];
+    const cx = UDC.nx, cy = UDC.ny + 0.15;          // จุดยึดแนว (ด้านใต้ของ UDC)
+    const N  = Math.max(1, cfg.count|0);
+    const sp = _nmToNY(cfg.spacing);                 // ระยะห่างเป็นหน่วย ny
+    const a  = (cfg.orientation || 0) * Math.PI/180;
+    const ux = Math.cos(a), uy = Math.sin(a);        // เวกเตอร์ตามแนว
+    if (cfg.pattern === 'line' || cfg.pattern === 'barrier') {
+        for (let i=0; i<N; i++) {
+            const t = (i - (N-1)/2) * sp;
+            let nx = cx + ux*t, ny = cy + uy*t;
+            if (cfg.pattern === 'barrier') ny -= Math.abs(t)*0.25;  // โค้งหันเข้าหาภัย
+            pos.push({nx, ny});
+        }
+    } else if (cfg.pattern === 'multi') {            // หลายแถวขนาน
+        const rows = 2, per = Math.ceil(N/rows);
+        for (let r=0; r<rows && pos.length<N; r++)
+            for (let i=0; i<per && pos.length<N; i++) {
+                const t = (i - (per-1)/2) * sp;
+                pos.push({ nx: cx + ux*t, ny: cy + r*sp*0.8 + uy*t });
+            }
+    } else if (cfg.pattern === 'cluster') {          // กระจุกซุ่มแน่น
+        for (let i=0; i<N; i++) {
+            const ang = (i/N) * Math.PI*2;
+            const rr  = sp * 0.6 * (0.5 + (i%2)*0.5);
+            pos.push({ nx: cx + Math.cos(ang)*rr, ny: cy + Math.sin(ang)*rr });
+        }
     }
-    // วางแนวโค้ง 7 ลูก ขวางช่องทางเข้าด้านใต้ของ UDC
-    const N = 7, spread = 0.26;
-    for (let i = 0; i < N; i++) {
-        const t  = (i/(N-1) - 0.5) * spread;
-        const nx = UDC.nx + t;
-        const ny = UDC.ny + 0.17 - Math.abs(t)*0.25;   // โค้งเล็กน้อย
-        layMine(nx, ny, false, true);
+    return pos;
+}
+
+// ── [v15.7] snap จุดที่ตกบนบก → หาเซลล์น้ำที่ใกล้ที่สุด ──────
+function _trapNearestWater(nx, ny) {
+    if (typeof isOnLand !== 'function' || typeof landMaskReady === 'undefined' || !landMaskReady)
+        return {nx, ny};                              // ไม่มี landmask → ปล่อยตามเดิม
+    if (nx<0||nx>1||ny<0||ny>1) return null;          // นอกแผนที่ → ทิ้ง
+    if (!isOnLand(nx, ny)) return {nx, ny};           // อยู่ในน้ำอยู่แล้ว
+    const step = 0.004, RINGS = 40;                   // ค้นหาวงออกไป ~ครึ่ง nm
+    for (let r=1; r<=RINGS; r++) {
+        for (let a=0; a<16; a++) {
+            const th = a/16 * Math.PI*2;
+            const tx = nx + Math.cos(th)*step*r, ty = ny + Math.sin(th)*step*r;
+            if (tx<0||tx>1||ty<0||ty>1) continue;
+            if (!isOnLand(tx, ty)) return {nx:tx, ny:ty};
+        }
+    }
+    return null;                                       // ไม่พบน้ำใกล้เคียง → ทิ้งทุ่นนี้
+}
+
+// ── [v15.7] วางสนามทุ่นดักตาม config ─────────────────────────
+function deployTrapMineField(cfg) {
+    cfg = cfg || trapMineCfg;
+    if (mineFieldLaid) {
+        addLog('[MIW] ⚠ มีสนามทุ่นดักวางอยู่แล้ว — เคลียร์ก่อนวางใหม่', '#fbbf24');
+        return false;
+    }
+    const positions = _trapFieldPositions(cfg);
+    const opts = {
+        mech: cfg.mech, targets: cfg.targets.slice(),
+        countTarget: cfg.countTarget|0 || 1, sensMult: cfg.sensMult || 1,
+        // [v15.9] influence thresholds + ฐานวางทุ่น
+        infl: Object.assign({ mag:0, ac:0, pr:0 }, cfg.infl || {}),
+        placement: cfg.placement || 'auto', caseDepth: cfg.caseDepth || 8,
+    };
+    let laid = 0, dropped = 0, nBottom = 0, nMoored = 0;
+    for (const p of positions) {
+        const w = _trapNearestWater(p.nx, p.ny);       // กันทุ่นขึ้นบก
+        if (!w) { dropped++; continue; }
+        layMine(w.nx, w.ny, false, true, opts);
+        const lm = seaMines[seaMines.length - 1];      // นับชนิดฐานที่ resolve จริง
+        if (lm && lm.placement === 'moored') nMoored++; else nBottom++;
+        laid++;
+    }
+    if (laid === 0) {
+        addLog('[MIW] ✗ วางทุ่นไม่ได้: ทุกตำแหน่งอยู่บนบก/นอกแผนที่ ลองเปลี่ยนรูปแบบหรือลดทิศทาง', '#ef4444');
+        return false;
     }
     mineFieldLaid = true;
-    addLog(`[MIW] 🛡 Controlled minefield วางแล้ว ${N} ลูก — barrier ช่องทางเข้าใต้ UDC`, '#22c55e');
-    addLog(`[MIW] ทุ่น command-detonated — จะระเบิดเมื่อภัยคุกคามแล่นผ่าน`, '#64748b');
+    if (dropped) addLog(`[MIW] ⚠ ข้ามทุ่น ${dropped} ลูกที่ตกบนบก (ปรับเข้าหาน้ำอัตโนมัติส่วนที่เหลือ)`, '#fbbf24');
+    const tgTH = cfg.targets.map(x=> x==='surface'?'ผิวน้ำ':x==='submarine'?'ใต้น้ำ':'โดรน').join('+');
+    addLog(`[MIW] 🛡 วางสนามทุ่นดัก "${cfg.label||cfg.preset||'custom'}" — ${laid} ลูก (ก้นทะเล ${nBottom} · กลางทะเล ${nMoored})`, '#22c55e');
+    addLog(`[MIW] กลไก:${(cfg.mech||'').toUpperCase()} · เป้า:${tgTH} · นับลำดับ:${opts.countTarget} · รูปแบบ:${cfg.pattern}`, '#64748b');
+    if (['magnetic','acoustic','pressure','multi'].indexOf(cfg.mech) !== -1) {
+        const inf = opts.infl;
+        addLog(`[MIW] ค่าอิทธิพลขั้นต่ำ (target discrimination): แม่เหล็ก≥${inf.mag}nT · เสียง≥${inf.ac}dB · ความดัน≥${inf.pr} — กรองเรือเล็ก/พลเรือนออก`, '#64748b');
+    }
     if (typeof sfxSonobuoyDeploy === 'function') sfxSonobuoyDeploy();
-    /* v12.6.1 — keep grid spans intact (was: textContent='💣 MINEFIELD ●' which
-       destroyed .bf-dp-ico/.label/.bf-dp-arrow children → button height
-       jumped 31px → 77px because anonymous text reflowed into grid cells) */
+    /* v12.6.1 — keep grid spans intact */
     const btn = document.getElementById('mineFieldBtn');
     if (btn) {
         btn.classList.add('mine-active');
         const lbl = btn.querySelector('.label');
         if (lbl) lbl.textContent = 'MINEFIELD ●';
     }
+    return true;
+}
+
+// ── [v15.7] เคลียร์สนามทุ่นดัก (เฉพาะทุ่นฝ่ายเรา) ─────────────
+function clearTrapMineField() {
+    const before = seaMines.length;
+    seaMines = seaMines.filter(m => !(m.controlled && m.state !== 'DETONATED'));
+    mineFieldLaid = false;
+    addLog(`[MIW] 🧹 เคลียร์สนามทุ่นดัก (${before - seaMines.length} ลูก)`, '#94a3b8');
+    const btn = document.getElementById('mineFieldBtn');
+    if (btn) {
+        btn.classList.remove('mine-active');
+        const lbl = btn.querySelector('.label');
+        if (lbl) lbl.textContent = 'Lay Controlled Minefield';
+    }
+}
+
+// ── เดิม: คลิกปุ่ม = เปิด config panel (กำหนดทับใน module ท้ายไฟล์) ─
+function layControlledMinefield() {
+    if (typeof window.__openTrapMinePanel === 'function') { window.__openTrapMinePanel(); return; }
+    deployTrapMineField();   // fallback — วางด้วย config ปัจจุบัน
 }
 
 // ── Detonate a mine ──────────────────────────────────────────
@@ -11162,6 +11535,118 @@ function _detonateMine(m, victimLabel) {
     m.state = 'DETONATED';
     if (typeof addExplosion === 'function') addExplosion(m.nx, m.ny, '#ff6b35');
     if (typeof sfxExplosion === 'function') sfxExplosion();
+    // [v15.8] ผลกระทบต่อสาย DAS — จำลองสายขาด (option B)
+    try { _checkCableDamage(m.nx, m.ny, m.mech); } catch(e){}
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  [v15.8] MINE → DAS CABLE DAMAGE MODEL — "จำลองสายขาด"
+//  เมื่อทุ่นระเบิดภายในรัศมีทำลาย → สาย DAS ช่วงนั้นขาด/สูญเสีย
+//  การเชื่อมโยง + ทริก Cable Risk indicator + วาดจุดขาดบนแผนที่
+// ═══════════════════════════════════════════════════════════════
+const MINE_CABLE_LETHAL_NM = 0.13;          // รัศมีทำลายสายเคเบิล (nm) ที่ mech มาตรฐาน
+// จุดขาดต่อสาย (null = ปกติ) — {nx,ny} = พิกัดจุดขาด, frame = เฟรมที่ขาด
+let cableDamage = { 1:null, 2:null, 3:null };
+
+function _latLngToNXY(lat, lng) {
+    return {
+        nx: (lng - LNG_LEFT) / (LNG_RIGHT - LNG_LEFT),
+        ny: (LAT_TOP - lat) / (LAT_TOP - LAT_BOT)
+    };
+}
+// คืน polyline ของสายทั้งสาม เป็นพิกัด nx,ny (สาย 1 sample จาก bezier)
+function _cablePolys() {
+    const polys = [];
+    if (typeof CABLE_GEO !== 'undefined') {
+        const pts = [];
+        for (let i = 0; i <= 24; i++) {
+            const t = i / 24;
+            const lat = bezierGeoVal(t, CABLE_GEO.p0[0], CABLE_GEO.p1[0], CABLE_GEO.p2[0], CABLE_GEO.p3[0]);
+            const lng = bezierGeoVal(t, CABLE_GEO.p0[1], CABLE_GEO.p1[1], CABLE_GEO.p2[1], CABLE_GEO.p3[1]);
+            pts.push(_latLngToNXY(lat, lng));
+        }
+        polys.push({ id: 1, pts });
+    }
+    if (typeof DAS2_COORDS !== 'undefined')
+        polys.push({ id: 2, pts: DAS2_COORDS.map(c => _latLngToNXY(c[0], c[1])) });
+    if (typeof DAS3_COORDS !== 'undefined')
+        polys.push({ id: 3, pts: DAS3_COORDS.map(c => _latLngToNXY(c[0], c[1])) });
+    return polys;
+}
+// ระยะจุด→ส่วนของเส้น (หน่วย ny) + จุดที่ใกล้ที่สุดบนเส้น
+function _ptSegND(px, py, ax, ay, bx, by) {
+    const dx = bx - ax, dy = by - ay;
+    const L2 = dx*dx + dy*dy;
+    let t = L2 > 0 ? ((px-ax)*dx + (py-ay)*dy) / L2 : 0;
+    t = Math.max(0, Math.min(1, t));
+    const cx = ax + t*dx, cy = ay + t*dy;
+    return { d: Math.hypot(px-cx, py-cy), nx: cx, ny: cy };
+}
+function _cableSeveredAny() {
+    return !!(cableDamage[1] || cableDamage[2] || cableDamage[3]);
+}
+// ตรวจระเบิด → สาย: ตัด segment ที่ใกล้สุดถ้าอยู่ในรัศมีทำลาย
+function _checkCableDamage(mx, my, mech) {
+    if (typeof LNG_LEFT === 'undefined') return;
+    // mech แรงกระแทก/แรงดันสูง → รัศมีทำลายสายไกลกว่า; contact → แคบกว่า
+    const mult = (mech === 'pressure' || mech === 'multi') ? 1.25
+               : (mech === 'contact')                      ? 0.80 : 1.0;
+    const lethal = _nmToNY(MINE_CABLE_LETHAL_NM) * mult;
+    let hit = false;
+    for (const cab of _cablePolys()) {
+        if (cableDamage[cab.id]) continue;             // ขาดอยู่แล้ว
+        let best = Infinity, bnx = 0, bny = 0;
+        for (let i = 0; i < cab.pts.length - 1; i++) {
+            const r = _ptSegND(mx, my, cab.pts[i].nx, cab.pts[i].ny, cab.pts[i+1].nx, cab.pts[i+1].ny);
+            if (r.d < best) { best = r.d; bnx = r.nx; bny = r.ny; }
+        }
+        if (best < lethal) {
+            cableDamage[cab.id] = { nx: bnx, ny: bny, frame: (typeof frame !== 'undefined' ? frame : 0) };
+            hit = true;
+            if (typeof addExplosion === 'function') addExplosion(bnx, bny, '#ef4444');
+            addLog(`[MIW] ✂ สาย DAS-${cab.id} ถูกตัดขาดจากแรงระเบิดทุ่น — สูญเสียการเชื่อมโยง/เซนเซอร์ช่วงนั้น`, '#ef4444');
+            if (typeof setDomain === 'function') setDomain('seabed', 'crit');
+        }
+    }
+    if (hit) _setCableRiskFromMines();
+}
+// ทริก Cable Risk indicator ให้สะท้อนความเสียหายจากทุ่น (มีลำดับเหนือ seismic)
+function _setCableRiskFromMines() {
+    const n = (cableDamage[1]?1:0) + (cableDamage[2]?1:0) + (cableDamage[3]?1:0);
+    const el = document.getElementById('seis-cable');
+    if (!el) return;
+    el.classList.remove('s-ok', 's-warn', 's-alert');
+    if (n >= 2)      { el.textContent = 'SEVERED ✂ ×' + n; el.classList.add('s-alert'); }
+    else if (n === 1){ el.textContent = 'CABLE FAULT ✂'; el.classList.add('s-alert'); }
+    else             { el.textContent = 'NOMINAL'; el.classList.add('s-ok'); }
+}
+// วาดเครื่องหมายจุดขาดบนสาย (เรียกท้าย drawCableX)
+function _drawCableSever(id) {
+    const d = cableDamage[id];
+    if (!d || typeof pn !== 'function') return;
+    const p = pn(d.nx, d.ny);
+    const tm = (typeof performance !== 'undefined') ? performance.now() * 0.001 : 0;
+    const pulse = 0.6 + 0.4 * Math.sin(tm * 6);
+    ctx.save();
+    // วงแหวนเตือนกระพริบ
+    ctx.beginPath(); ctx.arc(p.x, p.y, 9 + pulse*3, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(239,68,68,' + (0.5*pulse).toFixed(2) + ')';
+    ctx.lineWidth = 2; ctx.stroke();
+    // จุดขาดสีแดงทึบ
+    ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI*2);
+    ctx.fillStyle = '#ef4444'; ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 10; ctx.fill();
+    ctx.shadowBlur = 0;
+    // เครื่องหมายกากบาท (ตัด)
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.moveTo(p.x-3, p.y-3); ctx.lineTo(p.x+3, p.y+3);
+    ctx.moveTo(p.x+3, p.y-3); ctx.lineTo(p.x-3, p.y+3);
+    ctx.stroke();
+    // ป้ายกำกับ
+    ctx.font = 'bold 9px "Share Tech Mono"'; ctx.textAlign = 'center';
+    ctx.fillStyle = '#fca5a5';
+    ctx.fillText('✂ DAS-' + id + ' SEVERED', p.x, p.y - 12);
+    ctx.restore();
 }
 
 // ── Update mines — detection / trigger / neutralisation ──────
@@ -11240,17 +11725,31 @@ function updateSeaMines() {
                 }
             }
         }
-        // ── CONTROLLED (friendly) mine — detonate on hostile ─
+        // ── CONTROLLED (friendly) trap mine — fuze logic (v15.7) ─
         else if (m.controlled && m.state === 'ARMED') {
             if (typeof threats !== 'undefined') {
+                const myTrig = trigR * (m.sensMult || 1);   // sensitivity (C)
                 for (const t of threats) {
                     if (!t.active || t.frozen) continue;
-                    if (Math.hypot(t.nx-m.nx, t.ny-m.ny) < trigR) {
-                        _detonateMine(m, t.label);
-                        t.active = false; t.frozen = true;
-                        addLog(`[MIW] 💥 Controlled mine ระเบิด — ${t.label} ถูกทำลาย`, '#22c55e');
-                        if (typeof setDomain === 'function') setDomain('underwater','ok');
-                        break;
+                    if (!_trapQualifies(m, t)) continue;     // discrimination + mech (B/C)
+                    const inside = Math.hypot(t.nx-m.nx, t.ny-m.ny) < myTrig;
+                    const key = (t.id != null) ? ('id'+t.id) : (t.label||'?');
+                    if (inside) {
+                        if (m._seen[key]) continue;          // count each dwell once
+                        m._seen[key] = true;
+                        m.countSoFar = (m.countSoFar || 0) + 1;
+                        // ship-count fuze: ignore first (N-1), fire on the Nth pass
+                        if (m.countSoFar >= (m.countTarget || 1)) {
+                            _detonateMine(m, t.label);
+                            t.active = false; t.frozen = true;
+                            addLog(`[MIW] 💥 ทุ่นดัก[${(m.mech||'').toUpperCase()}] ระเบิด — ${t.label} ถูกทำลาย (นับลำดับที่ ${m.countSoFar})`, '#22c55e');
+                            if (typeof setDomain === 'function') setDomain('underwater','ok');
+                            break;
+                        } else {
+                            addLog(`[MIW] ⏳ ทุ่นดักนับเป้า ${m.countSoFar}/${m.countTarget} — ปล่อยผ่าน (${t.label})`, '#f59e0b');
+                        }
+                    } else {
+                        m._seen[key] = false;                // left radius → re-arm count for next pass
                     }
                 }
             }
@@ -11325,9 +11824,22 @@ function drawSeaMines() {
             ctx.lineTo(x+Math.cos(a)*8, y+Math.sin(a)*8);
             ctx.stroke();
         }
-        // mooring cable hint
-        ctx.strokeStyle = `${col}66`;
-        ctx.beginPath(); ctx.moveTo(x,y+5); ctx.lineTo(x,y+11); ctx.stroke();
+        // [v15.9] ฐานวางทุ่น — ก้นทะเล vs กลางทะเล (controlled mines)
+        if (!m.hostile && m.placement === 'moored') {
+            // ทอดประจำที่ — สายยึดลงพื้น + สมอ
+            ctx.strokeStyle = `${col}66`; ctx.setLineDash([2,2]); ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(x, y+5); ctx.lineTo(x, y+17); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = `${col}aa`; ctx.fillRect(x-3, y+16, 6, 2);   // สมอ
+        } else if (!m.hostile && m.placement === 'bottom') {
+            // ทุ่นก้นทะเล (ground) — เส้นฐานพื้นทะเล
+            ctx.strokeStyle = `${col}88`; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(x-7, y+6); ctx.lineTo(x+7, y+6); ctx.stroke();
+        } else {
+            // mooring cable hint (hostile/เดิม)
+            ctx.strokeStyle = `${col}66`; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(x,y+5); ctx.lineTo(x,y+11); ctx.stroke();
+        }
 
         // Neutralisation progress arc
         if (m.hostile && m.state === 'DETECTED' && m.neutProgress > 0) {
@@ -11342,6 +11854,15 @@ function drawSeaMines() {
         ctx.fillStyle = col;
         ctx.textAlign = 'center';
         ctx.fillText(m.hostile ? '💣 MINE' : '🛡 CTRL', x, y+19);
+        // [v15.9] placement + depth tag (controlled)
+        if (!m.hostile && m.placement) {
+            ctx.font = '6px "Share Tech Mono"';
+            ctx.fillStyle = `${col}cc`;
+            const tag = (m.placement === 'moored')
+                ? ('⚓MOOR ' + Math.round(m.caseDepth || 8) + 'm')
+                : ('⊥GND ' + Math.round(m.bedDepth || 0) + 'm');
+            ctx.fillText(tag, x, y+27);
+        }
         ctx.restore();
     }
 }
@@ -11745,6 +12266,17 @@ function updateCable2Photons() {
     cable2Photons = cable2Photons.filter(p => p.t < 1);
 }
 
+// [v15.5] Photon pulses — สาย 3 (ทุ่งโปรง) · สีฟ้า cyan (เข้าชุดเคเบิลเส้นอื่น)
+function updateCable3Photons() {
+    const rate  = dasTriggered ? 5  : 22;
+    const spd   = dasTriggered ? 0.012 : 0.007;
+    const sz    = dasTriggered ? 3.5 : 2.0;
+    const col   = dasTriggered ? '#ff6600' : '#38bdf8';
+    if (frame % rate === 0) cable3Photons.push({ t:0, speed:spd, size:sz, color:col, alpha:1.0 });
+    cable3Photons.forEach(p => { p.t += p.speed; p.alpha = Math.max(0, 1 - p.t); });
+    cable3Photons = cable3Photons.filter(p => p.t < 1);
+}
+
 // คำนวณตำแหน่งบน polyline จาก t (0=ต้นทาง, 1=ปลายทาง)
 function getPolylinePt(pxPts, t) {
     const lens = [];
@@ -11993,235 +12525,15 @@ terrainShadowBtn.onAdd = function() {
 terrainShadowBtn.addTo(map);
 
 // ═══════════════════════════════════════════════════════════════
-//  NAUTICAL CHART LAYERS — 2 modes (Esri Ocean / GEBCO 2023)
-// ───────────────────────────────────────────────────────────────
-//  Mode 1 — Esri Ocean Base (GEBCO/NOAA/NGA)  · classic depth shading
-//  Mode 2 — GEBCO 2023 Grid                   · raw bathymetry greyscale
-//  Shared overlay: OpenSeaMap IALA seamarks + custom depth soundings
-//  [Note: Mode 3 MapTiler Ocean ถูกลบใน v12.6.4 — ไม่ใช้ API key]
+//  [v15.5f] NAUTICAL CHART subsystem ถอดออกทั้งหมด
+//  เหตุผล: GEBCO 2023 เบลอ (z7) · Esri Ocean ไม่จำเป็นเพราะมี contour ความลึกอยู่แล้ว
+//  → ถอด: openSeaMap/Esri Ocean layers, depth soundings, legends, ปุ่ม Nautical Chart
 // ═══════════════════════════════════════════════════════════════
 
-// ── Shared: OpenSeaMap IALA seamarks overlay ──────────────────
-const openSeaMapLayer = L.tileLayer(
-    'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
-    { opacity: 0.55, maxZoom: 17, attribution: '© OpenSeaMap contributors' }
-);
+// [v15.5f-REMOVED] DEPTH_SOUNDINGS array + depthSoundingsLayer ถอดออก
 
-// ── MODE 1: Esri World Ocean Base + Reference ─────────────────
-//  ข้อมูล: GEBCO · NOAA · NGA · OCS · CHS (รวมในชุดเดียว)
-//  แสดง depth shading: ฟ้าอ่อน (ตื้น) → น้ำเงินเข้ม (ลึก)
-const gebcoBathyLayer = L.tileLayer(
-    'https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}',
-    {
-        opacity:       0.55,
-        maxZoom:       18,
-        maxNativeZoom: 13,
-        attribution:   'Tiles © Esri — GEBCO, NOAA, CHS, National Geographic'
-    }
-);
-const esriOceanRefLayer = L.tileLayer(
-    'https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}',
-    {
-        opacity:       0.70,
-        maxZoom:       18,
-        maxNativeZoom: 13,
-        attribution:   'Tiles © Esri'
-    }
-);
-
-// ── MODE 2: GEBCO 2023 Grid Tiles ─────────────────────────────
-//  Global Bathymetric Chart of the Oceans — 15 arc-second resolution
-//  ครอบคลุม Gulf of Thailand อย่างสมบูรณ์
-//  License: Creative Commons Attribution 4.0 (CC-BY 4.0)
-//  GEBCO Compilation Group (2023) GEBCO_2023 Grid
-const gebco2023Layer = L.tileLayer(
-    'https://tiles.gebco.net/tiles/gebco_latest/{z}/{x}/{y}.png',
-    {
-        opacity:       0.72,
-        maxZoom:       18,
-        maxNativeZoom: 7,    // GEBCO 2023 native resolution ~ zoom 7 (15 arc-sec grid)
-        attribution:   'GEBCO Compilation Group (2023) GEBCO_2023 Grid'
-    }
-);
-
-// ══════════════════════════════════════════════════════════════════════
-//  DEPTH SOUNDING MARKERS — GEBCO 2020 (nautical chart style)
-//  จุด sounding จาก opentopodata.org/v1/gebco2020
-//  Grid หยาบ 0.05° (ทั่วแผนที่) + Grid ละเอียด 0.02° (บริเวณ UDC/สัตหีบ)
-//  แสดงเป็นตัวเลขความลึก (เมตร) สไตล์ nautical chart
-// ══════════════════════════════════════════════════════════════════════
-const DEPTH_SOUNDINGS = [
-    // ── Wide area 0.05° grid (เฉพาะจุดที่เป็นน้ำ elevation < 0) ──
-    [12.50,100.62,26],[12.50,100.64,25],[12.50,100.67,25],[12.50,100.69,31],
-    [12.50,100.72,33],[12.50,100.77,27],[12.50,100.82,30],[12.50,100.87,33],
-    [12.50,100.93,39],[12.50,100.98,26],
-    [12.56,100.62,25],[12.56,100.64,24],[12.56,100.67,29],[12.56,100.69,38],
-    [12.56,100.72,34],[12.56,100.77,37],[12.56,100.82,30],[12.56,100.87,30],
-    [12.56,100.93,14],[12.56,100.98,13],
-    [12.62,100.62,26],[12.62,100.64,28],[12.62,100.67,36],[12.62,100.69,37],
-    [12.62,100.72,29],[12.62,100.77,35],[12.62,100.87,19],[12.62,100.98,6],
-    [12.68,100.62,31],[12.68,100.64,34],[12.68,100.67,31],[12.68,100.69,28],
-    [12.68,100.72,42],[12.68,100.77,25],
-    [12.74,100.62,28],[12.74,100.64,27],[12.74,100.67,24],[12.74,100.69,24],
-    [12.74,100.72,33],[12.74,100.77,19],
-    [12.80,100.62,27],[12.80,100.64,20],[12.80,100.67,23],[12.80,100.69,25],
-    [12.80,100.72,31],[12.80,100.77,21],[12.80,100.87,7],
-    [12.86,100.62,19],[12.86,100.64,22],[12.86,100.67,15],[12.86,100.69,24],
-    [12.86,100.72,25],[12.86,100.77,26],[12.86,100.87,10],
-    [12.92,100.62,24],[12.92,100.64,23],[12.92,100.67,3],[12.92,100.69,23],
-    [12.92,100.72,27],[12.92,100.82,13],
-    // ── Fine area 0.02° grid รอบ UDC (สัตหีบ) ────────────────────
-    [12.60,100.78,30],[12.60,100.80,31],[12.60,100.82,29],[12.60,100.84,28],
-    [12.60,100.86,27],[12.60,100.88,17],[12.60,100.90,13],[12.60,100.92,8],
-    [12.62,100.78,33],[12.62,100.80,28],[12.62,100.82,24],[12.62,100.84,30],
-    [12.62,100.86,21],[12.62,100.88,13],[12.62,100.90,5],
-    [12.64,100.78,31],[12.64,100.80,29],[12.64,100.82,30],[12.64,100.84,27],
-    [12.64,100.86,12],[12.64,100.88,4],[12.64,100.90,3],[12.64,100.92,5],
-    [12.66,100.78,38],[12.66,100.80,29],[12.66,100.82,19],[12.66,100.84,20],
-    [12.68,100.80,5],[12.68,100.82,16],[12.68,100.84,4],
-    [12.70,100.82,23],
-    [12.72,100.78,4],[12.72,100.80,5],[12.72,100.82,24],
-    [12.74,100.78,8],[12.74,100.80,14],[12.74,100.82,17],
-    [12.76,100.78,14],[12.76,100.80,15],[12.76,100.82,17],[12.76,100.84,4],
-    [12.78,100.78,18],[12.78,100.80,18],[12.78,100.82,16],[12.78,100.84,14],
-    [12.78,100.86,4],[12.78,100.88,6]
-];
-
-// ── สร้าง DivIcon markers สำหรับ depth soundings ─────────────────────
-const depthSoundingsLayer = L.layerGroup();
-DEPTH_SOUNDINGS.forEach(([lat, lng, depthM]) => {
-    // color ตามความลึก (สไตล์ nautical chart — ฟ้าอ่อน=ตื้น, น้ำเงินเข้ม=ลึก)
-    const col = depthM <= 10 ? '#bae6fd'
-              : depthM <= 20 ? '#7dd3fc'
-              : depthM <= 30 ? '#38bdf8'
-              : depthM <= 40 ? '#0ea5e9'
-              :                '#0369a1';
-    depthSoundingsLayer.addLayer(L.marker([lat, lng], {
-        interactive: false,
-        icon: L.divIcon({
-            className: '',
-            html: `<em style="font-family:var(--font-mono), monospace;font-size:10px;`+
-                  `font-style:italic;color:${col};text-shadow:0 0 3px rgba(0,0,0,.9);`+
-                  `line-height:1;pointer-events:none;">${depthM}</em>`,
-            iconSize:   [18, 10],
-            iconAnchor: [9, 5]
-        })
-    }));
-});
-
-// ── Nautical Chart mode state ─────────────────────────────────
-//  0 = OFF  |  1 = Esri Ocean  |  2 = GEBCO 2023
-let chartMode = 0;
-
-// ── Legend HTML templates (indexed by mode) ───────────────────
-const CHART_LEGENDS = {
-    1: `
-        <div class="leg-title" style="color:#38bdf8;">⚓ ESRI OCEAN BASE</div>
-        <div style="width:100%;height:9px;border-radius:2px;margin:3px 0 2px;
-             background:linear-gradient(to right,#cce8f4,#8ec6e0,#4a9abe,#1f6a9a,#0d4272,#051e3e);
-             border:1px solid rgba(56,189,248,.20);"></div>
-        <div style="display:flex;justify-content:space-between;font-size:10px;color:#64748b;margin-bottom:3px;">
-            <span>ตื้น</span><span>~15m</span><span>~30m</span><span>ลึก</span>
-        </div>
-        <div style="font-size:10px;color:#94a3b8;line-height:1.5;">
-            <span style="color:#7dd3fc;">■</span> Esri Ocean Base (GEBCO/NOAA)<br>
-            <span style="color:#93c5fd;">■</span> Depth labels &amp; annotations<br>
-            <span style="color:#38bdf8;">■</span> OpenSeaMap IALA seamarks
-        </div>
-        <div style="font-size:10px;color:#334155;text-align:right;margin-top:2px;">Esri · GEBCO · NOAA · NGA</div>`,
-    2: `
-        <div class="leg-title" style="color:#7dd3fc;">⚓ GEBCO 2023 GRID</div>
-        <div style="width:100%;height:9px;border-radius:2px;margin:3px 0 2px;
-             background:linear-gradient(to right,#f0f9ff,#bae6fd,#7dd3fc,#38bdf8,#0c4a6e,#020617);
-             border:1px solid rgba(125,211,252,.25);"></div>
-        <div style="display:flex;justify-content:space-between;font-size:10px;color:#64748b;margin-bottom:3px;">
-            <span>0m</span><span>~20m</span><span>~50m</span><span>&gt;100m</span>
-        </div>
-        <div style="font-size:10px;color:#94a3b8;line-height:1.5;">
-            <span style="color:#7dd3fc;">■</span> GEBCO_2023 Grid (15 arc-sec)<br>
-            <span style="color:#38bdf8;">■</span> OpenSeaMap IALA seamarks<br>
-            <span style="color:#60a5fa;">■</span> Depth soundings (custom)
-        </div>
-        <div style="font-size:10px;color:#334155;text-align:right;margin-top:2px;">GEBCO · BODC · CC-BY 4.0</div>`,
-};
-
-// ── Mode configurations ────────────────────────────────────────────────────────
-const CHART_CONF = [
-    { label:'⚓ Nautical',    color:'#8892b0', title:'คลิกเพื่อเปิด Nautical Chart' },
-    { label:'⚓ Esri Ocean',  color:'#38bdf8', title:'Mode 1/2: Esri Ocean Base + OpenSeaMap' },
-    { label:'⚓ GEBCO 2023',  color:'#7dd3fc', title:'Mode 2/2: GEBCO 2023 Grid Bathymetry + OpenSeaMap' },
-];
-
-// ── Helper: remove all chart layers ───────────────────────────
-function removeAllChartLayers() {
-    [gebcoBathyLayer, esriOceanRefLayer, gebco2023Layer,
-     openSeaMapLayer, depthSoundingsLayer]
-    .forEach(l => { if (map.hasLayer(l)) map.removeLayer(l); });
-}
-
-// ── Helper: update legend content ─────────────────────────────
-function updateChartLegend(mode) {
-    const el = document.getElementById('chartLegendContent');
-    if (el) el.innerHTML = CHART_LEGENDS[mode] || '';
-}
-
-// ── Apply chart mode (called on button click) ─────────────────
-function applyChartMode(btn) {
-    const conf = CHART_CONF[chartMode];
-    const leg  = document.getElementById('isobathLegend');
-    removeAllChartLayers();
-
-    if (chartMode === 0) {
-        // OFF
-        btn.classList.remove('active');
-        btn.style.borderColor = '';
-        btn.style.color = '';
-        btn.innerHTML = CHART_CONF[0].label;
-        btn.title     = CHART_CONF[0].title;
-        if (leg) leg.classList.remove('visible');
-        addLog('⚓ Nautical Chart: OFF');
-    } else {
-        // ON (modes 1–3)
-        btn.classList.add('active');
-        btn.style.borderColor = conf.color;
-        btn.style.color       = conf.color;
-        btn.innerHTML = `${conf.label} <span style="opacity:.55;font-size:9px;">${chartMode}/3 ▶</span>`;
-        btn.title     = conf.title;
-        if (leg) { leg.classList.add('visible'); updateChartLegend(chartMode); }
-
-        if (chartMode === 1) {
-            // Esri Ocean: depth shading + reference labels + seamarks + soundings
-            gebcoBathyLayer.addTo(map);
-            esriOceanRefLayer.addTo(map);
-            openSeaMapLayer.addTo(map);
-            depthSoundingsLayer.addTo(map);
-            addLog('⚓ Chart 1/2: Esri Ocean Base + depth labels + OpenSeaMap', '#38bdf8');
-        } else if (chartMode === 2) {
-            // GEBCO 2023: raw grid + seamarks + soundings
-            gebco2023Layer.addTo(map);
-            openSeaMapLayer.addTo(map);
-            depthSoundingsLayer.addTo(map);
-            addLog('⚓ Chart 2/2: GEBCO 2023 Grid (15 arc-sec) + OpenSeaMap', '#7dd3fc');
-        }
-        // Mode 3 (MapTiler) removed v12.6.4
-    }
-}
-
-// ── Nautical Chart Button (cycles OFF → Esri → GEBCO → OFF) ──
-const openSeaMapBtn = L.control({ position: 'topright' });
-openSeaMapBtn.onAdd = function() {
-    const btn = L.DomUtil.create('button', 'openseamap-btn');
-    btn.innerHTML = CHART_CONF[0].label;
-    btn.title     = CHART_CONF[0].title;
-    btn.style.minWidth = '112px';
-    btn.onclick = function() {
-        chartMode = (chartMode + 1) % 3;   // cycle: OFF(0) → Esri(1) → GEBCO(2) → OFF
-        applyChartMode(btn);
-    };
-    L.DomEvent.disableClickPropagation(btn);
-    return btn;
-};
-openSeaMapBtn.addTo(map);
+// [v15.5f-REMOVED] chartMode/CHART_LEGENDS/CHART_CONF/removeAllChartLayers/
+//                  updateChartLegend/applyChartMode + ปุ่ม openSeaMapBtn ถอดออกทั้งหมด
 
 // ═══════════════════════════════════════════════════════════════
 //  EEC Zone Overlay — GeoJSON boundary (3 provinces)
@@ -12370,6 +12682,18 @@ function buildLandMask() {
         else if (g.type === 'MultiPolygon')
             g.coordinates.forEach(coords => coords.forEach(processRing));
     });
+
+    // [v15.4] เกาะคราม + เกาะข้างเคียง ไม่อยู่ใน EEC GeoJSON (เป็นขอบเขตจังหวัด=แผ่นดินใหญ่)
+    //   → ผู้ใช้จึงยังวาง GUUV/เรือ/PV บนเกาะครามได้ · เพิ่ม footprint เกาะเข้า land mask เอง
+    //   ring = [lng,lat] (สอดคล้องกับ processRing) · ครอบคลุมพอประมาณ (cell ≈ 0.4–0.7 km)
+    const _EXTRA_ISLANDS = [
+        // เกาะคราม — ศูนย์กลาง ~12.714°N 100.782°E (≈ 2.5 × 1.5 km) · สถานีเคเบิลขึ้นบก
+        [[100.772,12.700],[100.788,12.698],[100.796,12.709],[100.797,12.722],
+         [100.790,12.731],[100.776,12.732],[100.769,12.721],[100.768,12.708]],
+        // เกาะครามน้อย — ทิศใต้เกาะคราม (เกาะเล็ก)
+        [[100.781,12.690],[100.789,12.689],[100.791,12.696],[100.783,12.697]],
+    ];
+    _EXTRA_ISLANDS.forEach(processRing);
 
     landMaskReady = true;
     console.log(`[LandMask] ✓ built — ${landCells}/${LAND_MASK_RES*LAND_MASK_RES} ` +
@@ -13519,6 +13843,7 @@ function drawCable() {
     ctx.font='10px "Share Tech Mono"'; ctx.fillStyle='#7dd3fc'; ctx.textAlign='center';
     ctx.fillText('KOH KRAM',p3.x,p3.y+7);
 
+    _drawCableSever(1);   // [v15.8] จุดสายขาดจากทุ่นระเบิด
     ctx.restore();
 }
 
@@ -13664,6 +13989,97 @@ function drawCable2() {
     ctx.font='10px "Share Tech Mono"'; ctx.fillStyle='#7dd3fc'; ctx.textAlign='center';
     ctx.fillText('FLEET',pLast.x,pLast.y+8);
 
+    _drawCableSever(2);   // [v15.8] จุดสายขาดจากทุ่นระเบิด
+    ctx.restore();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  [v15.5] DRAW: DAS CABLE สาย 3 — UDC → ท่าเรือทุ่งโปรง (Recon นย.)
+//  สายสั้นสุด · จุดขึ้นฝั่งใกล้ UDC ที่สุด · เขต กองพันลาดตระเวน นย.
+// ═══════════════════════════════════════════════════════════════
+function drawCable3() {
+    if (!das3Visible) return;
+
+    const pxPts = DAS3_COORDS.map(c => geoXY(c[0], c[1]));
+    const p0    = pxPts[0];
+    const pLast = pxPts[pxPts.length-1];
+
+    ctx.save();
+
+    // Glow เมื่อ DAS triggered
+    if (dasTriggered) {
+        ctx.beginPath();
+        ctx.moveTo(pxPts[0].x, pxPts[0].y);
+        pxPts.forEach((p,i)=>{ if(i>0) ctx.lineTo(p.x,p.y); });
+        ctx.shadowColor='#ff6600'; ctx.shadowBlur=20;
+        ctx.strokeStyle='rgba(255,80,0,0.30)'; ctx.lineWidth=10; ctx.stroke();
+        ctx.shadowBlur=0;
+    }
+
+    // Shadow ใต้สาย
+    ctx.beginPath();
+    ctx.moveTo(pxPts[0].x, pxPts[0].y+3);
+    pxPts.forEach((p,i)=>{ if(i>0) ctx.lineTo(p.x,p.y+3); });
+    ctx.strokeStyle='rgba(0,0,0,0.25)'; ctx.lineWidth=5; ctx.stroke();
+
+    // Main cable line — สีเขียว (Recon นย.) + crawling neon
+    ctx.beginPath();
+    ctx.moveTo(pxPts[0].x, pxPts[0].y);
+    pxPts.forEach((p,i)=>{ if(i>0) ctx.lineTo(p.x,p.y); });
+    ctx.strokeStyle = dasTriggered ? 'rgba(255,100,0,0.95)' : 'rgba(56,189,248,0.85)';
+    ctx.lineWidth=2.5;
+
+    const tm = performance.now() * 0.001;
+    ctx.shadowColor = dasTriggered ? '#ff3300' : '#00d4ff';
+    ctx.shadowBlur = dasTriggered ? (10 + Math.sin(tm * 15) * 4) : (6 + Math.sin(tm * 4) * 2);
+    ctx.setLineDash([8,4]);
+    ctx.lineDashOffset = dasTriggered ? -tm * 60 : -tm * 20;
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.shadowBlur = 0;
+
+    // Junction nodes
+    DAS3_COORDS.forEach((c, i)=>{
+        if (i===0 || i===DAS3_COORDS.length-1) return;
+        const p = geoXY(c[0], c[1]);
+        ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2);
+        ctx.fillStyle = dasTriggered ? '#ff6600' : '#38bdf8'; ctx.fill();
+    });
+
+    // Photon pulses
+    updateCable3Photons();
+    cable3Photons.forEach(ph=>{
+        const pt = getPolylinePt(pxPts, ph.t);
+        ctx.save();
+        ctx.shadowColor=ph.color; ctx.shadowBlur=ph.size*4;
+        ctx.beginPath(); ctx.arc(pt.x,pt.y,ph.size,0,Math.PI*2);
+        ctx.fillStyle=ph.color+Math.floor(ph.alpha*255).toString(16).padStart(2,'0');
+        ctx.fill(); ctx.restore();
+    });
+
+    // Endpoint nodes
+    [p0, pLast].forEach(pt=>{
+        ctx.beginPath(); ctx.arc(pt.x,pt.y,4,0,Math.PI*2);
+        ctx.fillStyle = dasTriggered ? '#ff4400' : '#38bdf8'; ctx.fill();
+        ctx.strokeStyle='#7dd3fc'; ctx.lineWidth=1.5; ctx.stroke();
+    });
+
+    // Cable label (midpoint)
+    const midPt = getPolylinePt(pxPts, 0.5);
+    ctx.font='10px "Share Tech Mono"'; ctx.textAlign='left';
+    ctx.fillStyle = dasTriggered ? 'rgba(255,100,0,.95)' : 'rgba(56,189,248,.75)';
+    ctx.fillText(dasTriggered ? '⚡ DAS ALERT — Fiber Tripwire Triggered!'
+                              : 'Fiber + Power (DAS) — ทุ่งโปรง (Recon นย.) · ~1.2 nm',
+                 midPt.x+6, midPt.y-6);
+
+    // Landing station icon (ท่าเรือทุ่งโปรง / Recon นย.)
+    ctx.fillStyle = dasTriggered ? '#ff4400' : '#0ea5e9';
+    ctx.fillRect(pLast.x-12,pLast.y-14,24,11);
+    ctx.strokeStyle='#38bdf8'; ctx.lineWidth=1; ctx.strokeRect(pLast.x-12,pLast.y-14,24,11);
+    ctx.font='9px "Share Tech Mono"'; ctx.fillStyle='#7dd3fc'; ctx.textAlign='center';
+    ctx.fillText('RECON',pLast.x,pLast.y+8);
+
+    _drawCableSever(3);   // [v15.8] จุดสายขาดจากทุ่นระเบิด
     ctx.restore();
 }
 
@@ -13885,16 +14301,19 @@ function drawSurveyVessels() {
 
         // ── 1. USBL Range Ring (4 nm friendly UUV tracking) ──
         if (s.usbl) {
-            const usblR = _pxNm * 4.0;
+            // [v15.2] ระยะติดตามอะคูสติก USBL ลดทอนตาม SVP (การหักเหของคลื่นเสียง) — สอดคล้องกับ PV/GUUV
+            const usblEffNm = 4.0 * svpMod;
+            const usblR = _pxNm * usblEffNm;
+            const uCol  = svpMod >= 1.0 ? '34,197,94' : svpMod >= 0.70 ? '251,191,36' : '239,68,68';
             ctx.save();
             ctx.setLineDash([2,6]);
-            ctx.strokeStyle='rgba(34,197,94,0.18)'; ctx.lineWidth=1;
+            ctx.strokeStyle=`rgba(${uCol},0.18)`; ctx.lineWidth=1;
             ctx.beginPath(); ctx.arc(x,y,usblR,0,Math.PI*2); ctx.stroke();
             ctx.setLineDash([]);
-            // small "USBL" label NE quadrant
-            ctx.font='8px "Share Tech Mono"'; ctx.fillStyle='rgba(34,197,94,0.55)';
+            // small "USBL" label NE quadrant — แสดงระยะ effective ตาม SVP
+            ctx.font='8px "Share Tech Mono"'; ctx.fillStyle=`rgba(${uCol},0.60)`;
             ctx.textAlign='left';
-            ctx.fillText('USBL 4nm', x+usblR*0.71+3, y-usblR*0.71);
+            ctx.fillText('USBL '+usblEffNm.toFixed(1)+'nm', x+usblR*0.71+3, y-usblR*0.71);
             ctx.restore();
             // Highlight friendly Guardian UUVs within range
             if (typeof guardianUUVs !== 'undefined') {
@@ -14933,26 +15352,32 @@ function drawROVs() {
 function drawUDCCapsule() {
     const {x:cx,y:cy}=geoXY(UDC_LAT, UDC_LNG);
 
+    // [v15.1] สเกลไอคอนตามระดับซูม — อ้างอิง zoom 11 (≈ 24.8 px/nm)
+    // เพื่อให้ไอคอน UDC ย่อ-ขยายตามมาตราส่วนแผนที่ (กันอาการ "ดูใหญ่เกินสัดส่วน" เมื่อ zoom out)
+    // [v15.5c] clamp 0.45–1.0 — ลดเพดานจาก 1.5→1.0 กันไอคอน/ตัวอักษร UDC โตเกินเมื่อ zoom เข้า
+    const s = Math.max(0.45, Math.min(1.0, _pxNm / 24.8));
+
     // Outer glow
-    const glow=ctx.createRadialGradient(cx,cy,0,cx,cy,42);
+    const gR=42*s;
+    const glow=ctx.createRadialGradient(cx,cy,0,cx,cy,gR);
     glow.addColorStop(0,'rgba(0,212,255,0.28)'); glow.addColorStop(1,'rgba(0,212,255,0)');
-    ctx.beginPath(); ctx.arc(cx,cy,42,0,Math.PI*2); ctx.fillStyle=glow; ctx.fill();
+    ctx.beginPath(); ctx.arc(cx,cy,gR,0,Math.PI*2); ctx.fillStyle=glow; ctx.fill();
 
     // Mooring pile anchors
-    const pR=33;
+    const pR=33*s;
     [Math.PI/4,3*Math.PI/4,5*Math.PI/4,7*Math.PI/4].forEach(a=>{
         const px2=cx+pR*Math.cos(a), py2=cy+pR*Math.sin(a);
         ctx.save();
-        ctx.beginPath(); ctx.moveTo(cx+18*Math.cos(a),cy+10*Math.sin(a)); ctx.lineTo(px2,py2);
+        ctx.beginPath(); ctx.moveTo(cx+18*s*Math.cos(a),cy+10*s*Math.sin(a)); ctx.lineTo(px2,py2);
         ctx.strokeStyle='rgba(251,146,60,.50)'; ctx.lineWidth=1.2;
         ctx.setLineDash([3,2]); ctx.stroke(); ctx.setLineDash([]);
-        ctx.beginPath(); ctx.arc(px2,py2,3,0,Math.PI*2);
+        ctx.beginPath(); ctx.arc(px2,py2,3*s,0,Math.PI*2);
         ctx.fillStyle='#fb923c'; ctx.fill();
         ctx.restore();
     });
 
     // Steel jacket frame
-    const jW=27, jH=15;
+    const jW=27*s, jH=15*s;
     ctx.save();
     ctx.beginPath(); ctx.rect(cx-jW,cy-jH,jW*2,jH*2);
     ctx.strokeStyle='rgba(100,180,255,0.65)'; ctx.lineWidth=1.5; ctx.stroke();
@@ -14967,30 +15392,30 @@ function drawUDCCapsule() {
 
     // Cylinder body
     ctx.save();
-    ctx.beginPath(); ctx.ellipse(cx,cy,20,9,0,0,Math.PI*2);
+    ctx.beginPath(); ctx.ellipse(cx,cy,20*s,9*s,0,0,Math.PI*2);
     ctx.fillStyle='rgba(0,80,140,0.75)'; ctx.fill();
     ctx.strokeStyle='#00d4ff'; ctx.lineWidth=2; ctx.stroke();
     ctx.strokeStyle='rgba(0,212,255,0.25)'; ctx.lineWidth=0.8;
     [-10,0,10].forEach(ox=>{
-        ctx.beginPath(); ctx.moveTo(cx+ox,cy-8); ctx.lineTo(cx+ox,cy+8); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx+ox*s,cy-8*s); ctx.lineTo(cx+ox*s,cy+8*s); ctx.stroke();
     });
-    [-1,1].forEach(s=>{
-        ctx.beginPath(); ctx.ellipse(cx+s*20,cy,4,9,0,0,Math.PI*2);
+    [-1,1].forEach(sg=>{
+        ctx.beginPath(); ctx.ellipse(cx+sg*20*s,cy,4*s,9*s,0,0,Math.PI*2);
         ctx.fillStyle='rgba(0,150,220,0.60)'; ctx.fill();
         ctx.strokeStyle='rgba(0,212,255,.80)'; ctx.lineWidth=1.5; ctx.stroke();
     });
     ctx.restore();
 
     // Pulsing sonar ring
-    const pulse=Math.sin(frame*.08)*4+18;
+    const pulse=(Math.sin(frame*.08)*4+18)*s;
     ctx.beginPath(); ctx.arc(cx,cy,pulse,0,Math.PI*2);
     ctx.strokeStyle='rgba(0,212,255,0.35)'; ctx.lineWidth=1; ctx.stroke();
 
     // Labels
-    ctx.font='bold 13px "Share Tech Mono"'; ctx.textAlign='center';
-    ctx.fillStyle='#00d4ff'; ctx.fillText('UDC-SH',cx,cy+52);
-    ctx.font='11px "Share Tech Mono"';
-    ctx.fillStyle='rgba(0,212,255,.70)'; ctx.fillText('▼ 40m depth',cx,cy+65);
+    ctx.font='bold '+Math.max(8,Math.round(13*s))+'px "Share Tech Mono"'; ctx.textAlign='center';
+    ctx.fillStyle='#00d4ff'; ctx.fillText('UDC',cx,cy+52*s);
+    ctx.font=Math.max(7,Math.round(11*s))+'px "Share Tech Mono"';
+    ctx.fillStyle='rgba(0,212,255,.70)'; ctx.fillText('▼ 40m depth',cx,cy+65*s);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -16419,7 +16844,7 @@ function toggleElevationOverlay() {
 // ── GFW API simulated layer logic ──
 let showGfwOverlay = false;
 let gfwUpdateInterval = null;
-const GFW_API_TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImtpZEtleSJ9.eyJkYXRhIjp7Im5hbWUiOiJVRENfU2ltdWxhdGlvbiIsInVzZXJJZCI6NjI5MzksImFwcGxpY2F0aW9uTmFtZSI6IlVEQ19TaW11bGF0aW9uIiwiaWQiOjExMDc4LCJ0eXBlIjoidXNlci1hcHBsaWNhdGlvbiJ9LCJpYXQiOjE3Nzk4NDU3ODIsImV4cCI6MjA5NTIwNTc4MiwiYXVkIjoiZ2Z3IiwiaXNzIjoiZ2Z3In0.iXPt3AJHJ2WZ8uPmA3lBnMoGQPYK3IH4sdBOU-XxvXdpDPEpbZn_CEXbx0Jlg1VZ-jH4_DKfZhQMjfbq5SEARt54jgEIlxd-j-Sjg7PlVdGZ6exzoeWYilwSrXthzZ1ucWNYCRQDyCakpS1GDPMsAGhOvT-sH9fI27m3hRET75NvYsekVshuuQhB67bHq1coedeuXdqyscwlIkIobdHCCCDK3oKSiUf50MwIH3OOsVwm2xI6fK42pyEb8-hOlzRXluliAqGnomuLYUUzzDTxZ5nO-yS-7Uc9h8JGJh_F2hdYJAmTvzdk9sEI1wZ1blC4YMu600riMo8z_ehgqoQVAZaeNtL-WDDwQUx6VC8evPziU-CH1HN6hsq3btAPIkRS-jvX0woPb-zezVqAhN3Mz16ctMcDV7iqoMmUUBwL1S_pWpcuJYq9jYld8rcx2A0hpDkm_oOZmBe73tKfcqDS8A_XSAoxm0kSvTQ_-_mUZav89Qb4BFriV8H3mRTU4486";
+const GFW_API_TOKEN = "YOUR_GFW_API_TOKEN";
 
 const GfwClientMock = {
     gaps: [],
@@ -17972,7 +18397,7 @@ function buildCables3D() {
     if (typeof CABLE_SAMPLES !== 'undefined') {
         makeCable(CABLE_SAMPLES, 0x2a3038, -1);
     }
-    // ══ สาย 3 — UDC → ทรภ.1 (Redundant Path · clip ที่ขอบ crop) ══
+    // ══ สาย 2 — UDC → กยพ./ทรภ.1 (Redundant Path · clip ที่ขอบ crop) ══
     if (typeof DAS2_COORDS !== 'undefined') {
         const c3 = makeCable(_clipCableToCrop(DAS2_COORDS), 0x3f8a76, +1);
         if (c3) {
@@ -17980,6 +18405,17 @@ function buildCables3D() {
             const pin = new THREE.Mesh(new THREE.ConeGeometry(2.6,7,8),
                 new THREE.MeshBasicMaterial({ color:0x64ffda }));
             pin.position.set(c3.end.x, c3.end.y+4, c3.end.z);
+            d3_scene.add(pin);
+        }
+    }
+    // ══ [v15.5] สาย 3 — UDC → ท่าเรือทุ่งโปรง (Recon นย.) · สีเขียว ══
+    if (typeof DAS3_COORDS !== 'undefined') {
+        const c4 = makeCable(_clipCableToCrop(DAS3_COORDS), 0x10b981, +1);
+        if (c4) {
+            // หมุดปลายทาง — สถานีบนฝั่งทุ่งโปรง (Recon นย.)
+            const pin = new THREE.Mesh(new THREE.ConeGeometry(2.6,7,8),
+                new THREE.MeshBasicMaterial({ color:0x34d399 }));
+            pin.position.set(c4.end.x, c4.end.y+4, c4.end.z);
             d3_scene.add(pin);
         }
     }
@@ -19470,9 +19906,16 @@ function drawSeaStateIndicator() {
 //  การแยก "วาด" และ "เคลื่อนที่" ในลำดับที่ชัดเจน
 //  ทำให้ Debug ง่ายและป้องกัน Race Condition ระหว่าง Layer
 // ═══════════════════════════════════════════════════════════════
+// [static-redraw] เมื่อ sim ถูก freeze (mission end / FLS) loop หลักหยุด — แต่ถ้า
+// map ถูก pan/zoom/resize เฟรมที่ค้างอยู่จะไม่ตรงกับแผนที่ → entity (รวม UDC) เลื่อน
+// _forceStaticDraw = วาดทับ 1 เฟรมโดยไม่ขยับ sim (ผูกกับ map move/zoom/resize ด้านล่าง)
+var _forceStaticDraw = false;   // var: global-scoped + hoisted ให้เห็นข้าม script block ได้
 function animate() {
+    const _static = _forceStaticDraw;   // rAF ส่ง timestamp มาเป็น arg จึงใช้ flag แทน param
+    _forceStaticDraw = false;
     // V07: หยุด loop ทันทีเมื่อ sim ถูก freeze (FLS Warning แสดงอยู่)
-    if (simPaused) return;
+    // ยกเว้น static-redraw: วาดเฟรมเดียวให้ overlay ตรงกับ map ที่เพิ่งเลื่อน แล้วไม่ขยับ sim
+    if (simPaused && !_static) return;
 
     // Sync canvas size — [UI Zoom fix] buffer ใช้ clientWidth/Height (พิกัด layout)
     // ให้ตรงกับ Leaflet ไม่ใช่ getBoundingClientRect ที่เพี้ยนตาม CSS zoom
@@ -19491,8 +19934,8 @@ function animate() {
     ctx.fillStyle='rgba(1,13,26,0.12)';
     ctx.fillRect(0,0,overlayCanvas.width,overlayCanvas.height);
 
-    // Update GFW client simulation target positions
-    if (typeof GfwClientMock !== 'undefined') {
+    // Update GFW client simulation target positions (ข้ามใน static-redraw — ไม่ขยับ sim)
+    if (!_static && typeof GfwClientMock !== 'undefined') {
         GfwClientMock.update(1.0);
     }
 
@@ -19503,6 +19946,7 @@ function animate() {
     drawSonarSweep();
     drawCable();
     drawCable2();
+    drawCable3();   // [v15.5] → ทุ่งโปรง (Recon นย.)
     checkDAS();
     drawDASKPLabel();   // ← OTDR KP position label
     drawCoastalAssets();
@@ -19523,6 +19967,9 @@ function animate() {
     drawEffects();
     drawScaleBar();
     drawSeaStateIndicator();
+
+    // [static-redraw] วาดเฟรมเดียวให้ตรงกับ map ที่เลื่อน แล้วจบ — ไม่ขยับ entity / ไม่ตั้ง rAF ต่อ
+    if (_static) return;
 
     // ── Move Guardian UUVs — V07 3-Phase Intercept ROE ────────────
     // Phase A (> 2nm จาก UDC): SPRINT 1.3×  — ไล่ประกบ
@@ -20268,6 +20715,7 @@ function resetAll() {
     // v08: ล้าง mine warfare
     seaMines = [];
     mineFieldLaid = false;
+    cableDamage = { 1:null, 2:null, 3:null };   // [v15.8] ซ่อมสาย DAS เมื่อ reset
     {
         const mb = document.getElementById('mineFieldBtn');
         if (mb) { mb.classList.remove('mine-active'); mb.textContent = '💣 Lay Minefield'; }
@@ -20366,6 +20814,7 @@ function launchScenario(type) {
     // v08: ล้าง mine warfare (controlled minefield จะถูกล้างด้วย)
     seaMines = [];
     mineFieldLaid = false;
+    cableDamage = { 1:null, 2:null, 3:null };   // [v15.8] ซ่อมสาย DAS เมื่อ reset
     {
         const mb = document.getElementById('mineFieldBtn');
         if (mb) { mb.classList.remove('mine-active'); mb.textContent = '💣 Lay Minefield'; }
@@ -21028,9 +21477,17 @@ function setSVP(type) {
     const modEl   = document.getElementById('svp-mod-val');
     const sstEl   = document.getElementById('svp-sst');
     const thermoEl= document.getElementById('svp-thermo-depth');
+    const cEl     = document.getElementById('svp-cval');
     if (modEl)    { modEl.textContent  = d.mod.toFixed(2); modEl.style.color = d.color; }
     if (sstEl)    sstEl.textContent    = d.sst + '°C';
     if (thermoEl) thermoEl.textContent = d.thermoDepth ? d.thermoDepth + 'm' : '—';
+    // [v15.2] ความเร็วเสียงที่ผิวน้ำ (m/s) — Mackenzie sound-speed eq. (S≈32 psu, สอดคล้องกับ CTD cast)
+    if (cEl) {
+        const T = d.sst, S = 32.0;
+        const cSurf = 1448.96 + 4.591*T - 5.304e-2*T*T + 1.340*(S-35);
+        cEl.textContent  = Math.round(cSurf) + ' m/s';
+        cEl.style.color  = d.color;
+    }
 
     // Recompute effectiveMod immediately
     ssMod = SS_MODS.hydroRange[seaState];
@@ -22094,6 +22551,30 @@ sonarEqnBtn.onAdd = function() {
         `;
         _sonarEqnRender(panel);
         document.body.appendChild(panel);
+        // [v15.5d] ลากย้ายพาเนลได้จากแถบหัว (leak-free: ผูก move/up ตอน mousedown ถอดตอน mouseup)
+        const _hdr = panel.querySelector('#sonarEqnHdr');
+        if (_hdr) {
+            _hdr.addEventListener('mousedown', function(e){
+                if (e.button !== 0) return;
+                const r = panel.getBoundingClientRect();
+                panel.style.left = r.left + 'px';
+                panel.style.top  = r.top  + 'px';
+                panel.style.right = 'auto';
+                const sx = e.clientX, sy = e.clientY, ox = r.left, oy = r.top;
+                function _mv(ev){
+                    let nx = ox + ev.clientX - sx, ny = oy + ev.clientY - sy;
+                    // กันลากหลุดจอ (เหลือขอบให้คว้ากลับได้)
+                    nx = Math.max(-panel.offsetWidth + 60, Math.min(window.innerWidth - 60, nx));
+                    ny = Math.max(0, Math.min(window.innerHeight - 30, ny));
+                    panel.style.left = nx + 'px';
+                    panel.style.top  = ny + 'px';
+                }
+                function _up(){ document.removeEventListener('mousemove', _mv); document.removeEventListener('mouseup', _up); }
+                document.addEventListener('mousemove', _mv);
+                document.addEventListener('mouseup', _up);
+                e.preventDefault();
+            });
+        }
     };
     L.DomEvent.disableClickPropagation(btn);
     return btn;
@@ -22125,13 +22606,27 @@ function _sonarEqnRender(panel) {
     const woaTag = woaOn
         ? `<span style="color:#22c55e">● WOA23 ray-traced TL</span>`
         : `<span style="color:#94a3b8">○ Thorp formula (WOA grid not loaded)</span>`;
-    let html = `<div style="color:#a78bfa;font-weight:bold;margin-bottom:6px;letter-spacing:1px;">
-        🔊 SONAR EQUATION · CURRENT ENV</div>
+    let html = `<div id="sonarEqnHdr" style="color:#a78bfa;font-weight:bold;margin-bottom:6px;letter-spacing:1px;cursor:move;user-select:none;" title="ลากเพื่อย้ายพาเนล">
+        ⠿ 🔊 SONAR EQUATION · CURRENT ENV</div>
         <div style="color:#94a3b8;margin-bottom:4px;">
             Sea State: <span style="color:#fbbf24">SS${ss}</span> ·
             ${_o4svp ? `SVP <span style="color:#22c55e" title="ตัวคูณระยะจากโปรไฟล์ความเร็วเสียง HYCOM จริง (sonic-layer / surface duct)">●HYCOM 4D</span>×<span style="color:#a78bfa">${svp.toFixed(2)}</span> <span style="color:#64748b">(c₀=${_o4svp.cSurf} m/s · ชั้นเสียง ${_o4svp.sld} m · ${_o4svp.duct?'ดักผิวน้ำ→ไกลขึ้น':'หักเหลงล่าง→สั้นลง'})</span>` : `SVP×<span style="color:#a78bfa">${svp.toFixed(2)}</span> <span style="color:#64748b">(preset)</span>`}
         </div>
         <div style="font-size:10px;margin-bottom:8px;">TL model: ${woaTag}</div>
+        <div style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.30);border-radius:5px;padding:6px 8px;margin-bottom:8px;font-size:10px;line-height:1.55;">
+            <div style="color:#a78bfa;font-weight:bold;margin-bottom:3px;letter-spacing:.5px;">สมการจริง — Sonar Equation</div>
+            <div style="color:#cbd5e1;">Passive:&nbsp; <span style="color:#22d3ee;font-weight:bold;">SE = SL − TL − (NL − DI) − DT</span></div>
+            <div style="color:#cbd5e1;">Active:&nbsp;&nbsp; <span style="color:#fbbf24;font-weight:bold;">SE = SL − 2·TL + TS − (NL − DI) − DT</span></div>
+            <div style="color:#64748b;margin-top:4px;border-top:1px dashed rgba(167,139,250,.2);padding-top:4px;">
+                TL = 20·log₁₀(R) + α·R∕1000 &nbsp;<span style="color:#475569">[spherical + absorption]</span><br>
+                α(f) = 0.11·f²∕(1+f²) + 44·f²∕(4100+f²) + 2.75×10⁻⁴·f² + 0.003 &nbsp;<span style="color:#475569">[Thorp · dB/km]</span><br>
+                NL = 10·log₁₀(10^(NL_ship∕10) + 10^(NL_wind∕10)) + 20 &nbsp;<span style="color:#475569">[Wenz]</span><br>
+                R<sub>det</sub>: แก้สมการหา R ที่ทำให้ SE = 0 (binary search 50 m–200 km) · R<sub>eff</sub> = R × SVP
+            </div>
+            <div style="color:#64748b;margin-top:4px;">
+                SL=Source Level · TL=Transmission Loss · NL=Noise Level · DI=Directivity Index · DT=Detection Threshold · TS=Target Strength · R=ระยะ(m) · f=ความถี่(kHz) · หน่วยทั้งหมดเป็น dB
+            </div>
+        </div>
         ${sb ? `<div style="font-size:10px;margin-bottom:8px;border-left:2px solid #f59e0b;padding-left:5px;color:#94a3b8;">
             ⚓ Seabed: <span style="color:#f59e0b">${sb.th || sb.cls}</span> ·
             φ≈<span style="color:#fcd34d">${(+sb.phi).toFixed(1)}</span> ·
@@ -22973,6 +23468,23 @@ var seabedVisible = false;
 var seabedLayer   = null;
 var seabedLegend  = null;
 var seabedData    = null;
+// [v15.5e] ตัวกรองชนิดตะกอนต่อโซน (tick ใน legend → แสดงเฉพาะชนิดนั้นบนแผนที่ 2D) — คงค่าในเซสชัน
+var SEABED_FILTER = { 'Marine Sand Sediment':true, 'Muddy Sand Sediment':true, 'Sandy Mud Sediment':true, 'Marine Mud Sediment':true };
+function _sbVisible(name){ return (name && SEABED_CLS[name]) ? (SEABED_FILTER[name]!==false) : true; }
+// ใช้ตัวกรองกับชั้น choropleth: ซ่อนสี + ปิด pointer-events (กันคลิกโดน popup ของโซนที่ซ่อน)
+function _sbApplyFilter(){
+    if(!seabedLayer) return;
+    try{
+        seabedLayer.eachLayer(function(l){
+            var nm=(l.feature && l.feature.properties) ? l.feature.properties.SS_NAME_E : null;
+            var vis=_sbVisible(nm), c=_sbCls(nm);
+            l.setStyle(vis ? { fillColor:c.col, fillOpacity:0.45, color:'#241a0b', weight:1, opacity:0.55 }
+                           : { fillOpacity:0, weight:0, opacity:0 });
+            var el=(l.getElement?l.getElement():null)||l._path||null;
+            if(el) el.style.pointerEvents = vis ? '' : 'none';
+        });
+    }catch(e){}
+}
 
 // ชนิดตะกอน → สี · ขนาดเม็ด φ · Bottom Loss (dB/bounce) · Reverb penalty (active, dB) · ป้ายเสียงก้อง
 // อิงหลักธรณีอะคูสติก APL-UW HFEVA / Hamilton: ทราย = อิมพีแดนซ์สูง สะท้อนแรง+ก้องสูง / โคลน = ดูดซับ+ก้องต่ำ
@@ -23081,14 +23593,38 @@ function _sbAddLegend(){
     var html='<div class="sb-l2-head" title="ลากเพื่อย้าย legend · ดับเบิลคลิกเพื่อรีเซ็ตตำแหน่ง">⚓ ชนิดตะกอน · Bottom Loss</div><div class="sb-l2-body">';
     var order=['Marine Sand Sediment','Muddy Sand Sediment','Sandy Mud Sediment','Marine Mud Sediment'];
     for(var k=0;k<order.length;k++){
-        var c=SEABED_CLS[order[k]];
-        html+='<div class="sb-l2-row"><span class="sb-l2-sw" style="background:'+c.col+';"></span>'
-            + '<span class="sb-l2-nm">'+c.th+'</span><span class="sb-l2-bl">'+c.bl+'dB</span></div>';
+        var key=order[k], c=SEABED_CLS[key], ck=(SEABED_FILTER[key]!==false)?'checked':'';
+        // [v15.5e] แต่ละแถวเป็น <label> + checkbox → ติ๊กเพื่อกรองโซนบนแผนที่ 2D
+        html+='<label class="sb-l2-row" data-cls="'+key+'" title="ติ๊กเพื่อแสดง/ซ่อนโซนชนิดนี้บนแผนที่">'
+            + '<input type="checkbox" class="sb-l2-ck" '+ck+' style="width:12px;height:12px;margin:0 4px 0 0;accent-color:'+c.col+';cursor:pointer;flex:0 0 auto;">'
+            + '<span class="sb-l2-sw" style="background:'+c.col+';"></span>'
+            + '<span class="sb-l2-nm">'+c.th+'</span><span class="sb-l2-bl">'+c.bl+'dB</span></label>';
     }
-    html+='<div class="sb-l2-note">ทราย→สะท้อนแรง/ก้องสูง · โคลน→ดูดซับ/เงียบ</div>'
+    html+='<div class="sb-l2-row" style="justify-content:flex-start;gap:6px;border-top:1px dashed rgba(148,163,184,.25);margin-top:3px;padding-top:4px;">'
+        + '<a href="javascript:void(0)" class="sb-l2-all" data-on="1" style="color:#22c55e;text-decoration:none;font-size:9px;">▣ ทั้งหมด</a>'
+        + '<a href="javascript:void(0)" class="sb-l2-all" data-on="0" style="color:#94a3b8;text-decoration:none;font-size:9px;">▢ ไม่เลือก</a></div>'
+        + '<div class="sb-l2-note">ติ๊ก = แสดงเฉพาะโซนนั้น · ทราย→สะท้อนแรง/ก้องสูง · โคลน→ดูดซับ/เงียบ</div>'
         + '<div class="sb-l2-src">DMR · CC-BY · @UDC ป้อนสมการโซนาร์</div></div>';
     div.innerHTML=html;
     document.body.appendChild(div);
+    // [v15.5e] wire checkbox → กรองโซนบนแผนที่
+    div.querySelectorAll('.sb-l2-ck').forEach(function(cb){
+        cb.addEventListener('change', function(){
+            var row=this.parentNode, key=row?row.getAttribute('data-cls'):null;
+            if(key){ SEABED_FILTER[key]=this.checked; _sbApplyFilter();
+                if(typeof addLog==='function') addLog('⚓ ตะกอน '+(SEABED_CLS[key]?SEABED_CLS[key].th:key)+': '+(this.checked?'แสดง':'ซ่อน')+' บนแผนที่ 2D', this.checked?'#f59e0b':'#94a3b8'); }
+        });
+    });
+    // ปุ่มลัด ทั้งหมด / ไม่เลือก
+    div.querySelectorAll('.sb-l2-all').forEach(function(a){
+        a.addEventListener('click', function(){
+            var on=(this.getAttribute('data-on')==='1');
+            order.forEach(function(key){ SEABED_FILTER[key]=on; });
+            div.querySelectorAll('.sb-l2-ck').forEach(function(cb){ cb.checked=on; });
+            _sbApplyFilter();
+            if(typeof addLog==='function') addLog('⚓ ตะกอน: '+(on?'แสดงทุกชนิด':'ซ่อนทุกชนิด')+' บนแผนที่ 2D', on?'#f59e0b':'#94a3b8');
+        });
+    });
     // คืนค่าตำแหน่งที่ผู้ใช้เคยลากไว้ (clamp กันหลุดจอ)
     try{
         var sv=JSON.parse(localStorage.getItem('sb-legend2d-pos')||'null');
@@ -23171,6 +23707,7 @@ function toggleSeabed(){
         }
         seabedVisible=true;
         _sbAddLegend();
+        _sbApplyFilter();   // [v15.5e] ใช้สถานะตัวกรองที่ค้างไว้ (ถ้ามี)
         _sbSetState();
         _sbSyncRow(true);
         if(typeof addLog==='function') addLog('⚓ Seabed Sediment: ON — '+data.features.length+' โพลิกอน (DMR) · Bottom Loss/Reverb → สมการโซนาร์', '#f59e0b');
@@ -23359,7 +23896,7 @@ window.toggleSeabed3D = toggleSeabed3D;
     // v12.6.4 — เพิ่ม 'Dark' ให้จัดกลุ่ม Dark Matter ใน BASE MAP; ลบ ASSETS/OTHER
     const RULES = [
         ['🗺 BASE MAP',       ['Dark','OpenSeaMap','OSM','SeaMap','Light','Vector','Satellite','Chart',
-                                'OpenStreet','Nautical','Esri','GEBCO','Ocean']],
+                                'OpenStreet','Nautical','Esri','Ocean']],
         ['🛡 ZONES · เขต',     ['ปะการัง','เขตปลอดภัย','กองเรือ','DAS','EEC','TSS','ร่องน้ำ',
                                 'Reef','Safety','Fleet','Zone']],
         ['⚓ INFRA · โครงสร้าง',['สถานี Landing','เคเบิ้ล','เส้นทางเดินเรือ','SLOC','Cable',
@@ -23532,16 +24069,31 @@ window.toggleSeabed3D = toggleSeabed3D;
         return fetch(url, { ...init, signal: ctl.signal })
             .finally(() => clearTimeout(t));
     };
-    // race หลาย CORS proxy พร้อมกัน — เอาตัวที่เร็วที่สุด
+    // race หลาย CORS proxy พร้อมกัน — เอาตัวที่สำเร็จเร็วที่สุด
+    // [v15.5g] จัดลำดับใหม่ + เพิ่ม allorigins/get (JSON-wrapper) เป็น fallback
+    //   · allorigins/raw  — เสถียรสุด ส่ง ACAO:* ใช้ได้แม้ origin=null (file://)
+    //   · allorigins/get  — ห่อ body ใน {contents:"...json..."} → unwrap ด้วย JSON.parse
+    //   · codetabs/corsproxy.io — สำรอง (corsproxy.io 403 เมื่อเปิดไฟล์ตรงๆ file://)
     const CORS_PROXIES = [
-        u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-        u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-        u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+        { make: u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}` },
+        { make: u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}` },
+        { make: u => `https://corsproxy.io/?url=${encodeURIComponent(u)}` },
+        { make: u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+          unwrap: j => (j && typeof j.contents === 'string' ? JSON.parse(j.contents) : j) },
     ];
     const fetchViaAnyProxy = async (targetUrl, ms = 10000) => {
-        const attempts = CORS_PROXIES.map(makeUrl => fetchTO(makeUrl(targetUrl), ms)
-            .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }));
-        return Promise.any(attempts);  // เอา proxy ที่สำเร็จเร็วที่สุด
+        const attempts = CORS_PROXIES.map(p => fetchTO(p.make(targetUrl), ms)
+            .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+            .then(j => (p.unwrap ? p.unwrap(j) : j)));
+        try {
+            return await Promise.any(attempts);  // เอา proxy ที่สำเร็จเร็วที่สุด
+        } catch (agg) {
+            // AggregateError → แทน "All promises were rejected" ด้วยรายละเอียดจริง
+            const errs = (agg && Array.isArray(agg.errors))
+                ? agg.errors.map(e => e && e.message).filter(Boolean) : [];
+            throw new Error('CORS proxy ล้มเหลวทุกตัว' +
+                (errs.length ? ' (' + [...new Set(errs)].slice(0, 3).join(' · ') + ')' : ''));
+        }
     };
     const fetchJSON = async (url, key, ttl) => {
         const cached = cacheGet(key, ttl);
@@ -23714,22 +24266,25 @@ window.toggleSeabed3D = toggleSeabed3D;
         async function refresh() {
             try {
                 let j, src;
-                // ① adsb.lol direct
+                // [v15.5g] ลำดับใหม่: direct → proxy (เส้นทางหลัก file://) → OpenSky (สำรอง)
+                //   adsb.lol ไม่ส่ง ACAO → direct ถูก browser block เสมอ จึงพึ่ง proxy เป็นหลัก
+                //   OpenSky ย้ายไปท้ายสุดเพราะ anonymous โดน HTTP 429 (rate-limit) บ่อย
+                // ① adsb.lol direct (สำเร็จเฉพาะตอน served ผ่าน CORS-friendly host)
                 try {
                     j = await fetchJSON(URL_ADSB_LOL, 'aviation', MDA.cfg.cacheTTL.aviation);
                     src = 'adsb.lol';
                 } catch (e1) {
                     console.warn('[MDA·Aviation] adsb.lol direct fail:', e1.message);
-                    // ② OpenSky direct
+                    // ② adsb.lol via CORS proxy (เส้นทางหลักเมื่อรันแบบ file://)
                     try {
+                        j = await fetchViaProxy(URL_ADSB_LOL);
+                        src = 'adsb.lol (proxied)';
+                    } catch (e2) {
+                        console.warn('[MDA·Aviation] adsb.lol proxy fail:', e2.message);
+                        // ③ OpenSky direct (สำรองสุดท้าย · อาจ 429)
                         const raw = await fetchJSON(URL_OPENSKY, 'aviation_os', MDA.cfg.cacheTTL.aviation);
                         j = { ac: normalizeOpenSky(raw) };
                         src = 'OpenSky';
-                    } catch (e2) {
-                        console.warn('[MDA·Aviation] OpenSky direct fail:', e2.message);
-                        // ③ adsb.lol via allorigins proxy (กัน file:// CORS)
-                        j = await fetchViaProxy(URL_ADSB_LOL);
-                        src = 'adsb.lol (proxied)';
                     }
                 }
                 const ac = (j && Array.isArray(j.ac)) ? j.ac : [];
@@ -24066,8 +24621,13 @@ window.toggleSeabed3D = toggleSeabed3D;
                 riskEl.className    = 'val s-ok';
                 tsuEl.textContent   = 'CLEAR';
                 tsuEl.className     = 'val s-ok';
-                cabEl.textContent   = 'NOMINAL';
-                cabEl.className     = 'val s-ok';
+                // [v15.8] ความเสียหายสายจากทุ่นมีลำดับเหนือ — อย่าเขียนทับ
+                if (typeof _cableSeveredAny === 'function' && _cableSeveredAny()) {
+                    _setCableRiskFromMines();
+                } else {
+                    cabEl.textContent   = 'NOMINAL';
+                    cabEl.className     = 'val s-ok';
+                }
                 if (ind) {
                     ind.style.background = '#fb923c';
                     ind.style.boxShadow  = '0 0 6px #fb923c';
@@ -24111,11 +24671,16 @@ window.toggleSeabed3D = toggleSeabed3D;
                                            :  's-ok');
             }
 
-            cabEl.textContent = impact.cableRisk;
-            cabEl.className   = 'val ' + (impact.cableRisk === 'CRITICAL' ? 's-alert'
-                                       :  impact.cableRisk === 'WARNING'  ? 's-alert'
-                                       :  impact.cableRisk === 'CAUTION'  ? 's-warn'
-                                       :  's-ok');
+            // [v15.8] ถ้าสายขาดจากทุ่น ให้คงสถานะ SEVERED (ลำดับเหนือ seismic)
+            if (typeof _cableSeveredAny === 'function' && _cableSeveredAny()) {
+                _setCableRiskFromMines();
+            } else {
+                cabEl.textContent = impact.cableRisk;
+                cabEl.className   = 'val ' + (impact.cableRisk === 'CRITICAL' ? 's-alert'
+                                           :  impact.cableRisk === 'WARNING'  ? 's-alert'
+                                           :  impact.cableRisk === 'CAUTION'  ? 's-warn'
+                                           :  's-ok');
+            }
 
             if (ind) {
                 const col = riskColor(pga);
@@ -28036,6 +28601,498 @@ window.toggleSeabed3D = toggleSeabed3D;
     } else {
         boot();
     }
+})();
+</script>
+
+<!-- ═══════════ [v15.6] Sensing-panel LAYOUT SWITCHER (A/B/C/D · theme option) ═══════════
+     · สลับรูปแบบการจัดวาง sensor 4 แบบ — จำค่าใน localStorage['sensingLayout'] (default 'A')
+     · ทำงานบน DOM แถวเดิม (decorate/visibility เท่านั้น ไม่ re-render) → toggle wiring + v11ToggleMap ไม่พัง -->
+<script>
+(function(){
+  function init(){
+    const lp = document.getElementById('mda-layerpanel');
+    if (!lp) return;
+    const head   = lp.querySelector('.mda-lp-head');
+    const groups = Array.from(lp.querySelectorAll('.mda-lp-group'));
+    if (!head || !groups.length) return;
+    if (document.getElementById('mda-lp-layoutbar')) return; // idempotent
+
+    const DOM_ICON = {air:'🛰',surface:'🚢',sub:'🌊',seabed:'⚓',cyber:'📡',litt:'🏝',tools:'⚙'};
+    const DOM_COL  = {air:'#00d4ff',surface:'#06b6d4',sub:'#14b8a6',seabed:'#f59e0b',cyber:'#8b5cf6',litt:'#22c55e',tools:'#94a3b8'};
+    const SEGS = [
+      ['A','▤','การ์ดมีกรอบ + badge นับ active'],
+      ['B','▥','แถบไอคอนโดเมน (ดูทีละโดเมน)'],
+      ['C','▦','ชิปกริด 2 คอลัมน์ + กรองโดเมน'],
+      ['D','⌕','ค้นหา + นับ sensor ที่เปิด']
+    ];
+
+    // ── build control bar (segmented control + domain strip + search + count) ──
+    const bar = document.createElement('div');
+    bar.className = 'mda-lp-layoutbar';
+    bar.id = 'mda-lp-layoutbar';
+    bar.innerHTML =
+      '<div class="mda-lp-segs">' +
+        SEGS.map(s=>`<button class="mda-lp-seg" data-layout="${s[0]}" title="${s[2]}">${s[1]}</button>`).join('') +
+      '</div>' +
+      '<div class="mda-lp-domstrip">' +
+        groups.map(g=>{ const d=g.dataset.domain;
+          return `<button class="mda-lp-dombtn" data-dom="${d}" title="${d}" style="color:${DOM_COL[d]||'#94a3b8'}">${DOM_ICON[d]||'•'}</button>`;
+        }).join('') +
+      '</div>' +
+      '<input type="text" class="mda-lp-search" placeholder="ค้นหา sensor…" aria-label="ค้นหา sensor">' +
+      '<span class="mda-lp-acount" title="sensor ที่เปิดอยู่ทั้งหมด">0</span>';
+    head.insertAdjacentElement('afterend', bar);
+    try { bar.style.top = head.offsetHeight + 'px'; } catch(_){}
+
+    // ── inject per-group active-count badge into each head ──
+    groups.forEach(g=>{
+      const h = g.querySelector('.mda-lp-group-head');
+      if (h && !h.querySelector('.mda-lp-badge')) {
+        const b = document.createElement('span'); b.className='mda-lp-badge'; h.appendChild(b);
+      }
+    });
+
+    const segs    = Array.from(bar.querySelectorAll('.mda-lp-seg'));
+    const dombtns = Array.from(bar.querySelectorAll('.mda-lp-dombtn'));
+    const search  = bar.querySelector('.mda-lp-search');
+    const acount  = bar.querySelector('.mda-lp-acount');
+
+    let MODE = localStorage.getItem('sensingLayout') || 'A';
+    if (!/^[ABCD]$/.test(MODE)) MODE = 'A';
+    let activeDom = groups[0] ? groups[0].dataset.domain : 'air';
+
+    function refreshBadges(){
+      let totalOn = 0;
+      groups.forEach(g=>{
+        const total = g.querySelectorAll('.mda-lp-row').length;
+        const on    = g.querySelectorAll('.mda-lp-row.on').length;
+        totalOn += on;
+        const b = g.querySelector('.mda-lp-badge');
+        if (b){ b.textContent = on + '/' + total; b.classList.toggle('dim', on===0); }
+      });
+      if (acount) acount.textContent = totalOn + ' ⊙';
+    }
+
+    function applyDomainVisibility(){
+      groups.forEach(g=>{
+        if (MODE==='B') g.classList.toggle('mda-domain-hidden', g.dataset.domain!==activeDom);
+        else if (MODE==='C'){
+          const btn = dombtns.find(b=>b.dataset.dom===g.dataset.domain);
+          g.classList.toggle('mda-domain-hidden', !!(btn && btn.classList.contains('off')));
+        } else g.classList.remove('mda-domain-hidden');
+      });
+      dombtns.forEach(b=>{
+        if (MODE==='B')      b.classList.toggle('on', b.dataset.dom===activeDom);
+        else if (MODE==='C') b.classList.toggle('on', !b.classList.contains('off'));
+        else                 b.classList.remove('on');
+      });
+    }
+
+    function applySearch(){
+      const q = (search && search.value || '').trim().toLowerCase();
+      lp.querySelectorAll('.mda-lp-row').forEach(r=>{
+        if (MODE!=='D' || !q){ r.classList.remove('mda-search-hide'); return; }
+        r.classList.toggle('mda-search-hide', (r.textContent||'').toLowerCase().indexOf(q)===-1);
+      });
+    }
+
+    function apply(){
+      lp.setAttribute('data-layout', MODE);
+      segs.forEach(s=>s.classList.toggle('on', s.dataset.layout===MODE));
+      applyDomainVisibility();
+      applySearch();
+      refreshBadges();
+    }
+
+    // ── events ──
+    bar.addEventListener('click', e=>{
+      const seg = e.target.closest('.mda-lp-seg');
+      if (seg){ MODE = seg.dataset.layout; try{localStorage.setItem('sensingLayout',MODE);}catch(_){}; apply(); return; }
+      const db = e.target.closest('.mda-lp-dombtn');
+      if (db){
+        if (MODE==='B') activeDom = db.dataset.dom;
+        else if (MODE==='C') db.classList.toggle('off');
+        applyDomainVisibility();
+      }
+    });
+    if (search) search.addEventListener('input', applySearch);
+
+    // keep badges/count live when rows toggle from ANY source — observe row class changes only
+    let raf = 0;
+    const mo = new MutationObserver(muts=>{
+      if (!muts.some(m=> m.target && m.target.classList && m.target.classList.contains('mda-lp-row'))) return;
+      if (raf) return;
+      raf = requestAnimationFrame(()=>{ raf=0; refreshBadges(); });
+    });
+    groups.forEach(g=> mo.observe(g, {subtree:true, attributes:true, attributeFilter:['class']}));
+
+    // [v15.6.1] tidy default — ย่อทุกกลุ่มตอนโหลด (เห็นเฉพาะหัวการ์ด + badge)
+    groups.forEach(g=> g.classList.add('collapsed'));
+
+    apply();
+    // optional programmatic hook
+    window.__sensingLayout = {
+      get mode(){ return MODE; },
+      set(m){ if(/^[ABCD]$/.test(m)){ MODE=m; try{localStorage.setItem('sensingLayout',m);}catch(_){}; apply(); } },
+      refresh: refreshBadges
+    };
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════════
+     [v15.7] TRAP-MINE CONFIGURATION PANEL — กลไกจุดระเบิด (B) +
+     ตรรกะ fuze (C) + รูปแบบสนาม (E) · presets + full config
+     ════════════════════════════════════════════════════════════════ -->
+<style id="trapmine-css">
+#trapmine-panel{
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:420px; max-width:94vw; max-height:88vh; overflow:auto;
+  background:rgba(11,18,32,0.94); backdrop-filter:blur(14px);
+  border:1px solid rgba(74,222,128,0.30); border-radius:14px;
+  box-shadow:0 18px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(74,222,128,0.08) inset;
+  color:#e2e8f0; font-family:'Share Tech Mono','Segoe UI',sans-serif;
+  z-index:100050; display:none; padding:0;
+}
+#trapmine-panel.open{ display:block; }
+#trapmine-panel .tmp-head{
+  display:flex; align-items:center; gap:8px; cursor:move;
+  padding:11px 14px; border-bottom:1px solid rgba(74,222,128,0.18);
+  background:linear-gradient(180deg,rgba(34,197,94,0.12),transparent);
+  border-radius:14px 14px 0 0;
+}
+#trapmine-panel .tmp-head b{ color:#4ade80; font-size:13px; letter-spacing:.5px; }
+#trapmine-panel .tmp-head .tmp-sub{ color:#64748b; font-size:10px; margin-left:2px; }
+#trapmine-panel .tmp-x{
+  margin-left:auto; cursor:pointer; color:#94a3b8; font-size:16px; line-height:1;
+  width:22px; height:22px; display:flex; align-items:center; justify-content:center;
+  border-radius:6px; border:1px solid transparent;
+}
+#trapmine-panel .tmp-x:hover{ color:#f87171; border-color:rgba(248,113,113,0.4); }
+#trapmine-panel .tmp-body{ padding:12px 14px 14px; }
+#trapmine-panel .tmp-sec{ margin-bottom:13px; }
+#trapmine-panel .tmp-sec-t{
+  font-size:10px; color:#4ade80; letter-spacing:1px; text-transform:uppercase;
+  margin-bottom:6px; padding-bottom:3px; border-bottom:1px dashed rgba(74,222,128,0.18);
+}
+#trapmine-panel .tmp-sec-t small{ color:#64748b; letter-spacing:0; text-transform:none; }
+.tmp-presets{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; }
+.tmp-preset{
+  padding:7px 6px; text-align:center; cursor:pointer; font-size:10.5px;
+  background:rgba(30,41,59,0.6); border:1px solid rgba(148,163,184,0.22);
+  border-radius:8px; color:#cbd5e1; transition:.12s; line-height:1.25;
+}
+.tmp-preset:hover{ border-color:rgba(74,222,128,0.5); color:#fff; }
+.tmp-preset.on{ background:rgba(34,197,94,0.18); border-color:#4ade80; color:#bbf7d0; }
+.tmp-preset .tpi{ font-size:15px; display:block; margin-bottom:2px; }
+.tmp-desc{ font-size:10px; color:#94a3b8; margin:6px 2px 0; min-height:24px; line-height:1.35; }
+.tmp-segrow{ display:flex; flex-wrap:wrap; gap:4px; }
+.tmp-seg{
+  flex:1 1 auto; min-width:58px; text-align:center; padding:5px 4px; cursor:pointer;
+  font-size:10px; background:rgba(30,41,59,0.6); border:1px solid rgba(148,163,184,0.22);
+  border-radius:6px; color:#cbd5e1; transition:.1s;
+}
+.tmp-seg:hover{ border-color:rgba(74,222,128,0.45); }
+.tmp-seg.on{ background:rgba(34,197,94,0.20); border-color:#4ade80; color:#bbf7d0; }
+.tmp-field{ display:flex; align-items:center; gap:8px; margin:7px 0; }
+.tmp-field label{ font-size:11px; color:#cbd5e1; flex:0 0 118px; }
+.tmp-field input[type=range]{ flex:1; accent-color:#4ade80; }
+.tmp-field .tmp-val{ font-size:11px; color:#4ade80; flex:0 0 58px; text-align:right; }
+.tmp-chips{ display:flex; gap:5px; }
+.tmp-chip{
+  padding:4px 9px; cursor:pointer; font-size:10.5px; border-radius:14px;
+  background:rgba(30,41,59,0.6); border:1px solid rgba(148,163,184,0.22); color:#cbd5e1;
+}
+.tmp-chip.on{ background:rgba(34,197,94,0.20); border-color:#4ade80; color:#bbf7d0; }
+.tmp-actions{ display:flex; gap:8px; margin-top:14px; }
+.tmp-btn{
+  flex:1; padding:9px; cursor:pointer; font-size:12px; font-weight:bold;
+  border-radius:8px; border:1px solid; transition:.12s; letter-spacing:.5px;
+}
+.tmp-btn.deploy{ background:rgba(34,197,94,0.20); border-color:#4ade80; color:#bbf7d0; }
+.tmp-btn.deploy:hover{ background:rgba(34,197,94,0.32); }
+.tmp-btn.clear{ background:rgba(248,113,113,0.12); border-color:rgba(248,113,113,0.45); color:#fca5a5; }
+.tmp-btn.clear:hover{ background:rgba(248,113,113,0.22); }
+.tmp-note{ font-size:9.5px; color:#64748b; margin-top:9px; line-height:1.4; }
+</style>
+
+<div id="trapmine-panel" role="dialog" aria-label="ตั้งค่าทุ่นระเบิดดัก">
+  <div class="tmp-head">
+    <b>💣 TRAP-MINE CONFIG</b><span class="tmp-sub">ตั้งค่าทุ่นระเบิดดัก</span>
+    <span class="tmp-x" id="tmp-close" title="ปิด">✕</span>
+  </div>
+  <div class="tmp-body">
+
+    <div class="tmp-sec">
+      <div class="tmp-sec-t">รูปแบบสำเร็จรูป <small>(Quick presets)</small></div>
+      <div class="tmp-presets" id="tmp-presets"></div>
+      <div class="tmp-desc" id="tmp-desc"></div>
+    </div>
+
+    <div class="tmp-sec">
+      <div class="tmp-sec-t">B · กลไกจุดระเบิด <small>(Firing mechanism)</small></div>
+      <div class="tmp-segrow" id="tmp-mech"></div>
+    </div>
+
+    <div class="tmp-sec">
+      <div class="tmp-sec-t">C · ตรรกะ Fuze <small>(เลือกเป้า · นับลำดับ · ความไว)</small></div>
+      <div style="margin:2px 0 8px;">
+        <div style="font-size:10.5px;color:#94a3b8;margin-bottom:4px;">เลือกชนิดเป้า (target discrimination)</div>
+        <div class="tmp-chips" id="tmp-targets"></div>
+      </div>
+      <div class="tmp-field">
+        <label>นับลำดับ (ship-count)</label>
+        <input type="range" id="tmp-count" min="1" max="6" step="1">
+        <span class="tmp-val" id="tmp-count-v"></span>
+      </div>
+      <div class="tmp-field">
+        <label>ความไว (sensitivity)</label>
+        <input type="range" id="tmp-sens" min="0.6" max="1.6" step="0.05">
+        <span class="tmp-val" id="tmp-sens-v"></span>
+      </div>
+      <div style="font-size:10.5px;color:#94a3b8;margin:9px 0 4px;border-top:1px dashed rgba(148,163,184,0.2);padding-top:8px;">
+        ค่าอิทธิพลขั้นต่ำที่จุดระเบิด <small style="color:#64748b;">(influence thresholds — กรอกเอง)</small>
+      </div>
+      <div class="tmp-field" data-inf="mag">
+        <label>แม่เหล็ก (magnetic)</label>
+        <input type="range" id="tmp-imag" min="30" max="600" step="10">
+        <span class="tmp-val" id="tmp-imag-v"></span>
+      </div>
+      <div class="tmp-field" data-inf="ac">
+        <label>เสียง (acoustic)</label>
+        <input type="range" id="tmp-iac" min="100" max="150" step="1">
+        <span class="tmp-val" id="tmp-iac-v"></span>
+      </div>
+      <div class="tmp-field" data-inf="pr">
+        <label>ความดัน (pressure)</label>
+        <input type="range" id="tmp-ipr" min="1" max="25" step="1">
+        <span class="tmp-val" id="tmp-ipr-v"></span>
+      </div>
+      <div id="tmp-infl-note" style="font-size:9px;color:#64748b;margin-top:5px;line-height:1.45;"></div>
+    </div>
+
+    <div class="tmp-sec">
+      <div class="tmp-sec-t">F · ฐานวางทุ่น <small>(ก้นทะเล / กลางทะเล — ตามความลึก)</small></div>
+      <div class="tmp-segrow" id="tmp-place"></div>
+      <div class="tmp-field" id="tmp-case-wrap">
+        <label>ความลึกทุ่นลอย (moored)</label>
+        <input type="range" id="tmp-case" min="3" max="20" step="1">
+        <span class="tmp-val" id="tmp-case-v"></span>
+      </div>
+      <div id="tmp-place-note" style="font-size:9px;color:#64748b;margin-top:5px;line-height:1.45;"></div>
+    </div>
+
+    <div class="tmp-sec">
+      <div class="tmp-sec-t">E · รูปแบบสนาม <small>(Field pattern)</small></div>
+      <div class="tmp-segrow" id="tmp-pattern"></div>
+      <div class="tmp-field">
+        <label>จำนวนทุ่น (count)</label>
+        <input type="range" id="tmp-n" min="3" max="16" step="1">
+        <span class="tmp-val" id="tmp-n-v"></span>
+      </div>
+      <div class="tmp-field">
+        <label>ระยะห่าง (spacing)</label>
+        <input type="range" id="tmp-sp" min="0.3" max="2.0" step="0.05">
+        <span class="tmp-val" id="tmp-sp-v"></span>
+      </div>
+      <div class="tmp-field">
+        <label>ทิศทางแนว (orientation)</label>
+        <input type="range" id="tmp-ori" min="0" max="180" step="5">
+        <span class="tmp-val" id="tmp-ori-v"></span>
+      </div>
+    </div>
+
+    <div class="tmp-actions">
+      <button class="tmp-btn deploy" id="tmp-deploy">วางสนามทุ่น ▶</button>
+      <button class="tmp-btn clear" id="tmp-clear">เคลียร์</button>
+    </div>
+    <div class="tmp-note" id="tmp-note"></div>
+
+  </div>
+</div>
+
+<script>
+/* [v15.7] Trap-Mine Config Panel — self-contained wiring */
+(function(){
+  function init(){
+    const P = document.getElementById('trapmine-panel');
+    if (!P) return;
+    const PRESETS = (typeof TRAP_MINE_PRESETS !== 'undefined') ? TRAP_MINE_PRESETS : {};
+    // ── config ปัจจุบัน (อ้าง global trapMineCfg) ──────────────
+    function cfg(){ return (typeof trapMineCfg !== 'undefined') ? trapMineCfg : (window.__tmCfg = window.__tmCfg || {}); }
+
+    const MECH = [
+      {k:'contact',  t:'สัมผัส'},     {k:'magnetic', t:'แม่เหล็ก'},
+      {k:'acoustic', t:'เสียง'},      {k:'pressure', t:'ความดัน'},
+      {k:'multi',    t:'ผสมผสาน'},    {k:'command',  t:'สั่งการ'},
+    ];
+    const MECH_DESC = {
+      contact:'จุดระเบิดเมื่อสัมผัสตัวเรือ — กวาดทำลายง่าย',
+      magnetic:'ตรวจสนามแม่เหล็กตัวเรือเหล็ก',
+      acoustic:'ตรวจเสียงใบจักร/เครื่องยนต์',
+      pressure:'ตรวจคลื่นความดันเรือผิวน้ำ — แทบกวาดไม่ได้',
+      multi:'รวมหลาย sensor — ต้านการกวาดดีที่สุด',
+      command:'จุดระเบิดด้วยการสั่งจากฝั่งเรา — ปลอดภัย/ถูกกฎหมาย',
+    };
+    const TARGETS = [{k:'surface',t:'ผิวน้ำ'},{k:'submarine',t:'ใต้น้ำ'},{k:'drone',t:'โดรน/USV'}];
+    const PATTERNS= [{k:'line',t:'เส้นตรง'},{k:'barrier',t:'แนวโค้ง'},{k:'multi',t:'หลายแถว'},{k:'cluster',t:'กระจุก'}];
+    const PLACE   = [{k:'auto',t:'อัตโนมัติ'},{k:'bottom',t:'ก้นทะเล'},{k:'moored',t:'กลางทะเล'}];
+    // ช่องอิทธิพลที่ active ตามกลไก — ใช้ไฮไลต์ slider + note discrimination
+    const INFL_CH = {
+      magnetic:['mag'], acoustic:['ac'], pressure:['pr'],
+      multi:['mag','ac','pr'], contact:[], command:[],
+    };
+    const INFL_NM = { mag:'แม่เหล็ก', ac:'เสียง', pr:'ความดัน' };
+
+    // ── build preset buttons ─────────────────────────────────
+    const PRES_ICON = {'anti-invasion':'🛡','chokepoint':'🎯','anti-sub':'🐋'};
+    const presWrap = P.querySelector('#tmp-presets');
+    Object.keys(PRESETS).forEach(key=>{
+      const b=document.createElement('div'); b.className='tmp-preset'; b.dataset.k=key;
+      b.innerHTML='<span class="tpi">'+(PRES_ICON[key]||'●')+'</span>'+PRESETS[key].label;
+      presWrap.appendChild(b);
+    });
+    // ── build mech / targets / patterns ──────────────────────
+    const mechWrap=P.querySelector('#tmp-mech');
+    MECH.forEach(m=>{ const s=document.createElement('div'); s.className='tmp-seg'; s.dataset.k=m.k; s.textContent=m.t; mechWrap.appendChild(s); });
+    const tgWrap=P.querySelector('#tmp-targets');
+    TARGETS.forEach(t=>{ const c=document.createElement('div'); c.className='tmp-chip'; c.dataset.k=t.k; c.textContent=t.t; tgWrap.appendChild(c); });
+    const patWrap=P.querySelector('#tmp-pattern');
+    PATTERNS.forEach(p=>{ const s=document.createElement('div'); s.className='tmp-seg'; s.dataset.k=p.k; s.textContent=p.t; patWrap.appendChild(s); });
+    const placeWrap=P.querySelector('#tmp-place');
+    PLACE.forEach(p=>{ const s=document.createElement('div'); s.className='tmp-seg'; s.dataset.k=p.k; s.textContent=p.t; placeWrap.appendChild(s); });
+
+    const $count=P.querySelector('#tmp-count'), $sens=P.querySelector('#tmp-sens'),
+          $n=P.querySelector('#tmp-n'), $sp=P.querySelector('#tmp-sp'), $ori=P.querySelector('#tmp-ori'),
+          $imag=P.querySelector('#tmp-imag'), $iac=P.querySelector('#tmp-iac'), $ipr=P.querySelector('#tmp-ipr'),
+          $case=P.querySelector('#tmp-case');
+
+    // ── render UI from cfg ───────────────────────────────────
+    function render(){
+      const c=cfg();
+      presWrap.querySelectorAll('.tmp-preset').forEach(b=> b.classList.toggle('on', b.dataset.k===c.preset));
+      P.querySelector('#tmp-desc').textContent = (PRESETS[c.preset]&&PRESETS[c.preset].desc) || 'กำหนดเอง (custom)';
+      mechWrap.querySelectorAll('.tmp-seg').forEach(s=> s.classList.toggle('on', s.dataset.k===c.mech));
+      tgWrap.querySelectorAll('.tmp-chip').forEach(ch=> ch.classList.toggle('on', (c.targets||[]).indexOf(ch.dataset.k)!==-1));
+      patWrap.querySelectorAll('.tmp-seg').forEach(s=> s.classList.toggle('on', s.dataset.k===c.pattern));
+      $count.value=c.countTarget; P.querySelector('#tmp-count-v').textContent = c.countTarget==1?'ลำแรก':('ลำที่ '+c.countTarget);
+      $sens.value=c.sensMult;     P.querySelector('#tmp-sens-v').textContent = Math.round(c.sensMult*100)+'%';
+      $n.value=c.count;           P.querySelector('#tmp-n-v').textContent = c.count+' ลูก';
+      $sp.value=c.spacing;        P.querySelector('#tmp-sp-v').textContent = c.spacing.toFixed(2)+' nm';
+      $ori.value=c.orientation;   P.querySelector('#tmp-ori-v').textContent = c.orientation+'°';
+      P.querySelector('#tmp-note').textContent = '🛈 '+(MECH_DESC[c.mech]||'')+
+        '  ·  ระยะห่างควรน้อยกว่ารัศมีทำลายของทุ่น มิฉะนั้นเรือลอดผ่านได้';
+
+      // ── influence thresholds (target discrimination — กรอกเอง) ──
+      const inf = c.infl = Object.assign({mag:0,ac:0,pr:0}, c.infl||{});
+      $imag.value=inf.mag; P.querySelector('#tmp-imag-v').textContent = inf.mag+' nT';
+      $iac.value =inf.ac;  P.querySelector('#tmp-iac-v').textContent  = inf.ac+' dB';
+      $ipr.value =inf.pr;  P.querySelector('#tmp-ipr-v').textContent  = inf.pr+'';
+      const active = INFL_CH[c.mech] || [];
+      P.querySelectorAll('.tmp-field[data-inf]').forEach(f=>{
+        const on = active.indexOf(f.dataset.inf)!==-1;
+        f.classList.toggle('tmp-inf-on', on);
+        f.style.opacity = on ? '1' : '0.38';
+      });
+      const noteEl = P.querySelector('#tmp-infl-note');
+      if (active.length===0){
+        noteEl.textContent = (c.mech==='contact')
+          ? '⊘ กลไกสัมผัส: จุดระเบิดเมื่อโดนตัวเรือ — ไม่ใช้ค่าอิทธิพล (เลือกชนิดเป้าหมายอย่างเดียว)'
+          : '⊘ กลไกสั่งการ: ฝ่ายเรากดจุดระเบิดเอง — ไม่ใช้ค่าอิทธิพลอัตโนมัติ';
+      } else {
+        const names = active.map(k=>INFL_NM[k]).join(' + ');
+        let tip = '';
+        if (active.indexOf('mag')!==-1) tip += (inf.mag>=300?' · กรองเฉพาะเรือรบใหญ่':inf.mag>=120?' · กรองเรือประมง/พลเรือนเล็กออก':inf.mag>0?' · ไวสูง เสี่ยงโดนเรือเล็ก':' · ไม่ตั้งเกณฑ์ = ระเบิดทุกลำ');
+        noteEl.textContent = '🎯 ใช้ช่อง: '+names+' — เป้าต้องมีอิทธิพล ≥ เกณฑ์จึงจุดระเบิด'+tip+
+          (c.mech==='multi'?'  ·  ผสมผสาน: ต้องผ่าน ≥2 ใน 3 ช่อง':'');
+      }
+
+      // ── placement (ฐานวางทุ่น — ก้นทะเล / กลางทะเล) ──
+      placeWrap.querySelectorAll('.tmp-seg').forEach(s=> s.classList.toggle('on', s.dataset.k===(c.placement||'auto')));
+      $case.value = c.caseDepth||8; P.querySelector('#tmp-case-v').textContent = (c.caseDepth||8)+' m';
+      const caseWrap = P.querySelector('#tmp-case-wrap');
+      caseWrap.style.display = (c.placement==='moored') ? '' : 'none';
+      const pNote = P.querySelector('#tmp-place-note');
+      let depthTxt='', rec='';
+      if (typeof sampleBathyDepth==='function' && typeof UDC!=='undefined'){
+        const d = Math.abs(sampleBathyDepth(UDC.nx, UDC.ny+0.15));
+        depthTxt = 'ความลึกพื้นทะเลโดยประมาณที่กลางสนาม ≈ '+Math.round(d)+' m — ';
+        rec = (d>25) ? 'ลึก → แนะนำ "กลางทะเล" (ทอดประจำที่/moored)' : 'ตื้น → แนะนำ "ก้นทะเล" (ground)';
+      }
+      let warn='';
+      if (c.placement==='moored' && c.mech==='pressure') warn=' ⚠ ทุ่นความดันต้องวางก้นทะเล — กลางทะเลตรวจความดันไม่ได้';
+      else if (c.placement==='bottom' && (c.targets||[]).indexOf('submarine')!==-1) warn=' ⚠ ดักเรือดำน้ำลึก ควรใช้กลางทะเลให้ครอบคลุมแนวดิ่ง';
+      pNote.innerHTML = '🛈 '+depthTxt+rec+(c.placement==='auto'?'  ·  โหมดอัตโนมัติ: เลือกฐานตามความลึกแต่ละจุด':'')+
+        (warn?'<br><span style="color:#fbbf24">'+warn+'</span>':'');
+    }
+    function markCustom(){ cfg().preset='custom'; }
+
+    // ── events: presets ──────────────────────────────────────
+    presWrap.addEventListener('click', e=>{
+      const b=e.target.closest('.tmp-preset'); if(!b) return;
+      const k=b.dataset.k, p=PRESETS[k]; if(!p) return;
+      const c=cfg();
+      c.preset=k; c.mech=p.mech; c.targets=p.targets.slice();
+      c.countTarget=p.countTarget; c.sensMult=p.sensMult;
+      c.pattern=p.pattern; c.count=p.count; c.spacing=p.spacing; c.orientation=p.orientation;
+      c.infl=Object.assign({mag:0,ac:0,pr:0}, p.infl||{});
+      c.placement=p.placement||'auto'; c.caseDepth=p.caseDepth||8;
+      c.label=p.label;
+      render();
+    });
+    mechWrap.addEventListener('click', e=>{ const s=e.target.closest('.tmp-seg'); if(!s)return; cfg().mech=s.dataset.k; markCustom(); render(); });
+    patWrap.addEventListener('click', e=>{ const s=e.target.closest('.tmp-seg'); if(!s)return; cfg().pattern=s.dataset.k; markCustom(); render(); });
+    tgWrap.addEventListener('click', e=>{
+      const ch=e.target.closest('.tmp-chip'); if(!ch)return;
+      const c=cfg(), k=ch.dataset.k; c.targets=c.targets||[];
+      const i=c.targets.indexOf(k);
+      if(i===-1) c.targets.push(k); else if(c.targets.length>1) c.targets.splice(i,1);
+      markCustom(); render();
+    });
+    $count.addEventListener('input', ()=>{ cfg().countTarget=+$count.value; markCustom(); render(); });
+    $sens .addEventListener('input', ()=>{ cfg().sensMult=+$sens.value; markCustom(); render(); });
+    $n    .addEventListener('input', ()=>{ cfg().count=+$n.value; markCustom(); render(); });
+    $sp   .addEventListener('input', ()=>{ cfg().spacing=+$sp.value; markCustom(); render(); });
+    $ori  .addEventListener('input', ()=>{ cfg().orientation=+$ori.value; markCustom(); render(); });
+    // influence thresholds
+    $imag.addEventListener('input', ()=>{ const c=cfg(); c.infl=Object.assign({mag:0,ac:0,pr:0},c.infl); c.infl.mag=+$imag.value; markCustom(); render(); });
+    $iac .addEventListener('input', ()=>{ const c=cfg(); c.infl=Object.assign({mag:0,ac:0,pr:0},c.infl); c.infl.ac =+$iac.value;  markCustom(); render(); });
+    $ipr .addEventListener('input', ()=>{ const c=cfg(); c.infl=Object.assign({mag:0,ac:0,pr:0},c.infl); c.infl.pr =+$ipr.value;  markCustom(); render(); });
+    // placement base + case depth
+    placeWrap.addEventListener('click', e=>{ const s=e.target.closest('.tmp-seg'); if(!s)return; cfg().placement=s.dataset.k; markCustom(); render(); });
+    $case.addEventListener('input', ()=>{ cfg().caseDepth=+$case.value; markCustom(); render(); });
+
+    // ── deploy / clear / close ───────────────────────────────
+    P.querySelector('#tmp-deploy').addEventListener('click', ()=>{
+      if(typeof deployTrapMineField==='function'){
+        const ok=deployTrapMineField(cfg());
+        if(ok) close();
+      }
+    });
+    P.querySelector('#tmp-clear').addEventListener('click', ()=>{
+      if(typeof clearTrapMineField==='function') clearTrapMineField();
+      render();
+    });
+    function open(){ render(); P.classList.add('open'); }
+    function close(){ P.classList.remove('open'); }
+    P.querySelector('#tmp-close').addEventListener('click', close);
+    window.__openTrapMinePanel = open;
+
+    // ── drag by header ───────────────────────────────────────
+    const head=P.querySelector('.tmp-head'); let drag=null;
+    head.addEventListener('mousedown', e=>{
+      if(e.target.closest('.tmp-x')) return;
+      const r=P.getBoundingClientRect();
+      P.style.transform='none'; P.style.left=r.left+'px'; P.style.top=r.top+'px';
+      drag={dx:e.clientX-r.left, dy:e.clientY-r.top}; e.preventDefault();
+    });
+    window.addEventListener('mousemove', e=>{ if(!drag)return; P.style.left=(e.clientX-drag.dx)+'px'; P.style.top=(e.clientY-drag.dy)+'px'; });
+    window.addEventListener('mouseup', ()=>{ drag=null; });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 })();
 </script>
 </body>
