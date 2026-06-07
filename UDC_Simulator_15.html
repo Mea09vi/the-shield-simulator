@@ -720,6 +720,17 @@
             box-shadow:0 0 10px rgba(245,158,11,.4); }
         #d3sedBtn.active { background:rgba(245,158,11,.34);
             box-shadow:0 0 14px rgba(245,158,11,.6); }
+        /* [v15.9 · UNDEX] ปุ่มจำลองการระเบิดทุ่นจริง 3 มิติ — โทนส้ม-แดง ให้เข้าชุดกับ BDA 2D */
+        #d3detonateBtn {
+            background:rgb(var(--bg-dark-rgb) / .85); border:1px solid #f97316;
+            color:#fb923c; font-family:var(--font-mono), monospace;
+            font-size:10px; padding:5px 9px; border-radius:5px;
+            cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+        }
+        #d3detonateBtn:hover { background:rgba(249,115,22,.22);
+            box-shadow:0 0 10px rgba(249,115,22,.45); }
+        #d3detonateBtn:active { background:rgba(249,115,22,.34);
+            box-shadow:0 0 14px rgba(249,115,22,.65); }
         #dive3dSedLegend {
             position:absolute; bottom:92px; left:16px; z-index:9021;
             background:rgba(28,18,6,.90); border:1px solid rgba(245,158,11,.5);
@@ -2856,6 +2867,17 @@
             box-shadow: 0 0 14px rgb(var(--green-rgb) / .50);
             animation: bfPulse 1.4s ease-in-out infinite;
         }
+        /* v15.9 — แถวจำลองการระเบิด (Battle Damage Area) สีส้ม-แดง UNDEX */
+        #bf-deploy-panel .bf-dp-row.bf-mine-det {
+            border-color: rgba(249,115,22,.35);
+        }
+        #bf-deploy-panel .bf-dp-row.bf-mine-det .label { color: #fb923c; font-weight: 600; }
+        #bf-deploy-panel .bf-dp-row.bf-mine-det:hover {
+            background: rgba(249,115,22,.12);
+            border-color: rgba(249,115,22,.65);
+            box-shadow: 0 0 12px rgba(249,115,22,.30);
+        }
+        #bf-deploy-panel .bf-dp-row.bf-mine-det:hover .bf-dp-arrow { color: #fb923c; }
 
         @keyframes bfPulse {
             0%, 100% { filter: brightness(1); }
@@ -4630,7 +4652,7 @@
     </div>
 
     <!-- ASSETS — PATROL VESSELS (PV) -->
-    <div class="bf-dp-group" data-bf-group="pv">
+    <div class="bf-dp-group collapsed" data-bf-group="pv">
         <div class="bf-dp-group-head">
             <span class="bf-dp-group-name" style="color:#64ffda;">
                 <span class="bf-dp-chev">▾</span> 🚢 PATROL VESSELS
@@ -4654,7 +4676,7 @@
     </div>
 
     <!-- ASSETS — GUARDIAN UUV -->
-    <div class="bf-dp-group" data-bf-group="guuv">
+    <div class="bf-dp-group collapsed" data-bf-group="guuv">
         <div class="bf-dp-group-head">
             <span class="bf-dp-group-name" style="color:#22d3ee;">
                 <span class="bf-dp-chev">▾</span> 🤿 GUARDIAN UUV
@@ -4678,7 +4700,7 @@
     </div>
 
     <!-- ASSETS — HYDROGRAPHIC SURVEY VESSELS -->
-    <div class="bf-dp-group" data-bf-group="sv">
+    <div class="bf-dp-group collapsed" data-bf-group="sv">
         <div class="bf-dp-group-head">
             <span class="bf-dp-group-name" style="color:#fbbf24;">
                 <span class="bf-dp-chev">▾</span> 🔬 HYDROGRAPHIC SURVEY
@@ -4707,6 +4729,94 @@
         <span class="bf-dp-section-sub">สั่ง</span>
     </div>
 
+    <!-- COMMAND — MINE WARFARE (v15.9: ยกขึ้นบนสุด + เปิดค้างไว้ ให้เห็นได้ทันทีไม่ต้อง scroll) -->
+    <div class="bf-dp-group" data-bf-group="mine">
+        <div class="bf-dp-group-head">
+            <span class="bf-dp-group-name" style="color:#4ade80;">
+                <span class="bf-dp-chev">▾</span> 💣 MINE WARFARE
+            </span>
+        </div>
+        <div class="bf-dp-group-body">
+            <div class="bf-dp-row bf-mine" id="mineFieldBtn" data-bf-cmd="mine-lay"
+                 title="วางทุ่นระเบิดควบคุมในแนวเข้าฐาน">
+                <span class="bf-dp-ico">💣</span>
+                <span class="label">Lay Controlled Minefield</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+            <div class="bf-dp-row bf-mine-det" id="mineDetonateBtn"
+                 onclick="if(typeof simulateMineDetonation==='function')simulateMineDetonation()"
+                 title="จำลองการจุดระเบิดทุ่น + แสดงวงรัศมีความเสียหาย (Battle Damage Area) บนแผนที่ 2 มิติ และพวยน้ำ 3 มิติ">
+                <span class="bf-dp-ico">💥</span>
+                <span class="label">จำลองการระเบิด (BDA)</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMMAND — SEABED SENTRY (v15.10: โครงข่ายเซ็นเซอร์ก้นทะเลไร้สาย — ต่อยอดจาก Anduril "Seabed Sentry") -->
+    <div class="bf-dp-group" data-bf-group="seabed-sentry">
+        <div class="bf-dp-group-head">
+            <span class="bf-dp-group-name" style="color:#22d3ee;">
+                <span class="bf-dp-chev">▾</span> 🛰️ SEABED SENTRY
+            </span>
+        </div>
+        <div class="bf-dp-group-body">
+            <div class="bf-dp-row" id="ssDeployBtn"
+                 onclick="if(window.deploySeabedSentry)window.deploySeabedSentry()"
+                 title="วางโครงข่ายเซ็นเซอร์ก้นทะเลไร้สาย (cableless mesh) เป็นแนวตรวจจับล่วงหน้าหน้าฐาน — ต้นแบบ Anduril Seabed Sentry">
+                <span class="bf-dp-ico">🛰️</span>
+                <span class="label">วางโครงข่ายเซ็นเซอร์ (Mesh)</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+            <div class="bf-dp-row" id="ssToggleBtn"
+                 onclick="if(window.toggleSeabedSentry)window.toggleSeabedSentry()"
+                 title="แสดง/ซ่อนโครงข่ายเซ็นเซอร์ก้นทะเลบนแผนที่ 2D และ 3D">
+                <span class="bf-dp-ico">👁️</span>
+                <span class="label">แสดง/ซ่อน</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+            <div class="bf-dp-row" id="ssClearBtn"
+                 onclick="if(window.clearSeabedSentry)window.clearSeabedSentry()"
+                 title="เก็บกู้โครงข่ายเซ็นเซอร์ก้นทะเล">
+                <span class="bf-dp-ico">🧹</span>
+                <span class="label">เก็บกู้โครงข่าย</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMMAND — COPPERHEAD (v15.11: effector ยานใต้น้ำความเร็วสูง ยิงตาม cue จาก Seabed Sentry — ต้นแบบ Anduril Copperhead) -->
+    <div class="bf-dp-group" data-bf-group="copperhead">
+        <div class="bf-dp-group-head">
+            <span class="bf-dp-group-name" style="color:#fb923c;">
+                <span class="bf-dp-chev">▾</span> 🚀 COPPERHEAD
+            </span>
+        </div>
+        <div class="bf-dp-group-body">
+            <div class="bf-dp-row" id="chArmBtn"
+                 onclick="if(window.toggleCopperheadArm)window.toggleCopperheadArm()"
+                 title="ติดอาวุธ Auto-Engage — เมื่อ Seabed Sentry ตรวจพบการรุกล้ำ ระบบจะยิง Copperhead อัตโนมัติเข้าสกัด (kill chain: Sentry→Lattice→Copperhead)">
+                <span class="bf-dp-ico">🎯</span>
+                <span class="label">Auto-Engage: SAFE</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+            <div class="bf-dp-row" id="chFireBtn"
+                 onclick="if(window.launchCopperheadManual)window.launchCopperheadManual()"
+                 title="ยิง Copperhead ด้วยมือ เข้าสกัดเป้าที่ Seabed Sentry จับได้/เป้า active ที่ใกล้ฐานที่สุด">
+                <span class="bf-dp-ico">🚀</span>
+                <span class="label">ยิง Copperhead (เป้าใกล้สุด)</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+            <div class="bf-dp-row" id="chClearBtn"
+                 onclick="if(window.clearCopperheads)window.clearCopperheads()"
+                 title="เก็บ/ล้างยานเอฟเฟกเตอร์ที่กำลังวิ่งทั้งหมด">
+                <span class="bf-dp-ico">🧹</span>
+                <span class="label">เก็บ/ล้างยาน</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+        </div>
+    </div>
+
     <!-- COMMAND — ASW HELICOPTER (collapsed by default) -->
     <div class="bf-dp-group collapsed" data-bf-group="helo">
         <div class="bf-dp-group-head">
@@ -4725,23 +4835,6 @@
                  title="ส่ง ฮ.ปจอ. ขึ้น Combat Air Patrol">
                 <span class="bf-dp-ico">✈</span>
                 <span class="label">Airborne CAP</span>
-                <span class="bf-dp-arrow">›</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- COMMAND — MINE WARFARE (collapsed by default) -->
-    <div class="bf-dp-group collapsed" data-bf-group="mine">
-        <div class="bf-dp-group-head">
-            <span class="bf-dp-group-name" style="color:#4ade80;">
-                <span class="bf-dp-chev">▾</span> 💣 MINE WARFARE
-            </span>
-        </div>
-        <div class="bf-dp-group-body">
-            <div class="bf-dp-row bf-mine" id="mineFieldBtn" data-bf-cmd="mine-lay"
-                 title="วางทุ่นระเบิดควบคุมในแนวเข้าฐาน">
-                <span class="bf-dp-ico">💣</span>
-                <span class="label">Lay Controlled Minefield</span>
                 <span class="bf-dp-arrow">›</span>
             </div>
         </div>
@@ -6077,6 +6170,7 @@
         <button id="d3udcBtn"    onclick="zoomToUDC()">🔬 UDC</button>
         <button id="d3raysBtn"   onclick="toggleAcousticRays()" title="แสดง ray paths เสียงผ่าน SVP (Snell's law)">🎯 Rays</button>
         <button id="d3sedBtn"    onclick="toggleSeabed3D()" title="ชนิดตะกอนพื้นท้องทะเล (DMR) — ระบายสีพื้นทะเลตามชนิดตะกอน + Bottom Loss">⚓ ตะกอน</button>
+        <button id="d3detonateBtn" onclick="if(typeof simulateMineDetonation==='function')simulateMineDetonation()" title="จำลองการจุดระเบิดทุ่นจริง (UNDEX · Cole 1948) — พวยน้ำ + ฟองแก๊ส + คลื่นผิวน้ำ + หลุมพื้นทะเล และผลกระทบต่อน้ำโดยรอบ">💥 ระเบิดจริง</button>
     </div>
 </div>
 
@@ -20718,7 +20812,7 @@ function resetAll() {
     cableDamage = { 1:null, 2:null, 3:null };   // [v15.8] ซ่อมสาย DAS เมื่อ reset
     {
         const mb = document.getElementById('mineFieldBtn');
-        if (mb) { mb.classList.remove('mine-active'); mb.textContent = '💣 Lay Minefield'; }
+        if (mb) { mb.classList.remove('mine-active'); mb.innerHTML = '<span class="bf-dp-ico">💣</span><span class="label">Lay Controlled Minefield</span><span class="bf-dp-arrow">›</span>'; }
     }
     document.getElementById('dasAlert').style.display='none';
     document.getElementById('missionFailOverlay').style.display='none';
@@ -20817,7 +20911,7 @@ function launchScenario(type) {
     cableDamage = { 1:null, 2:null, 3:null };   // [v15.8] ซ่อมสาย DAS เมื่อ reset
     {
         const mb = document.getElementById('mineFieldBtn');
-        if (mb) { mb.classList.remove('mine-active'); mb.textContent = '💣 Lay Minefield'; }
+        if (mb) { mb.classList.remove('mine-active'); mb.innerHTML = '<span class="bf-dp-ico">💣</span><span class="label">Lay Controlled Minefield</span><span class="bf-dp-arrow">›</span>'; }
     }
     document.getElementById('dasAlert').style.display='none';
     document.getElementById('missionFailOverlay').style.display='none';
@@ -26426,6 +26520,9 @@ window.toggleSeabed3D = toggleSeabed3D;
             return narr;
         }
 
+        //  [ส่วนที่ 43] หมวด ญ — Sensor Impact Matrix (ตารางผลกระทบเซ็นเซอร์ · AI Decision Support)
+        //  วัตถุประสงค์ : ไล่เซ็นเซอร์ทุกโดเมน → ระดับผลกระทบต่อ UDC (มาก/ปานกลาง/น้อย/ไม่มี)
+        //  หลักการ      : deterministic · ทำงานทั้ง real & demo · ตรวจสอบย้อนได้ · ไม่ต้อง redeploy
         // ════════════════════════════════════════════════════════════════════════
         // [v15] SENSOR IMPACT MATRIX — ไล่ทุกเซ็นเซอร์ ทุกโดเมน → ประเมินผลกระทบต่อ UDC
         //   ระดับ: มาก(high) / ปานกลาง(med) / น้อย(low) / ไม่มี(none) · deterministic
@@ -26782,6 +26879,9 @@ window.toggleSeabed3D = toggleSeabed3D;
             return null;
         }
 
+        //  [ส่วนที่ 44] หมวด ญ — Own-Force-Aware Force Deployment (รับรู้กำลังฝ่ายเรา · v15.2)
+        //  วัตถุประสงค์ : ให้ AI พิจารณา "กำลังที่ user วางไว้แล้ว" ก่อนเสนอ/วางกำลังเพิ่ม
+        //  หลักการ      : สแกน entity ฝ่ายเรา → gap analysis → คำแนะนำไม่ซ้ำซ้อน
         // ═══ [v15.2] OWN-FORCE AWARENESS — คำแนะนำ/วางกำลังรู้จัก "กำลังที่ user วางไว้แล้ว" ═══
         // _ownForceGeo(): อ่าน PV/GUUV ที่ user วาง (nx/ny สด) → bearing/range จากศูนย์ UDC + นับ avail
         function _ownForceGeo() {
@@ -27541,6 +27641,9 @@ window.toggleSeabed3D = toggleSeabed3D;
         // BASEMAP radio wiring ลบออก v12.6.4 — ย้ายไปปุ่มใน right-rail
 
         // ══════════════════════════════════════════════════════════
+        //  [ส่วนที่ 45] หมวด ช — UI Bridge: Tactical / AIS / Actions Row Wiring (v12.2)
+        //  วัตถุประสงค์ : เชื่อมแถวใน MDA panel → ปุ่ม/โหมดเดิมของ v11 (string switch)
+        //  หลักการ      : data-action mapping · mirror state · ไม่ทับ logic เดิม
         //  v12.2 — TACTICAL / AIS / ACTIONS row wiring (v11 bridge)
         // ──────────────────────────────────────────────────────────
         //  data-mda-action     → name of the v11 toggle (string switch)
@@ -27738,6 +27841,9 @@ window.toggleSeabed3D = toggleSeabed3D;
         setTimeout(syncAllActionRows, 600);
 
         // ════════════════════════════════════════════════════════════
+        //  [ส่วนที่ 46] หมวด ญ — Default Multi-Domain Sensing Preset (ภาพ sensing เริ่มต้น · v15.1)
+        //  วัตถุประสงค์ : กำหนดเลเยอร์ sensing ที่เปิดเริ่มต้นต่อโดเมน (idempotent)
+        //  หลักการ      : ใช้ row.click จริง → sync panel · map · state ครบทุกระบบ
         //  [v15.1] DEFAULT MULTI-DOMAIN SENSING — ภาพ sensing เริ่มต้น
         //  ──────────────────────────────────────────────────────────
         //  ใช้ "การคลิกแถวจริง" (row.click) เป็นกลไก จึง sync ครบทั้ง
@@ -27954,6 +28060,9 @@ window.toggleSeabed3D = toggleSeabed3D;
         })();
 
         // ════════════════════════════════════════════════════════════════
+        //  [ส่วนที่ 47] หมวด ช — Blue Force Deploy Panel Wiring (กำลังฝ่ายเรา · v12.4)
+        //  วัตถุประสงค์ : แผง DEPLOY · BLUE FORCE → ผูกปุ่ม leaflet-control เดิม
+        //  หลักการ      : action rows + drag/collapse + count chips sync (mirror MDA)
         //  v12.4 — DEPLOY · BLUE FORCE panel wire-up
         //  • Action rows delegate to existing leaflet-control buttons
         //  • Drag + collapse + right-side handle (mirror MDA pattern)
@@ -28302,6 +28411,9 @@ window.toggleSeabed3D = toggleSeabed3D;
      - layout/position ไม่เปลี่ยน · เปลี่ยนแค่ตัวแปร :root
      ──────────────────────────────────────────────────────────── -->
 <script>
+//  [ส่วนที่ 48] หมวด ช — Theme Switcher (สลับธีม CSS runtime · v15.1)
+//  วัตถุประสงค์ : สลับธีมผ่านตัวแปร :root + ฟอนต์/สไตล์แผง — จำค่าใน localStorage
+//  หลักการ      : runtime CSS variable swap · layout/position ไม่เปลี่ยน
 (function(){
     'use strict';
     const STORAGE_KEY      = 'udc_theme';
@@ -28608,6 +28720,9 @@ window.toggleSeabed3D = toggleSeabed3D;
      · สลับรูปแบบการจัดวาง sensor 4 แบบ — จำค่าใน localStorage['sensingLayout'] (default 'A')
      · ทำงานบน DOM แถวเดิม (decorate/visibility เท่านั้น ไม่ re-render) → toggle wiring + v11ToggleMap ไม่พัง -->
 <script>
+//  [ส่วนที่ 49] หมวด ช — Sensing-Panel Layout Switcher A/B/C/D (v15.6)
+//  วัตถุประสงค์ : สลับรูปแบบการจัดวาง sensor 4 แบบ — จำค่าใน localStorage['sensingLayout']
+//  หลักการ      : decorate/visibility บน DOM แถวเดิม (ไม่ re-render) → toggle wiring ไม่พัง
 (function(){
   function init(){
     const lp = document.getElementById('mda-layerpanel');
@@ -28749,7 +28864,7 @@ window.toggleSeabed3D = toggleSeabed3D;
 <style id="trapmine-css">
 #trapmine-panel{
   position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-  width:420px; max-width:94vw; max-height:88vh; overflow:auto;
+  width:760px; max-width:96vw; max-height:92vh; overflow:auto;
   background:rgba(11,18,32,0.94); backdrop-filter:blur(14px);
   border:1px solid rgba(74,222,128,0.30); border-radius:14px;
   box-shadow:0 18px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(74,222,128,0.08) inset;
@@ -28771,8 +28886,15 @@ window.toggleSeabed3D = toggleSeabed3D;
   border-radius:6px; border:1px solid transparent;
 }
 #trapmine-panel .tmp-x:hover{ color:#f87171; border-color:rgba(248,113,113,0.4); }
-#trapmine-panel .tmp-body{ padding:12px 14px 14px; }
-#trapmine-panel .tmp-sec{ margin-bottom:13px; }
+#trapmine-panel .tmp-body{
+  padding:12px 16px 14px;
+  display:grid; grid-template-columns:1.05fr 1fr; gap:0 18px; align-items:start;
+}
+#trapmine-panel .tmp-col{ min-width:0; }
+#trapmine-panel .tmp-actions,
+#trapmine-panel .tmp-note{ grid-column:1 / -1; }
+@media (max-width:680px){ #trapmine-panel .tmp-body{ grid-template-columns:1fr; } }
+#trapmine-panel .tmp-sec{ margin-bottom:11px; }
 #trapmine-panel .tmp-sec-t{
   font-size:10px; color:#4ade80; letter-spacing:1px; text-transform:uppercase;
   margin-bottom:6px; padding-bottom:3px; border-bottom:1px dashed rgba(74,222,128,0.18);
@@ -28825,6 +28947,8 @@ window.toggleSeabed3D = toggleSeabed3D;
   </div>
   <div class="tmp-body">
 
+    <div class="tmp-col">
+
     <div class="tmp-sec">
       <div class="tmp-sec-t">รูปแบบสำเร็จรูป <small>(Quick presets)</small></div>
       <div class="tmp-presets" id="tmp-presets"></div>
@@ -28835,6 +28959,41 @@ window.toggleSeabed3D = toggleSeabed3D;
       <div class="tmp-sec-t">B · กลไกจุดระเบิด <small>(Firing mechanism)</small></div>
       <div class="tmp-segrow" id="tmp-mech"></div>
     </div>
+
+    <div class="tmp-sec">
+      <div class="tmp-sec-t">F · ฐานวางทุ่น <small>(ก้นทะเล / กลางทะเล — ตามความลึก)</small></div>
+      <div class="tmp-segrow" id="tmp-place"></div>
+      <div class="tmp-field" id="tmp-case-wrap">
+        <label>ความลึกทุ่นลอย (moored)</label>
+        <input type="range" id="tmp-case" min="3" max="20" step="1">
+        <span class="tmp-val" id="tmp-case-v"></span>
+      </div>
+      <div id="tmp-place-note" style="font-size:9px;color:#64748b;margin-top:5px;line-height:1.45;"></div>
+    </div>
+
+    <div class="tmp-sec">
+      <div class="tmp-sec-t">E · รูปแบบสนาม <small>(Field pattern)</small></div>
+      <div class="tmp-segrow" id="tmp-pattern"></div>
+      <div class="tmp-field">
+        <label>จำนวนทุ่น (count)</label>
+        <input type="range" id="tmp-n" min="3" max="16" step="1">
+        <span class="tmp-val" id="tmp-n-v"></span>
+      </div>
+      <div class="tmp-field">
+        <label>ระยะห่าง (spacing)</label>
+        <input type="range" id="tmp-sp" min="0.3" max="2.0" step="0.05">
+        <span class="tmp-val" id="tmp-sp-v"></span>
+      </div>
+      <div class="tmp-field">
+        <label>ทิศทางแนว (orientation)</label>
+        <input type="range" id="tmp-ori" min="0" max="180" step="5">
+        <span class="tmp-val" id="tmp-ori-v"></span>
+      </div>
+    </div>
+
+    </div><!-- /tmp-col 1 -->
+
+    <div class="tmp-col">
 
     <div class="tmp-sec">
       <div class="tmp-sec-t">C · ตรรกะ Fuze <small>(เลือกเป้า · นับลำดับ · ความไว)</small></div>
@@ -28873,36 +29032,7 @@ window.toggleSeabed3D = toggleSeabed3D;
       <div id="tmp-infl-note" style="font-size:9px;color:#64748b;margin-top:5px;line-height:1.45;"></div>
     </div>
 
-    <div class="tmp-sec">
-      <div class="tmp-sec-t">F · ฐานวางทุ่น <small>(ก้นทะเล / กลางทะเล — ตามความลึก)</small></div>
-      <div class="tmp-segrow" id="tmp-place"></div>
-      <div class="tmp-field" id="tmp-case-wrap">
-        <label>ความลึกทุ่นลอย (moored)</label>
-        <input type="range" id="tmp-case" min="3" max="20" step="1">
-        <span class="tmp-val" id="tmp-case-v"></span>
-      </div>
-      <div id="tmp-place-note" style="font-size:9px;color:#64748b;margin-top:5px;line-height:1.45;"></div>
-    </div>
-
-    <div class="tmp-sec">
-      <div class="tmp-sec-t">E · รูปแบบสนาม <small>(Field pattern)</small></div>
-      <div class="tmp-segrow" id="tmp-pattern"></div>
-      <div class="tmp-field">
-        <label>จำนวนทุ่น (count)</label>
-        <input type="range" id="tmp-n" min="3" max="16" step="1">
-        <span class="tmp-val" id="tmp-n-v"></span>
-      </div>
-      <div class="tmp-field">
-        <label>ระยะห่าง (spacing)</label>
-        <input type="range" id="tmp-sp" min="0.3" max="2.0" step="0.05">
-        <span class="tmp-val" id="tmp-sp-v"></span>
-      </div>
-      <div class="tmp-field">
-        <label>ทิศทางแนว (orientation)</label>
-        <input type="range" id="tmp-ori" min="0" max="180" step="5">
-        <span class="tmp-val" id="tmp-ori-v"></span>
-      </div>
-    </div>
+    </div><!-- /tmp-col 2 -->
 
     <div class="tmp-actions">
       <button class="tmp-btn deploy" id="tmp-deploy">วางสนามทุ่น ▶</button>
@@ -28914,6 +29044,9 @@ window.toggleSeabed3D = toggleSeabed3D;
 </div>
 
 <script>
+//  [ส่วนที่ 50] หมวด ง — Trap-Mine Configuration Panel (ทุ่นระเบิดควบคุม · v15.7/v15.9)
+//  วัตถุประสงค์ : ตั้งค่าสนามทุ่นระเบิดควบคุม — preset · influence threshold · bottom/moored
+//  หลักการ      : กลไกจุดระเบิด + ตรรกะ fuze + รูปแบบสนาม · target discrimination
 /* [v15.7] Trap-Mine Config Panel — self-contained wiring */
 (function(){
   function init(){
@@ -29093,6 +29226,849 @@ window.toggleSeabed3D = toggleSeabed3D;
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
+})();
+</script>
+
+<script>
+//  [ส่วนที่ 51] หมวด จ — UNDEX MINE-DETONATION SIMULATION (v15.9)
+//  วัตถุประสงค์ : เมื่อวางทุ่นแล้ว → จำลองการจุดระเบิด
+//      • แผนที่ 2 มิติ : วงรัศมีความเสียหาย (Battle Damage Area) 4 ระดับ
+//      • แผนที่ 3 มิติ : พวยน้ำ + ฟองแก๊ส + คลื่นผิวน้ำ + หลุมพื้นทะเล (ผลต่อน้ำรอบข้าง)
+//  ฐานทฤษฎี  : Cole, R.H. (1948) "Underwater Explosions" — similitude scaling
+//      Peak shock pressure  P(MPa) = 52.4·(W^1/3 / R)^1.13   (W = kg TNT-eq, R = m)
+//      ⇒ รัศมีที่ความดัน P :  R = W^1/3 · (52.4/P)^(1/1.13)
+//      Bubble 1st-max radius A_max ≈ 3.50·(W/(1+d/10.3))^1/3  (d = ความลึก m)
+//      Bubble period         T ≈ 2.11·W^1/3 / (d+10.3)^5/6  s
+//  หมายเหตุ   : อ่าวไทยน้ำตื้น → โซนอันตรายต่อนักประดาน้ำ/สัตว์ทะเลกว้างมาก
+(function(){
+  'use strict';
+
+  // ── ประมาณมวลดินระเบิด (kg TNT-eq) ตามชนิด/ฐานวางทุ่น ──────────
+  function _mineChargeKg(m){
+    let W = (m && m.placement === 'moored') ? 180 : 560;   // ก้นทะเล ≈ ทุ่นอิทธิพลหนัก
+    if (m){
+      if (m.mech === 'contact')                         W *= 0.55;  // ทุ่นชน — หัวรบเล็กกว่า
+      else if (m.mech === 'multi' || m.mech === 'pressure') W *= 1.15;
+    }
+    return W;
+  }
+  function _mineDepthM(m){
+    if (!m) return 12;
+    if (m.placement === 'moored') return Math.max(3, m.caseDepth || 8);
+    if (m.bedDepth)               return Math.max(4, m.bedDepth);
+    if (typeof sampleBathyDepth === 'function')
+      return Math.max(4, Math.abs(sampleBathyDepth(m.nx, m.ny)));
+    return (typeof D3_SEABED !== 'undefined') ? D3_SEABED : 30;
+  }
+
+  // ── ฟิสิกส์ Cole (1948) ───────────────────────────────────────
+  function _undexRadiusForP(W, P){           // P[MPa], W[kg] → R[m]
+    return Math.cbrt(W) * Math.pow(52.4 / P, 1/1.13);
+  }
+  function _bubbleMaxR(W, d){ return 3.50 * Math.cbrt(W / (1 + d/10.3)); }
+  function _bubblePeriod(W, d){ return 2.11 * Math.cbrt(W) / Math.pow(d + 10.3, 5/6); }
+
+  // 4 โซนความเสียหาย (เรียงจากในออกนอก)
+  function _undexRadii(W){
+    const Z = [
+      { name:'ทำลายตัวเรือ/ถึงตาย',            p:10,   color:'#ef4444', fill:0.16, icon:'🔴' },
+      { name:'สูญเสียการเคลื่อนที่ (mobility kill)', p:3,  color:'#f97316', fill:0.10, icon:'🟠' },
+      { name:'อุปกรณ์เสียหาย (equipment shock)',   p:1,  color:'#fbbf24', fill:0.06, icon:'🟡' },
+      { name:'อันตรายต่อนักประดาน้ำ/สัตว์ทะเล',    p:0.10, color:'#38bdf8', fill:0.04, dash:true, icon:'🔵' },
+    ];
+    Z.forEach(z => z.r = _undexRadiusForP(W, z.p));
+    return Z;
+  }
+
+  // ── วงผลต่อ "เรือ" : Keel Shock Factor (หลักนิยม) ───────────────
+  //   SF = √W/R·(1+sinφ)/2  (W=lb, R=ft) ; ตั้งฉากกราบเรือ φ=90° → factor 1
+  //   แปลง SI: R(m) = 0.4526·√W(kg)/SF   (กรณีเลวร้ายสุด)
+  //   เกณฑ์ (Wikipedia/Reid): SF≥0.5 จมเรือ · 0.2 mobility kill · 0.1 อุปกรณ์/ไฟฟ้า
+  function _ksfRadius(W, sf){ return 0.4526 * Math.sqrt(W) / sf; }
+  function _shipRings(W){
+    return [
+      { name:'เรือจม / สูญเสียกำลังรบ',           sf:0.5, color:'#dc2626', fill:0.16, icon:'⚓', metric:'KSF ≥ 0.5' },
+      { name:'สูญเสียการขับเคลื่อน (mobility kill)', sf:0.2, color:'#f97316', fill:0.09, icon:'⚙️', metric:'KSF ≥ 0.2' },
+      { name:'อุปกรณ์ / ระบบไฟเสียหาย',            sf:0.1, color:'#fbbf24', fill:0.05, icon:'🔌', metric:'KSF ≥ 0.1' },
+    ].map(z => ({ ...z, r:_ksfRadius(W, z.sf), dash:false, cite:'Keel Shock Factor — Reid (NAVSEA)' }));
+  }
+  // ── วงผลต่อ "สิ่งมีชีวิต/นักประดาน้ำ" : เกณฑ์ NOAA 2025 + Christian–Gaspin ──
+  function _marineRings(W){
+    return [
+      { name:'นักประดาน้ำ / ปลา บาดเจ็บรุนแรง',        p:0.69, color:'#c084fc', fill:0.05, icon:'🤿', metric:'P ≥ 0.69 MPa (100 psi)', cite:'Christian–Gaspin diver criteria' },
+      { name:'สัตว์เลี้ยงลูกด้วยนม เริ่มบาดเจ็บการได้ยิน', p:0.13, color:'#38bdf8', fill:0.03, icon:'🐬', metric:'PK 222 dB ≈ 0.13 MPa', cite:'NOAA/NMFS 2025 · AUD INJ onset' },
+    ].map(z => ({ ...z, r:_undexRadiusForP(W, z.p), dash:true }));
+  }
+  const _fmtR = r => (r >= 1000) ? (r/1000).toFixed(2)+' km' : Math.round(r)+' m';
+
+  // ═══════════════════════ 2D — Battle Damage Area ═══════════════
+  let _bdaLayer = null;
+  function _draw2DBda(m){
+    if (typeof L === 'undefined' || typeof map === 'undefined') return;
+    if (!_bdaLayer) _bdaLayer = L.layerGroup().addTo(map);
+    const W = _mineChargeKg(m), d = _mineDepthM(m);
+    const lat = nyToLat(m.ny), lng = nxToLng(m.nx);
+    // วงผลต่อเรือ (KSF, เส้นทึบ) + วงผลต่อสิ่งมีชีวิต (เกณฑ์ NOAA, เส้นประ)
+    const rings = _shipRings(W).concat(_marineRings(W)).sort((a, b) => b.r - a.r);
+    // วาดจากวงใหญ่ก่อน (วงเล็กทับวงใหญ่)
+    rings.forEach(z => {
+      L.circle([lat, lng], {
+        radius: z.r, color: z.color, weight: z.dash ? 1.3 : 1.6, opacity: 0.9,
+        fillColor: z.color, fillOpacity: z.fill,
+        dashArray: z.dash ? '5 6' : null, interactive: true
+      }).bindTooltip(
+        `${z.icon} ${z.name}<br>${z.metric} · R ≈ ${_fmtR(z.r)}<br>` +
+        `<span style="opacity:.65">อ้างอิง: ${z.cite}</span>`,
+        { sticky:true, opacity:0.95 }
+      ).addTo(_bdaLayer);
+    });
+    const A = _bubbleMaxR(W, d), T = _bubblePeriod(W, d);
+    L.circleMarker([lat, lng], { radius:4, color:'#fff', weight:1, fillColor:'#ff6b35', fillOpacity:1 })
+      .bindTooltip(
+        `💥 UNDEX · W ≈ ${Math.round(W)} kg TNT-eq · ลึก ${Math.round(d)} m<br>` +
+        `ฟองแก๊ส A_max ≈ ${A.toFixed(1)} m · คาบ ${T.toFixed(2)} s<br>` +
+        `<span style="opacity:.7">อ้างอิง: Cole (1948) similitude</span>`,
+        { sticky:true }
+      ).addTo(_bdaLayer);
+  }
+  function clearMineBda(){ if (_bdaLayer) _bdaLayer.clearLayers(); }
+
+  // ═══════════════════════ 3D — UNDEX plume/bubble FX ════════════
+  //  ใช้กลุ่มถาวรแยกต่างหาก (update3DEntities ล้าง d3_dynGroup ทุกเฟรม)
+  //  + ticker ของตัวเอง — แต่ละวัตถุพก userData._undexUpdate(u) คืน false เพื่อ dispose
+  let _d3fxGroup = null, _d3fxRAF = null;
+  const _ease = k => 1 - Math.pow(1 - Math.min(1, Math.max(0, k)), 2);
+
+  function _ensureFxGroup(){
+    if (_d3fxGroup) return _d3fxGroup;
+    if (typeof d3_scene === 'undefined' || !d3_scene || typeof THREE === 'undefined') return null;
+    _d3fxGroup = new THREE.Group(); _d3fxGroup.name = 'undexFX';
+    d3_scene.add(_d3fxGroup);
+    return _d3fxGroup;
+  }
+  function _fxAdd(mesh, updateFn){
+    mesh.userData._t0 = performance.now();
+    mesh.userData._undexUpdate = updateFn;
+    _d3fxGroup.add(mesh);
+  }
+  function _d3fxTick(){
+    if (!_d3fxGroup){ _d3fxRAF = null; return; }
+    const now = performance.now();
+    let alive = 0;
+    _d3fxGroup.children.slice().forEach(ch => {
+      const f = ch.userData._undexUpdate;
+      if (!f){ return; }
+      const u = (now - ch.userData._t0) / 1000;
+      let keep = true;
+      try { keep = f(u, ch); } catch(e){ keep = false; }
+      if (keep === false){ _d3fxGroup.remove(ch); try{ _disposeObject3D(ch); }catch(e){} }
+      else alive++;
+    });
+    _d3fxRAF = (alive > 0) ? requestAnimationFrame(_d3fxTick) : null;
+  }
+  function _d3fxKick(){ if (!_d3fxRAF) _d3fxRAF = requestAnimationFrame(_d3fxTick); }
+  function _clear3DFx(){
+    if (!_d3fxGroup) return;
+    _d3fxGroup.children.slice().forEach(c => { _d3fxGroup.remove(c); try{ _disposeObject3D(c); }catch(e){} });
+  }
+
+  // ── ป้ายอธิบาย FX 3 มิติ (canvas → THREE.Sprite, หันเข้ากล้องเสมอ) ──
+  function _makeLabelSprite(text, color){
+    if (typeof THREE === 'undefined') return null;
+    const cv = document.createElement('canvas'); cv.width = 512; cv.height = 128;
+    const cx = cv.getContext('2d');
+    cx.font = 'bold 44px sans-serif'; cx.textAlign = 'center'; cx.textBaseline = 'middle';
+    const tw = cx.measureText(text).width, pad = 30, bw = Math.min(500, tw + pad*2), x0 = (512 - bw)/2;
+    cx.fillStyle = 'rgba(8,13,22,0.82)';
+    if (cx.roundRect){ cx.beginPath(); cx.roundRect(x0, 30, bw, 68, 14); cx.fill(); cx.lineWidth = 3; cx.strokeStyle = color; cx.stroke(); }
+    else { cx.fillRect(x0, 30, bw, 68); cx.lineWidth = 3; cx.strokeStyle = color; cx.strokeRect(x0, 30, bw, 68); }
+    cx.fillStyle = color; cx.fillText(text, 256, 66);
+    const tex = new THREE.CanvasTexture(cv); tex.needsUpdate = true;
+    const mat = new THREE.SpriteMaterial({ map:tex, transparent:true, depthTest:false, depthWrite:false });
+    const sp = new THREE.Sprite(mat); sp.scale.set(22, 5.5, 1);
+    return sp;
+  }
+  function _fxLabel(text, color, x, y, z, delay, life){
+    const sp = _makeLabelSprite(text, color); if (!sp) return;
+    sp.position.set(x, y, z); sp.material.opacity = 0;
+    _fxAdd(sp, u => { if (u > delay + life) return false;
+      if (u < delay){ sp.material.opacity = 0; return true; }
+      const k = (u - delay) / life;
+      sp.material.opacity = (k < 0.15) ? (k/0.15)*0.95 : 0.95*(1 - (k-0.15)/0.85);
+      sp.position.y = y + k * 2.2;                 // ลอยขึ้นช้า ๆ
+      return true; });
+  }
+
+  // ── แผง readout สรุปผล BDA (HTML overlay มุมซ้ายล่าง) ──────────
+  let _readoutEl = null;
+  function _ensureReadout(){
+    if (_readoutEl) return _readoutEl;
+    const el = document.createElement('div');
+    el.id = 'undexReadout';
+    el.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9000;max-width:355px;' +
+      'font-family:var(--font-mono,monospace);font-size:11px;line-height:1.5;color:#e5eef7;' +
+      'background:rgba(8,13,22,0.93);border:1px solid #f97316;border-radius:9px;' +
+      'box-shadow:0 8px 30px rgba(0,0,0,.55);padding:11px 13px;display:none;backdrop-filter:blur(3px);';
+    document.body.appendChild(el);
+    _readoutEl = el; return el;
+  }
+  function _hideReadout(){ if (_readoutEl) _readoutEl.style.display = 'none'; }
+  function _show3DReadout(W, d){
+    const el = _ensureReadout();
+    const ship = _shipRings(W), marine = _marineRings(W);
+    const A = _bubbleMaxR(W, d), T = _bubblePeriod(W, d);
+    const li = z => '<div style="padding-left:9px">• ' + z.name +
+        ' <span style="opacity:.55">(' + z.metric + ')</span> → <b>' + _fmtR(z.r) + '</b></div>';
+    el.innerHTML =
+      '<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(249,115,22,.4);padding-bottom:5px;margin-bottom:6px">' +
+        '<b style="color:#fb923c;letter-spacing:.3px">💥 UNDEX · BATTLE DAMAGE ASSESSMENT</b>' +
+        '<span id="undexReadoutX" style="cursor:pointer;color:#94a3b8;padding:0 4px;font-weight:bold">✕</span></div>' +
+      '<div style="color:#cbd5e1">ดินระเบิด <b style="color:#fde68a">' + Math.round(W) + ' kg</b> TNT-eq · ความลึก ' + Math.round(d) + ' m<br>' +
+        'ฟองแก๊ส A_max <b>' + A.toFixed(1) + ' m</b> · คาบ <b>' + T.toFixed(2) + ' s</b> · พวยน้ำ/โดมละอองพุ่งถึงผิวน้ำ</div>' +
+      '<div style="margin-top:7px"><b style="color:#f87171">⚓ ผลต่อเรือ (Keel Shock Factor)</b>' +
+        ship.map(li).join('') +
+        '<div style="padding-left:9px;opacity:.65;font-size:10px">กลไก: double-hit (คลื่นตรง + คลื่นสะท้อนพื้น) + bubble whipping</div></div>' +
+      '<div style="margin-top:7px"><b style="color:#7dd3fc">🐬 ผลต่อสิ่งมีชีวิต / นักประดาน้ำ</b>' +
+        marine.map(li).join('') + '</div>' +
+      '<div style="margin-top:7px;padding-top:5px;border-top:1px dashed rgba(148,163,184,.3);font-size:10px;opacity:.82">' +
+        '🌊 อ่าวไทยน้ำตื้น: พื้นทราย/โคลนอ่อน "ลด+หน่วง" คลื่นสะท้อนพื้น → ความเสียหายต่ำกว่าพื้นหินแข็ง<br>' +
+        '📚 Cole 1948 · Swisdak NSWC TR76-116 · KSF (Reid) · NOAA/NMFS 2025</div>';
+    el.style.display = 'block';
+    const x = el.querySelector('#undexReadoutX'); if (x) x.onclick = _hideReadout;
+  }
+
+  function _d3MineDetonation(nx, ny, W, d){
+    const g = _ensureFxGroup(); if (!g) return;
+    const x = _d3x(nx), z = _d3z(ny);
+    const seabedY = (typeof bathyWorldY === 'function') ? bathyWorldY(x, z) : _d3y(D3_SEABED);
+    const mineY   = _d3y(Math.min(d, (typeof D3_SEABED !== 'undefined') ? D3_SEABED : d));
+    const Z = _undexRadii(W);
+    const lethalU = Math.max(2, m2u(Z[0].r));
+    const mobU    = Math.max(3, m2u(Z[1].r));
+    const shockU  = Math.max(4, m2u(Z[2].r));
+    const diverU  = m2u(Z[3].r);
+    const A = _bubbleMaxR(W, d), T = _bubblePeriod(W, d);
+    const bubU   = Math.max(1.5, Math.min(m2u(A), D3_W * 0.10));
+    const plumeH = Math.min(m2u(Math.max(20, Z[0].r * 1.2)), D3_W * 0.16);
+
+    // 1) แสงวาบจุดระเบิด
+    const light = new THREE.PointLight(0xffd9a0, 7, lethalU * 10, 2);
+    light.position.set(x, mineY + 1, z);
+    _fxAdd(light, u => { if (u > 0.45) return false; light.intensity = 7 * (1 - u/0.45); return true; });
+
+    // 2) คลื่นกระแทก (shock sphere) ขยายเร็ว
+    const ss = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 20, 16),
+      new THREE.MeshBasicMaterial({ color:0xfff1c9, transparent:true, opacity:0.5,
+        blending:THREE.AdditiveBlending, depthWrite:false }));
+    ss.position.set(x, mineY, z);
+    _fxAdd(ss, u => { const Lf=0.55; if (u>Lf) return false; const k=u/Lf;
+      ss.scale.setScalar(0.3 + mobU*_ease(k)); ss.material.opacity = 0.5*(1-k); return true; });
+
+    // 3) ฟองแก๊ส (gas bubble) ขยาย-ยุบตามคาบ แล้วลอยขึ้น
+    if (mineY < -0.5){
+      const bub = new THREE.Mesh(
+        new THREE.SphereGeometry(1, 18, 14),
+        new THREE.MeshPhongMaterial({ color:0xbfe9ff, emissive:0x183848, transparent:true,
+          opacity:0.55, shininess:90, depthWrite:false }));
+      bub.position.set(x, mineY, z);
+      const bubLife = Math.min(3.4, T*2.2), riseTo = Math.min(-0.2, mineY + Math.abs(mineY)*0.85);
+      _fxAdd(bub, u => { if (u>bubLife) return false;
+        const pulse = 0.55 + 0.45*Math.abs(Math.sin(Math.PI*(u/T)));
+        bub.scale.setScalar(bubU*pulse);
+        bub.position.y = mineY + (riseTo-mineY)*Math.min(1, u/bubLife);
+        bub.material.opacity = 0.06 + 0.5*(1-u/bubLife);
+        return true; });
+    }
+
+    // 4) พวยน้ำ (surface plume column) — โผล่หลังฟองแก๊สถึงผิวน้ำ
+    const pDelay = Math.min(0.8, T*0.6), pLife = 2.4;
+    const plume = new THREE.Mesh(
+      new THREE.CylinderGeometry(bubU*0.45, bubU*0.9, 1, 16, 1, true),
+      new THREE.MeshBasicMaterial({ color:0xeaf6ff, transparent:true, opacity:0.0,
+        depthWrite:false, side:THREE.DoubleSide }));
+    plume.position.set(x, 0, z);
+    _fxAdd(plume, u => { if (u > pDelay+pLife) return false;
+      if (u < pDelay){ plume.material.opacity = 0; return true; }
+      const k = (u-pDelay)/pLife; const h = Math.max(0.01, plumeH*Math.sin(Math.PI*Math.min(1,k)));
+      plume.scale.y = h; plume.position.y = h/2; plume.material.opacity = 0.55*(1-k);
+      return true; });
+
+    // 5) ละอองน้ำยอด (spray dome) ที่ผิวน้ำ
+    const dome = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 18, 10, 0, Math.PI*2, 0, Math.PI/2),
+      new THREE.MeshBasicMaterial({ color:0xffffff, transparent:true, opacity:0.0, depthWrite:false }));
+    dome.position.set(x, 0, z);
+    const domeLife = 1.7, domeMax = mobU*0.7;
+    _fxAdd(dome, u => { if (u > pDelay+domeLife) return false;
+      if (u < pDelay){ dome.material.opacity = 0; return true; }
+      const k = (u-pDelay)/domeLife;
+      dome.scale.set(domeMax*_ease(k), plumeH*0.4*_ease(k), domeMax*_ease(k));
+      dome.material.opacity = 0.45*(1-k); return true; });
+
+    // 6) คลื่นวงผิวน้ำ (surface ripple rings) แผ่ออกถึงเขตอันตรายนักประดาน้ำ
+    const rMax = Math.min(diverU > 0 ? diverU : shockU*2, D3_W*0.45);
+    [0, 0.3, 0.6].forEach(delay => {
+      const ring = new THREE.Mesh(
+        new THREE.RingGeometry(0.92, 1.0, 56),
+        new THREE.MeshBasicMaterial({ color:0x9fe4ff, transparent:true, opacity:0.0,
+          side:THREE.DoubleSide, depthWrite:false }));
+      ring.rotation.x = -Math.PI/2; ring.position.set(x, 0.2, z);
+      const rLife = 2.8;
+      _fxAdd(ring, u => { if (u > delay+rLife) return false;
+        if (u < delay){ ring.material.opacity = 0; return true; }
+        const k = (u-delay)/rLife; const rr = Math.max(0.5, rMax*_ease(k));
+        ring.scale.set(rr, rr, rr); ring.material.opacity = 0.5*(1-k); return true; });
+    });
+
+    // 7) แผ่นน้ำปั่นป่วน (disturbed-water disc) ค้างนาน ค่อย ๆ จาง
+    const disc = new THREE.Mesh(
+      new THREE.CircleGeometry(1, 44),
+      new THREE.MeshBasicMaterial({ color:0x274b63, transparent:true, opacity:0.0,
+        side:THREE.DoubleSide, depthWrite:false }));
+    disc.rotation.x = -Math.PI/2; disc.position.set(x, 0.05, z);
+    const discLife = 4.5;
+    _fxAdd(disc, u => { if (u > discLife) return false; const k = u/discLife;
+      const rr = mobU*Math.min(1, k*3); disc.scale.set(rr, rr, rr);
+      disc.material.opacity = 0.30*(1-k); return true; });
+
+    // 8) หลุมพื้นทะเล (seabed crater) — เฉพาะทุ่นก้นทะเล
+    if (mineY <= seabedY + 2){
+      const crater = new THREE.Mesh(
+        new THREE.RingGeometry(0.5, 1.0, 36),
+        new THREE.MeshBasicMaterial({ color:0x140d08, transparent:true, opacity:0.0,
+          side:THREE.DoubleSide, depthWrite:false }));
+      crater.rotation.x = -Math.PI/2; crater.position.set(x, seabedY + 0.3, z);
+      const craterMax = Math.max(1.5, lethalU*1.4), cLife = 6.5;
+      _fxAdd(crater, u => { if (u > cLife) return false; const k = u/cLife;
+        const rr = craterMax*Math.min(1, k*4); crater.scale.set(rr, rr, rr);
+        crater.material.opacity = (k<0.1 ? k/0.1 : 1) * 0.55 * (1 - Math.max(0, (k-0.6)/0.4));
+        return true; });
+    }
+
+    // 9) ป้ายอธิบาย FX — อธิบายว่าแต่ละปรากฏการณ์คืออะไร
+    _fxLabel('⚡ คลื่นกระแทก (shockwave)', '#fff1c9',
+             x, mineY + Math.max(3, mobU*0.55), z, 0.05, 1.7);
+    _fxLabel('🫧 ฟองแก๊ส · คาบ ' + T.toFixed(2) + ' s', '#bfe9ff',
+             x + bubU*0.7, Math.min(-1, mineY*0.55), z, 0.55, 2.3);
+    _fxLabel('🌊 พวยน้ำ / โดมละออง', '#eaf6ff',
+             x, Math.max(plumeH*0.7, 4), z, Math.min(0.8, T*0.6) + 0.3, 2.3);
+
+    _d3fxKick();
+  }
+
+  // ═══════════════════════ จุดเข้าหลัก ═══════════════════════════
+  function simulateMineDetonation(){
+    if (typeof seaMines === 'undefined' || !Array.isArray(seaMines)) return;
+    const live = seaMines.filter(m => m && m.controlled &&
+                                  m.state !== 'DETONATED' && m.state !== 'NEUTRALIZED');
+    const targets = live.length ? live
+                  : seaMines.filter(m => m && m.state !== 'DETONATED');
+    if (!targets.length){
+      if (typeof addLog === 'function')
+        addLog('💥 ยังไม่มีทุ่นระเบิดที่จะจุด — กรุณาวางสนามทุ่นก่อน', '#fbbf24');
+      return;
+    }
+    clearMineBda();
+    if (typeof addLog === 'function')
+      addLog(`💥 จำลองการจุดระเบิดทุ่น ${targets.length} ลูก (UNDEX · Cole 1948)`, '#fb923c');
+    targets.forEach((m, i) => {
+      setTimeout(() => {
+        const W = _mineChargeKg(m), d = _mineDepthM(m);
+        const ship = _shipRings(W), marine = _marineRings(W);
+        try { _draw2DBda(m); } catch(e){}
+        try { _show3DReadout(W, d); } catch(e){}
+        try { if (typeof _detonateMine === 'function' && m.state !== 'DETONATED') _detonateMine(m, 'SIM'); } catch(e){}
+        if (typeof d3_active !== 'undefined' && d3_active){ try { _d3MineDetonation(m.nx, m.ny, W, d); } catch(e){} }
+        if (typeof addLog === 'function')
+          addLog(`  • W≈${Math.round(W)}kg ลึก${Math.round(d)}m → ` +
+                 `⚓เรือ:จม ${_fmtR(ship[0].r)} · mob ${_fmtR(ship[1].r)} | ` +
+                 `🐬ทะเล:${_fmtR(marine[1].r)}`, '#94a3b8');
+      }, i * 420);
+    });
+  }
+
+  // ── ล้าง BDA/FX เมื่อเคลียร์หรือวางสนามทุ่นใหม่ (monkey-patch) ──
+  if (typeof clearTrapMineField === 'function'){
+    const _origClear = clearTrapMineField;
+    clearTrapMineField = function(){ try{ clearMineBda(); _clear3DFx(); _hideReadout(); }catch(e){} return _origClear.apply(this, arguments); };
+    window.clearTrapMineField = clearTrapMineField;
+  }
+  if (typeof deployTrapMineField === 'function'){
+    const _origDeploy = deployTrapMineField;
+    deployTrapMineField = function(){ try{ clearMineBda(); _hideReadout(); }catch(e){} return _origDeploy.apply(this, arguments); };
+    window.deployTrapMineField = deployTrapMineField;
+  }
+
+  // export
+  window.simulateMineDetonation = simulateMineDetonation;
+  window.clearMineBda           = clearMineBda;
+})();
+</script>
+
+<script>
+/* ==================================================================
+   [ส่วนที่ 52] หมวด ฉ — SEABED SENTRY : Cableless Sensor Mesh (v15.10)
+   ------------------------------------------------------------------
+   วัตถุประสงค์ : โครงข่ายเซ็นเซอร์ก้นทะเล "ไร้สาย" วางเป็นแนวตรวจจับ
+                 ล่วงหน้า (sensing screen) หน้าฐาน UDC — โหนดเชื่อมกัน
+                 เป็น mesh, ตรวจจับเรือ/ยานใต้น้ำที่รุกล้ำแล้วส่งเตือน
+   ต้นแบบ      : Anduril "Seabed Sentry" (cableless seabed sensor nodes
+                 + Lattice mesh) — ศึกษาตามที่อาจารย์ที่ปรึกษามอบหมาย
+   หมายเหตุ    : ระยะตรวจจับ/ระยะ mesh เป็น "ค่าจำลอง (notional)" —
+                 สเปกจริงของ Seabed Sentry เป็นข้อมูลปิด
+   เชื่อมต่อ    : การตรวจจับ (cue) เตรียมเป็น hook ให้โมดูล B (Copperhead)
+                 ผ่าน window._ssCuedContacts
+   ================================================================== */
+(function(){
+  'use strict';
+  let seabedNodes = [];
+  let _ssSeq = 0, _ssDeployed = false, _ssVisible = true;
+  let _ssLayer = null;        // Leaflet layerGroup
+  let _ssGroup = null;        // THREE.Group (persistent)
+  let _ssPulse = [];          // [{ringMat, base, phase}] for animation
+  let _ssScanTimer = null;
+  let _ssRaf = 0, _ssT0 = null;
+  const _SS_COLOR = '#22d3ee', _SS_CUE = '#f43f5e';
+
+  // ---- helper: meters between two {nx,ny} ----
+  function _ssDistM(a, b){
+    try{
+      if (typeof haversineNm === 'function')
+        return haversineNm(nyToLat(a.ny), nxToLng(a.nx), nyToLat(b.ny), nxToLng(b.nx)) * 1852;
+    }catch(e){}
+    const dx=(a.nx-b.nx), dy=(a.ny-b.ny); return Math.sqrt(dx*dx+dy*dy)*100000; // planar fallback
+  }
+
+  // ---- deploy ----
+  function deploySeabedSentry(cfg){
+    cfg = cfg || {};
+    clearSeabedSentry();
+    const n  = cfg.count   || 9;
+    const dR = cfg.detectR || 2000;   // notional acoustic detection radius (m/โหนด)
+    const mR = cfg.meshR   || 5200;   // notional mesh comm-link range (m)
+    const cx = (typeof UDC!=='undefined' && UDC) ? UDC.nx : 0.5;
+    const cy = (typeof UDC!=='undefined' && UDC) ? UDC.ny : 0.5;
+    const span  = 0.24;               // E–W extent ของแนวตรวจจับ
+    const baseY = cy + 0.20;          // seaward ของฐาน (+ny = ลงใต้/ออกทะเล)
+    for (let i=0;i<n;i++){
+      const t = (n>1) ? (i/(n-1) - 0.5) : 0;       // -0.5..0.5
+      let nx = cx + t*span;
+      let ny = baseY - Math.cos(t*Math.PI)*0.035;  // โค้งเล็กน้อย bowing ออกทะเล
+      ny += (i%2 ? 0.030 : 0);                       // stagger → mesh 2 แถว
+      nx = Math.max(0.02, Math.min(0.98, nx));
+      ny = Math.max(0.02, Math.min(0.98, ny));
+      let depth = 30;
+      try{ if (typeof sampleBathyDepth==='function') depth = sampleBathyDepth(nx,ny) || 30; }catch(e){}
+      seabedNodes.push({ id:++_ssSeq, nx, ny, depth, detectR:dR, meshR:mR,
+                         state:'active', cuedLabel:null, pulse:(i*0.7)%6.28 });
+    }
+    _ssDeployed = true; _ssVisible = true;
+    _ss2dRender(); _ss3dRender(); _ssStartScan(); _ssStartRaf();
+    _ssSyncBtns();
+    if (typeof addLog==='function')
+      addLog(`[SEABED SENTRY] วางโครงข่ายเซ็นเซอร์ก้นทะเลไร้สาย ${n} โหนด · ตรวจจับ R≈${(dR/1000).toFixed(1)} km/โหนด · mesh-linked`, '#22d3ee');
+    try{ if (typeof setDomain==='function') setDomain('underwater','ok'); }catch(e){}
+    return seabedNodes.length;
+  }
+
+  // ---- clear ----
+  function clearSeabedSentry(){
+    seabedNodes = []; _ssDeployed = false; _ssPulse = [];
+    if (_ssLayer){ try{ _ssLayer.clearLayers(); if (typeof map!=='undefined' && map) map.removeLayer(_ssLayer); }catch(e){} }
+    _ssDispose3D();
+    _ssStopScan(); _ssStopRaf();
+    try{ delete window._ssCuedContacts; }catch(e){ window._ssCuedContacts = null; }
+    _ssSyncBtns();
+    if (typeof addLog==='function') addLog('[SEABED SENTRY] เก็บกู้โครงข่ายเซ็นเซอร์ก้นทะเล', '#94a3b8');
+  }
+
+  // ---- toggle visibility ----
+  function toggleSeabedSentry(){
+    if (!_ssDeployed){ if(typeof addLog==='function') addLog('[SEABED SENTRY] ยังไม่ได้วางโครงข่าย', '#f59e0b'); return; }
+    _ssVisible = !_ssVisible;
+    _ss2dRender(); _ss3dRender();
+    _ssSyncBtns();
+    if (typeof addLog==='function') addLog('[SEABED SENTRY] ' + (_ssVisible?'แสดง':'ซ่อน') + 'โครงข่ายเซ็นเซอร์', '#22d3ee');
+  }
+
+  // ---- 2D render (Leaflet) ----
+  function _ss2dRender(){
+    if (typeof map==='undefined' || !map || typeof L==='undefined') return;
+    if (!_ssLayer) _ssLayer = L.layerGroup();
+    _ssLayer.clearLayers();
+    if (!_ssVisible || !seabedNodes.length){ try{ map.removeLayer(_ssLayer); }catch(e){} return; }
+    // mesh links
+    for (let i=0;i<seabedNodes.length;i++)
+      for (let j=i+1;j<seabedNodes.length;j++){
+        const a=seabedNodes[i], b=seabedNodes[j];
+        if (_ssDistM(a,b) <= a.meshR)
+          L.polyline([[nyToLat(a.ny),nxToLng(a.nx)],[nyToLat(b.ny),nxToLng(b.nx)]],
+            { color:_SS_COLOR, weight:1, opacity:0.30, dashArray:'2 5', interactive:false }).addTo(_ssLayer);
+      }
+    // detection rings + node markers
+    seabedNodes.forEach(nd=>{
+      const lat=nyToLat(nd.ny), lng=nxToLng(nd.nx), cued=(nd.state==='cued');
+      L.circle([lat,lng], { radius:nd.detectR, color:cued?_SS_CUE:_SS_COLOR, weight:1,
+        opacity:cued?0.7:0.45, fillColor:cued?_SS_CUE:_SS_COLOR, fillOpacity:cued?0.10:0.05, interactive:false }).addTo(_ssLayer);
+      L.circleMarker([lat,lng], { radius:5, color:cued?_SS_CUE:_SS_COLOR, weight:2,
+        fillColor:cued?_SS_CUE:'#0e7490', fillOpacity:0.92 })
+        .bindTooltip(`🛰️ Seabed Sentry #${nd.id}` + (cued?` · ⚠ CONTACT`:``) +
+          `<br>ลึก ${Math.round(nd.depth)} m · ตรวจจับ R≈${(nd.detectR/1000).toFixed(1)} km` +
+          (cued&&nd.cuedLabel?`<br>เป้า: ${nd.cuedLabel}`:``) +
+          `<br><span style="opacity:.6">เซ็นเซอร์ก้นทะเลไร้สาย (mesh) · ค่าจำลอง</span>`, { sticky:true })
+        .addTo(_ssLayer);
+    });
+    _ssLayer.addTo(map);
+  }
+
+  // ---- 3D render (Three.js) ----
+  function _ssDispose3D(){
+    if (_ssGroup && typeof d3_scene!=='undefined' && d3_scene){
+      try{ _ssGroup.traverse(o=>{ if(typeof _disposeObject3D==='function') _disposeObject3D(o); }); d3_scene.remove(_ssGroup); }catch(e){}
+    }
+    _ssGroup = null; _ssPulse = [];
+  }
+  function _ss3dRender(){
+    if (typeof THREE==='undefined' || typeof d3_scene==='undefined' || !d3_scene) return;
+    _ssDispose3D();
+    if (!_ssVisible || !seabedNodes.length) return;
+    _ssGroup = new THREE.Group(); _ssGroup.name='seabed-sentry';
+    const pos = [];
+    seabedNodes.forEach(nd=>{
+      const x=_d3x(nd.nx), z=_d3z(nd.ny);
+      let y=0; try{ if (typeof bathyWorldY==='function') y=bathyWorldY(x,z); }catch(e){}
+      pos.push({x,y,z});
+      const cued=(nd.state==='cued'), col=new THREE.Color(cued?_SS_CUE:_SS_COLOR);
+      // node body — emissive sphere on seabed
+      const body = new THREE.Mesh(new THREE.SphereGeometry(1.4,12,10),
+        new THREE.MeshBasicMaterial({ color:col }));
+      body.position.set(x, y+1.4, z); _ssGroup.add(body);
+      // thin sensor pylon
+      const pylon = new THREE.Mesh(new THREE.CylinderGeometry(0.18,0.28,6,6),
+        new THREE.MeshBasicMaterial({ color:col, transparent:true, opacity:0.6 }));
+      pylon.position.set(x, y+3, z); _ssGroup.add(pylon);
+      // detection ring lying on seabed (capped radius for readability)
+      let rr = 6; try{ rr = Math.min(m2u(nd.detectR), D3_W*0.18); }catch(e){}
+      const ring = new THREE.Mesh(new THREE.RingGeometry(rr*0.9, rr, 40),
+        new THREE.MeshBasicMaterial({ color:col, transparent:true, opacity:0.22, side:THREE.DoubleSide }));
+      ring.position.set(x, y+0.6, z); ring.rotation.x=-Math.PI/2; _ssGroup.add(ring);
+      _ssPulse.push({ ringMat:ring.material, phase:nd.pulse, base:0.22 });
+    });
+    // mesh-link line segments
+    const linePts=[];
+    for (let i=0;i<seabedNodes.length;i++)
+      for (let j=i+1;j<seabedNodes.length;j++)
+        if (_ssDistM(seabedNodes[i],seabedNodes[j]) <= seabedNodes[i].meshR){
+          const a=pos[i], b=pos[j]; linePts.push(a.x,a.y+1.4,a.z, b.x,b.y+1.4,b.z);
+        }
+    if (linePts.length){
+      const lg=new THREE.BufferGeometry();
+      lg.setAttribute('position', new THREE.Float32BufferAttribute(linePts,3));
+      _ssGroup.add(new THREE.LineSegments(lg,
+        new THREE.LineBasicMaterial({ color:new THREE.Color(_SS_COLOR), transparent:true, opacity:0.35 })));
+    }
+    d3_scene.add(_ssGroup);
+  }
+
+  // ---- pulse animation (self-RAF) ----
+  function _ssStartRaf(){
+    if (_ssRaf) return; _ssT0=null;
+    const tick=(ts)=>{
+      if (_ssT0===null) _ssT0=ts; const t=(ts-_ssT0)/1000;
+      const active = (typeof d3_active==='undefined') || d3_active;
+      if (active && _ssPulse.length){
+        for (const p of _ssPulse){
+          const k = 0.5+0.5*Math.sin(t*2.2 + p.phase);
+          if (p.ringMat) p.ringMat.opacity = p.base*(0.4+0.9*k);
+        }
+      }
+      // re-sync 3D if user toggled into 3D after deploy
+      if (_ssDeployed && _ssVisible && active && !_ssGroup) _ss3dRender();
+      _ssRaf = requestAnimationFrame(tick);
+    };
+    _ssRaf = requestAnimationFrame(tick);
+  }
+  function _ssStopRaf(){ if (_ssRaf){ cancelAnimationFrame(_ssRaf); _ssRaf=0; } }
+
+  // ---- detection scan (cue hook for module B / Copperhead) ----
+  function _ssStartScan(){ _ssStopScan(); _ssScanTimer = setInterval(_ssScan, 1200); }
+  function _ssStopScan(){ if (_ssScanTimer){ clearInterval(_ssScanTimer); _ssScanTimer=null; } }
+  function _ssScan(){
+    if (!_ssDeployed || !seabedNodes.length) return;
+    if (typeof threats==='undefined' || !Array.isArray(threats)) return;
+    // seabed acoustic ตรวจจับเรือผิวน้ำ/ใต้น้ำ — ไม่ตรวจจับอากาศยาน (drone)
+    const subj = threats.filter(t => t && t.active && t.type && t.type!=='drone');
+    let changed=false, newCue=null;
+    seabedNodes.forEach(nd=>{
+      let near=null, best=Infinity;
+      for (const t of subj){
+        const d=_ssDistM(nd,{nx:t.nx, ny:t.ny});
+        if (d<=nd.detectR && d<best){ best=d; near=t; }
+      }
+      const wasCued=(nd.state==='cued');
+      if (near){
+        nd.state='cued'; nd.cuedLabel = near.label||near.type;
+        if (!wasCued){ changed=true; newCue=newCue||{nd, t:near}; }
+      } else if (wasCued){
+        nd.state='active'; nd.cuedLabel=null; changed=true;
+      }
+    });
+    if (changed){
+      _ss2dRender(); _ss3dRender();
+      if (newCue && typeof addLog==='function')
+        addLog(`[SEABED SENTRY] ⚠ ตรวจพบการรุกล้ำ — โหนด #${newCue.nd.id} จับสัญญาณ ${newCue.t.label||newCue.t.type} (acoustic, mesh-relayed)`, '#f43f5e');
+      // hook ส่งต่อให้โมดูล B (Copperhead)
+      window._ssCuedContacts = seabedNodes.filter(n=>n.state==='cued')
+        .map(n=>({ nodeId:n.id, nx:n.nx, ny:n.ny, target:n.cuedLabel }));
+    }
+  }
+
+  // ---- deploy-panel button state sync ----
+  function _ssSyncBtns(){
+    try{
+      const tg=document.getElementById('ssToggleBtn');
+      if (tg){ const lab=tg.querySelector('.label');
+        if (lab) lab.textContent = _ssDeployed ? (_ssVisible?'ซ่อนโครงข่าย':'แสดงโครงข่าย') : 'แสดง/ซ่อน';
+        tg.style.opacity = _ssDeployed?'1':'0.55'; }
+      const dp=document.getElementById('ssDeployBtn'); if(dp) dp.style.opacity = _ssDeployed?'0.6':'1';
+      const cl=document.getElementById('ssClearBtn'); if(cl) cl.style.opacity = _ssDeployed?'1':'0.55';
+    }catch(e){}
+  }
+
+  // ---- exports ----
+  window.deploySeabedSentry = deploySeabedSentry;
+  window.clearSeabedSentry  = clearSeabedSentry;
+  window.toggleSeabedSentry = toggleSeabedSentry;
+  window._ssNodes = function(){ return seabedNodes.slice(); };
+})();
+</script>
+
+<script>
+/* ==================================================================
+   [ส่วนที่ 53] หมวด ช — COPPERHEAD : Autonomous Undersea Effector (v15.11)
+   ------------------------------------------------------------------
+   วัตถุประสงค์ : ยานใต้น้ำเอฟเฟกเตอร์ความเร็วสูง (>30 kn class) ที่ถูก
+                 ปล่อยตาม "cue" จากโครงข่าย Seabed Sentry (โมดูล A) เพื่อ
+                 วิ่งเข้าสกัด/ทำลายเป้าที่รุกล้ำ — ปิด kill chain:
+                 Seabed Sentry (detect) → Lattice (decide) → Copperhead (engage)
+   ต้นแบบ      : Anduril "Copperhead" (recoverable high-speed AUV + warhead
+                 subvariant "-M" เทียบเคียง Mk.54/Mk.48) — ศึกษาตามที่
+                 อาจารย์ที่ปรึกษามอบหมาย
+   หมายเหตุ    : ความเร็ว/ระยะ/ผลทำลาย เป็น "ค่าจำลอง (notional)" + เร่งเวลา
+                 เพื่อให้มองเห็นในจอ — สเปกจริงเป็นข้อมูลปิด
+   เชื่อมต่อ    : อ่าน cue จาก window._ssCuedContacts (โมดูล A)
+                 ใช้ addExplosion / neutralize-pattern เดิมของซิม
+   ================================================================== */
+(function(){
+  'use strict';
+  let copperheads = [];
+  let _chSeq = 0, _chKills = 0, _chArmed = false;
+  let _chLayer = null;         // Leaflet layerGroup
+  let _chGroup = null;         // THREE.Group (persistent, meshes updated in place)
+  let _chRaf = 0, _chLastTs = null;
+  let _chEngTimer = null;
+  const CH_SPEED     = 0.024;  // normalized/วินาที (เร่งเวลา — แทน sprint >30 kn)
+  const CH_INTERCEPT = 0.006;  // ระยะจุดระเบิด (~300 m) — warhead trigger
+  const CH_RUN_DEPTH = 8;      // ความลึกวิ่ง (m) สำหรับมุมมอง 3D
+  const CH_COLOR = '#fb923c';
+
+  // ---- หา threat จริงที่โหนด Seabed Sentry จับได้ (ใกล้โหนดที่สุด) ----
+  function _chFindThreatForContact(c){
+    if (typeof threats==='undefined' || !Array.isArray(threats)) return null;
+    let best=null, bd=Infinity;
+    for (const t of threats){
+      if (!t || !t.active || t.frozen || t.type==='drone') continue;
+      const dx=t.nx-c.nx, dy=t.ny-c.ny, d=dx*dx+dy*dy;
+      if (d<bd){ bd=d; best=t; }
+    }
+    return best;
+  }
+  function _chBase(){
+    const bx=(typeof UDC!=='undefined'&&UDC)?UDC.nx:0.5;
+    const by=(typeof UDC!=='undefined'&&UDC)?UDC.ny:0.5;
+    return {bx,by};
+  }
+
+  // ---- ปล่อย Copperhead 1 ลำเข้าเป้า ----
+  function launchCopperhead(target, opts){
+    opts = opts || {};
+    if (!target || !target.active || target.frozen) return null;
+    if (target._chEngaged) return null;     // กันยิงซ้ำเป้าเดิม
+    target._chEngaged = true;
+    const {bx,by} = _chBase();
+    const ch = { id:++_chSeq, nx:bx, ny:by, hdg:0, target, state:'transit', trail:[[bx,by]] };
+    copperheads.push(ch);
+    if (typeof addLog==='function')
+      addLog(`[COPPERHEAD] 🚀 ปล่อย CH-${ch.id} (effector) → ${target.label||target.type}` +
+             (opts.manual?' · manual':' · cue จาก Seabed Sentry'), CH_COLOR);
+    _chSyncBtns(); _chStartRaf(); _ch2dRender();
+    return ch;
+  }
+
+  // ---- ยิงด้วยมือ: เลือกเป้าที่ Sentry จับได้ก่อน, ไม่งั้นเป้า active ใกล้ฐานสุด ----
+  function launchCopperheadManual(){
+    let tgt=null;
+    const cues = window._ssCuedContacts;
+    if (Array.isArray(cues)){
+      for (const c of cues){ const t=_chFindThreatForContact(c); if (t && !t._chEngaged){ tgt=t; break; } }
+    }
+    if (!tgt && typeof threats!=='undefined' && Array.isArray(threats)){
+      const {bx,by}=_chBase(); let bd=Infinity;
+      for (const t of threats){
+        if (!t||!t.active||t.frozen||t.type==='drone'||t._chEngaged) continue;
+        const dx=t.nx-bx, dy=t.ny-by, d=dx*dx+dy*dy;
+        if (d<bd){ bd=d; tgt=t; }
+      }
+    }
+    if (!tgt){ if(typeof addLog==='function') addLog('[COPPERHEAD] ไม่พบเป้าที่ active ให้สกัด','#f59e0b'); return; }
+    launchCopperhead(tgt, {manual:true});
+  }
+
+  // ---- Auto-Engage: อ่าน cue จาก Seabed Sentry แล้วยิงให้อัตโนมัติ ----
+  function _chAutoScan(){
+    if (!_chArmed) return;
+    const cues = window._ssCuedContacts;
+    if (!Array.isArray(cues) || !cues.length) return;
+    for (const c of cues){
+      const t = _chFindThreatForContact(c);
+      if (t && !t._chEngaged) launchCopperhead(t, {});
+    }
+  }
+  function toggleCopperheadArm(){
+    _chArmed = !_chArmed;
+    if (_chArmed && !_chEngTimer) _chEngTimer = setInterval(_chAutoScan, 1200);
+    if (!_chArmed && _chEngTimer){ clearInterval(_chEngTimer); _chEngTimer=null; }
+    _chSyncBtns();
+    if (typeof addLog==='function')
+      addLog('[COPPERHEAD] Auto-Engage ' + (_chArmed?'🔴 ARMED — จะยิงอัตโนมัติเมื่อ Seabed Sentry ตรวจพบ':'SAFE'),
+             _chArmed?CH_COLOR:'#94a3b8');
+  }
+
+  // ---- ก้าวการเคลื่อนที่ (dt วินาที) ----
+  function _chStep(dt){
+    let hitFx=false;
+    for (const ch of copperheads){
+      if (ch.state!=='transit') continue;
+      const t = ch.target;
+      if (!t || !t.active || t.frozen){      // เป้าถูกจัดการโดยกำลังอื่น/หลุด
+        ch.state='spent'; if (t) t._chEngaged=false;
+        if (typeof addLog==='function') addLog(`[COPPERHEAD] CH-${ch.id} เป้าถูกจัดการ/หลุด — ยุติภารกิจ`,'#94a3b8');
+        continue;
+      }
+      const dx=t.nx-ch.nx, dy=t.ny-ch.ny, d=Math.sqrt(dx*dx+dy*dy);
+      if (d <= CH_INTERCEPT){               // HIT — warhead detonation
+        try{ if (typeof addExplosion==='function') addExplosion(t.nx, t.ny, CH_COLOR); }catch(e){}
+        t.frozen=true; t.active=false; t._chEngaged=false; ch.state='spent'; _chKills++; hitFx=true;
+        if (typeof addLog==='function')
+          addLog(`[COPPERHEAD] 💥 CH-${ch.id} INTERCEPT — ${t.label||t.type} NEUTRALIZED (warhead, Mk-class)`,'#22c55e');
+        try{ if (typeof addEngLog==='function')
+          addEngLog(`<span style="color:#22c55e;">✓ COPPERHEAD CH-${ch.id} → ${typeof escapeHtml==='function'?escapeHtml(t.label||t.type):(t.label||t.type)} HIT</span>`); }catch(e){}
+        try{ if (typeof setDomain==='function') setDomain('underwater','ok'); }catch(e){}
+        continue;
+      }
+      const spd = CH_SPEED*dt;
+      ch.nx += (dx/d)*spd; ch.ny += (dy/d)*spd; ch.hdg = Math.atan2(dy,dx);
+      ch.trail.push([ch.nx,ch.ny]); if (ch.trail.length>40) ch.trail.shift();
+    }
+    if (copperheads.some(c=>c.state==='spent'))
+      copperheads = copperheads.filter(c=>c.state!=='spent');
+  }
+
+  // ---- ticker (self-RAF) — หยุดเองเมื่อไม่มียานวิ่ง ----
+  function _chStartRaf(){
+    if (_chRaf) return; _chLastTs=null;
+    const tick=(ts)=>{
+      if (_chLastTs===null) _chLastTs=ts;
+      let dt=(ts-_chLastTs)/1000; _chLastTs=ts;
+      if (dt>0.05) dt=0.05;
+      _chStep(dt);
+      _ch2dRender(); _ch3dSync();
+      if (!copperheads.length){ _chRaf=0; return; }
+      _chRaf = requestAnimationFrame(tick);
+    };
+    _chRaf = requestAnimationFrame(tick);
+  }
+
+  // ---- 2D render (Leaflet) ----
+  function _ch2dRender(){
+    if (typeof map==='undefined' || !map || typeof L==='undefined') return;
+    if (!_chLayer) _chLayer = L.layerGroup();
+    _chLayer.clearLayers();
+    if (!copperheads.length){ try{ map.removeLayer(_chLayer); }catch(e){} return; }
+    copperheads.forEach(ch=>{
+      if (ch.trail.length>1)
+        L.polyline(ch.trail.map(p=>[nyToLat(p[1]),nxToLng(p[0])]),
+          { color:CH_COLOR, weight:1.5, opacity:0.5, interactive:false }).addTo(_chLayer);
+      const lat=nyToLat(ch.ny), lng=nxToLng(ch.nx);
+      if (ch.target && ch.target.active)
+        L.polyline([[lat,lng],[nyToLat(ch.target.ny),nxToLng(ch.target.nx)]],
+          { color:CH_COLOR, weight:1, opacity:0.25, dashArray:'3 4', interactive:false }).addTo(_chLayer);
+      L.circleMarker([lat,lng], { radius:4, color:CH_COLOR, weight:2, fillColor:'#7c2d12', fillOpacity:0.95 })
+        .bindTooltip(`🚀 Copperhead CH-${ch.id}<br>effector · >30 kn class (เร่งเวลา)` +
+          `<br><span style="opacity:.6">เป้า: ${ch.target?(ch.target.label||ch.target.type):'—'} · ค่าจำลอง</span>`, { sticky:true })
+        .addTo(_chLayer);
+    });
+    _chLayer.addTo(map);
+  }
+
+  // ---- 3D sync (Three.js) — สร้าง mesh ต่อยาน, อัปเดตตำแหน่งในที่ ----
+  function _ch3dSync(){
+    if (typeof THREE==='undefined' || typeof d3_scene==='undefined' || !d3_scene){
+      if (_chGroup) _chGroup=null; return;
+    }
+    if (!copperheads.length){
+      if (_chGroup){ try{ _chGroup.traverse(o=>{ if(typeof _disposeObject3D==='function') _disposeObject3D(o); }); d3_scene.remove(_chGroup); }catch(e){} _chGroup=null; }
+      return;
+    }
+    if (!_chGroup){ _chGroup=new THREE.Group(); _chGroup.name='copperhead'; d3_scene.add(_chGroup); }
+    const liveIds = new Set(copperheads.map(c=>c.id));
+    for (let i=_chGroup.children.length-1;i>=0;i--){
+      const o=_chGroup.children[i];
+      if (!liveIds.has(o.userData.chId)){ if(typeof _disposeObject3D==='function') _disposeObject3D(o); _chGroup.remove(o); }
+    }
+    copperheads.forEach(ch=>{
+      let mesh = _chGroup.children.find(o=>o.userData.chId===ch.id);
+      if (!mesh){
+        const g = new THREE.CylinderGeometry(0.5,0.5,4,8); g.rotateZ(Math.PI/2);
+        mesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color:0xfb923c }));
+        mesh.userData.chId = ch.id; _chGroup.add(mesh);
+      }
+      const x=_d3x(ch.nx), z=_d3z(ch.ny);
+      let y=-CH_RUN_DEPTH; try{ y=_d3y(CH_RUN_DEPTH); }catch(e){}
+      mesh.position.set(x,y,z); mesh.rotation.y = -ch.hdg;
+    });
+  }
+
+  // ---- clear ----
+  function clearCopperheads(){
+    copperheads.forEach(ch=>{ if(ch.target) ch.target._chEngaged=false; });
+    copperheads = [];
+    if (_chRaf){ cancelAnimationFrame(_chRaf); _chRaf=0; }
+    if (_chLayer){ try{ _chLayer.clearLayers(); if(typeof map!=='undefined'&&map) map.removeLayer(_chLayer); }catch(e){} }
+    if (_chGroup && typeof d3_scene!=='undefined' && d3_scene){
+      try{ _chGroup.traverse(o=>{ if(typeof _disposeObject3D==='function') _disposeObject3D(o); }); d3_scene.remove(_chGroup); }catch(e){}
+    }
+    _chGroup=null; _chSyncBtns();
+    if (typeof addLog==='function') addLog('[COPPERHEAD] เก็บ/ล้างยานเอฟเฟกเตอร์ทั้งหมด','#94a3b8');
+  }
+
+  // ---- deploy-panel button state ----
+  function _chSyncBtns(){
+    try{
+      const a=document.getElementById('chArmBtn');
+      if (a){ const lab=a.querySelector('.label');
+        if (lab) lab.textContent = _chArmed ? 'Auto-Engage: ARMED 🔴' : 'Auto-Engage: SAFE';
+        a.style.background = _chArmed ? 'rgba(251,146,60,0.18)' : ''; }
+    }catch(e){}
+  }
+
+  // ---- exports ----
+  window.launchCopperhead       = launchCopperhead;
+  window.launchCopperheadManual = launchCopperheadManual;
+  window.toggleCopperheadArm    = toggleCopperheadArm;
+  window.clearCopperheads       = clearCopperheads;
+  window._chState = function(){ return { armed:_chArmed, active:copperheads.length, kills:_chKills }; };
 })();
 </script>
 </body>
