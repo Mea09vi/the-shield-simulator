@@ -401,7 +401,7 @@
             line-height: 1;
             user-select: none;
         }
-        #fsBtn:hover { background: rgb(var(--teal-rgb) / .14); border-color: var(--teal); box-shadow: 0 0 10px rgb(var(--teal-rgb) / ); }
+        #fsBtn:hover { background: rgb(var(--teal-rgb) / .14); border-color: var(--teal); box-shadow: 0 0 10px rgb(var(--teal-rgb) / .45); }
         #fsBtn.active { background: rgb(var(--teal-rgb) / .18); border-color: var(--teal); color: #fff; }
 
         /* ═══ TIER 1 — Credibility Markers ═══════════════════════ */
@@ -900,7 +900,7 @@
             padding:5px 10px; cursor:pointer; display:block;
             box-shadow:0 0 10px rgb(var(--green-rgb) / .3); transition:all .2s;
         }
-        .reef-toggle-btn:hover { background:rgb(var(--green-rgb) / .15); box-shadow:0 0 14px rgb(var(--green-rgb) / ); }
+        .reef-toggle-btn:hover { background:rgb(var(--green-rgb) / .15); box-shadow:0 0 14px rgb(var(--green-rgb) / .45); }
         /* ── AIS Live toggle button ── */
         .ais-toggle-btn {
             background: rgb(var(--bg-panel-rgb) / 0.88);
@@ -1002,7 +1002,7 @@
             padding:5px 10px; cursor:pointer; display:block;
             box-shadow:0 0 8px rgb(var(--teal-rgb) / .15); transition:all .2s; white-space:nowrap;
         }
-        .place-patrol-btn:hover { background:rgb(var(--teal-rgb) / .12); box-shadow:0 0 14px rgb(var(--teal-rgb) / ); }
+        .place-patrol-btn:hover { background:rgb(var(--teal-rgb) / .12); box-shadow:0 0 14px rgb(var(--teal-rgb) / .45); }
         .place-patrol-btn.active {
             background:rgb(var(--teal-rgb) / .22); border-color:var(--teal);
             box-shadow:0 0 16px rgb(var(--teal-rgb) / .65); color:#fff;
@@ -1035,7 +1035,7 @@
             padding:5px 10px; cursor:pointer; display:block;
             box-shadow:0 0 8px rgb(var(--cyan-rgb) / .15); transition:all .2s; white-space:nowrap;
         }
-        .place-guuv-btn:hover { background:rgb(var(--cyan-rgb) / .12); box-shadow:0 0 14px rgb(var(--cyan-rgb) / ); }
+        .place-guuv-btn:hover { background:rgb(var(--cyan-rgb) / .12); box-shadow:0 0 14px rgb(var(--cyan-rgb) / .45); }
         .place-guuv-btn.active {
             background:rgb(var(--cyan-rgb) / .22); border-color:var(--cyan); color:#fff;
             box-shadow:0 0 16px rgb(var(--cyan-rgb) / .65); animation:placePulse 1.2s ease-in-out infinite;
@@ -1141,9 +1141,9 @@
             padding:5px 10px; cursor:pointer; display:block; min-width:114px; text-align:center;
             box-shadow:0 0 8px rgb(var(--cyan-rgb) / .18); transition:all .2s; white-space:nowrap;
         }
-        .openseamap-btn:hover { background:rgb(var(--cyan-rgb) / .10); box-shadow:0 0 14px rgb(var(--cyan-rgb) / ); }
+        .openseamap-btn:hover { background:rgb(var(--cyan-rgb) / .10); box-shadow:0 0 14px rgb(var(--cyan-rgb) / .45); }
         /* active 색 is set inline per mode; base .active keeps glow */
-        .openseamap-btn.active { background:rgb(var(--cyan-rgb) / .12); box-shadow:0 0 14px rgb(var(--cyan-rgb) / ); }
+        .openseamap-btn.active { background:rgb(var(--cyan-rgb) / .12); box-shadow:0 0 14px rgb(var(--cyan-rgb) / .45); }
         /* ── [v13] Marine Weather floating panel ── */
         #marine-wx-panel {
             position: fixed;
@@ -1754,7 +1754,7 @@
             font-size:10px; text-align:center; line-height:1.5;
         }
         .fls-roe-step.s-done {
-            background:rgb(var(--cyan-rgb) / .12); border:1px solid rgb(var(--cyan-rgb) / );
+            background:rgb(var(--cyan-rgb) / .12); border:1px solid rgb(var(--cyan-rgb) / .5);
             color:var(--cyan);
         }
         .fls-roe-step.s-active {
@@ -1810,7 +1810,7 @@
             padding:0; overflow:hidden;
             opacity:0; visibility:hidden; pointer-events:none;
             transition:opacity .20s ease, visibility .20s ease, transform .20s ease;
-            box-shadow:0 0 50px rgb(var(--teal-rgb) / .22),0 0 100px rgb(var(--teal-rgb) / );
+            box-shadow:0 0 50px rgb(var(--teal-rgb) / .22),0 0 100px rgb(var(--teal-rgb) / .12);
             backdrop-filter:blur(16px);
         }
         #pvShipModal.pvs-show {
@@ -1890,9 +1890,9 @@
             font-family:var(--font-mono), monospace; font-size:8px;
             border-radius:3px; padding:2px 6px; white-space:nowrap; text-align:center;
         }
-        .wt-gun { background:rgb(var(--cyan-rgb) / .10); border:1px solid rgb(var(--cyan-rgb) / ); color:var(--cyan); }
+        .wt-gun { background:rgb(var(--cyan-rgb) / .10); border:1px solid rgb(var(--cyan-rgb) / .5); color:var(--cyan); }
         .wt-asw { background:rgba(189,147,249,.10); border:1px solid rgba(189,147,249,.35); color:var(--purple); }
-        .wt-ssm { background:rgb(var(--red-rgb) / .10); border:1px solid rgb(var(--red-rgb) / ); color:var(--red); }
+        .wt-ssm { background:rgb(var(--red-rgb) / .10); border:1px solid rgb(var(--red-rgb) / .5); color:var(--red); }
 
         /* ══════════════════════════════════════════════════════════════
            PV Search Pattern Configuration Modal
@@ -1906,7 +1906,7 @@
             padding:0; overflow:hidden;
             opacity:0; visibility:hidden; pointer-events:none;
             transition:all .20s ease;
-            box-shadow:0 0 50px rgb(var(--teal-rgb) / .22),0 0 100px rgb(var(--teal-rgb) / );
+            box-shadow:0 0 50px rgb(var(--teal-rgb) / .22),0 0 100px rgb(var(--teal-rgb) / .12);
             backdrop-filter:blur(16px);
         }
         #pvPatternModal.pv-show {
@@ -1975,7 +1975,7 @@
         }
         .pv-nato-ref {
             font-family:var(--font-mono), monospace; font-size:9px;
-            color:rgb(var(--teal-rgb) / .45); border-top:1px solid rgb(var(--teal-rgb) / );
+            color:rgb(var(--teal-rgb) / .45); border-top:1px solid rgb(var(--teal-rgb) / .5);
             padding-top:6px; margin-top:4px;
         }
         /* Right: parameters */
@@ -2044,7 +2044,7 @@
             font-size:11px; padding:6px 20px; border-radius:5px; cursor:pointer;
             font-weight:bold; letter-spacing:.5px; transition:all .15s;
         }
-        .pv-confirm-btn:hover { background:rgb(var(--teal-rgb) / .28); box-shadow:0 0 12px rgb(var(--teal-rgb) / ); }
+        .pv-confirm-btn:hover { background:rgb(var(--teal-rgb) / .28); box-shadow:0 0 12px rgb(var(--teal-rgb) / .45); }
 
         /* ── Surface Contact Alert Panel (top-right, amber — ไม่ freeze) ── */
         #surfaceContactPanel {
@@ -2057,7 +2057,7 @@
             opacity:0; pointer-events:none; visibility:hidden;
             transition:opacity .3s, transform .3s, visibility .3s;
             backdrop-filter:blur(14px);
-            box-shadow:0 0 36px rgb(var(--amber-rgb) / .30), 0 0 70px rgb(var(--amber-rgb) / );
+            box-shadow:0 0 36px rgb(var(--amber-rgb) / .30), 0 0 70px rgb(var(--amber-rgb) / .12);
         }
         #surfaceContactPanel.sc-show {
             opacity:1; visibility:visible; pointer-events:auto;
@@ -2240,7 +2240,7 @@
         }
         /* v12.6.3 — pointer-events:none เมื่อ panel ซ่อน ป้องกัน ghost-click บัง domain buttons */
         #mda-layerpanel.collapsed { transform: translateX(-110%); opacity:0; pointer-events:none; }
-        #mda-layerpanel.dragging { transition: none; opacity:.92; box-shadow: 0 12px 60px rgb(var(--cyan-rgb) / .4), 0 0 0 1px rgb(var(--cyan-rgb) / ) inset; }
+        #mda-layerpanel.dragging { transition: none; opacity:.92; box-shadow: 0 12px 60px rgb(var(--cyan-rgb) / .4), 0 0 0 1px rgb(var(--cyan-rgb) / .5) inset; }
         /* v12.3 — slimmer header + drag handle cursor */
         #mda-layerpanel .mda-lp-head {
             position: sticky; top: 0; z-index: 6;   /* [v15.5] ตรึงหัว panel ไว้บนสุด — เป็น drag handle ได้เสมอแม้เลื่อน scroll ดูหัวข้อล่าง (หัวไม่เลื่อนหายไปกับเนื้อหา) */
@@ -2380,6 +2380,102 @@
         #mda-layerpanel[data-layout="D"] .mda-lp-badge { display: inline-block; }
         #mda-layerpanel[data-layout="D"] .mda-lp-group.collapsed .mda-lp-group-body { max-height: 1200px; padding: 1px 6px 4px; }
 
+        /* ═══════════ [v15.12] BLUE FORCE OPERATIONS — LAYOUT SWITCHER (A/B/C/D) ═══════════
+           A = การ์ดตามชนิดอาวุธ + badge ความพร้อม · B = พื้นที่สงคราม · C = kill-chain · D = ค้นหา */
+        #bf-deploy-panel .bf-lp-layoutbar {
+            position: sticky; top: 0; z-index: 5;
+            display: flex; align-items: center; gap: 6px; padding: 5px 10px;
+            background: rgb(var(--bg-panel-rgb) / .97);
+            border-bottom: 1px solid rgb(var(--cyan-rgb) / .12);
+            backdrop-filter: blur(14px) saturate(150%); -webkit-backdrop-filter: blur(14px) saturate(150%);
+        }
+        #bf-deploy-panel .bf-lp-segs { display: flex; gap: 3px; flex: 0 0 auto; }
+        #bf-deploy-panel .bf-lp-seg {
+            width: 26px; height: 22px; display: flex; align-items: center; justify-content: center;
+            background: rgb(var(--cyan-rgb) / .05); border: 1px solid rgb(var(--cyan-rgb) / .18);
+            color: var(--text-muted); cursor: pointer; border-radius: 4px;
+            font-size: 12px; line-height: 1; padding: 0; transition: all .15s;
+        }
+        #bf-deploy-panel .bf-lp-seg:hover { color: var(--cyan); border-color: rgb(var(--cyan-rgb) / .4); background: rgb(var(--cyan-rgb) / .12); }
+        #bf-deploy-panel .bf-lp-seg.on {
+            color: var(--bg-dark); background: var(--cyan); border-color: var(--cyan);
+            box-shadow: 0 0 10px rgb(var(--cyan-rgb) / .45);
+        }
+        /* category strips — warfare-area (mode B) / kill-chain (mode C) */
+        #bf-deploy-panel .bf-lp-strip { display: none; flex: 1; flex-wrap: wrap; gap: 3px; min-width: 0; }
+        #bf-deploy-panel .bf-lp-catbtn {
+            height: 22px; padding: 0 7px; display: flex; align-items: center; gap: 3px;
+            background: rgba(0,0,0,.28); border: 1px solid rgba(255,255,255,.12);
+            border-radius: 5px; cursor: pointer; font-size: 9.5px; line-height: 1;
+            white-space: nowrap; filter: grayscale(.5) opacity(.6); transition: all .15s;
+        }
+        #bf-deploy-panel .bf-lp-catbtn:hover { filter: none; transform: translateY(-1px); }
+        #bf-deploy-panel .bf-lp-catbtn.on { filter: none; border-color: currentColor; box-shadow: 0 0 8px -2px currentColor; }
+        /* search (mode D) */
+        #bf-deploy-panel .bf-lp-search {
+            display: none; flex: 1; min-width: 0;
+            background: rgba(0,0,0,.35); border: 1px solid rgb(var(--cyan-rgb) / .22);
+            border-radius: 5px; color: var(--text-main); font-size: 11px; padding: 3px 8px;
+            font-family: var(--font-body), sans-serif; outline: none;
+        }
+        #bf-deploy-panel .bf-lp-search:focus { border-color: rgb(var(--cyan-rgb) / .5); }
+        #bf-deploy-panel .bf-lp-search::placeholder { color: var(--text-muted); }
+        /* total ready-count chip (mode D) */
+        #bf-deploy-panel .bf-lp-acount {
+            display: none; flex: 0 0 auto;
+            font-family: 'Share Tech Mono', monospace; font-size: 9px;
+            color: var(--cyan); background: rgb(var(--cyan-rgb) / .12);
+            border: 1px solid rgb(var(--cyan-rgb) / .3); border-radius: 10px;
+            padding: 0 7px; line-height: 18px;
+        }
+        #bf-deploy-panel[data-layout="D"] .bf-lp-acount { display: inline-block; }
+        /* per-group readiness badge (modes A & D) */
+        #bf-deploy-panel .bf-lp-badge {
+            display: none; font-family: 'Share Tech Mono', monospace; font-size: 8.5px;
+            color: var(--cyan); background: rgb(var(--cyan-rgb) / .12);
+            border: 1px solid rgb(var(--cyan-rgb) / .3); border-radius: 10px;
+            padding: 0 6px; line-height: 14px; margin-left: 6px;
+        }
+        #bf-deploy-panel .bf-lp-badge.dim { color: var(--text-muted); background: rgba(0,0,0,.3); border-color: rgba(255,255,255,.1); }
+        /* visibility utilities driven by switcher JS */
+        #bf-deploy-panel .bf-cat-hidden,
+        #bf-deploy-panel .bf-search-hide { display: none !important; }
+
+        /* ── MODE A · FRAMED CARDS by weapon type + readiness ── */
+        #bf-deploy-panel[data-layout="A"] .bf-dp-group {
+            margin: 7px 8px; border: 1px solid rgb(var(--cyan-rgb) / .15);
+            border-left: 3px solid var(--cyan); border-radius: 8px; overflow: hidden;
+            background: rgb(var(--bg-panel-rgb) / .35);
+        }
+        #bf-deploy-panel[data-layout="A"] .bf-dp-group[data-bf-group="pv"]            { border-left-color: #64ffda; }
+        #bf-deploy-panel[data-layout="A"] .bf-dp-group[data-bf-group="guuv"]          { border-left-color: #22d3ee; }
+        #bf-deploy-panel[data-layout="A"] .bf-dp-group[data-bf-group="sv"]            { border-left-color: #fbbf24; }
+        #bf-deploy-panel[data-layout="A"] .bf-dp-group[data-bf-group="mine"]          { border-left-color: #4ade80; }
+        #bf-deploy-panel[data-layout="A"] .bf-dp-group[data-bf-group="seabed-sentry"] { border-left-color: #22d3ee; }
+        #bf-deploy-panel[data-layout="A"] .bf-dp-group[data-bf-group="copperhead"]    { border-left-color: #fb923c; }
+        #bf-deploy-panel[data-layout="A"] .bf-dp-group[data-bf-group="helo"]          { border-left-color: #fcd34d; }
+        #bf-deploy-panel[data-layout="A"] .bf-lp-badge { display: inline-block; }
+
+        /* ── MODE B · WARFARE-AREA RAIL (ดูทีละพื้นที่) ── */
+        #bf-deploy-panel[data-layout="B"] .bf-lp-warstrip { display: flex; }
+        #bf-deploy-panel[data-layout="B"] .bf-dp-section { display: none; }
+        #bf-deploy-panel[data-layout="B"] .bf-dp-group-head { display: none; }
+        #bf-deploy-panel[data-layout="B"] .bf-dp-group.collapsed .bf-dp-group-body { max-height: 1200px; padding: 3px 6px 6px; }
+
+        /* ── MODE C · KILL-CHAIN CHIP GRID (Sense→Decide→Effect) ── */
+        #bf-deploy-panel[data-layout="C"] .bf-lp-kcstrip { display: flex; }
+        #bf-deploy-panel[data-layout="C"] .bf-dp-section { display: none; }
+        #bf-deploy-panel[data-layout="C"] .bf-dp-group.collapsed .bf-dp-group-body { max-height: 1200px; padding: 3px 6px 6px; }
+        #bf-deploy-panel[data-layout="C"] .bf-dp-group-body { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+        #bf-deploy-panel[data-layout="C"] .bf-dp-row { grid-template-columns: 22px 1fr; }
+        #bf-deploy-panel[data-layout="C"] .bf-dp-row .bf-dp-arrow { display: none; }
+
+        /* ── MODE D · SEARCH + READY COUNT ── */
+        #bf-deploy-panel[data-layout="D"] .bf-lp-search { display: block; }
+        #bf-deploy-panel[data-layout="D"] .bf-dp-section { display: none; }
+        #bf-deploy-panel[data-layout="D"] .bf-lp-badge { display: inline-block; }
+        #bf-deploy-panel[data-layout="D"] .bf-dp-group.collapsed .bf-dp-group-body { max-height: 1200px; padding: 3px 6px 6px; }
+
         /* ═══ [v15.5 · #1] Seabed-sediment 2D — legend ลอย (ลากย้ายได้) + popup ธีมเข้ม ═══ */
         .sb-legend2d {
             position: fixed; top: 90px; left: 300px; z-index: 4600;
@@ -2512,7 +2608,7 @@
             transition: left .25s, background .25s;
         }
         .mda-sw.on {
-            background: linear-gradient(90deg, rgb(var(--cyan-rgb) / .85), rgb(var(--cyan-rgb) / ));
+            background: linear-gradient(90deg, rgb(var(--cyan-rgb) / .85), rgb(var(--cyan-rgb) / 0));
             border-color: rgb(var(--cyan-rgb) / .6);
             box-shadow: 0 0 10px rgb(var(--cyan-rgb) / .35);
         }
@@ -2546,7 +2642,7 @@
         }
         .mda-handle.visible {
             opacity: 1; pointer-events: all;
-            box-shadow: 0 0 14px rgb(var(--cyan-rgb) / .55), 0 0 0 1px rgb(var(--cyan-rgb) / ) inset;
+            box-shadow: 0 0 14px rgb(var(--cyan-rgb) / .55), 0 0 0 1px rgb(var(--cyan-rgb) / .5) inset;
             animation: mdaHandlePulse 1.8s ease-in-out infinite;
         }
         .mda-handle:hover {
@@ -2555,8 +2651,8 @@
             transform: translateY(-50%) scale(1.08);
         }
         @keyframes mdaHandlePulse {
-            0%, 100% { box-shadow: 0 0 12px rgb(var(--cyan-rgb) / .45), 0 0 0 1px rgb(var(--cyan-rgb) / ) inset; }
-            50%      { box-shadow: 0 0 22px rgb(var(--cyan-rgb) / .85), 0 0 0 1px rgb(var(--cyan-rgb) / ) inset; }
+            0%, 100% { box-shadow: 0 0 12px rgb(var(--cyan-rgb) / .45), 0 0 0 1px rgb(var(--cyan-rgb) / .5) inset; }
+            50%      { box-shadow: 0 0 22px rgb(var(--cyan-rgb) / .85), 0 0 0 1px rgb(var(--cyan-rgb) / .5) inset; }
         }
         #mda-handle-left { left: 0; border-radius: 0 6px 6px 0; }
 
@@ -2681,6 +2777,27 @@
             background: rgb(var(--text-muted-rgb) / .18);
         }
 
+        /* ══ [v15.14] สถานะกำลังรบ — ประจำการ (in-service) vs เสนอจัดหา (proposed) ══ */
+        #bf-deploy-panel .bf-dp-status {
+            font-family: 'Share Tech Mono', monospace; font-size: 8px; font-weight: 700;
+            letter-spacing: .4px; line-height: 13px; padding: 0 5px; border-radius: 9px;
+            white-space: nowrap; flex: 0 0 auto; text-transform: none;
+        }
+        #bf-deploy-panel .bf-st-svc {            /* ประจำการ — ของจริงในกองทัพเรือวันนี้ */
+            color: #4ade80; background: rgba(74,222,128,.12);
+            border: 1px solid rgba(74,222,128,.50);
+        }
+        #bf-deploy-panel .bf-st-prop {           /* เสนอจัดหา — แนวคิด/ยังไม่ประจำการ */
+            color: #fbbf24; background: rgba(251,191,36,.10);
+            border: 1px dashed rgba(251,191,36,.60);
+        }
+        /* proposed: เส้นประ + จางลงเล็กน้อย ให้อ่านเป็น "แนวคิด ยังไม่ประจำการ" ทันที */
+        #bf-deploy-panel .bf-dp-group[data-bf-status="proposed"] .bf-dp-group-name { opacity: .9; }
+        #bf-deploy-panel[data-layout="A"] .bf-dp-group[data-bf-status="proposed"] {
+            border-left-style: dashed;
+            background: rgb(var(--bg-panel-rgb) / .20);
+        }
+
         /* ASSETS — action row (button-style, no toggle switch) */
         #bf-deploy-panel .bf-dp-row {
             display: grid;
@@ -2775,7 +2892,7 @@
             font-size: 9px; font-weight: 700; letter-spacing: 1.8px;
             color: rgba(148,163,184,.92);
             text-transform: uppercase;
-            background: linear-gradient(180deg, rgb(var(--text-muted-rgb) / .10), rgb(var(--text-muted-rgb) / ));
+            background: linear-gradient(180deg, rgb(var(--text-muted-rgb) / .10), rgb(var(--text-muted-rgb) / 0));
             border-bottom: 1px solid rgb(var(--text-muted-rgb) / .22);
             border-top: 1px solid rgb(var(--text-muted-rgb) / .22);
             user-select: none;
@@ -4652,10 +4769,11 @@
     </div>
 
     <!-- ASSETS — PATROL VESSELS (PV) -->
-    <div class="bf-dp-group collapsed" data-bf-group="pv">
+    <div class="bf-dp-group collapsed" data-bf-group="pv" data-bf-status="in-service">
         <div class="bf-dp-group-head">
             <span class="bf-dp-group-name" style="color:#64ffda;">
                 <span class="bf-dp-chev">▾</span> 🚢 PATROL VESSELS
+                <span class="bf-dp-status bf-st-svc" title="ประจำการในกองทัพเรือปัจจุบัน">ประจำการ</span>
             </span>
             <span class="bf-dp-count" id="bf-cnt-pv">0</span>
         </div>
@@ -4676,10 +4794,11 @@
     </div>
 
     <!-- ASSETS — GUARDIAN UUV -->
-    <div class="bf-dp-group collapsed" data-bf-group="guuv">
+    <div class="bf-dp-group collapsed" data-bf-group="guuv" data-bf-status="proposed">
         <div class="bf-dp-group-head">
             <span class="bf-dp-group-name" style="color:#22d3ee;">
                 <span class="bf-dp-chev">▾</span> 🤿 GUARDIAN UUV
+                <span class="bf-dp-status bf-st-prop" title="แนวคิด/เสนอจัดหา — ยังไม่ประจำการ">เสนอจัดหา</span>
             </span>
             <span class="bf-dp-count" id="bf-cnt-guuv">0</span>
         </div>
@@ -4700,10 +4819,11 @@
     </div>
 
     <!-- ASSETS — HYDROGRAPHIC SURVEY VESSELS -->
-    <div class="bf-dp-group collapsed" data-bf-group="sv">
+    <div class="bf-dp-group collapsed" data-bf-group="sv" data-bf-status="in-service">
         <div class="bf-dp-group-head">
             <span class="bf-dp-group-name" style="color:#fbbf24;">
                 <span class="bf-dp-chev">▾</span> 🔬 HYDROGRAPHIC SURVEY
+                <span class="bf-dp-status bf-st-svc" title="ประจำการในกองทัพเรือปัจจุบัน">ประจำการ</span>
             </span>
             <span class="bf-dp-count" id="bf-cnt-sv">0</span>
         </div>
@@ -4730,10 +4850,11 @@
     </div>
 
     <!-- COMMAND — MINE WARFARE (v15.9: ยกขึ้นบนสุด + เปิดค้างไว้ ให้เห็นได้ทันทีไม่ต้อง scroll) -->
-    <div class="bf-dp-group" data-bf-group="mine">
+    <div class="bf-dp-group" data-bf-group="mine" data-bf-status="in-service">
         <div class="bf-dp-group-head">
             <span class="bf-dp-group-name" style="color:#4ade80;">
                 <span class="bf-dp-chev">▾</span> 💣 MINE WARFARE
+                <span class="bf-dp-status bf-st-svc" title="ประจำการในกองทัพเรือปัจจุบัน">ประจำการ</span>
             </span>
         </div>
         <div class="bf-dp-group-body">
@@ -4754,10 +4875,11 @@
     </div>
 
     <!-- COMMAND — SEABED SENTRY (v15.10: โครงข่ายเซ็นเซอร์ก้นทะเลไร้สาย — ต่อยอดจาก Anduril "Seabed Sentry") -->
-    <div class="bf-dp-group" data-bf-group="seabed-sentry">
+    <div class="bf-dp-group" data-bf-group="seabed-sentry" data-bf-status="proposed">
         <div class="bf-dp-group-head">
             <span class="bf-dp-group-name" style="color:#22d3ee;">
                 <span class="bf-dp-chev">▾</span> 🛰️ SEABED SENTRY
+                <span class="bf-dp-status bf-st-prop" title="แนวคิด/เสนอจัดหา — ยังไม่ประจำการ">เสนอจัดหา</span>
             </span>
         </div>
         <div class="bf-dp-group-body">
@@ -4786,10 +4908,11 @@
     </div>
 
     <!-- COMMAND — COPPERHEAD (v15.11: effector ยานใต้น้ำความเร็วสูง ยิงตาม cue จาก Seabed Sentry — ต้นแบบ Anduril Copperhead) -->
-    <div class="bf-dp-group" data-bf-group="copperhead">
+    <div class="bf-dp-group" data-bf-group="copperhead" data-bf-status="proposed">
         <div class="bf-dp-group-head">
             <span class="bf-dp-group-name" style="color:#fb923c;">
                 <span class="bf-dp-chev">▾</span> 🚀 COPPERHEAD
+                <span class="bf-dp-status bf-st-prop" title="แนวคิด/เสนอจัดหา — ยังไม่ประจำการ">เสนอจัดหา</span>
             </span>
         </div>
         <div class="bf-dp-group-body">
@@ -4818,10 +4941,11 @@
     </div>
 
     <!-- COMMAND — ASW HELICOPTER (collapsed by default) -->
-    <div class="bf-dp-group collapsed" data-bf-group="helo">
+    <div class="bf-dp-group collapsed" data-bf-group="helo" data-bf-status="in-service">
         <div class="bf-dp-group-head">
             <span class="bf-dp-group-name" style="color:#fcd34d;">
                 <span class="bf-dp-chev">▾</span> 🚁 ASW HELICOPTER
+                <span class="bf-dp-status bf-st-svc" title="ประจำการในกองทัพเรือปัจจุบัน">ประจำการ</span>
             </span>
         </div>
         <div class="bf-dp-group-body">
@@ -5328,6 +5452,11 @@
             <div class="sensor-row"><span>🚁 ASW Helicopter</span><span class="val s-ok" id="as-helo">STANDBY</span></div>
             <div class="sensor-row"><span>📡 Surface Radar</span><span class="val s-ok" id="as-radar">SCANNING</span></div>
             <div class="sensor-row"><span>🛡 AD System</span><span class="val s-ok" id="as-ad">ARMED</span></div>
+        </div>
+
+        <!-- ═══ [v15.14] RECOGNIZED MARITIME PICTURE — docked ใต้ Surface Domain (สมมาตรกับ threat board ฝั่งขวา) ═══ -->
+        <div class="panel rmp-dock" id="panel-rmp" style="border-color:#38bdf8;flex:0 0 auto;">
+            <div id="rmp-host"></div>
         </div>
     </div>
 
@@ -6055,6 +6184,9 @@
                 <button class="btn btn-drone" onclick="launchScenario('drone')">🔵 Drone</button>
                 <button class="btn btn-combo" onclick="launchScenario('combined')">🟣 Combined</button>
             </div>
+            <div class="ctrl-grp">▾ ภัย Grey-zone</div>
+            <button class="btn btn-surf" style="background:rgba(203,213,225,.10);border-color:rgba(251,191,36,.55);color:#fbbf24;justify-content:center;" onclick="launchScenario('greytrawler')">⚪→🔴 เรือประมงปลอม AIS — ลากสมอตัดเคเบิล</button>
+            <button class="btn btn-surf" style="background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.55);color:#f87171;justify-content:center;" onclick="launchScenario('usv')">⬡→🔴 USV เรือระเบิดไร้คนขับ — พุ่งชน (Kinetic)</button>
             <div class="ctrl-grp">▾ ภัยทางอากาศ</div>
             <button class="btn btn-drone" style="justify-content:center;" onclick="launchScenario('airraid')">🛩️ Air Raid — ฝูงโดรน UAV + sUAS</button>
             <div class="ctrl-grp">▾ เรือดำน้ำ (ASW)</div>
@@ -6209,7 +6341,7 @@
 
    ┌── 3. ระบบหลักและหลักการ (SUBSYSTEMS & DOCTRINE) ──────────────────────────
    • แผนที่ GIS       Leaflet (tile) + <canvas> โปร่งใสซ้อนทับ วาดใหม่ทุกเฟรมใน
-                      animate() — หัวใจของซิม ([ส่วนที่ 25])
+                      animate() — หัวใจของซิม ([ส่วนที่ 8.1])
    • ภัยคุกคาม & ROE  threats[] สร้างโดย scenario*() ; กฎการปะทะ (ROE) 3 ขั้น
                       ตามกฎหมายทะเล : วิทยุเตือน → ยิงเตือน → เข้าตรวจค้น
    • DAS Tripwire    สายเคเบิลใยแก้วตรวจ "การสั่นสะเทือน" — แนวเตือนภัยเส้นแรก
@@ -6236,26 +6368,33 @@
    ข้อมูล : threats[] type='drone' มี droneClass = 'uav'(เป้า ESSM) | 'suas'(เป้า สอ.รฝ.)
    ฟังก์ชัน : updateReconDrones()→updateAirDefense() · drawAirDefense() · scenarioAirRaid()
 
-   ┌── 5. สารบัญ — ค้นหา "[ส่วนที่ N]" เพื่อกระโดดไปยังส่วนนั้น ──────────────────
-     1  แผนที่ Leaflet (ฉากหลัง)        16  ROV
-     2  แนวปะการังเทียม                 17  UDC Capsule
-     3  เขตปลอดภัยในราชการทหาร          18  ADCP (วัดกระแสน้ำ)
-     4  พื้นที่กองเรือยุทธการ           19  สินทรัพย์ชายฝั่ง (เกาะคราม)
-     5a DAS Fiber สาย 1 + Tripwire      20  GUUV (Guardian UUV)
-     5b DAS Cable สาย 2 (สำรอง)         21  เรือลาดตระเวน (PV)
-     6  สายเคเบิลใต้น้ำระหว่างประเทศ    22  จำแนกภัยคุกคาม (IFF)
-     7  SLOC เส้นทางเดินเรือพาณิชย์     23  Visual Effects
-     8  TSS แบ่งแนวจราจรทางเรือ         24  Scale Bar
-     9  Canvas Overlay                  25  Main Animation Loop  ★ หัวใจ
-     10 ระบบพิกัดภูมิศาสตร์             26  UI Helper Functions
-     11 ตัวแปรสถานะระบบ (globals)       27  Reset System
-     12 น้ำขึ้น-ลง + Detection Mod.     28  Tactical Scenarios
-     12B ASW Helicopter System          29  Initialization
-     13 วงแหวนป้องกัน · 14 โซนาร์ · 15 เรือสำรวจอุทกศาสตร์
+   ┌── 5. สารบัญ — ค้นหา "[ส่วนที่ N]" เพื่อกระโดดไปยังส่วน · ๒๓ ส่วนหลัก · จัดเป็น ๖ กลุ่มหน้าที่ ──
+   ░ กลุ่ม ๑ · แพลตฟอร์ม & ภูมิศาสตร์ (Platform & Geospatial) — ฉากแผนที่ พิกัด ฐานข้อมูล
+     1 แผนที่ Leaflet · 1.1 AIS Heatmap · 1.2 AIS Anomaly · 1.3 Camera Frustum (3D→2D)
+     1.4 TL Heatmap (WOA23) · 1.5 แนวปะการังเทียม · 1.6 เขตปลอดภัยทหาร · 1.7 พื้นที่กองเรือ
+     1.8 DAS Cable#2 (สำรอง) · 1.9 เคเบิลใต้น้ำสากล · 1.10 SLOC · 1.11 TSS จราจรเรือ
+     2 Canvas Overlay · 2.1 พิกัดภูมิศาสตร์ 3-way · 2.2 ตัวแปรสถานะกลาง (globals)
+   ░ กลุ่ม ๒ · สิ่งแวดล้อม & ฟิสิกส์เสียง (Environment & Acoustics) — สมุทรศาสตร์+โซนาร์
+     4 น้ำขึ้น-ลง + DetMod · 4.1 DAS Cable#1 + Tripwire · 10 WOA23 SVP + สมการโซนาร์
+   ░ กลุ่ม ๓ · กำลังรบ & ระบบป้องกัน (Forces & Defence) — สินทรัพย์ฝ่ายเรา+ทุ่นระเบิด
+     3 ฮ.ปด. (ASW Helo) · 5 วงแหวนป้องกัน · 5.1 Active Sonar · 6 เรือสำรวจอุทก.
+     6.1 HSV-Ext (ร.ล.สุริยะ) · 6.2 ROV · 6.3 UDC Capsule · 6.4 ADCP · 6.5 ชายฝั่งเกาะคราม
+     6.6 Guardian UUV · 6.7 เรือลาดตระเวน (ROE) · 23 SEABED SENTRY · 23.1 COPPERHEAD
+     22 Trap-Mine Config · 22.1 UNDEX Detonation Sim
+   ░ กลุ่ม ๔ · ภัยคุกคาม & การจำแนก (Threats & Classification) — IFF + RMP
+     7 IFF + Telemetry · 7.1 Visual FX (ระเบิด/จับเป้า) · 21 RMP จำแนกภัย ๒ แกน
+   ░ กลุ่ม ๕ · การแสดงผล วงรอบ & UI (Display · Loop · UI) — เรนเดอร์+ลูป+แผงควบคุม
+     8 Scale Bar · 8.1 Main Loop ★ หัวใจ · 8.2 UI Helpers · 8.3 Reset · 8.4 Scenarios
+     9 Init (บูต) · 16 UI Bridge · 18 Blue Force Deploy · 19 Theme Switcher
+     20 Sensing Layout A/B/C/D · 20.1 Blue-Force Layout A/B/C/D
+   ░ กลุ่ม ๖ · ตระหนักรู้หลายมิติ & ตัดสินใจ (MDA & Decision) — โดเมน ญ + AI ตัดสินใจ
+     11 ญ.๑ Air (OpenSky) · 11.1 ญ.๒ Hazard (USGS) · 11.2 ญ.๓ Space (Kp) · 11.3 ญ.๔ Info (GDELT)
+     12 ญ.ว Marine Wx · 12.1 ลม · 12.2 พายุ(GDACS) · 12.3 ฝนเรดาร์ · 12.4 ญ.ส Seamarks
+     13 ญ.๕ Intel Fusion · 14 Sensor Impact Matrix · 15 Own-Force-Aware · 17 Default Sensing
    ═══════════════════════════════════════════════════════════════════════════ */
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 1] หมวด ก — สถาปัตยกรรมพื้นฐาน + ชั้นภูมิศาสตร์
+//  [ส่วนที่ 1] กลุ่ม ๑ · แพลตฟอร์ม & ภูมิศาสตร์ (Platform & Geospatial)
 //  การตั้งค่าแผนที่ Leaflet · Leaflet Map + CartoDB Dark Matter Tile
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : สร้างฉากหลังแผนที่ ๒ มิติ ความละเอียดสูงสำหรับการแสดงสถานการณ์ทางยุทธวิธี
@@ -6294,8 +6433,15 @@ window.__basemapSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/s
     maxNativeZoom: 16,
     minZoom: 3,
 }).addTo(map);
+// [v15.14] OpenStreetMap standard — basemap ตัวที่ 3 (ถนน/ชื่อสถานที่/ท่าเรือ อ่านง่าย)
+window.__basemapOSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    subdomains: 'abc',
+    maxZoom: 19,
+    minZoom: 3,
+});
 // [v15.5f] ถอด GEBCO 2023 basemap ออก (native res แค่ z7 → เบลอเมื่อ zoom เข้าสัตหีบ)
-//          คงไว้ 2 ตัวเลือก: Dark / Satellite (Ocean Base/Voyager ที่ลองใส่ใช้ไม่ได้จริง → ถอด)
+//          [v15.14] คงไว้ 3 ตัวเลือก: Dark / Satellite / OSM
 
 // ── Basemap switcher buttons (will appear in right-rail "BASE MAP" section) ──
 // v12.6.4 — ย้ายออกจาก MDA left-panel · [v15.5f] เหลือ 2 ตัวเลือก: Dark / Satellite
@@ -6303,6 +6449,7 @@ window.__basemapSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/s
     const BMS = [
         { key: 'dark',  html: '🌑 Dark Matter',  getL: () => window.__basemapDark  },
         { key: 'sat',   html: '🛰 Satellite',      getL: () => window.__basemapSat   },
+        { key: 'osm',   html: '🗺 OSM',            getL: () => window.__basemapOSM   },
     ];
     let currentKey = 'sat'; // satellite loaded by default
     const allBtns = [];
@@ -6317,7 +6464,7 @@ window.__basemapSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/s
             L.DomEvent.disableClickPropagation(btn);
             btn.onclick = function () {
                 if (bm.key === currentKey) return;
-                [window.__basemapDark, window.__basemapSat]
+                [window.__basemapDark, window.__basemapSat, window.__basemapOSM]
                     .forEach(l => { if (l && map.hasLayer(l)) map.removeLayer(l); });
                 const lyr = bm.getL();
                 if (lyr) { lyr.addTo(map); lyr.bringToBack(); }
@@ -6389,7 +6536,7 @@ function toggleAisHeat() {
 }
 // ปุ่ม toggle — เพิ่มเป็น Leaflet control (จะถูก rr-organizer ดูดเข้าหมวด ANALYSIS)
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 2] หมวด ก — สถาปัตยกรรมพื้นฐาน + ชั้นภูมิศาสตร์
+//  [ส่วนที่ 1.1] กลุ่ม ๑ · แพลตฟอร์ม & ภูมิศาสตร์ (Platform & Geospatial)
 //  ระบบ AIS Trajectory Heatmap · AIS Heat Map Layer (KDE-style aggregation)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : แสดงความหนาแน่นของเส้นทางเรือพาณิชย์/เรือประมง จากข้อมูล AIS ในรอบ ๒๔ ชม.
@@ -6491,12 +6638,12 @@ function toggleAisAnomaly() {
 setInterval(renderAisAnomalies, 170);
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 3] หมวด ก — สถาปัตยกรรมพื้นฐาน + ชั้นภูมิศาสตร์
+//  [ส่วนที่ 1.2] กลุ่ม ๑ · แพลตฟอร์ม & ภูมิศาสตร์ (Platform & Geospatial)
 //  ระบบตรวจจับความผิดปกติของ AIS · AIS Anomaly Detection (spoof / dark / loiter)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : แจ้งเตือนเรือที่มีพฤติกรรมน่าสงสัย ๓ ประเภท: spoofing, dark ship, loitering
 //  หลักการ      : rule-based heuristics บน velocity discontinuity + signal-loss window + dwell time
-//  เชื่อมต่อกับ  : feed ข้อมูลเข้า IFF Threat Display (ส่วนที่ ๒๙)
+//  เชื่อมต่อกับ  : feed ข้อมูลเข้า IFF Threat Display (ส่วนที่ ๗)
 // ═══════════════════════════════════════════════════════════════
 L.Control.AisAnomaly = L.Control.extend({
     options: { position: 'topright' },
@@ -6592,12 +6739,12 @@ function toggleCamFrustum() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 4] หมวด ก — สถาปัตยกรรมพื้นฐาน + ชั้นภูมิศาสตร์
+//  [ส่วนที่ 1.3] กลุ่ม ๑ · แพลตฟอร์ม & ภูมิศาสตร์ (Platform & Geospatial)
 //  กรอบมุมมองกล้อง 3D บนแผนที่ 2D · Three.js Camera Frustum Projection
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : ฉาย field-of-view ของกล้อง 3D Dive View ลงบนแผนที่ ๒ มิติ เพื่อเชื่อม situational awareness
 //  หลักการ      : Three.js PerspectiveCamera + frustum-to-ground plane projection (4 มุมล่างของ frustum)
-//  เชื่อมต่อกับ  : ทำงานคู่กับ 3D Dive View (ส่วนที่ ๓๗) สลับมุมมองได้ทันทีโดยไม่หลงทิศ
+//  เชื่อมต่อกับ  : ทำงานคู่กับ 3D Dive View (ส่วนที่ ๑๐) สลับมุมมองได้ทันทีโดยไม่หลงทิศ
 // ═══════════════════════════════════════════════════════════════
 L.Control.CamFrustum = L.Control.extend({
     options: { position: 'topright' },
@@ -6731,12 +6878,12 @@ function _cycleTlHeatFreq(e) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 5] หมวด ก — สถาปัตยกรรมพื้นฐาน + ชั้นภูมิศาสตร์
+//  [ส่วนที่ 1.4] กลุ่ม ๑ · แพลตฟอร์ม & ภูมิศาสตร์ (Platform & Geospatial)
 //  แผนที่ความร้อนการสูญเสียเสียงใต้น้ำ · TL Heatmap Overlay (WOA23-derived)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : แสดงระยะตรวจจับของโซนาร์ active ในรูปคลื่นความร้อน (Transmission Loss < 90 dB = สีน้ำเงิน, > 130 dB = สีแดง)
 //  หลักการ      : Canvas radial heatmap · sample TL จากตาราง pre-computed (ray-traced WOA23 SVP) · HSL color map
-//  เชื่อมต่อกับ  : ผูกกับโมดูล WoaTL (ส่วนที่ ๓๖) — เปลี่ยนความถี่ ๕/๑๕/๓๐ kHz ได้ด้วย right-click
+//  เชื่อมต่อกับ  : ผูกกับโมดูล WoaTL (ส่วนที่ ๙) — เปลี่ยนความถี่ ๕/๑๕/๓๐ kHz ได้ด้วย right-click
 // ═══════════════════════════════════════════════════════════════
 L.Control.TlHeat = L.Control.extend({
     options: { position: 'topright' },
@@ -6780,12 +6927,12 @@ L.marker([12.718, 100.779], {
 }).addTo(map);
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 6] หมวด ก — สถาปัตยกรรมพื้นฐาน + ชั้นภูมิศาสตร์
+//  [ส่วนที่ 1.5] กลุ่ม ๑ · แพลตฟอร์ม & ภูมิศาสตร์ (Platform & Geospatial)
 //  แนวปะการังเทียม · Artificial Reef Markers (Acoustic Clutter Zone)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : แสดงแนวปะการังเทียมที่กรมประมง/ทร. วางไว้ — เป็นพื้นที่สะท้อนเสียงสูง (clutter) ที่ลด PSR ของโซนาร์
 //  หลักการ      : GIS Marker จาก dataset ทร. · ทำหน้าที่เป็น acoustic clutter zone ในตอนวิเคราะห์โซนาร์
-//  เชื่อมต่อกับ  : ลดประสิทธิภาพ Sonar Sweep (ส่วนที่ ๒๐) และ Guardian UUV passive sonar (ส่วนที่ ๒๗)
+//  เชื่อมต่อกับ  : ลดประสิทธิภาพ Sonar Sweep (ส่วนที่ ๕.๑) และ Guardian UUV passive sonar (ส่วนที่ ๖.๖)
 // ═══════════════════════════════════════════════════════════════
 // ───────────────────────────────────────────────────────────────
 //  ความสำคัญในงานวิจัย:
@@ -6954,7 +7101,7 @@ reefToggleBtn.onAdd = function() {
 reefToggleBtn.addTo(map);
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 7] หมวด ก — สถาปัตยกรรมพื้นฐาน + ชั้นภูมิศาสตร์
+//  [ส่วนที่ 1.6] กลุ่ม ๑ · แพลตฟอร์ม & ภูมิศาสตร์ (Platform & Geospatial)
 //  เขตปลอดภัยในราชการทหารเรือ · Naval Safety Zone (พ.ร.ก. Restricted Area)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : กำหนดขอบเขตน่านน้ำที่จำกัดการเข้าออกตามกฎหมาย — เป็นชั้นแรกของ Rules of Engagement (ROE)
@@ -7027,12 +7174,12 @@ safetyZoneToggleBtn.onAdd = function() {
 safetyZoneToggleBtn.addTo(map);
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 8] หมวด ก — สถาปัตยกรรมพื้นฐาน + ชั้นภูมิศาสตร์
+//  [ส่วนที่ 1.7] กลุ่ม ๑ · แพลตฟอร์ม & ภูมิศาสตร์ (Platform & Geospatial)
 //  พื้นที่กองเรือยุทธการ · Fleet Operational Zone (C2 Node + DAS endpoint)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : แสดงพื้นที่ฐาน กร./ฐานทัพเรือสัตหีบ — เป็นโหนด Command & Control หลัก
 //  หลักการ      : Leaflet polygon + DAS Cable 2 anchor point
-//  เชื่อมต่อกับ  : เชื่อมกับ DAS Cable #2 (ส่วนที่ ๙) และฐาน อูฯ ตะเภา (ผ่าน Coastal Assets)
+//  เชื่อมต่อกับ  : เชื่อมกับ DAS Cable #2 (ส่วนที่ ๑.๘) และฐาน อูฯ ตะเภา (ผ่าน Coastal Assets)
 // ═══════════════════════════════════════════════════════════════
 // ───────────────────────────────────────────────────────────────
 //  ที่มา: ไฟล์ KML พื้นที่กองเรือยุทธการ (กองทัพเรือ)
@@ -7103,12 +7250,12 @@ fleetZoneToggleBtn.onAdd = function() {
 fleetZoneToggleBtn.addTo(map);
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 9] หมวด ก — สถาปัตยกรรมพื้นฐาน + ชั้นภูมิศาสตร์
+//  [ส่วนที่ 1.8] กลุ่ม ๑ · แพลตฟอร์ม & ภูมิศาสตร์ (Platform & Geospatial)
 //  สายเคเบิล DAS เส้นที่ ๒ — เส้นทางสำรอง · DAS Fiber Optic Cable #2 (Redundancy Path)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : สาย Distributed Acoustic Sensing เส้นที่สอง — ป้องกัน single-point-of-failure ของระบบดักฟัง
 //  หลักการ      : Bezier curve geometry · เส้นทางเลี่ยงเส้นแรกเพื่อ geographic diversity
-//  เชื่อมต่อกับ  : ทำงานคู่กับ DAS Cable #1 (ส่วนที่ ๑๘) ผ่านระบบ tripwire เดียวกัน
+//  เชื่อมต่อกับ  : ทำงานคู่กับ DAS Cable #1 (ส่วนที่ ๔.๑) ผ่านระบบ tripwire เดียวกัน
 // ═══════════════════════════════════════════════════════════════
 //  UDC → กองเรือยุทธการ (Secondary/Backup Path)
 // ───────────────────────────────────────────────────────────────
@@ -7209,7 +7356,7 @@ das3ToggleBtn.onAdd = function() {
 das3ToggleBtn.addTo(map);
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 10] หมวด ก — สถาปัตยกรรมพื้นฐาน + ชั้นภูมิศาสตร์
+//  [ส่วนที่ 1.9] กลุ่ม ๑ · แพลตฟอร์ม & ภูมิศาสตร์ (Platform & Geospatial)
 //  สายเคเบิลใต้น้ำระหว่างประเทศ · International Submarine Cables (ADC/AAG)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : แสดงสายเคเบิลสื่อสารระหว่างประเทศ ๒ ระบบ (ADC, AAG) ที่ผ่านน่านน้ำไทย — รับผิดชอบ ~๙๕% ของ internet traffic
@@ -7314,7 +7461,7 @@ function renderCableWays(ways, source) {
         cableRouteGroup.addLayer(line);
         n++;
     }
-    addLog('CABLE', `โหลดเส้นเคเบิ้ล ${n} ways จาก ${source}`);
+    addLog(`[CABLE] โหลดเส้นเคเบิ้ล ${n} ways จาก ${source}`);
     return n;
 }
 
@@ -7446,12 +7593,12 @@ const APPROX_GULF_ROUTES = [
         return;
     }
     // Fallback: live Overpass (OSM data — sparse but at least something)
-    addLog('CABLE', 'ไม่พบ TeleGeography snapshot — fallback Overpass…');
+    addLog('[CABLE] ไม่พบ TeleGeography snapshot — fallback Overpass…');
     const ways = await loadCablesLive();
     if (ways && ways.length) {
         renderCableWays(ways, 'Overpass live (OSM)');
     } else {
-        addLog('CABLE', 'โหลดเส้นเคเบิ้ลล้มเหลว (offline?)');
+        addLog('[CABLE] โหลดเส้นเคเบิ้ลล้มเหลว (offline?)');
     }
 })();
 
@@ -7468,11 +7615,11 @@ cableABtn.onAdd = function() {
         if (cableAVisible) {
             cableLandingGroup.addTo(map);
             btn.classList.add('active-a');
-            addLog('CABLE', 'แสดงสถานี Landing — Sri Racha CLS');
+            addLog('[CABLE] แสดงสถานี Landing — Sri Racha CLS');
         } else {
             map.removeLayer(cableLandingGroup);
             btn.classList.remove('active-a');
-            addLog('CABLE', 'ซ่อนสถานี Landing');
+            addLog('[CABLE] ซ่อนสถานี Landing');
         }
     };
     return btn;
@@ -7492,11 +7639,11 @@ cableBBtn.onAdd = function() {
         if (cableBVisible) {
             cableRouteGroup.addTo(map);
             btn.classList.add('active-b');
-            addLog('CABLE', 'แสดงเส้นทางเคเบิ้ล ADC+AAG (ประมาณการ)');
+            addLog('[CABLE] แสดงเส้นทางเคเบิ้ล ADC+AAG (ประมาณการ)');
         } else {
             map.removeLayer(cableRouteGroup);
             btn.classList.remove('active-b');
-            addLog('CABLE', 'ซ่อนเส้นทางเคเบิ้ล');
+            addLog('[CABLE] ซ่อนเส้นทางเคเบิ้ล');
         }
     };
     return btn;
@@ -7504,12 +7651,12 @@ cableBBtn.onAdd = function() {
 cableBBtn.addTo(map);
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 11] หมวด ก — สถาปัตยกรรมพื้นฐาน + ชั้นภูมิศาสตร์
+//  [ส่วนที่ 1.10] กลุ่ม ๑ · แพลตฟอร์ม & ภูมิศาสตร์ (Platform & Geospatial)
 //  SLOC — เส้นทางเดินเรือพาณิชย์ · Sea Lines of Communication (Threat Approach Vector)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : แสดง 'เส้นเลือดใหญ่' ทางเศรษฐกิจ — แหลมฉบัง / มาบตาพุด / สิงคโปร์ — และเป็น vector ที่ภัยคุกคามใช้แฝงตัวเข้ามา
 //  หลักการ      : Leaflet polyline แบ่ง ๓ corridor (เหนือ-กลาง-ใต้)
-//  เชื่อมต่อกับ  : ใช้เป็น 'baseline behavior' ในการตรวจจับ AIS anomaly (ส่วนที่ ๓)
+//  เชื่อมต่อกับ  : ใช้เป็น 'baseline behavior' ในการตรวจจับ AIS anomaly (ส่วนที่ ๑.๒)
 // ═══════════════════════════════════════════════════════════════
 // ───────────────────────────────────────────────────────────────
 //  SLOC คือเส้นทางเดินเรือหลักที่เรือสินค้าและเรือรบใช้ในยามปกติ
@@ -7570,11 +7717,11 @@ slocBtn.onAdd = function() {
         if (slocVisible) {
             slocGroup.addTo(map);
             btn.classList.add('active');
-            addLog('SLOC', 'แสดงเส้นทางเดินเรือพาณิชย์ 2 เส้น');
+            addLog('[SLOC] แสดงเส้นทางเดินเรือพาณิชย์ 2 เส้น');
         } else {
             map.removeLayer(slocGroup);
             btn.classList.remove('active');
-            addLog('SLOC', 'ซ่อนเส้นทางเดินเรือ');
+            addLog('[SLOC] ซ่อนเส้นทางเดินเรือ');
         }
     };
     return btn;
@@ -7582,7 +7729,7 @@ slocBtn.onAdd = function() {
 slocBtn.addTo(map);
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 12] หมวด ก — สถาปัตยกรรมพื้นฐาน + ชั้นภูมิศาสตร์
+//  [ส่วนที่ 1.11] กลุ่ม ๑ · แพลตฟอร์ม & ภูมิศาสตร์ (Platform & Geospatial)
 //  ระบบแบ่งแนวจราจรทางเรือ · Traffic Separation Scheme (IMO + กรมเจ้าท่า)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : แสดง TSS ตามมาตรฐาน IMO ของกรมเจ้าท่า — แหลมฉบัง, มาบตาพุด, สัตหีบ
@@ -7793,11 +7940,11 @@ tssBtn.onAdd = function() {
         if (tssVisible) {
             tssGroup.addTo(map);
             btn.classList.add('active');
-            addLog('TSS', 'แสดง TSS 3 พื้นที่ — แหลมฉบัง · มาบตาพุด · สัตหีบ', '#fb923c');
+            addLog('[TSS] แสดง TSS 3 พื้นที่ — แหลมฉบัง · มาบตาพุด · สัตหีบ', '#fb923c');
         } else {
             map.removeLayer(tssGroup);
             btn.classList.remove('active');
-            addLog('TSS', 'ซ่อน Traffic Separation Scheme');
+            addLog('[TSS] ซ่อน Traffic Separation Scheme');
         }
     };
     return btn;
@@ -9526,6 +9673,8 @@ function connectAISStream() {
     // ── onerror: fallback ─────────────────────────────────────
     aisWS.onerror = function() {
         addLog('[AIS] ✗ AISStream error — fallback Simulation', '#ef4444');
+        // ปิด onclose/onerror ก่อน null — กัน close event ยิง reconnect ซ้ำกับ sim ที่เพิ่งเริ่ม (race)
+        if (aisWS) { aisWS.onclose = null; aisWS.onerror = null; try { aisWS.close(); } catch(_){} }
         aisWS = null;
         aisRealMode = false;
         startSimulatedAIS();
@@ -10322,7 +10471,7 @@ document.addEventListener('keydown', function(e) {
 });
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 13] หมวด ข — ระบบพิกัด + สถานะส่วนกลาง
+//  [ส่วนที่ 2] กลุ่ม ๑ · แพลตฟอร์ม & ภูมิศาสตร์ — พิกัด+สถานะส่วนกลาง
 //  ชั้น Canvas Overlay · HTML5 Canvas Layer (over Leaflet)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : วาง canvas โปร่งใสซ้อนบน Leaflet — เป็นพื้นที่วาด entity ทั้งหมด (เรือ, UUV, threats, FX)
@@ -10370,7 +10519,7 @@ function _staticRedraw() {
 map.on('move zoom zoomanim viewreset resize', _staticRedraw);
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 14] หมวด ข — ระบบพิกัด + สถานะส่วนกลาง
+//  [ส่วนที่ 2.1] กลุ่ม ๑ · แพลตฟอร์ม & ภูมิศาสตร์ — พิกัด+สถานะส่วนกลาง
 //  ระบบพิกัดทางภูมิศาสตร์ · Geographic Coordinate System (3-way: WGS-84 ↔ nx/ny ↔ pixel)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : แปลงพิกัดระหว่าง ๓ ระบบ: lat/lng (สากล), nx/ny (normalized 0–1), pixel (canvas)
@@ -10432,7 +10581,7 @@ function haversineNm(lat1, lng1, lat2, lng2) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 15] หมวด ข — ระบบพิกัด + สถานะส่วนกลาง
+//  [ส่วนที่ 2.2] กลุ่ม ๑ · แพลตฟอร์ม & ภูมิศาสตร์ — พิกัด+สถานะส่วนกลาง
 //  ตัวแปรสถานะส่วนกลาง · Global State Variables (Simulator Memory)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : ที่เก็บข้อมูล runtime ของทั้งระบบ — frame counter, arrays ของ entity ทุกประเภท, flag การจำลอง
@@ -10463,12 +10612,12 @@ let guuvUserCount = 0, svUserCount = 0;
 let placeGUUVMode = false, placeSurveyMode = false;
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 16] หมวด ค — สิ่งแวดล้อมและอากาศยานสนับสนุน
+//  [ส่วนที่ 3] กลุ่ม ๓ · กำลังรบ & ระบบป้องกัน — ฮ.ปราบเรือดำน้ำ (ASW Helicopter)
 //  ระบบ ฮ.ปด. · ASW Helicopter System (MH-60S + Sonobuoy + Mk46)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : จำลอง ฮ. ปราบเรือดำน้ำ ที่ขึ้นจากฐาน อูฯ ตะเภา — ทิ้ง sonobuoy + ยิง Mk46 ตอร์ปิโดได้
 //  หลักการ      : state machine: TRANSIT → SONOBUOY DROP → CONTACT → ENGAGE → RTB
-//  เชื่อมต่อกับ  : เรียกใช้ทรัพยากร torpedoes (ส่วนที่ ๓๐) และ sonobuoy field (ส่วนที่ ๒๐)
+//  เชื่อมต่อกับ  : เรียกใช้ทรัพยากร torpedoes (ส่วนที่ ๗.๑) และ sonobuoy field (ส่วนที่ ๕.๑)
 // ═══════════════════════════════════════════════════════════════
 //  ─────────────────────────────────────────────────────────────
 //  Royal Thai Navy MH-60S Knighthawk × 1 (callsign SEAHAWK01)
@@ -11699,7 +11848,7 @@ function _checkCableDamage(mx, my, mech) {
             hit = true;
             if (typeof addExplosion === 'function') addExplosion(bnx, bny, '#ef4444');
             addLog(`[MIW] ✂ สาย DAS-${cab.id} ถูกตัดขาดจากแรงระเบิดทุ่น — สูญเสียการเชื่อมโยง/เซนเซอร์ช่วงนั้น`, '#ef4444');
-            if (typeof setDomain === 'function') setDomain('seabed', 'crit');
+            if (typeof setDomain === 'function') setDomain('underwater', 'crit');
         }
     }
     if (hit) _setCableRiskFromMines();
@@ -11962,12 +12111,12 @@ function drawSeaMines() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 17] หมวด ค — สิ่งแวดล้อมและอากาศยานสนับสนุน
+//  [ส่วนที่ 4] กลุ่ม ๒ · สิ่งแวดล้อม & ฟิสิกส์เสียง (Environment & Acoustics)
 //  การจำลองน้ำขึ้น-ลง + ตัวปรับ Detection · Tide Simulation (M2+S2 Harmonics)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : จำลองน้ำขึ้น-ลงแบบ semi-diurnal ของอ่าวไทย — ส่งผลต่อ noise level และ thermocline depth
 //  หลักการ      : M2 (12.42h) + S2 (12.00h) harmonics · ผลิต range factor 0.78–1.10× สำหรับ detection
-//  เชื่อมต่อกับ  : ปรับ PSR ของ sonar/passive ทั้งหมด (ส่วนที่ ๒๐ และ ๒๗)
+//  เชื่อมต่อกับ  : ปรับ PSR ของ sonar/passive ทั้งหมด (ส่วนที่ ๕.๑ และ ๖.๖)
 // ═══════════════════════════════════════════════════════════════
 // ───────────────────────────────────────────────────────────────
 //  หลักการทางอุทกศาสตร์ (Hydrographic Principle):
@@ -12194,12 +12343,12 @@ const rovs = [
 let _pxNm = 30;
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 18] หมวด ค — สิ่งแวดล้อมและอากาศยานสนับสนุน
+//  [ส่วนที่ 4.1] กลุ่ม ๒ · สิ่งแวดล้อม & ฟิสิกส์เสียง (Environment & Acoustics)
 //  สายเคเบิล DAS เส้นที่ ๑ + ระบบ Tripwire · DAS Fiber Optic Cable #1 (Rayleigh Backscatter Tripwire)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : สายดักฟังเสียงใต้น้ำเส้นหลัก — ใช้ Rayleigh backscattering แปลงเส้นใยแก้วเป็น hydrophone กระจาย
 //  หลักการ      : photon-by-photon model · OTDR-style KP localization · triggers alert เมื่อ ΔPhase > threshold
-//  เชื่อมต่อกับ  : คู่กับ DAS Cable #2 (ส่วนที่ ๙) เพื่อ redundancy + cross-check ตำแหน่งภัย
+//  เชื่อมต่อกับ  : คู่กับ DAS Cable #2 (ส่วนที่ ๑.๘) เพื่อ redundancy + cross-check ตำแหน่งภัย
 // ═══════════════════════════════════════════════════════════════
 // ───────────────────────────────────────────────────────────────
 //  DAS = Distributed Acoustic Sensing
@@ -13366,12 +13515,12 @@ function initPatrolVessels() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 19] หมวด ง — สถาปัตยกรรมการป้องกัน
+//  [ส่วนที่ 5] กลุ่ม ๓ · สถาปัตยกรรมการป้องกัน
 //  วงแหวนป้องกันแบบหลายชั้น · Layered Defense Zone Rings (Outer / MEZ / Hydro / Sonar)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : แสดง concentric defense ring ๔ ชั้นรอบ UDC — Outer 10nm / MEZ 5nm / Hydro / Sonar
 //  หลักการ      : geographic accuracy (haversine-based) · ไม่ใช่แค่ pixel circle
-//  เชื่อมต่อกับ  : แต่ละ ring trigger ROE level ต่างกัน · ทำงานคู่กับ Sonar Sweep (ส่วนที่ ๒๐)
+//  เชื่อมต่อกับ  : แต่ละ ring trigger ROE level ต่างกัน · ทำงานคู่กับ Sonar Sweep (ส่วนที่ ๕.๑)
 // ═══════════════════════════════════════════════════════════════
 // ───────────────────────────────────────────────────────────────
 //  หลักการทางยุทธวิธี (Tactical Layered Defense):
@@ -13802,12 +13951,12 @@ function scenarioAirRaid() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 20] หมวด ง — สถาปัตยกรรมการป้องกัน
+//  [ส่วนที่ 5.1] กลุ่ม ๓ · สถาปัตยกรรมการป้องกัน
 //  การกวาดโซนาร์แบบ Active · Active Sonar Sweep Animation (CIC 360° Display)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : จำลองจอ CIC ของ active sonar — กวาด ๓๖๐° รัศมี ๑๑ nm + sweep line + persistent trail
 //  หลักการ      : radial gradient + sweep line ที่ลบ trail หลังกวาดครบรอบ
-//  เชื่อมต่อกับ  : ตรวจจับ threats (ส่วนที่ ๒๙) — call detectionCheck() ทุกการ sweep
+//  เชื่อมต่อกับ  : ตรวจจับ threats (ส่วนที่ ๗) — call detectionCheck() ทุกการ sweep
 // ═══════════════════════════════════════════════════════════════
 // ───────────────────────────────────────────────────────────────
 //  หลักการทางอะคูสติกใต้น้ำ (Underwater Acoustics):
@@ -14178,12 +14327,12 @@ function drawCable3() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 21] หมวด จ — กำลังฝ่ายเรา (Friendly Fleet)
+//  [ส่วนที่ 6] กลุ่ม ๓ · กำลังฝ่ายเรา (Friendly Fleet)
 //  เรือสำรวจอุทกศาสตร์ · Hydrographic Survey Vessels (MBES / SSS / MAG / ADCP / SBP / CTD)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : เรือสำรวจของ ทร. (ร.ล.พฤหัสบดี / ร.ล.จันทร / ร.ล.สุริยะ) — มี ๘ เซ็นเซอร์อุทกศาสตร์
 //  หลักการ      : lawn-mower pattern · MBES swath ±60° · CTD cast → SVP boost +2 dB PSR · MAG sweep ตรวจ UUV
-//  เชื่อมต่อกับ  : ของใหม่ HSV-Ext (ส่วนที่ ๒๒) ขยาย capability ตาม spec ร.ล.สุริยะ FY69
+//  เชื่อมต่อกับ  : ของใหม่ HSV-Ext (ส่วนที่ ๖.๑) ขยาย capability ตาม spec ร.ล.สุริยะ FY69
 // ═══════════════════════════════════════════════════════════════
 // ───────────────────────────────────────────────────────────────
 //  บทบาทในระบบ THE SHIELD:
@@ -14617,7 +14766,7 @@ function drawSurveyVessels() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 22] หมวด จ — กำลังฝ่ายเรา (Friendly Fleet)
+//  [ส่วนที่ 6.1] กลุ่ม ๓ · กำลังฝ่ายเรา (Friendly Fleet)
 //  HSV-Ext — ขีดความสามารถจาก ร.ล.สุริยะ · HSV Extension Module (HTMS Suriya 2026 PDF-derived)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : เพิ่ม ๘ ขีดความสามารถจาก spec ร.ล.สุริยะ ลำใหม่ ปีงบ ๖๙ ลงในแผนที่ ๒ มิติ
@@ -15358,12 +15507,12 @@ function buildHSVPanelHTML() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 23] หมวด จ — กำลังฝ่ายเรา (Friendly Fleet)
+//  [ส่วนที่ 6.2] กลุ่ม ๓ · กำลังฝ่ายเรา (Friendly Fleet)
 //  ROV ระยะใกล้ · ROV — Remotely Operated Vehicle (Close-in Security)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : หุ่นยนต์ใต้น้ำควบคุมระยะใกล้ — รักษาความปลอดภัยรอบ UDC ในรัศมีไม่เกิน 0.5 nm
 //  หลักการ      : tether-limited movement · slow speed (~2 kn) · short-range camera + manipulator
-//  เชื่อมต่อกับ  : ทำงานเป็น 'inner perimeter' ก่อน Guardian UUV (ส่วนที่ ๒๗)
+//  เชื่อมต่อกับ  : ทำงานเป็น 'inner perimeter' ก่อน Guardian UUV (ส่วนที่ ๖.๖)
 // ═══════════════════════════════════════════════════════════════
 // ───────────────────────────────────────────────────────────────
 //  ROV คือหุ่นยนต์ใต้น้ำที่ควบคุมจากผิวน้ำผ่านสาย Umbilical Tether
@@ -15416,7 +15565,7 @@ function drawROVs() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 24] หมวด จ — กำลังฝ่ายเรา (Friendly Fleet)
+//  [ส่วนที่ 6.3] กลุ่ม ๓ · กำลังฝ่ายเรา (Friendly Fleet)
 //  UDC Capsule (Shanghai-type) · Underwater Data Center Capsule (Steel Jacket + Mooring)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : แสดงรูปทรงและองค์ประกอบของ UDC — steel jacket, mooring piles, end cap, cylinder body
@@ -15513,12 +15662,12 @@ function drawUDCCapsule() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 25] หมวด จ — กำลังฝ่ายเรา (Friendly Fleet)
+//  [ส่วนที่ 6.4] กลุ่ม ๓ · กำลังฝ่ายเรา (Friendly Fleet)
 //  เซ็นเซอร์ ADCP รอบ UDC · ADCP Sensor Array (6 units, 1.3 nm ring)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : ADCP คงที่ ๖ ตัวรอบ UDC วัดกระแสน้ำเป็นชั้นลึก — ใช้คำนวณ drift correction ของ torpedo/UUV
 //  หลักการ      : hexagonal layout · acoustic Doppler shift · เก็บข้อมูลทุก 30 s
-//  เชื่อมต่อกับ  : feed กระแสน้ำเข้าใน FLS Cone (ส่วนที่ ๒๒) และ Patrol drift compensation
+//  เชื่อมต่อกับ  : feed กระแสน้ำเข้าใน FLS Cone (ส่วนที่ ๖.๑) และ Patrol drift compensation
 // ═══════════════════════════════════════════════════════════════
 // ───────────────────────────────────────────────────────────────
 //  ADCP คืออุปกรณ์วัดกระแสน้ำใต้ทะเลแบบ Acoustic ใช้หลักการ Doppler Effect:
@@ -15571,12 +15720,12 @@ function drawADCP() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 26] หมวด จ — กำลังฝ่ายเรา (Friendly Fleet)
+//  [ส่วนที่ 6.5] กลุ่ม ๓ · กำลังฝ่ายเรา (Friendly Fleet)
 //  สินทรัพย์ชายฝั่งบนเกาะคราม · Coastal Defense Assets (Radar + EO/IR + Hydrophone + Guard Boat)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : หน่วยป้องกันบนเกาะคราม — เรดาร์ผิวน้ำ, EO/IR camera, hydrophone array, guard boat
 //  หลักการ      : static asset markers + sector coverage cone
-//  เชื่อมต่อกับ  : เป็น 'over-the-horizon' layer ก่อน Patrol Vessels (ส่วนที่ ๒๘)
+//  เชื่อมต่อกับ  : เป็น 'over-the-horizon' layer ก่อน Patrol Vessels (ส่วนที่ ๖.๗)
 // ═══════════════════════════════════════════════════════════════
 // ───────────────────────────────────────────────────────────────
 //  เกาะคราม (Koh Kram) ตั้งอยู่ห่างจาก UDC ประมาณ 3–5nm
@@ -15617,12 +15766,12 @@ function drawCoastalAssets() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 27] หมวด จ — กำลังฝ่ายเรา (Friendly Fleet)
+//  [ส่วนที่ 6.6] กลุ่ม ๓ · กำลังฝ่ายเรา (Friendly Fleet)
 //  Guardian UUV · GUUV — Guardian Unmanned Underwater Vehicle
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : UUV ฝ่ายเรา — passive sonar กวาด ๒๗๐° + FLS active ±๒๒.๕° · ใช้ thermocline ให้เปรียบ
 //  หลักการ      : potential field steering · PSR = SE = SL - 2TL + TS - (NL-DI) - DT
-//  เชื่อมต่อกับ  : กิน TL จาก WoaTL (ส่วนที่ ๓๖) เมื่อโหลด pipe-line ray-traced TL พร้อม
+//  เชื่อมต่อกับ  : กิน TL จาก WoaTL (ส่วนที่ ๙) เมื่อโหลด pipe-line ray-traced TL พร้อม
 // ═══════════════════════════════════════════════════════════════
 // ───────────────────────────────────────────────────────────────
 //  GUUV คือ UUV อัตโนมัติทำหน้าที่ลาดตระเวนใต้น้ำรอบ UDC
@@ -15854,7 +16003,7 @@ function drawGuardianUUVs() {
         ctx.textAlign='center';
         const flsLX = x + flsR*Math.cos(angle);
         const flsLY = y + flsR*Math.sin(angle) - 5;
-        ctx.fillText(`FLS ~${Math.round(1500*detMod)}m`, flsLX, flsLY);
+        ctx.fillText(`FLS ~${Math.round(1500*detMod*SS_MODS.flsRange[seaState])}m`, flsLX, flsLY);
         ctx.restore();
 
         // ── 3. GUUV body ──
@@ -15939,12 +16088,12 @@ function drawGuardianUUVs() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 28] หมวด จ — กำลังฝ่ายเรา (Friendly Fleet)
+//  [ส่วนที่ 6.7] กลุ่ม ๓ · กำลังฝ่ายเรา (Friendly Fleet)
 //  เรือลาดตระเวน · Patrol Vessels (Race-track Pattern + 3-step ROE)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : เรือ ตชด./ลาดตระเวน เดินวน race-track 4 WP — รับผิดชอบ outer ring + Quick Reaction Force
 //  หลักการ      : waypoint navigation · 3-step ROE: warn → shoulder → engage
-//  เชื่อมต่อกับ  : ทำงานเสริม Coastal Assets (ส่วนที่ ๒๖) ปิดช่องว่างนอก radar shore
+//  เชื่อมต่อกับ  : ทำงานเสริม Coastal Assets (ส่วนที่ ๖.๕) ปิดช่องว่างนอก radar shore
 // ═══════════════════════════════════════════════════════════════
 // ───────────────────────────────────────────────────────────────
 //  เรือลาดตระเวนทำหน้าที่ "ชั้นป้องกันผิวน้ำ" (Surface Layer Defense)
@@ -16234,12 +16383,12 @@ function drawPatrolVessels() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 29] หมวด ฉ — ภัยคุกคาม + จำแนกฝ่าย
+//  [ส่วนที่ 7] กลุ่ม ๔ · ภัยคุกคาม & การจำแนก (Threats & Classification)
 //  ระบบจำแนกภัย IFF + Telemetry · IFF Threat Display + Telemetry Trail
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : แสดงเส้น trajectory + DST (Distance·Speed·Time) ของทุก threat · จำแนก friend/foe/unknown
 //  หลักการ      : trail polyline + state-color (red/yellow/green) · DST label
-//  เชื่อมต่อกับ  : รับ contact จาก Sonar Sweep (ส่วนที่ ๒๐) และ AIS Anomaly (ส่วนที่ ๓)
+//  เชื่อมต่อกับ  : รับ contact จาก Sonar Sweep (ส่วนที่ ๕.๑) และ AIS Anomaly (ส่วนที่ ๑.๒)
 // ═══════════════════════════════════════════════════════════════
 // ───────────────────────────────────────────────────────────────
 //  IFF (Identification Friend or Foe) คือระบบจำแนกเป้าหมายว่า
@@ -16347,7 +16496,7 @@ function drawThreats() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 30] หมวด ฉ — ภัยคุกคาม + จำแนกฝ่าย
+//  [ส่วนที่ 7.1] กลุ่ม ๔ · ภัยคุกคาม & การจำแนก (Threats & Classification)
 //  Visual FX การระเบิด/จับเป้า · Explosion + Capture Animation (40-frame Ring)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : เอฟเฟกต์ภาพเมื่อเกิดเหตุการณ์ทางยุทธวิธี — ระเบิด, จับเป้าสำเร็จ, ยิง Mk46
@@ -16938,7 +17087,22 @@ function toggleElevationOverlay() {
 // ── GFW API simulated layer logic ──
 let showGfwOverlay = false;
 let gfwUpdateInterval = null;
-const GFW_API_TOKEN = "YOUR_GFW_API_TOKEN";
+// GFW API token: runtime-config via localStorage (key 'gfw-api-token') - no secret embedded in file.
+// To set the token: call setupGfwKey() in the browser console (or wire it to a UI button).
+function getGfwToken() {
+    try { return localStorage.getItem('gfw-api-token') || ''; }
+    catch (e) { return ''; }
+}
+function setupGfwKey() {
+    var oldKey = '';
+    try { oldKey = localStorage.getItem('gfw-api-token') || ''; } catch (e) {}
+    var key = prompt("Enter Global Fishing Watch API Token (JWT):", oldKey);
+    if (key !== null) {
+        try { localStorage.setItem('gfw-api-token', key.trim()); } catch (e) {}
+        if (typeof addLog === 'function') addLog('GFW API Token: saved', '#ec4899');
+    }
+}
+if (typeof window !== 'undefined') window.setupGfwKey = setupGfwKey;
 
 const GfwClientMock = {
     gaps: [],
@@ -16964,6 +17128,7 @@ const GfwClientMock = {
     },
 
     async fetchRealData() {
+        const GFW_API_TOKEN = getGfwToken();
         if (!GFW_API_TOKEN) return;
         console.log("GFW: Attempting to fetch live GFW API data...");
         try {
@@ -17195,7 +17360,7 @@ function _renderGfwPanelContent(panel) {
         html += `
         <div style="background:rgba(255,255,255,0.02);border-left:2px solid #ec4899;padding:4px 6px;margin-top:4px;font-size:10px;">
             <div style="display:flex;justify-content:space-between;font-weight:bold;">
-                <span style="color:#cbd5e1;">Target: ${d.id}</span>
+                <span style="color:#cbd5e1;">Target: ${escapeHtml(d.id)}</span>
                 <span style="color:#ec4899;">UNIDENTIFIED</span>
             </div>
             <div style="color:#64748b;margin-top:2px;">
@@ -17213,11 +17378,11 @@ function _renderGfwPanelContent(panel) {
         html += `
         <div style="background:rgba(255,255,255,0.02);border-left:2px solid #f97316;padding:4px 6px;margin-top:4px;font-size:10px;">
             <div style="display:flex;justify-content:space-between;font-weight:bold;">
-                <span style="color:#cbd5e1;">${g.name}</span>
+                <span style="color:#cbd5e1;">${escapeHtml(g.name)}</span>
                 <span style="color:#f97316;">GAP ALERT</span>
             </div>
             <div style="color:#64748b;margin-top:2px;">
-                MMSI: ${g.mmsi} | Last Seen: ${g.lat.toFixed(4)}°N, ${g.lng.toFixed(4)}°E<br>
+                MMSI: ${escapeHtml(g.mmsi)} | Last Seen: ${g.lat.toFixed(4)}°N, ${g.lng.toFixed(4)}°E<br>
                 Status: ${gapStatus}
             </div>
         </div>`;
@@ -17901,32 +18066,43 @@ function findStationSite() {
 }
 
 // ── Cable landing station — บนพื้นเรียบของเกาะ ──
+// ── [v15.15] สร้างโมเดลสถานี landing แบบ reusable (อาคาร+หลังคา+ประตู+เสาอากาศ+ไฟ marker) ──
+//   opts: { wall, roof, light, scale, name }  — ใช้ซ้ำได้ทั้งเกาะคราม และ ทุ่งโปรง (Recon นย.)
+function buildStationModel(sx, sy, sz, opts) {
+    opts = opts || {};
+    const wallCol  = (opts.wall  != null) ? opts.wall  : 0xb6bec8;
+    const roofCol  = (opts.roof  != null) ? opts.roof  : 0x5f6a76;
+    const lightCol = (opts.light != null) ? opts.light : 0xff4444;
+    const s = opts.scale || 1;
+    const grp = new THREE.Group();
+    // อาคารสถานี
+    const bld = new THREE.Mesh(new THREE.BoxGeometry(15*s,12*s,20*s),
+        new THREE.MeshPhongMaterial({ color:wallCol }));
+    bld.position.set(sx, sy+6*s, sz); grp.add(bld);
+    const roof = new THREE.Mesh(new THREE.BoxGeometry(17*s,2.5*s,22*s),
+        new THREE.MeshPhongMaterial({ color:roofCol }));
+    roof.position.set(sx, sy+13*s, sz); grp.add(roof);
+    // ประตู
+    const door = new THREE.Mesh(new THREE.BoxGeometry(0.6,6.5*s,4.5*s),
+        new THREE.MeshBasicMaterial({ color:0x22384a }));
+    door.position.set(sx+7.8*s, sy+3.3*s, sz); grp.add(door);
+    // เสาอากาศ + ไฟ marker
+    const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.6,0.6,26*s,6),
+        new THREE.MeshPhongMaterial({ color:0xccd2d8 }));
+    mast.position.set(sx-4.5*s, sy+25*s, sz-7*s); grp.add(mast);
+    const lt = new THREE.Mesh(new THREE.SphereGeometry(1.5,8,8),
+        new THREE.MeshBasicMaterial({ color:lightCol }));
+    lt.position.set(sx-4.5*s, sy+39*s, sz-7*s);
+    lt.name='station-light'; grp.add(lt);
+    grp.name = opts.name || 'station';
+    return grp;
+}
+
 function buildShore3D() {
     if (!d3_stationPos) return;
-    const grp = new THREE.Group();
     const sx = _d3x(d3_stationPos.nx), sz = _d3z(d3_stationPos.ny);
     const sy = Math.max(terrainY(sx,sz), 2.5);  // วางบนพื้นจริง ณ จุด Landing
-    // อาคารสถานี
-    const bld = new THREE.Mesh(new THREE.BoxGeometry(15,12,20),
-        new THREE.MeshPhongMaterial({ color:0xb6bec8 }));
-    bld.position.set(sx, sy+6, sz); grp.add(bld);
-    const roof = new THREE.Mesh(new THREE.BoxGeometry(17,2.5,22),
-        new THREE.MeshPhongMaterial({ color:0x5f6a76 }));
-    roof.position.set(sx, sy+13, sz); grp.add(roof);
-    // ประตู
-    const door = new THREE.Mesh(new THREE.BoxGeometry(0.6,6.5,4.5),
-        new THREE.MeshBasicMaterial({ color:0x22384a }));
-    door.position.set(sx+7.8, sy+3.3, sz); grp.add(door);
-    // เสาอากาศ + ไฟ marker
-    const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.6,0.6,26,6),
-        new THREE.MeshPhongMaterial({ color:0xccd2d8 }));
-    mast.position.set(sx-4.5, sy+25, sz-7); grp.add(mast);
-    const lt = new THREE.Mesh(new THREE.SphereGeometry(1.5,8,8),
-        new THREE.MeshBasicMaterial({ color:0xff4444 }));
-    lt.position.set(sx-4.5, sy+39, sz-7);
-    lt.name='station-light'; grp.add(lt);
-    // (เอาป้ายข้อความออก — กันเกะกะ)
-    grp.name='shore';
+    const grp = buildStationModel(sx, sy, sz, { name:'shore' });
     d3_scene.add(grp);
 }
 
@@ -18506,11 +18682,14 @@ function buildCables3D() {
     if (typeof DAS3_COORDS !== 'undefined') {
         const c4 = makeCable(_clipCableToCrop(DAS3_COORDS), 0x10b981, +1);
         if (c4) {
-            // หมุดปลายทาง — สถานีบนฝั่งทุ่งโปรง (Recon นย.)
-            const pin = new THREE.Mesh(new THREE.ConeGeometry(2.6,7,8),
-                new THREE.MeshBasicMaterial({ color:0x34d399 }));
-            pin.position.set(c4.end.x, c4.end.y+4, c4.end.z);
-            d3_scene.add(pin);
+            // [v15.15] สถานี landing บนฝั่งทุ่งโปรง (Recon นย.) — โมเดลคล้ายเกาะคราม (โทนเขียว)
+            const ex = c4.end.x, ez = c4.end.z;
+            const ey = Math.max(terrainY(ex, ez), 2.5);   // วางบนพื้นจริง ณ จุดขึ้นฝั่ง
+            const st = buildStationModel(ex, ey, ez, {
+                wall:0x9fb8a6, roof:0x3f6b54, light:0x34d399,
+                scale:0.85, name:'recon-station'
+            });
+            d3_scene.add(st);
         }
     }
 }
@@ -19900,12 +20079,12 @@ function toggle3DView() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 31] หมวด ช — ส่วนแสดงผล + วงรอบจำลอง
+//  [ส่วนที่ 8] กลุ่ม ๕ · ส่วนแสดงผล + วงรอบจำลอง
 //  แถบมาตราส่วนแผนที่ · Scale Bar (5 nm, Zoom-responsive)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : แถบมาตราส่วน 5 nm มุมล่างซ้าย — ปรับตามระดับ zoom · เป็นหน่วย nautical mile (สากลการเดินเรือ)
 //  หลักการ      : dynamic length based on pxPerNm()
-//  เชื่อมต่อกับ  : reference สำหรับวัดระยะของ defense rings (ส่วนที่ ๑๙)
+//  เชื่อมต่อกับ  : reference สำหรับวัดระยะของ defense rings (ส่วนที่ ๕)
 // ═══════════════════════════════════════════════════════════════
 // ───────────────────────────────────────────────────────────────
 //  Scale Bar แสดงระยะทางจริงในหน่วย Nautical Miles (nm)
@@ -19970,7 +20149,7 @@ function drawSeaStateIndicator() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 32] หมวด ช — ส่วนแสดงผล + วงรอบจำลอง
+//  [ส่วนที่ 8.1] กลุ่ม ๕ · ส่วนแสดงผล + วงรอบจำลอง
 //  วงรอบการจำลองหลัก · Main Animation Loop (requestAnimationFrame · 60 FPS)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : หัวใจของ simulator — เรียก update → draw → schedule ของทุก subsystem ที่ 60 FPS
@@ -20668,7 +20847,7 @@ map.once('load', _startAnimationOnce);
 setTimeout(_startAnimationOnce, 500);
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 33] หมวด ช — ส่วนแสดงผล + วงรอบจำลอง
+//  [ส่วนที่ 8.2] กลุ่ม ๕ · ส่วนแสดงผล + วงรอบจำลอง
 //  ฟังก์ชันสื่อสารกับผู้ใช้ (HMI) · UI Helper Functions (updateStatus / addLog / setSensor / setDomain)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : ตัวกลางระหว่าง simulator engine กับ Human-Machine Interface — สี, ไอคอน, log
@@ -20772,7 +20951,7 @@ function closestPatrol(nx,ny) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 34] หมวด ช — ส่วนแสดงผล + วงรอบจำลอง
+//  [ส่วนที่ 8.3] กลุ่ม ๕ · ส่วนแสดงผล + วงรอบจำลอง
 //  ระบบ Reset สถานะ · Reset System (Emergency Drill Reset)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : คืนสถานะระบบทั้งหมดสู่ initial — สำหรับการฝึก/สาธิตซ้ำ
@@ -20856,7 +21035,7 @@ function resetAll() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 35] หมวด ช — ส่วนแสดงผล + วงรอบจำลอง
+//  [ส่วนที่ 8.4] กลุ่ม ๕ · ส่วนแสดงผล + วงรอบจำลอง
 //  สถานการณ์ยุทธวิธีจำลอง · Tactical Scenarios (4 Pre-built Plays)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : ๔ สถานการณ์ฝึก — UUV swarm / Surface ROE / Drone / Combined Arms
@@ -20905,14 +21084,9 @@ function launchScenario(type) {
     sonobuoys = [];
     heloAlertActive = false;
     initASWHelicopter();
-    // v08: ล้าง mine warfare (controlled minefield จะถูกล้างด้วย)
-    seaMines = [];
-    mineFieldLaid = false;
+    // [v15.14] ทุ่นระเบิด (minefield) คงอยู่ข้ามสถานการณ์ — เหมือน Seabed Sentry/Copperhead
+    //          ไม่ล้าง seaMines/mineFieldLaid อีกต่อไป (ผู้ใช้วางทุ่นไว้แล้วเลือกปล่อยภัยมาทดสอบได้)
     cableDamage = { 1:null, 2:null, 3:null };   // [v15.8] ซ่อมสาย DAS เมื่อ reset
-    {
-        const mb = document.getElementById('mineFieldBtn');
-        if (mb) { mb.classList.remove('mine-active'); mb.innerHTML = '<span class="bf-dp-ico">💣</span><span class="label">Lay Controlled Minefield</span><span class="bf-dp-arrow">›</span>'; }
-    }
     document.getElementById('dasAlert').style.display='none';
     document.getElementById('missionFailOverlay').style.display='none';
     guardianUUVs.forEach(g=>{g.redirected=false;g.redirectTarget=null;});
@@ -20940,6 +21114,8 @@ function launchScenario(type) {
     showBriefing(type);
     if      (type==='uuv')      scenarioUUV();
     else if (type==='surface')  scenarioSurface();
+    else if (type==='greytrawler') scenarioGreyTrawler();   // [v15.14] grey-zone
+    else if (type==='usv')         scenarioUSV();            // [v15.14] kinetic USV
     else if (type==='drone')    scenarioDrone();
     else if (type==='airraid')  scenarioAirRaid();
     else if (type==='combined') scenarioCombined();
@@ -21137,6 +21313,190 @@ function scenarioSurface() {
                   ['ผลการสกัด','ตรวจค้น (Boarding) — เรือประมง ปล่อยตัว'],
                   ['ROE ที่ใช้','Phase 3 — Boarding & Search Complete'],
                   ['UDC Status','SECURE — ไม่มีความเสียหาย']]});
+    });
+}
+
+// ── [v15.14] Scenario: Grey-Zone Trawler ─────────────────────────
+//  เรือประมงพราง AIS (ดูเป็นพลเรือน WHITE) แต่ลากสมอตัดสายเคเบิลใต้น้ำ
+//  สาธิตกรอบ RMP 2 แกน: รู้จำ WHITE→GREY→RED + มิติ SURFACE→effect SEABED
+//  ROE เต็มรูปแบบ: MONITOR(WHITE) → CHALLENGE+SHADOW(GREY) → DETAIN(RED)
+//  Effect จริง: ตัดสาย DAS ด้วยระบบ _checkCableDamage/cableDamage เดิม
+//  บทเรียน grey-zone: ภัยลงมือสำเร็จ "ก่อน" ROE จะยืนยัน RED — เร่ง decision cycle
+// ─────────────────────────────────────────────────────────────────
+function scenarioGreyTrawler() {
+    // หาจุดกึ่งกลางบนสายเคเบิล DAS เพื่อให้เรือไป loiter เหนือสาย
+    let cab = null, mid = null;
+    try {
+        const polys = (typeof _cablePolys === 'function') ? _cablePolys() : [];
+        if (polys.length) {
+            cab = polys[Math.floor(Math.random() * polys.length)];
+            mid = cab.pts[Math.floor(cab.pts.length / 2)];
+        }
+    } catch (_) {}
+    if (!mid) mid = { nx: UDC.nx - 0.02, ny: UDC.ny + 0.10 };   // fallback ใต้ UDC
+
+    // เกิดจากขอบทะเลเปิด มุ่งเข้าหาจุดเหนือสาย
+    const eNx = Math.min(0.95, Math.max(0.05, mid.nx + 0.22));
+    const eNy = Math.min(0.95, Math.max(0.05, mid.ny + 0.16));
+    const t = {
+        type:'surface', nx:eNx, ny:eNy, tnx:mid.nx, tny:mid.ny,
+        color:'#cbd5e1', speed:0.0009, active:true, frozen:false,
+        classified:false, detained:false,
+        recognition:'WHITE',            // ← เริ่มเป็นพลเรือน (ปลอม AIS)
+        crewing:'MANNED',
+        aisName:'F/V SIAM PEARL 7', mmsi:'567xxxxxx',
+        label:'AIS · F/V SIAM PEARL 7', spd:9, hdg:230, trail:[],
+        scAlerted:false, _cableTarget: mid };
+    threats.push(t);
+    const _rmp = () => { try { if (window.__rmp && window.__rmp.refresh) window.__rmp.refresh(); } catch(_){} };
+
+    // T0 — ปรากฏเป็นเรือประมงพลเรือน (WHITE) บน RMP
+    T(600, () => {
+        addLog('[AIS] เรือประมง "F/V SIAM PEARL 7" (MMSI 567xxxxxx) — Type: Fishing | ⚪ WHITE','#cbd5e1');
+        setDomain('coastal','ok');
+        _rmp();
+        updateStatus('[AIS] ⚪ WHITE — เรือประมงพลเรือน<br>[RMP] บันทึก พลเรือน/เป็นกลาง<br>[ROE] MONITOR — เฝ้าติดตามตามปกติ','#cbd5e1');
+    });
+
+    // T~3s — AIS ไม่ตรงเรดาร์ + เข้าใกล้แนวสายเคเบิล → GREY
+    T(3000, () => {
+        t.recognition = 'GREY';
+        addLog('[MDA] ⚠ AIS–Radar MISMATCH — ความเร็ว/เส้นทางไม่ตรง AIS · เรือวนเหนือแนวสายเคเบิล','#fbbf24');
+        addLog('[RMP] จัดประเภทใหม่ → 🟡 GREY (น่าสงสัย) | ROE: CHALLENGE + SHADOW','#fbbf24');
+        setDomain('coastal','warn'); setDomain('underwater','warn');
+        _rmp();
+        const pv = closestPatrol(t.nx, t.ny);
+        if (pv) { pv.redirected = true; pv.redirectTarget = { nx:t.nx-0.06, ny:t.ny+0.05 }; }
+        updateStatus('⚠ [RMP] 🟡 GREY — AIS ไม่ตรงเรดาร์<br>[ROE] ท้าทาย IFF + ส่ง PV ประกบ (SHADOW)<br>[SEABED] เฝ้าแนวสายเคเบิล','#fbbf24');
+    });
+
+    // T~6s — ท้าทาย IFF ไม่ตอบ + เรือเกือบหยุด loiter เหนือสาย + DAS สั่นสะเทือน
+    T(6000, () => {
+        t.speed = 0.00012;   // loiter เหนือสาย
+        addLog('[ROE·CHALLENGE] 📻 ท้าทาย IFF — ไม่มีการตอบกลับที่ถูกต้อง','#f59e0b');
+        addLog('[DAS Tripwire] micro-vibration บนสาย — สงสัยการทอดสมอ','#f59e0b');
+        setDomain('underwater','warn');
+        setSensor('uw-hydro','ALERT','s-warn');
+        updateStatus('📻 [CHALLENGE] ไม่ตอบ IFF<br>[DAS] สั่นสะเทือนบนสาย — สงสัยทอดสมอ<br>[ROE↑] เตรียมยืนยันเจตนา','#f59e0b');
+    });
+
+    // T~9s — ยืนยันเจตนาร้าย: ลากสมอตัดสาย → RED + ตัดเคเบิลจริง
+    T(9000, () => {
+        t.recognition = 'RED'; t.classified = true; t.color = '#ef4444';
+        addLog('[RMP] ✋ ยืนยัน HOSTILE → 🔴 RED — ทอดสมอลากตัดสายโดยเจตนา (Grey-zone sabotage)','#ef4444');
+        setDomain('underwater','crit'); setDomain('command','warn');
+        // effect ตัดเคเบิลจริงด้วยระบบเดิม
+        try { if (typeof _checkCableDamage === 'function') _checkCableDamage(t.nx, t.ny, 'contact'); } catch(_){}
+        // ถ้าเรือยังไม่อยู่ในรัศมีตัด — บังคับตัดสายเป้าหมายที่ loiter อยู่
+        try {
+            if (cab && typeof cableDamage !== 'undefined' && !cableDamage[cab.id]) {
+                cableDamage[cab.id] = { nx: mid.nx, ny: mid.ny, frame: (typeof frame !== 'undefined' ? frame : 0) };
+                if (typeof addExplosion === 'function') addExplosion(mid.nx, mid.ny, '#ef4444');
+                if (typeof _setCableRiskFromMines === 'function') _setCableRiskFromMines();
+                addLog(`[MIW] ✂ สาย DAS-${cab.id} ถูกตัดขาด — สูญเสียเซนเซอร์/การสื่อสารช่วงนั้น`,'#ef4444');
+            }
+        } catch(_){}
+        _rmp();
+        updateStatus('🔴 [RMP] RED — ยืนยันก่อวินาศกรรมสายเคเบิล<br>✂ สาย DAS ถูกตัดขาด<br>[COMMAND] สั่งจับกุม + แจ้ง ศรชล.','#ef4444');
+    });
+
+    // T~12s — ตอบโต้: PV เข้าจับกุม (DETAIN)
+    T(12000, () => {
+        t.frozen = true; t.detained = true; t.speed = 0;
+        if (typeof addCaptureEffect === 'function') addCaptureEffect(t.nx, t.ny);
+        addLog('[ROE·DETAIN] ⚓ PV เข้าควบคุมเรือ — จับกุมลูกเรือ + ยึดของกลาง','#39ff14');
+        updateStatus('⚓ [DETAIN] ควบคุมเรือสำเร็จ<br>[ศรชล.] รับช่วงดำเนินคดี<br>[ความเสียหาย] สาย DAS 1 เส้น','#39ff14');
+    });
+
+    // T~15s — สรุปบทเรียน grey-zone
+    T(15000, () => {
+        setDomain('coastal','ok'); setDomain('command','ok');
+        _rmp();
+        showOutcome({ result:'⚠ GREY-ZONE — เคเบิลเสียหายก่อนยืนยัน RED', color:'#fbbf24',
+            rows:[['ภัยคุกคาม','เรือประมงปลอม AIS — ลากสมอตัดเคเบิล (Sabotage)'],
+                  ['แกนรู้จำ','WHITE → GREY → RED (พรางเป็นพลเรือน)'],
+                  ['แกนมิติ','SURFACE (มีคนบังคับ) + ผลกระทบ SEABED'],
+                  ['ผลกระทบ','สาย DAS ขาด 1 เส้น — ก่อน ROE ถึง RED'],
+                  ['บทเรียน','ภัย grey-zone ลงมือสำเร็จก่อนการยืนยัน — ต้องเร่ง decision cycle']]});
+        T(5000, () => { t.frozen = false; t.tnx = 1.1; t.tny = -0.1; t.speed = 0.0006; T(4000, () => { t.active = false; _rmp(); }); });
+    });
+}
+
+// ── [v15.14] Scenario: USV Explosive Boat ────────────────────────
+//  เรือผิวน้ำไร้คนขับติดวัตถุระเบิด (USV/ASV) — kinetic suicide craft
+//  สาธิตกรอบ RMP: รู้จำ GREY→RED + มิติ SURFACE / ⬡ UNMANNED (เติมช่อง crewing)
+//  ROE ขั้วตรงข้ามเรือประมง: DETECT→TRACK→CHALLENGE→ENGAGE (weapons-free hard-kill)
+//  ไม่มี AIS/IFF · ความเร็วสูง · พุ่งเข้าหา UDC → ต้องสอยก่อนถึง MEZ 5nm
+//  บทเรียน: ภัย kinetic ไร้คนขับ ต้องอนุมัติ WCS FREE + ตัดสินใจเร็ว (ไม่มี boarding)
+// ─────────────────────────────────────────────────────────────────
+function scenarioUSV() {
+    // เกิดจากทะเลเปิดทิศตะวันออก พุ่งตรงเข้า UDC ความเร็วสูง
+    const sp = (typeof randomSurfaceSpawn === 'function') ? randomSurfaceSpawn()
+             : { nx: UDC.nx + 0.30, ny: UDC.ny + 0.06 };
+    const eNx = Math.min(0.96, Math.max(0.06, sp.nx));
+    const eNy = Math.min(0.96, Math.max(0.06, sp.ny));
+    const dxH = UDC.nx - eNx, dyH = UDC.ny - eNy;
+    const hdg = Math.round((Math.atan2(dxH, -dyH) * 180 / Math.PI + 360) % 360);
+    const t = {
+        type:'surface', nx:eNx, ny:eNy, tnx:UDC.nx, tny:UDC.ny,
+        color:'#fbbf24', speed:0.0016, active:true, frozen:false,
+        classified:false,
+        recognition:'GREY',            // เรดาร์จับได้ทันที แต่ไม่มี AIS → น่าสงสัย
+        crewing:'UNMANNED',            // ← เติมช่อง SURF/⬡ UNMANNED ในเมทริกซ์
+        usv:true,
+        label:'RADAR-ONLY · FAST CRAFT', spd:35, hdg, trail:[], scAlerted:false };
+    threats.push(t);
+    const _rmp = () => { try { if (window.__rmp && window.__rmp.refresh) window.__rmp.refresh(); } catch(_){} };
+
+    // T~0.8s — DETECT: เรดาร์จับเป้าเล็กเร็ว ไม่มี AIS/IFF → GREY
+    T(800, () => {
+        addLog('[Coastal Radar] เป้าเล็ก ความเร็วสูง ~35kt · ไม่มี AIS/IFF — UNK-FAST-1 | 🟡 GREY','#fbbf24');
+        setDomain('coastal','warn'); setDomain('air','warn');
+        setSensor('cs-radar','FAST CONTACT','s-warn');
+        _rmp();
+        const pv = closestPatrol(t.nx, t.ny);
+        if (pv) { pv.redirected = true; pv.redirectTarget = { nx:t.nx-0.05, ny:t.ny+0.04 }; }
+        updateStatus('[RADAR] 🟡 GREY — เป้าเล็กเร็ว ไม่มี AIS/IFF<br>[ROE] DETECT → TRACK<br>[PV] เข้าสกัดกั้น','#fbbf24');
+    });
+
+    // T~3s — TRACK: โปรไฟล์ไร้คนขับ (ไม่มี bridge IR · วิ่งตรงผิดธรรมชาติ) — ยัง GREY
+    T(3000, () => {
+        addLog('[EO/IR] ไม่พบ bridge/ลูกเรือ — โปรไฟล์ ⬡ UNMANNED · เส้นทางพุ่งตรง UDC','#f59e0b');
+        addLog('[RMP] SURF / ⬡ UNMANNED — ROE: TRACK + CHALLENGE','#f59e0b');
+        setSensor('as-patrol','INTERCEPT','s-warn');
+        setDomain('coastal','crit');
+        _rmp();
+        updateStatus('⚠ [RMP] GREY · ⬡ UNMANNED<br>[EO/IR] ไม่มีลูกเรือ — สงสัย USV ระเบิด<br>[ROE] TRACK + เตรียม CHALLENGE','#f59e0b');
+    });
+
+    // T~5.5s — CHALLENGE→RED: ไม่ตอบ + เร่งเข้าหา UDC = เจตนาร้าย → WCS FREE
+    T(5500, () => {
+        t.recognition = 'RED'; t.classified = true; t.color = '#ef4444'; t.speed = 0.0020;
+        addLog('[ROE·CHALLENGE] 📻 เตือนไม่ตอบ + เร่งความเร็วเข้าหา UDC','#ef4444');
+        addLog('[RMP] ✋ ยืนยัน HOSTILE → 🔴 RED | WCS: FREE — ENGAGE AUTHORIZED','#ef4444');
+        setSensor('as-patrol','WEAPONS FREE','s-alert');
+        setDomain('air','crit'); setDomain('command','warn');
+        _rmp();
+        updateStatus('🔴 [RMP] RED · ⬡ UNMANNED — USV ระเบิดพุ่งเข้า<br>[WCS] FREE — ยิงได้ทันที<br>[PV] เข้าทำลายก่อนถึง MEZ 5nm','#ef4444');
+    });
+
+    // T~8s — ENGAGE: PV ยิงทำลายก่อนถึง MEZ (hard-kill)
+    T(8000, () => {
+        if (!t.active) return;
+        if (typeof addExplosion === 'function') addExplosion(t.nx, t.ny, '#ef4444');
+        t.active = false;
+        const pv = closestPatrol(t.nx, t.ny); if (pv) { pv.killCount = (pv.killCount || 0) + 1; pv.redirected = false; }
+        addLog('[ENGAGE] 🔫 PV ยิงทำลาย USV ด้วยปืน 30mm — เป้าถูกทำลายก่อนถึง MEZ','#39ff14');
+        setDomain('coastal','ok'); setDomain('air','ok'); setDomain('command','ok');
+        setSensor('cs-radar','ACTIVE','s-ok'); setSensor('as-patrol','ON PATROL','s-ok');
+        _rmp();
+        updateStatus('✓ [ENGAGE] USV ถูกทำลาย — UDC ปลอดภัย<br>[PV] กลับ Patrol Pattern<br>[STATUS] ปกติ','#39ff14');
+        showOutcome({ result:'✓ THREAT NEUTRALIZED — USV DESTROYED', color:'#39ff14',
+            rows:[['ภัยคุกคาม','USV เรือระเบิดไร้คนขับ (Kinetic Suicide Craft)'],
+                  ['แกนรู้จำ','GREY → RED (radar-only · ไม่มี AIS/IFF)'],
+                  ['แกนมิติ','SURFACE · ⬡ UNMANNED'],
+                  ['ROE ที่ใช้','DETECT → TRACK → CHALLENGE → ENGAGE (WCS FREE)'],
+                  ['บทเรียน','kinetic ไร้คนขับ — ไม่มี boarding · ต้อง weapons-free + ยิงเร็วก่อน MEZ']]});
     });
 }
 
@@ -21461,6 +21821,34 @@ const BRIEFINGS = {
         ],
         footer: '🚨 ALERT LV.1 — ALL ROE AUTHORIZED',
         footerBg: 'rgba(189,147,249,.18)',
+    },
+    // [v15.14] Grey-zone — เรือประมงปลอม AIS ลากสมอตัดเคเบิล
+    greytrawler: {
+        header: '⚪→🔴 GREY-ZONE — AIS-SPOOF TRAWLER (CABLE SABOTAGE)',
+        color: '#fbbf24',
+        rows: [
+            ['ประเภทภัย',  'เรือประมงพราง AIS — ลากสมอตัดสายเคเบิล (Hybrid/Sabotage)'],
+            ['แกนรู้จำ',   'WHITE (พลเรือน) → GREY (น่าสงสัย) → RED (ยืนยัน)'],
+            ['แกนมิติ',    'SURFACE (มีคนบังคับ) + ผลกระทบ SEABED (สายเคเบิล)'],
+            ['ตัวชี้วัด',  'AIS-Radar mismatch · วนเหนือแนวสาย · DAS micro-vibration'],
+            ['ROE',        'MONITOR → CHALLENGE+SHADOW → DETAIN (ศรชล. รับช่วง)'],
+        ],
+        footer: '⚠ GREY-ZONE — จำแนกให้ทันก่อนเกิดผล',
+        footerBg: 'rgba(251,191,36,.16)',
+    },
+    // [v15.14] Grey-zone — USV เรือระเบิดไร้คนขับ
+    usv: {
+        header: '⬡ THREAT — USV EXPLOSIVE BOAT (KINETIC)',
+        color: '#ef4444',
+        rows: [
+            ['ประเภทภัย',  'USV เรือผิวน้ำไร้คนขับติดวัตถุระเบิด (Suicide Craft)'],
+            ['แกนรู้จำ',   'GREY → RED (radar-only · ไม่มี AIS/IFF)'],
+            ['แกนมิติ',    'SURFACE · ⬡ UNMANNED'],
+            ['ลักษณะ',     'เป้าเล็ก ความเร็วสูง ~35 kt · พุ่งตรงเข้า UDC'],
+            ['ROE',        'DETECT → TRACK → CHALLENGE → ENGAGE (WCS FREE)'],
+        ],
+        footer: '🔫 WEAPONS FREE — ทำลายก่อนถึง MEZ 5nm',
+        footerBg: 'rgba(239,68,68,.16)',
     },
 };
 
@@ -22267,7 +22655,7 @@ runBootSequence();
 })();
 
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 36] หมวด ฌ — บูตและเริ่มต้นระบบ
+//  [ส่วนที่ 9] กลุ่ม ๕ · การแสดงผล วงรอบ & UI — บูตและเริ่มต้นระบบ
 //  การเริ่มต้นระบบเมื่อโหลดหน้า · System Initialization (initAssets / updateTide / Pre-frame Setup)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : ลำดับการบูตเมื่อเปิดไฟล์ — โหลด tile, เริ่ม clock, init เซ็นเซอร์ทุกตัวก่อน frame แรก
@@ -22449,12 +22837,12 @@ function toggleAcousticRays() {
 //  nearest-freq, bilinear (range,depth).  Falls back to Thorp formula
 //  when grid not loaded or query outside coverage.
 // ═══════════════════════════════════════════════════════════════
-//  [ส่วนที่ 37] หมวด ซ — ฟิสิกส์เสียงและสมการโซนาร์
+//  [ส่วนที่ 10] กลุ่ม ๒ · สิ่งแวดล้อม & ฟิสิกส์เสียง — สมการโซนาร์
 //  WOA23 SVP + สมการโซนาร์ · WOA23 Sound Velocity Profile + Sonar Equation (SE = SL−2TL+TS−(NL−DI)−DT)
 // ───────────────────────────────────────────────────────────────
 //  วัตถุประสงค์ : โหลด TL grid pre-computed จาก ray-tracer (build_tl_grid.py · WOA23 SVP สัตหีบ ๒๕๖๓)
 //  หลักการ      : Float32 binary grid 3×3×401×101 + JSON sidecar · bilinear (range,depth) + nearest (src,freq) sampling
-//  เชื่อมต่อกับ  : แทนที่ Thorp formula เดิมเมื่อ WoaTL.ready=true — ใช้ใน Sonar Eqn Panel + TL Heatmap (ส่วนที่ ๕)
+//  เชื่อมต่อกับ  : แทนที่ Thorp formula เดิมเมื่อ WoaTL.ready=true — ใช้ใน Sonar Eqn Panel + TL Heatmap (ส่วนที่ ๑.๔)
 // ═══════════════════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════════════════
 const WoaTL = {
@@ -24295,13 +24683,13 @@ window.toggleSeabed3D = toggleSeabed3D;
     MDA.util.computeUDCImpact = computeUDCImpact;
 
 
-//  [ส่วนที่ 38] หมวด ญ — Multi-Domain Awareness (MDA / Air Domain)
+//  [ส่วนที่ 11] กลุ่ม ๖ · Multi-Domain Awareness (MDA / Air Domain)
 //  วัตถุประสงค์ : ดึง flight state vectors แบบ near-real-time
 //  หลักการ      : OpenSky `/api/states/all` (CORS, no key) · poll 60s
 //  เชื่อมโยง     : Layer Panel (Air) · Status Badge AIR · Fusion R1
 //  อ้างอิง       : https://openskynetwork.github.io/opensky-api/rest.html
     /* ══════════════════════════════════════════════════════════════
-       [ส่วนที่ 38]  หมวด ญ.๑  Air Domain — OpenSky Flight States
+       ·  หมวด ญ.๑  Air Domain — OpenSky Flight States
        ──────────────────────────────────────────────────────────────
        วัตถุประสงค์ : ดึง flight states (state vectors) แบบ near-real-time
                      ครอบคลุม Indochina/อ่าวไทย/อันดามัน วาดเป็น icon
@@ -24429,13 +24817,13 @@ window.toggleSeabed3D = toggleSeabed3D;
     })();
 
 
-//  [ส่วนที่ 39] หมวด ญ — Multi-Domain Awareness (MDA / Hazard Domain)
+//  [ส่วนที่ 11.1] กลุ่ม ๖ · Multi-Domain Awareness (MDA / Hazard Domain)
 //  วัตถุประสงค์ : ติดตามแผ่นดินไหวรอบภูมิภาคในรอบ ๒๔ ชม.
 //  หลักการ      : USGS all_day.geojson · filter ภายใน bbox · poll 180s
 //  เชื่อมโยง     : Layer Panel (Hazard) · Status Badge SEISMIC · Fusion R2
 //  อ้างอิง       : https://earthquake.usgs.gov/earthquakes/feed/v1.0/
     /* ══════════════════════════════════════════════════════════════
-       [ส่วนที่ 39]  หมวด ญ.๒  Hazard Domain — USGS Earthquake Feed
+       ·  หมวด ญ.๒  Hazard Domain — USGS Earthquake Feed
        ──────────────────────────────────────────────────────────────
        วัตถุประสงค์ : ติดตามแผ่นดินไหวรอบภูมิภาคในรอบ ๒๔ ชม.
                      เน้นเหตุการณ์ที่ส่งผลต่อชายฝั่ง/ฐานทัพ
@@ -24878,13 +25266,13 @@ window.toggleSeabed3D = toggleSeabed3D;
     })();
 
 
-//  [ส่วนที่ 40] หมวด ญ — Multi-Domain Awareness (MDA / Space Domain)
+//  [ส่วนที่ 11.2] กลุ่ม ๖ · Multi-Domain Awareness (MDA / Space Domain)
 //  วัตถุประสงค์ : ติดตามดัชนี Kp (geomagnetic disturbance)
 //  หลักการ      : SWPC noaa-planetary-k-index.json · poll 600s
 //  เชื่อมโยง     : Layer Panel (Space) · Status Badge SPACE Kp · Fusion R3
 //  อ้างอิง       : https://services.swpc.noaa.gov/products/
     /* ══════════════════════════════════════════════════════════════
-       [ส่วนที่ 40]  หมวด ญ.๓  Space Domain — NOAA SWPC Kp Index
+       ·  หมวด ญ.๓  Space Domain — NOAA SWPC Kp Index
        ──────────────────────────────────────────────────────────────
        วัตถุประสงค์ : ติดตามดัชนี Kp (geomagnetic disturbance) ที่ส่งผล
                      ต่อ HF radio / GPS-DGPS / communication
@@ -24934,13 +25322,13 @@ window.toggleSeabed3D = toggleSeabed3D;
     })();
 
 
-//  [ส่วนที่ 41] หมวด ญ — Multi-Domain Awareness (MDA / Information Domain)
+//  [ส่วนที่ 11.3] กลุ่ม ๖ · Multi-Domain Awareness (MDA / Information Domain)
 //  วัตถุประสงค์ : ดึงข่าว/เหตุการณ์ภูมิภาค keyword navy/military/maritime
 //  หลักการ      : GDELT v2 Doc API · poll 300s · sourcecountry filter
 //  เชื่อมโยง     : Layer Panel (Info) · Status Badge GDELT · Fusion R4
 //  อ้างอิง       : https://blog.gdeltproject.org/gdelt-doc-2-0-api-debuts/
     /* ══════════════════════════════════════════════════════════════
-       [ส่วนที่ 41]  หมวด ญ.๔  Information Domain — GDELT 2.0 Events
+       ·  หมวด ญ.๔  Information Domain — GDELT 2.0 Events
        ──────────────────────────────────────────────────────────────
        วัตถุประสงค์ : ดึงข่าว/เหตุการณ์ระดับภูมิภาค (Thailand/Vietnam
                      /Cambodia/Malaysia/Myanmar) เพื่อ context ทางการข่าว
@@ -24976,14 +25364,14 @@ window.toggleSeabed3D = toggleSeabed3D;
     })();
 
 
-//  [ส่วนที่ 41.5 — v13] หมวด ญ.ว  Marine Weather — Open-Meteo Marine API
+//  [ส่วนที่ 12] กลุ่ม ๖ · ญ.ว  Marine Weather — Open-Meteo Marine API
 //  วัตถุประสงค์ : ดึงข้อมูลคลื่น/ลม ณ อ่าวสัตหีบ (lat 12.66, lon 100.9)
 //  หลักการ      : Open-Meteo Marine API · hourly · ไม่ต้องใช้ API key
 //                wave_height · wave_direction · wave_period · wind_wave_height
 //  เชื่อมโยง     : badge MARINE-WX · count row marine-wx · floating panel · marker
 //  อ้างอิง       : https://open-meteo.com/en/docs/marine-weather-api
     /* ══════════════════════════════════════════════════════════════
-       [ส่วนที่ 41.5]  หมวด ญ.ว  Marine Weather — Open-Meteo
+       ·  หมวด ญ.ว  Marine Weather — Open-Meteo
        ──────────────────────────────────────────────────────────────
        วัตถุประสงค์ : ดึง wave height / direction / period สำหรับ
                      อ่าวสัตหีบ (UDC AOI) — update ทุก 30 นาที
@@ -25191,7 +25579,7 @@ window.toggleSeabed3D = toggleSeabed3D;
     })();
 
         /* ══════════════════════════════════════════════════════════════════
-           [ส่วน 41.7 — v15] หมวด ญ.ว  Weather / Wind — Open-Meteo Forecast
+           [ส่วนที่ 12.1] หมวด ญ.ว  Weather / Wind — Open-Meteo Forecast
            ────────────────────────────────────────────────────────────────
            วัตถุประสงค์ : สภาพอากาศผิวพื้นจริง (ลม/ลมกระโชก/ฝน/อุณหภูมิ/เมฆ/
                           ทัศนวิสัย/ความกดอากาศ) เหนืออ่าวสัตหีบ -> Air&Space sensing
@@ -25294,7 +25682,7 @@ window.toggleSeabed3D = toggleSeabed3D;
         })();
 
         /* ══════════════════════════════════════════════════════════════════
-           [ส่วน 41.8 — v15] หมวด ญ.พ  Tropical Cyclone Tracker — GDACS
+           [ส่วนที่ 12.2] หมวด ญ.พ  Tropical Cyclone Tracker — GDACS
            ────────────────────────────────────────────────────────────────
            วัตถุประสงค์ : ติดตามพายุหมุนเขตร้อน (TC) ที่ active -> เตือนภัยล่วงหน้า
                           ต่อปฏิบัติการทางเรือ + บริบทให้ AI
@@ -25377,7 +25765,7 @@ window.toggleSeabed3D = toggleSeabed3D;
         })();
 
         /* ══════════════════════════════════════════════════════════════════
-           [ส่วน 41.9 — v15] หมวด ญ.ฝ  Rain Radar Nowcast — RainViewer
+           [ส่วนที่ 12.3] หมวด ญ.ฝ  Rain Radar Nowcast — RainViewer
            ────────────────────────────────────────────────────────────────
            วัตถุประสงค์ : ภาพเรดาร์ฝนจริง (nowcast) ซ้อนบนแผนที่ -> ประเมินฝน/
                           ทัศนวิสัยรอบพื้นที่ปฏิบัติการแบบเรียลไทม์
@@ -25426,7 +25814,7 @@ window.toggleSeabed3D = toggleSeabed3D;
 
 
 
-//  [ส่วนที่ 41.6 — v13] หมวด ญ.ส  Seamark Layer — Overpass API (OSM)
+//  [ส่วนที่ 12.4] กลุ่ม ๖ · ญ.ส  Seamark Layer — Overpass API (OSM)
 //  วัตถุประสงค์ : ดึง seamark nodes จาก OpenStreetMap ผ่าน Overpass API
 //  หลักการ      : query `node["seamark:type"]` ใน bbox อ่าวสัตหีบ
 //                render เป็น IALA Region A marker (port=red, stbd=green,
@@ -25434,7 +25822,7 @@ window.toggleSeabed3D = toggleSeabed3D;
 //  ข้อดีเหนือ tile: แสดง node จริงที่ OSM มี (tile cache อาจล่าช้า)
 //  อ้างอิง       : https://overpass-api.de · IALA Maritime Buoyage System Region A
     /* ══════════════════════════════════════════════════════════════
-       [ส่วนที่ 41.6]  หมวด ญ.ส  Seamarks — Overpass API query
+       ·  หมวด ญ.ส  Seamarks — Overpass API query
        ──────────────────────────────────────────────────────────────
        bbox     : 12.3,100.5,13.0,101.2 — อ่าวสัตหีบ + surrounding
        query    : node["seamark:type"] → ทุก aid-to-navigation ใน OSM
@@ -25667,13 +26055,13 @@ window.toggleSeabed3D = toggleSeabed3D;
     })();
 
 
-//  [ส่วนที่ 42] หมวด ญ — Multi-Domain Awareness (MDA / Intel Fusion)
+//  [ส่วนที่ 13] กลุ่ม ๖ · Multi-Domain Awareness (MDA / Intel Fusion)
 //  วัตถุประสงค์ : รวมสัญญาณจาก ๔ โดเมน → briefing items priority-sorted
 //  หลักการ      : Rule-based (R1–R5) · CRIT/WARN/INFO · render 3 tabs
 //  เชื่อมโยง     : #mda-intelfeed body · Status Badge FUSION
 //  อ้างอิง       : OSIRIS Intel Feed pattern (Next.js routes/intel-feed)
     /* ══════════════════════════════════════════════════════════════
-       [ส่วนที่ 42]  หมวด ญ.๕  Fusion Engine — Rule-based Briefing
+       ·  หมวด ญ.๕  Fusion Engine — Rule-based Briefing
        ──────────────────────────────────────────────────────────────
        วัตถุประสงค์ : รวมสัญญาณจาก ๔ โดเมน → สร้าง briefing items
                      เรียงตาม priority (CRIT > WARN > INFO)
@@ -25922,6 +26310,7 @@ window.toggleSeabed3D = toggleSeabed3D;
             _gatherSeaState() {
                 try {
                     if (window.MDA && window.MDA.weather && window.MDA.weather.seaState != null) return +window.MDA.weather.seaState;
+                    if (typeof seaState === 'number') return seaState;
                     if (window.seaState != null) return +window.seaState;
                     if (window.MDA_OCEANO && window.MDA_OCEANO.seaState != null) return +window.MDA_OCEANO.seaState;
                 } catch (_) {}
@@ -26520,7 +26909,7 @@ window.toggleSeabed3D = toggleSeabed3D;
             return narr;
         }
 
-        //  [ส่วนที่ 43] หมวด ญ — Sensor Impact Matrix (ตารางผลกระทบเซ็นเซอร์ · AI Decision Support)
+        //  [ส่วนที่ 14] กลุ่ม ๖ · Sensor Impact Matrix (ตารางผลกระทบเซ็นเซอร์ · AI Decision Support)
         //  วัตถุประสงค์ : ไล่เซ็นเซอร์ทุกโดเมน → ระดับผลกระทบต่อ UDC (มาก/ปานกลาง/น้อย/ไม่มี)
         //  หลักการ      : deterministic · ทำงานทั้ง real & demo · ตรวจสอบย้อนได้ · ไม่ต้อง redeploy
         // ════════════════════════════════════════════════════════════════════════
@@ -26872,14 +27261,14 @@ window.toggleSeabed3D = toggleSeabed3D;
                     const s = String(a && a.msg || '');
                     let m = s.match(/(?:COG|bearing|brg|bearing of|ทิศ(?:ทาง)?|มุ่งหน้า)\s*[:=]?\s*(\d{1,3})/i);
                     if (m) { const b = parseInt(m[1], 10); if (b >= 0 && b <= 360) return b % 360; }
-                    m = s.match(/(\d{1,3})\s*°/);
+                    m = s.match(/(\d{1,3})\s*°(?!\s*\/)/);
                     if (m) { const b = parseInt(m[1], 10); if (b >= 0 && b <= 360) return b % 360; }
                 }
             } catch (_) {}
             return null;
         }
 
-        //  [ส่วนที่ 44] หมวด ญ — Own-Force-Aware Force Deployment (รับรู้กำลังฝ่ายเรา · v15.2)
+        //  [ส่วนที่ 15] กลุ่ม ๖ · Own-Force-Aware Force Deployment (รับรู้กำลังฝ่ายเรา · v15.2)
         //  วัตถุประสงค์ : ให้ AI พิจารณา "กำลังที่ user วางไว้แล้ว" ก่อนเสนอ/วางกำลังเพิ่ม
         //  หลักการ      : สแกน entity ฝ่ายเรา → gap analysis → คำแนะนำไม่ซ้ำซ้อน
         // ═══ [v15.2] OWN-FORCE AWARENESS — คำแนะนำ/วางกำลังรู้จัก "กำลังที่ user วางไว้แล้ว" ═══
@@ -27641,7 +28030,7 @@ window.toggleSeabed3D = toggleSeabed3D;
         // BASEMAP radio wiring ลบออก v12.6.4 — ย้ายไปปุ่มใน right-rail
 
         // ══════════════════════════════════════════════════════════
-        //  [ส่วนที่ 45] หมวด ช — UI Bridge: Tactical / AIS / Actions Row Wiring (v12.2)
+        //  [ส่วนที่ 16] กลุ่ม ๕ · UI Bridge: Tactical / AIS / Actions Row Wiring (v12.2)
         //  วัตถุประสงค์ : เชื่อมแถวใน MDA panel → ปุ่ม/โหมดเดิมของ v11 (string switch)
         //  หลักการ      : data-action mapping · mirror state · ไม่ทับ logic เดิม
         //  v12.2 — TACTICAL / AIS / ACTIONS row wiring (v11 bridge)
@@ -27841,7 +28230,7 @@ window.toggleSeabed3D = toggleSeabed3D;
         setTimeout(syncAllActionRows, 600);
 
         // ════════════════════════════════════════════════════════════
-        //  [ส่วนที่ 46] หมวด ญ — Default Multi-Domain Sensing Preset (ภาพ sensing เริ่มต้น · v15.1)
+        //  [ส่วนที่ 17] กลุ่ม ๖ · Default Multi-Domain Sensing Preset (ภาพ sensing เริ่มต้น · v15.1)
         //  วัตถุประสงค์ : กำหนดเลเยอร์ sensing ที่เปิดเริ่มต้นต่อโดเมน (idempotent)
         //  หลักการ      : ใช้ row.click จริง → sync panel · map · state ครบทุกระบบ
         //  [v15.1] DEFAULT MULTI-DOMAIN SENSING — ภาพ sensing เริ่มต้น
@@ -28060,7 +28449,7 @@ window.toggleSeabed3D = toggleSeabed3D;
         })();
 
         // ════════════════════════════════════════════════════════════════
-        //  [ส่วนที่ 47] หมวด ช — Blue Force Deploy Panel Wiring (กำลังฝ่ายเรา · v12.4)
+        //  [ส่วนที่ 18] กลุ่ม ๕ · Blue Force Deploy Panel Wiring (กำลังฝ่ายเรา · v12.4)
         //  วัตถุประสงค์ : แผง DEPLOY · BLUE FORCE → ผูกปุ่ม leaflet-control เดิม
         //  หลักการ      : action rows + drag/collapse + count chips sync (mirror MDA)
         //  v12.4 — DEPLOY · BLUE FORCE panel wire-up
@@ -28411,7 +28800,7 @@ window.toggleSeabed3D = toggleSeabed3D;
      - layout/position ไม่เปลี่ยน · เปลี่ยนแค่ตัวแปร :root
      ──────────────────────────────────────────────────────────── -->
 <script>
-//  [ส่วนที่ 48] หมวด ช — Theme Switcher (สลับธีม CSS runtime · v15.1)
+//  [ส่วนที่ 19] กลุ่ม ๕ · Theme Switcher (สลับธีม CSS runtime · v15.1)
 //  วัตถุประสงค์ : สลับธีมผ่านตัวแปร :root + ฟอนต์/สไตล์แผง — จำค่าใน localStorage
 //  หลักการ      : runtime CSS variable swap · layout/position ไม่เปลี่ยน
 (function(){
@@ -28720,7 +29109,7 @@ window.toggleSeabed3D = toggleSeabed3D;
      · สลับรูปแบบการจัดวาง sensor 4 แบบ — จำค่าใน localStorage['sensingLayout'] (default 'A')
      · ทำงานบน DOM แถวเดิม (decorate/visibility เท่านั้น ไม่ re-render) → toggle wiring + v11ToggleMap ไม่พัง -->
 <script>
-//  [ส่วนที่ 49] หมวด ช — Sensing-Panel Layout Switcher A/B/C/D (v15.6)
+//  [ส่วนที่ 20] กลุ่ม ๕ · Sensing-Panel Layout Switcher A/B/C/D (v15.6)
 //  วัตถุประสงค์ : สลับรูปแบบการจัดวาง sensor 4 แบบ — จำค่าใน localStorage['sensingLayout']
 //  หลักการ      : decorate/visibility บน DOM แถวเดิม (ไม่ re-render) → toggle wiring ไม่พัง
 (function(){
@@ -28853,6 +29242,475 @@ window.toggleSeabed3D = toggleSeabed3D;
     };
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+
+<!-- ═══════════ [v15.12] Blue-Force Operations LAYOUT SWITCHER (A/B/C/D) ═══════════
+     · mirror ของ Sensing switcher — A=การ์ดชนิดอาวุธ+badge / B=พื้นที่สงคราม / C=kill-chain / D=ค้นหา
+     · จำค่าใน localStorage['blueForceLayout'] (default 'A') · decorate/visibility เท่านั้น ไม่ re-render
+     · ทำงานบนหมู่กำลังเดิม → wiring/drag/collapse/count เดิมไม่พัง -->
+<script>
+//  [ส่วนที่ 20.1] กลุ่ม ๕ · Blue-Force Panel Layout Switcher A/B/C/D (v15.12)
+//  วัตถุประสงค์ : สลับรูปแบบการจัดวางหมู่กำลังฝ่ายเรา 4 แบบ — จำค่าใน localStorage['blueForceLayout']
+//  หลักการ      : decorate/visibility บนหมู่เดิม (ไม่ re-render) → wiring/drag/collapse/count เดิมไม่พัง
+(function(){
+  function init(){
+    const panel = document.getElementById('bf-deploy-panel');
+    if (!panel) return;
+    const head   = panel.querySelector('.bf-dp-head');
+    const groups = Array.from(panel.querySelectorAll('.bf-dp-group'));
+    if (!head || !groups.length) return;
+    if (document.getElementById('bf-lp-layoutbar')) return; // idempotent
+
+    // ── classification axes (หมู่กำลัง → พื้นที่สงคราม / kill-chain) ──
+    const WAR = { pv:'ASuW', guuv:'ASW', sv:'MIW', mine:'MIW', 'seabed-sentry':'SeabedCI', copperhead:'SeabedCI', helo:'ASW' };
+    const KC  = { pv:'EFFECT', guuv:'DECIDE', sv:'SENSE', mine:'EFFECT', 'seabed-sentry':'SENSE', copperhead:'EFFECT', helo:'EFFECT' };
+    const WAR_DEF = [
+      ['ASuW','🚢','#06b6d4','สงครามผิวน้ำ — เรือตรวจการณ์'],
+      ['ASW','🌊','#14b8a6','สงครามปราบเรือดำน้ำ — GUUV / ฮ.ปจอ.'],
+      ['MIW','💣','#4ade80','สงครามทุ่นระเบิด — วางทุ่น / สำรวจอุทกฯ'],
+      ['SeabedCI','⚓','#22d3ee','พื้นท้องทะเล / โครงสร้างพื้นฐานวิกฤต — Seabed Sentry / Copperhead']
+    ];
+    const KC_DEF = [
+      ['SENSE','📡','#38bdf8','ตรวจจับ — Seabed Sentry / เรือสำรวจ'],
+      ['DECIDE','🧠','#a78bfa','ตัดสินใจ-พิสูจน์ทราบ — Guardian UUV (ROE gate)'],
+      ['EFFECT','🎯','#fb923c','ปฏิบัติ-สกัดกั้น — ทุ่น / Copperhead / ฮ. / เรือ ตกก.']
+    ];
+    const SEGS = [
+      ['A','▤','การ์ดตามชนิดอาวุธ + badge ความพร้อมรบ'],
+      ['B','▥','แยกตามพื้นที่สงคราม (ดูทีละพื้นที่)'],
+      ['C','▦','ตาม Kill-Chain: Sense → Decide → Effect'],
+      ['D','⌕','ค้นหา + นับกำลังพร้อมรบ']
+    ];
+
+    // ── build control bar ──
+    const bar = document.createElement('div');
+    bar.className = 'bf-lp-layoutbar';
+    bar.id = 'bf-lp-layoutbar';
+    bar.innerHTML =
+      '<div class="bf-lp-segs">' +
+        SEGS.map(s=>`<button class="bf-lp-seg" data-layout="${s[0]}" title="${s[2]}">${s[1]}</button>`).join('') +
+      '</div>' +
+      '<div class="bf-lp-strip bf-lp-warstrip">' +
+        WAR_DEF.map(w=>`<button class="bf-lp-catbtn" data-war="${w[0]}" title="${w[3]}" style="color:${w[2]}">${w[1]} ${w[0]}</button>`).join('') +
+      '</div>' +
+      '<div class="bf-lp-strip bf-lp-kcstrip">' +
+        KC_DEF.map(k=>`<button class="bf-lp-catbtn" data-kc="${k[0]}" title="${k[3]}" style="color:${k[2]}">${k[1]} ${k[0]}</button>`).join('') +
+      '</div>' +
+      '<input type="text" class="bf-lp-search" placeholder="ค้นหากำลัง…" aria-label="ค้นหากำลังฝ่ายเรา">' +
+      '<span class="bf-lp-acount" title="กำลังที่พร้อมรบ/วางแล้วทั้งหมด">0</span>';
+    head.insertAdjacentElement('afterend', bar);
+
+    // ── inject readiness badge into each group name ──
+    groups.forEach(g=>{
+      const nm = g.querySelector('.bf-dp-group-name');
+      if (nm && !nm.querySelector('.bf-lp-badge')) {
+        const b = document.createElement('span'); b.className='bf-lp-badge'; nm.appendChild(b);
+      }
+    });
+
+    const segs    = Array.from(bar.querySelectorAll('.bf-lp-seg'));
+    const warbtns = Array.from(bar.querySelectorAll('[data-war]'));
+    const kcbtns  = Array.from(bar.querySelectorAll('[data-kc]'));
+    const search  = bar.querySelector('.bf-lp-search');
+    const acount  = bar.querySelector('.bf-lp-acount');
+
+    let MODE = localStorage.getItem('blueForceLayout') || 'A';
+    if (!/^[ABCD]$/.test(MODE)) MODE = 'A';
+    let activeWar = 'ASuW';
+    const kcOff = new Set();   // kill-chain stages toggled OFF (mode C filter)
+
+    // ── readiness/active count per group (best-effort, TDZ-safe) ──
+    function bfReady(grp){
+      try{
+        switch(grp){
+          case 'pv':   return (typeof patrolVessels!=='undefined') ? patrolVessels.filter(v=>v&&v.userPlaced).length : 0;
+          case 'guuv': return (typeof guardianUUVs!=='undefined')  ? guardianUUVs.length : 0;
+          case 'sv':   return (typeof surveyVessels!=='undefined') ? surveyVessels.length : 0;
+          case 'mine': return (typeof mineFieldLaid!=='undefined' && mineFieldLaid) ? 1 : 0;
+          case 'seabed-sentry': return (window._ssNodes) ? window._ssNodes().length : 0;
+          case 'copperhead':    return (window._chState) ? (window._chState().active||0) : 0;
+          case 'helo': return (typeof aswHelo!=='undefined' && aswHelo) ? 1 : 0;
+        }
+      }catch(_){}
+      return 0;
+    }
+    function chArmed(){ try{ return !!(window._chState && window._chState().armed); }catch(_){ return false; } }
+
+    function refreshBadges(){
+      let total = 0;
+      groups.forEach(g=>{
+        const grp = g.dataset.bfGroup; const n = bfReady(grp); total += n;
+        const b = g.querySelector('.bf-lp-badge');
+        if (b){
+          b.textContent = (grp==='copperhead' && chArmed()) ? ('⚡'+n) : String(n);
+          b.classList.toggle('dim', n===0);
+        }
+      });
+      if (acount) acount.textContent = total + ' ⚙';
+    }
+
+    function applyVis(){
+      groups.forEach(g=>{
+        const grp = g.dataset.bfGroup;
+        let hidden = false;
+        if (MODE==='B')      hidden = (WAR[grp]||'') !== activeWar;
+        else if (MODE==='C') hidden = kcOff.has(KC[grp]||'');
+        g.classList.toggle('bf-cat-hidden', hidden);
+      });
+      warbtns.forEach(b=> b.classList.toggle('on', MODE==='B' && b.dataset.war===activeWar));
+      kcbtns.forEach(b=> b.classList.toggle('on', MODE==='C' && !kcOff.has(b.dataset.kc)));
+    }
+
+    function applySearch(){
+      const q = (search && search.value || '').trim().toLowerCase();
+      panel.querySelectorAll('.bf-dp-row').forEach(r=>{
+        if (MODE!=='D' || !q){ r.classList.remove('bf-search-hide'); return; }
+        r.classList.toggle('bf-search-hide', (r.textContent||'').toLowerCase().indexOf(q)===-1);
+      });
+    }
+
+    function apply(){
+      panel.setAttribute('data-layout', MODE);
+      segs.forEach(s=>s.classList.toggle('on', s.dataset.layout===MODE));
+      applyVis();
+      applySearch();
+      refreshBadges();
+    }
+
+    // ── events ──
+    bar.addEventListener('click', e=>{
+      const seg = e.target.closest('.bf-lp-seg');
+      if (seg){ MODE = seg.dataset.layout; try{localStorage.setItem('blueForceLayout',MODE);}catch(_){}; apply(); return; }
+      const wb = e.target.closest('[data-war]');
+      if (wb){ activeWar = wb.dataset.war; applyVis(); return; }
+      const kb = e.target.closest('[data-kc]');
+      if (kb){ const k=kb.dataset.kc; if(kcOff.has(k)) kcOff.delete(k); else kcOff.add(k); applyVis(); return; }
+    });
+    if (search) search.addEventListener('input', applySearch);
+
+    apply();
+    setInterval(refreshBadges, 1000);   // readiness มาจาก array ภายนอก → poll เบา ๆ
+
+    // programmatic hook
+    window.__blueForceLayout = {
+      get mode(){ return MODE; },
+      set(m){ if(/^[ABCD]$/.test(m)){ MODE=m; try{localStorage.setItem('blueForceLayout',m);}catch(_){}; apply(); } },
+      refresh: refreshBadges
+    };
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════════
+     [v15.13] RECOGNIZED MARITIME PICTURE (RMP) — ระบบจำแนกภัย 2 แกน
+     แกน 1 = การรู้จำ (WHITE/GREY/RED) · แกน 2 = มิติ (AIR/SURF/SUB/SEABED/CYBER-EW)
+     + crewing (manned/unmanned) + ท่าที ROE/WCS ที่แนะนำตามการรู้จำ
+     ════════════════════════════════════════════════════════════════ -->
+<script>
+// [ส่วนที่ 21] กลุ่ม ๔ · Recognized Maritime Picture (จำแนกภัย 2 แกน · v15.13)
+(function(){
+  'use strict';
+  const esc = (typeof escapeHtml==='function') ? escapeHtml : (s=>String(s==null?'':s));
+  let panel=null;
+
+  // ── แกน 2: มิติ (domain) ──
+  const DOMAINS = [
+    { key:'AIR',    icon:'✈️',  th:'อากาศ',      col:'#00d4ff' },
+    { key:'SURF',   icon:'🚢',  th:'ผิวน้ำ',     col:'#06b6d4' },
+    { key:'SUB',    icon:'🌊',  th:'ใต้น้ำ',     col:'#14b8a6' },
+    { key:'SEABED', icon:'⚓',  th:'ท้องทะเล',   col:'#f59e0b' },
+    { key:'CYBER',  icon:'📡',  th:'ไซเบอร์/EW', col:'#8b5cf6' },
+  ];
+  const DOM_MAP={}; DOMAINS.forEach(d=>DOM_MAP[d.key]=d);
+
+  // ── แกน 1: การรู้จำ (recognition) + ท่าที ROE/WCS ที่แนะนำ ──
+  const RECOG = [
+    { key:'RED',   th:'ข้าศึก · ยืนยันแล้ว',          col:'#ef4444',
+      posture:'ENGAGE — อาวุธพร้อมยิงตามคำสั่ง',        wcs:'FREE'  },
+    { key:'GREY',  th:'น่าสงสัย · ยังไม่จำแนก',         col:'#fbbf24',
+      posture:'CHALLENGE+SHADOW — ท้าทาย IFF / ประกบติดตาม', wcs:'TIGHT' },
+    { key:'WHITE', th:'พลเรือน/เป็นกลาง · ยืนยันแล้ว',   col:'#cbd5e1',
+      posture:'MONITOR — เฝ้าติดตามเท่านั้น',           wcs:'HOLD'  },
+  ];
+  const RECOG_MAP={}; RECOG.forEach(r=>RECOG_MAP[r.key]=r);
+
+  // ── เข้าถึง threats[] อย่างปลอดภัย (กัน TDZ) ──
+  function getThreats(){ try{ return Array.isArray(threats)?threats:[]; }catch(_){ return []; } }
+
+  // ── จำแนกภัยจาก threat object → {domain, crewing, recog, posture, wcs} ──
+  function domainOf(t){
+    const ty=(t.type||'').toLowerCase(), lab=(t.label||'').toUpperCase();
+    if (ty==='uav'||ty==='suas'||ty==='drone'||t.isAir||/UAV|SUAS|DRONE/.test(lab)) return 'AIR';
+    if (t.isCyber||ty==='cyber'||ty==='ew') return 'CYBER';
+    if (ty==='mine'||t.isSeabed||/MINE|SEABED|CABLE/.test(lab)) return 'SEABED';
+    if (t.isSubmarine||t.subClass||ty==='uuv'||(typeof t.dep==='number'&&t.dep>3)) return 'SUB';
+    if (ty==='usv') return 'SURF';
+    return 'SURF';
+  }
+  function crewingOf(t){
+    if (typeof t.crewing==='string') return t.crewing;
+    const ty=(t.type||'').toLowerCase(), sc=(t.subClass||'').toUpperCase();
+    if (ty==='uav'||ty==='suas'||ty==='drone') return 'UNMANNED';
+    if (sc==='SDV'||sc==='MIDGET'||sc==='SSK')  return 'MANNED';   // มินิซับ/ยานส่งนักประดาน้ำ = มีคน
+    if (ty==='uuv'||ty==='usv'||ty==='mine')    return 'UNMANNED';
+    return 'MANNED';
+  }
+  function recogOf(t){
+    if (typeof t.recognition==='string') return t.recognition;     // override (เช่น white track ในอนาคต)
+    if (t.classified) return 'RED';
+    return 'GREY';   // ตรวจพบแล้วแต่ยังจำแนกไม่ได้ = น่าสงสัย (grey-zone)
+  }
+  function classifyThreat(t){
+    const domain=domainOf(t), crewing=crewingOf(t), recog=recogOf(t);
+    const r=RECOG_MAP[recog]||{};
+    const tax={ domain, crewing, recog, posture:r.posture||'', wcs:r.wcs||'' };
+    t.taxonomy=tax;   // ผูกไว้ที่ object ให้ระบบ ROE/effect รุ่นถัดไปใช้ต่อ
+    return tax;
+  }
+  window.classifyThreat = classifyThreat;
+
+  // ── เก็บภาพรวม ─────────────────────────────────────────────────
+  function snapshot(){
+    const live=getThreats().filter(t=>t&&t.active);
+    const counts={}; RECOG.forEach(r=>DOMAINS.forEach(d=>counts[r.key+'_'+d.key]=0));
+    const contacts=[];
+    live.forEach(t=>{ const tx=classifyThreat(t); counts[tx.recog+'_'+tx.domain]++; contacts.push({t,tx}); });
+    return { counts, contacts, total:live.length };
+  }
+
+  // ── CSS ────────────────────────────────────────────────────────
+  const CSS = `
+  #rmp-panel{ position:fixed; top:96px; right:14px; width:348px; z-index:7400;
+    font-family:'Segoe UI',-apple-system,sans-serif; color:#e2e8f0;
+    background:rgba(8,14,22,.93); border:1px solid rgba(56,189,248,.32);
+    border-radius:9px; box-shadow:0 8px 28px rgba(0,0,0,.55); backdrop-filter:blur(7px);
+    overflow:hidden; user-select:none; }
+  #rmp-panel.dragging{ opacity:.94; }
+  .rmp-head{ display:flex; align-items:center; justify-content:space-between;
+    padding:7px 10px; cursor:grab; background:linear-gradient(90deg,rgba(56,189,248,.16),rgba(56,189,248,.03));
+    border-bottom:1px solid rgba(56,189,248,.22); }
+  .rmp-head:active{ cursor:grabbing; }
+  .rmp-title{ font-size:11px; font-weight:700; letter-spacing:.4px; color:#7dd3fc; }
+  .rmp-x{ cursor:pointer; font-size:12px; color:#94a3b8; padding:0 4px; }
+  .rmp-x:hover{ color:#f87171; }
+  .rmp-sub{ font-size:9.5px; color:#94a3b8; padding:5px 10px 3px; }
+  .rmp-sub #rmp-total{ color:#7dd3fc; font-weight:700; }
+  .rmp-matrix{ display:grid; grid-template-columns:62px repeat(5,1fr) 26px; gap:2px; padding:4px 8px 8px; }
+  .rmp-mh{ font-size:13px; text-align:center; padding:2px 0; }
+  .rmp-corner{ font-size:8px; color:#64748b; display:flex; align-items:center; justify-content:center; }
+  .rmp-bl{ font-size:9px; font-weight:700; letter-spacing:.3px; display:flex; align-items:center;
+    padding-left:3px; border-left:3px solid; }
+  .rmp-cell{ text-align:center; font-size:12px; font-weight:700; padding:3px 0; border-radius:3px;
+    background:color-mix(in srgb, var(--bc) 16%, transparent); color:var(--bc);
+    border:1px solid color-mix(in srgb, var(--bc) 34%, transparent); }
+  .rmp-cell.rmp-dim{ background:rgba(148,163,184,.05); color:#475569; border-color:rgba(148,163,184,.10); }
+  .rmp-bt{ text-align:center; font-size:12px; font-weight:700; padding:3px 0; }
+  .rmp-legend{ font-size:8.5px; color:#64748b; padding:0 10px 5px; }
+  .rmp-list{ max-height:200px; overflow-y:auto; padding:0 8px 8px; }
+  .rmp-row{ display:flex; align-items:center; gap:6px; padding:3px 5px; margin-top:3px;
+    background:rgba(255,255,255,.025); border-left:3px solid; border-radius:0 4px 4px 0; }
+  .rmp-dot{ width:7px; height:7px; border-radius:50%; flex:0 0 auto; box-shadow:0 0 5px currentColor; }
+  .rmp-dico{ font-size:12px; flex:0 0 auto; }
+  .rmp-crew{ font-size:11px; color:#7dd3fc; flex:0 0 auto; }
+  .rmp-crew.rmp-un{ color:#a78bfa; }
+  .rmp-lab{ font-size:9.5px; color:#cbd5e1; flex:1 1 auto; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .rmp-post{ font-size:9px; font-weight:700; letter-spacing:.3px; flex:0 0 auto; }
+  .rmp-empty{ font-size:9px; color:#64748b; text-align:center; padding:14px 4px; line-height:1.6; }
+  /* [v15.14] minimize + tabs */
+  .rmp-min{ cursor:pointer; font-size:13px; color:#94a3b8; padding:0 5px; line-height:1; transition:transform .15s; }
+  .rmp-min:hover{ color:#7dd3fc; }
+  #rmp-panel.rmp-collapsed .rmp-min{ transform:rotate(-90deg); }
+  #rmp-panel.rmp-collapsed .rmp-body{ display:none; }
+  .rmp-tabs{ display:flex; gap:0; padding:6px 8px 0; }
+  .rmp-tab{ flex:1 1 0; text-align:center; font-size:10px; font-weight:700; letter-spacing:.3px;
+    padding:5px 0 6px; cursor:pointer; color:#64748b; background:rgba(148,163,184,.05);
+    border:1px solid rgba(148,163,184,.14); border-bottom:none; }
+  .rmp-tab:first-child{ border-radius:5px 0 0 0; }
+  .rmp-tab:last-child{ border-radius:0 5px 0 0; }
+  .rmp-tab:hover{ color:#cbd5e1; }
+  .rmp-tab.rmp-on{ color:#7dd3fc; background:rgba(56,189,248,.12); border-color:rgba(56,189,248,.34); }
+  .rmp-pane{ display:none; border-top:1px solid rgba(56,189,248,.18); }
+  .rmp-pane.rmp-on{ display:block; }
+
+  /* ══ [v15.14] โหมด docked (inline) — ฝังในพาเนลซ้าย กว้าง ~282px ══ */
+  #rmp-panel.rmp-inline{ position:static; width:auto; z-index:auto;
+    background:transparent; border:none; border-radius:0; box-shadow:none;
+    backdrop-filter:none; overflow:visible; }
+  #rmp-panel.rmp-inline .rmp-head{ padding:6px 6px 5px; cursor:default;
+    background:transparent; border-bottom:1px solid rgba(56,189,248,.16); }
+  #rmp-panel.rmp-inline .rmp-head:active{ cursor:default; }
+  #rmp-panel.rmp-inline .rmp-title{ font-size:9.5px; letter-spacing:.2px; line-height:1.25; }
+  #rmp-panel.rmp-inline .rmp-x{ display:none; }          /* docked = ไม่มีปุ่มปิด */
+  #rmp-panel.rmp-inline .rmp-tabs{ padding:5px 4px 0; }
+  #rmp-panel.rmp-inline .rmp-tab{ font-size:9px; padding:4px 0 5px; }
+  #rmp-panel.rmp-inline .rmp-matrix{ grid-template-columns:24px repeat(5,1fr) 14px;
+    gap:2px; padding:4px 2px 6px; }
+  #rmp-panel.rmp-inline .rmp-mh{ font-size:11px; }
+  #rmp-panel.rmp-inline .rmp-corner{ font-size:6.5px; line-height:1.1; }
+  #rmp-panel.rmp-inline .rmp-bl{ font-size:8px; padding-left:2px; border-left-width:2px; }
+  #rmp-panel.rmp-inline .rmp-cell,
+  #rmp-panel.rmp-inline .rmp-bt{ font-size:10px; padding:2px 0; }
+  #rmp-panel.rmp-inline .rmp-legend{ font-size:7.5px; padding:0 6px 5px; line-height:1.4; }
+  #rmp-panel.rmp-inline .rmp-list{ max-height:160px; padding:0 4px 6px; }
+  #rmp-panel.rmp-inline .rmp-lab{ font-size:9px; }
+  #rmp-panel.rmp-inline .rmp-pane{ border-top:1px solid rgba(56,189,248,.14); }
+  /* host panel: ใช้ chrome ของ .panel เดิม — RMP โชว์เนื้อตรง ๆ */
+  #panel-rmp.rmp-dock{ padding:8px 8px 6px; }
+  #panel-rmp.rmp-dock > #rmp-host{ display:block; }
+  `;
+
+  // ── สร้าง matrix grid ──
+  function buildMatrix(){
+    let h='<div class="rmp-matrix">';
+    h+='<div class="rmp-mh rmp-corner">รู้จำ＼มิติ</div>';
+    DOMAINS.forEach(d=>{ h+=`<div class="rmp-mh" title="${esc(d.th)}" style="color:${d.col}">${d.icon}</div>`; });
+    h+='<div class="rmp-mh" title="รวม" style="color:#94a3b8">Σ</div>';
+    RECOG.forEach(r=>{
+      h+=`<div class="rmp-bl" style="color:${r.col};border-color:${r.col}" title="${esc(r.th)}">${r.key}</div>`;
+      DOMAINS.forEach(d=>{ h+=`<div class="rmp-cell rmp-dim" id="rmp-c-${r.key}-${d.key}" style="--bc:${r.col}"></div>`; });
+      h+=`<div class="rmp-bt" id="rmp-bt-${r.key}" style="color:${r.col}">0</div>`;
+    });
+    return h+'</div>';
+  }
+
+  // ── refresh ──
+  function refresh(){
+    if(!panel) return;
+    const s=snapshot();
+    RECOG.forEach(r=>{
+      let sum=0;
+      DOMAINS.forEach(d=>{
+        const n=s.counts[r.key+'_'+d.key]; sum+=n;
+        const c=document.getElementById('rmp-c-'+r.key+'-'+d.key);
+        if(c){ c.textContent=n||''; c.classList.toggle('rmp-dim', !n); }
+      });
+      const bt=document.getElementById('rmp-bt-'+r.key); if(bt) bt.textContent=sum;
+    });
+    const tot=document.getElementById('rmp-total'); if(tot) tot.textContent=s.total;
+    const listEl=document.getElementById('rmp-list'); if(!listEl) return;
+    if(!s.contacts.length){
+      listEl.innerHTML='<div class="rmp-empty">— ไม่มีเป้าในระบบ —<br>กดแผง 🔴 Threat Injection เพื่อจำลองภัย</div>';
+      return;
+    }
+    const ord={RED:0,GREY:1,WHITE:2};
+    s.contacts.sort((a,b)=>(ord[a.tx.recog]-ord[b.tx.recog]));
+    listEl.innerHTML=s.contacts.map(({t,tx})=>{
+      const r=RECOG_MAP[tx.recog]||{col:'#94a3b8'}, d=DOM_MAP[tx.domain]||{icon:'•'};
+      const crew = tx.crewing==='MANNED'
+        ? '<span class="rmp-crew" title="มีคนบังคับ">◉</span>'
+        : '<span class="rmp-crew rmp-un" title="ไร้คนขับ">⬡</span>';
+      return `<div class="rmp-row" style="border-left-color:${r.col}">`+
+        `<span class="rmp-dot" style="color:${r.col};background:${r.col}"></span>`+
+        `<span class="rmp-dico">${d.icon}</span>`+crew+
+        `<span class="rmp-lab">${esc(t.label||tx.domain)}</span>`+
+        `<span class="rmp-post" style="color:${r.col}">${esc(tx.wcs)}</span>`+
+      `</div>`;
+    }).join('');
+  }
+
+  // ── drag (เฉพาะพาเนลนี้ · เก็บตำแหน่งใน rmp-pos) ──
+  function makeDrag(el, head){
+    let on=false,sx=0,sy=0,bl=0,bt=0,pid=null;
+    head.addEventListener('pointerdown',e=>{
+      if(e.target&&(e.target.id==='rmp-x'||e.target.id==='rmp-min')) return;
+      if(e.button!==0&&e.pointerType==='mouse') return;
+      on=true; pid=e.pointerId; const r=el.getBoundingClientRect();
+      bl=r.left; bt=r.top; sx=e.clientX; sy=e.clientY;
+      el.classList.add('dragging'); el.style.right='auto';
+      try{ head.setPointerCapture(pid); }catch(_){} e.preventDefault();
+    });
+    head.addEventListener('pointermove',e=>{
+      if(!on) return; const w=el.offsetWidth;
+      const maxL=Math.max(0,window.innerWidth-Math.min(w,60)), maxT=Math.max(0,window.innerHeight-40);
+      el.style.left=Math.max(-w+60,Math.min(bl+(e.clientX-sx),maxL))+'px';
+      el.style.top =Math.max(0,    Math.min(bt+(e.clientY-sy),maxT))+'px';
+    });
+    const end=()=>{ if(!on) return; on=false; el.classList.remove('dragging');
+      try{ if(pid!=null) head.releasePointerCapture(pid); }catch(_){}
+      try{ const r=el.getBoundingClientRect(); localStorage.setItem('rmp-pos',JSON.stringify({left:r.left,top:r.top})); }catch(_){} };
+    head.addEventListener('pointerup',end);
+    head.addEventListener('pointercancel',end);
+    head.addEventListener('dblclick',()=>{ el.style.left='auto'; el.style.right='14px'; el.style.top='96px';
+      try{ localStorage.removeItem('rmp-pos'); }catch(_){} });
+  }
+
+  // ── build ──
+  function build(){
+    if(document.getElementById('rmp-panel')){ panel=document.getElementById('rmp-panel'); return; }
+    if(!document.getElementById('rmp-css')){ const st=document.createElement('style'); st.id='rmp-css'; st.textContent=CSS; document.head.appendChild(st); }
+    panel=document.createElement('div'); panel.id='rmp-panel';
+    panel.innerHTML =
+      '<div class="rmp-head" id="rmp-head">'+
+        '<span class="rmp-title">🛰 RECOGNIZED MARITIME PICTURE · <span id="rmp-total">0</span></span>'+
+        '<span style="display:flex;align-items:center;gap:2px">'+
+          '<span class="rmp-min" id="rmp-min" title="ยุบ/ขยาย">▾</span>'+
+          '<span class="rmp-x" id="rmp-x" title="ปิด">✕</span>'+
+        '</span>'+
+      '</div>'+
+      '<div class="rmp-body" id="rmp-body">'+
+        '<div class="rmp-tabs">'+
+          '<div class="rmp-tab" id="rmp-tab-matrix" data-pane="matrix">▦ MATRIX</div>'+
+          '<div class="rmp-tab" id="rmp-tab-list"   data-pane="list">☰ TRACK LIST</div>'+
+        '</div>'+
+        '<div class="rmp-pane" id="rmp-pane-matrix">'+
+          buildMatrix()+
+          '<div class="rmp-legend">แถว = การรู้จำ · คอลัมน์ = มิติ · ตัวเลข = จำนวนเป้า · Σ = รวม</div>'+
+        '</div>'+
+        '<div class="rmp-pane" id="rmp-pane-list">'+
+          '<div class="rmp-legend" style="padding-top:6px">◉ มีคนบังคับ · ⬡ ไร้คนขับ · ป้ายท้าย = WCS ที่แนะนำ</div>'+
+          '<div class="rmp-list" id="rmp-list"></div>'+
+        '</div>'+
+      '</div>';
+    // [v15.14] ถ้ามี host ในพาเนลซ้าย → ฝังแบบ docked (inline) ใต้ SURFACE; ไม่งั้น float เดิม
+    var host = document.getElementById('rmp-host');
+    var inline = !!host;
+    if(inline){
+      panel.classList.add('rmp-inline');
+      host.appendChild(panel);
+    } else {
+      document.body.appendChild(panel);
+      // คืนตำแหน่งที่บันทึกไว้ (เฉพาะโหมดลอย)
+      try{ const p=JSON.parse(localStorage.getItem('rmp-pos')||'null');
+        if(p&&typeof p.left==='number'){ panel.style.left=p.left+'px'; panel.style.top=p.top+'px'; panel.style.right='auto'; } }catch(_){}
+    }
+    document.getElementById('rmp-x').addEventListener('click',()=>{ panel.style.display='none'; });
+    // ── แท็บ Matrix ↔ List (จำค่าใน rmp-tab) ──
+    function setTab(name){
+      ['matrix','list'].forEach(p=>{
+        const tab=document.getElementById('rmp-tab-'+p), pane=document.getElementById('rmp-pane-'+p);
+        const on=(p===name);
+        if(tab) tab.classList.toggle('rmp-on',on);
+        if(pane) pane.classList.toggle('rmp-on',on);
+      });
+      try{ localStorage.setItem('rmp-tab',name); }catch(_){}
+    }
+    document.getElementById('rmp-tab-matrix').addEventListener('click',()=>setTab('matrix'));
+    document.getElementById('rmp-tab-list').addEventListener('click',()=>setTab('list'));
+    let savedTab='matrix'; try{ savedTab=localStorage.getItem('rmp-tab')||'matrix'; }catch(_){}
+    setTab(savedTab==='list'?'list':'matrix');
+    // ── ยุบ/ขยายพาเนล (จำค่าใน rmp-collapsed) ──
+    function applyCollapsed(c){ panel.classList.toggle('rmp-collapsed',c); try{ localStorage.setItem('rmp-collapsed',c?'1':'0'); }catch(_){} }
+    document.getElementById('rmp-min').addEventListener('click',()=>applyCollapsed(!panel.classList.contains('rmp-collapsed')));
+    let savedCol=false; try{ savedCol=localStorage.getItem('rmp-collapsed')==='1'; }catch(_){}
+    applyCollapsed(savedCol);
+    if(!inline) makeDrag(panel, document.getElementById('rmp-head'));   // [v15.14] docked = ไม่ลาก
+    refresh();
+  }
+
+  // programmatic hook
+  window.__rmp = {
+    open(){ build(); if(panel) panel.style.display='block'; },
+    close(){ if(panel) panel.style.display='none'; },
+    refresh, classify:classifyThreat,
+    get el(){ return panel; }
+  };
+
+  function init(){ build(); setInterval(refresh,1000); }
+  if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
 </script>
@@ -29044,7 +29902,7 @@ window.toggleSeabed3D = toggleSeabed3D;
 </div>
 
 <script>
-//  [ส่วนที่ 50] หมวด ง — Trap-Mine Configuration Panel (ทุ่นระเบิดควบคุม · v15.7/v15.9)
+//  [ส่วนที่ 22] กลุ่ม ๓ · Trap-Mine Configuration Panel (ทุ่นระเบิดควบคุม · v15.7/v15.9)
 //  วัตถุประสงค์ : ตั้งค่าสนามทุ่นระเบิดควบคุม — preset · influence threshold · bottom/moored
 //  หลักการ      : กลไกจุดระเบิด + ตรรกะ fuze + รูปแบบสนาม · target discrimination
 /* [v15.7] Trap-Mine Config Panel — self-contained wiring */
@@ -29230,7 +30088,7 @@ window.toggleSeabed3D = toggleSeabed3D;
 </script>
 
 <script>
-//  [ส่วนที่ 51] หมวด จ — UNDEX MINE-DETONATION SIMULATION (v15.9)
+//  [ส่วนที่ 22.1] กลุ่ม ๓ · UNDEX MINE-DETONATION SIMULATION (v15.9)
 //  วัตถุประสงค์ : เมื่อวางทุ่นแล้ว → จำลองการจุดระเบิด
 //      • แผนที่ 2 มิติ : วงรัศมีความเสียหาย (Battle Damage Area) 4 ระดับ
 //      • แผนที่ 3 มิติ : พวยน้ำ + ฟองแก๊ส + คลื่นผิวน้ำ + หลุมพื้นทะเล (ผลต่อน้ำรอบข้าง)
@@ -29608,7 +30466,7 @@ window.toggleSeabed3D = toggleSeabed3D;
 
 <script>
 /* ==================================================================
-   [ส่วนที่ 52] หมวด ฉ — SEABED SENTRY : Cableless Sensor Mesh (v15.10)
+   [ส่วนที่ 23] กลุ่ม ๓ · SEABED SENTRY : Cableless Sensor Mesh (v15.10)
    ------------------------------------------------------------------
    วัตถุประสงค์ : โครงข่ายเซ็นเซอร์ก้นทะเล "ไร้สาย" วางเป็นแนวตรวจจับ
                  ล่วงหน้า (sensing screen) หน้าฐาน UDC — โหนดเชื่อมกัน
@@ -29846,7 +30704,7 @@ window.toggleSeabed3D = toggleSeabed3D;
 
 <script>
 /* ==================================================================
-   [ส่วนที่ 53] หมวด ช — COPPERHEAD : Autonomous Undersea Effector (v15.11)
+   [ส่วนที่ 23.1] กลุ่ม ๓ · COPPERHEAD : Autonomous Undersea Effector (v15.11)
    ------------------------------------------------------------------
    วัตถุประสงค์ : ยานใต้น้ำเอฟเฟกเตอร์ความเร็วสูง (>30 kn class) ที่ถูก
                  ปล่อยตาม "cue" จากโครงข่าย Seabed Sentry (โมดูล A) เพื่อ
