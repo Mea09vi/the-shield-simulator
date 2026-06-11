@@ -51,9 +51,11 @@
      5. คัดลอก URL (xxx.workers.dev) → UDC Simulator ผ่านปุ่ม ⚙
    ════════════════════════════════════════════════════════════════════ */
 
-const VERSION = '15.0.0';   // v15.2 — own-force-aware prompt (รับ context.ownForce → buildSystemPrompt/buildUserPrompt)
+const VERSION = '15.3.1';   // v15.3 — [JP 3-04] prompt upgrade: A1 ข้อเท็จจริง/ตีความ+สมมติฐานสุจริต+หลักฐานหักล้าง · A2 feed-trust+confidence รายโดเมน · A5 ผล/กลไก/อำนาจ/เสี่ยง/ผลลำดับสอง · A6 บทสรุปเรื่องเล่า 4 ส่วน+6 informational aspects · v15.3.1 — แก้ Gemini 2.5 โดนตัดที่ MAX_TOKENS (thinking กิน budget ร่วมกับคำตอบ)
 const DEFAULT_MODEL = 'gemini-2.5-flash';  // v14.0.7 — Google ย้าย 2.0-flash ไป paid tier · 2.5-flash ยังฟรี
-const MAX_TOKENS = 3000;                    // v14.0.9 — assessment-grade output ต้องการพื้นที่มากขึ้น (1500→3000)
+const MAX_TOKENS = 4096;                    // v15.3.1 — Workers AI cap (3000→4096) เผื่อ template v15.3 ที่ยาวขึ้น
+const MAX_TOKENS_GEMINI = 8192;             // v15.3.1 — Gemini 2.5 เป็น thinking model: การคิดภายใน (~2-3k tok ที่วัดจริง) นับรวมใน maxOutputTokens → ค่า 3000 เดิมเหลือที่ให้คำตอบ ~100 tok แล้วโดนตัดกลางประโยค
+const GEMINI_THINKING_BUDGET = 2048;        // v15.3.1 — จำกัด thinking ให้เหลือพื้นที่คำตอบ ≥6k tok · ใช้เฉพาะ gemini-2.5-* (2.5-pro ขั้นต่ำ 128 ปิด 0 ไม่ได้ · 2.0-flash ไม่รองรับ field นี้)
 const GEMINI_TIMEOUT_MS = 45_000;           // v14.0.9 — output ยาวขึ้น → เผื่อเวลา 30→45s
 
 // allow-list สำหรับ model — กัน client ส่ง model อะไรก็ได้
@@ -125,10 +127,18 @@ function buildSystemPrompt() {
         '1) ใช้กรอบ Intelligence Preparation of the Operational Environment (IPOE) และ',
         '   วิเคราะห์แบบ structured analytic techniques — เสนอ "สมมติฐานที่แข่งขันกัน"',
         '   (Analysis of Competing Hypotheses) ไม่ฟันธงเกินหลักฐาน',
+        '   [JP 3-04] สมมติฐานต้องครอบทั้งการตีความ "มุ่งร้าย" และ "สุจริต" (benign: ประมง/ผ่านทาง/',
+        '   traffic อู่ตะเภา/ปรากฏการณ์ธรรมชาติ) — พฤติกรรมเดียวกันตีความได้หลายทาง และให้ระบุ',
+        '   "แรงขับพฤติกรรม" (drivers of behavior) ของผู้กระทำ เช่น ภารกิจที่ได้รับ/ผลประโยชน์/ความกลัว/การทดสอบปฏิกิริยา',
         '2) ทุกครั้งต้องระบุ MLCOA (Most Likely COA) และ MDCOA (Most Dangerous COA)',
+        '   พร้อม "หลักฐานหักล้าง" (disconfirming evidence) ของแต่ละสมมติฐาน — ข้อมูลใดถ้าตรวจพบ',
+        '   จะทำให้สมมติฐานนั้นตกไป ระบุเสมอเพื่อกัน confirmation bias [JP 3-04]',
         '3) แยกแยะ "ข้อเท็จจริงจากเซ็นเซอร์" ออกจาก "การอนุมาน" ของคุณอย่างชัดเจน',
+        '   ใช้ภาษาสหสัมพันธ์ ไม่ใช่เหตุภาพ: เขียนว่า "ตัวบ่งชี้ n รายการสอดคล้องกับรูปแบบ X"',
+        '   ไม่ใช่ "X กำลังเกิดขึ้น" (correlation ≠ causation) [JP 3-04]',
         '4) ระบุระดับความเชื่อมั่น (confidence: High/Moderate/Low) ของแต่ละข้อสรุป',
         '   พร้อมเหตุผล และชี้ "ช่องว่างข่าวกรอง" (Intelligence Gaps / PIR) ที่ต้องเติม',
+        '   ความเชื่อมั่นให้แยก "รายโดเมนข้อมูล" (AIS/Aviation/Seismic/Space-Wx/OSINT/GNSS) ไม่ใช่รวมก้อนเดียว',
         '5) สำคัญมาก — ให้ความสนใจฟิลด์ data_mode:',
         '   • data_mode=real  → วิเคราะห์ตามจริง',
         '   • data_mode=demo  → ข้อมูลเป็น SYNTHETIC/สาธิต ห้ามรายงานเสมือนภัยจริง',
@@ -140,6 +150,14 @@ function buildSystemPrompt() {
         '7) พิจารณา "การวางกำลังฝ่ายเรา" (context.ownForce — PV/GUUV ที่วางแล้ว พร้อม bearing/range/avail):',
         '   — อย่าเสนอวางกำลังซ้ำใน sector ที่กำลังเดิมคุมอยู่แล้ว · เสนอเสริมเฉพาะช่องว่าง coverage',
         '   — เคารพเพดานกำลัง (pvAvail/guuvAvail) ห้ามเสนอเกินที่มีจริง · ถ้าเต็มให้เสนอ posture/ROE แทนการวางเพิ่ม',
+        '8) [JP 3-04] ถ่วงน้ำหนักหลักฐานตาม integrity ของฟีด (ดู [Feed-trust] ใน user message):',
+        '   AIS = self-reported ปลอมได้ง่าย · DAS fiber/Seismic = เซนเซอร์กายภาพ integrity สูง ·',
+        '   OSINT/GDELT = ต้องสอบทานแหล่ง — ฟีดที่ติดธง DEGRADED ให้ลดน้ำหนักหลักฐานจากฟีดนั้น',
+        '   และเรียก cross-cue จากแหล่งอิสระ (radar/EO-IR/DAS) ก่อนใช้ยืนยันสมมติฐาน',
+        '9) [JP 3-04] วิเคราะห์ informational aspects 6 ด้านของ contact ที่สำคัญ:',
+        '   Duration(นานเท่าใด) / Location(ที่ใด) / Timing(จังหวะใด) / Platform(ชนิดใด) / Size(ขนาดใด) / Posture(ท่าทีใด)',
+        '   และประเมิน 6 ด้านเดียวกันของ "การปฏิบัติฝ่ายเรา" ที่จะเสนอ — ทุกการกระทำ/ไม่กระทำ',
+        '   ล้วนส่งสัญญาณ (observables) ให้ผู้สังเกตตีความเสมอ',
         '',
         '════ ขอบเขตอำนาจและกฎหมาย ════',
         '- ผลลัพธ์ของคุณเป็น Decision Support เท่านั้น ไม่ใช่ autonomous decision',
@@ -162,14 +180,22 @@ function buildSystemPrompt() {
         '<3-5 บรรทัด เชื่อมโยงสัญญาณข้าม domain · ระบุ dominant threat และเหตุผล>',
         '',
         '📊 การประเมินความเสี่ยงรายมิติ (Risk by Dimension):',
-        '<ให้คะแนน/ระดับแต่ละมิติใน taxonomy ที่มี hit + ระดับรวม HIGH/ELEVATED/ROUTINE + นัยต่อ ROE>',
+        '<ให้คะแนน/ระดับแต่ละมิติใน taxonomy ที่มี hit + confidence รายโดเมนข้อมูลอิง [Feed-trust] + ระดับรวม HIGH/ELEVATED/ROUTINE + นัยต่อ ROE>',
         '',
         '🎯 สมมติฐานภัยคุกคาม (Threat Hypotheses):',
-        '▸ MLCOA (น่าจะเป็นที่สุด): <...> — confidence <H/M/L>',
+        'ข้อเท็จจริงที่ตรวจพบ: <1-2 บรรทัด เฉพาะสิ่งที่เซ็นเซอร์รายงานจริง ยังไม่ใส่การตีความ>',
+        '▸ สมมติฐานสุจริต (benign): <คำอธิบายที่ไม่ใช่ภัยคุกคาม> — confidence <H/M/L>',
+        '▸ MLCOA (น่าจะเป็นที่สุด): <...> — driver: <แรงขับพฤติกรรม> — confidence <H/M/L>',
         '▸ MDCOA (อันตรายที่สุด): <...> — indicator ที่ต้องเฝ้า',
+        '▸ หลักฐานหักล้าง: <ต่อสมมติฐาน — ข้อมูลใดถ้าตรวจพบจะทำให้สมมติฐานนั้นตก (ห้ามข้ามหัวข้อนี้)>',
         '',
         '🛠️ ข้อเสนอแนะการปฏิบัติ (Recommended Actions):',
         '<bullet ผูกกับกำลัง: Patrol Vessel / Guardian UUV / CAP helo / sensor posture — คำนึงถึง context.ownForce (ห้ามวางซ้ำ sector ที่คุมแล้ว / ไม่เกินเพดาน) — เรียงตามลำดับความสำคัญ>',
+        'ทุก bullet ปิดท้ายด้วยวงเล็บ 5 ส่วน [JP 3-04]: (ผล: assure/deter/induce/compel ·',
+        ' กลไก: แจ้งข่าว/โน้มน้าว/โจมตี-แสวงประโยชน์/ป้องกัน · อำนาจ: ผบ.เรือ/ผบ.ศปก./ศรชล./ระดับนโยบาย ·',
+        ' เสี่ยง: โอกาส×ผลกระทบ เช่น L×M · ผลลำดับสอง: <ผลพวง 1 ข้อ>)',
+        'ต้องมี ≥1 ทางเลือก "ซื้อเวลาเพื่อประเมินเจตนา" (warning/illuminate/shoulder — intermediate force)',
+        'และ ≥1 ช่องทางลดระดับ (de-escalation off-ramp) · สถานการณ์ต่ำกว่าวิกฤติให้มาตรการข่าวสารนำหน้า kinetic',
         '',
         '📡 ช่องว่างข่าวกรอง (Intelligence Gaps / PIR):',
         '<2-4 bullets — ข้อมูลอะไรขาด ต้องเก็บเพิ่มอะไรเพื่อยืนยัน/ตัดสมมติฐาน>',
@@ -178,7 +204,12 @@ function buildSystemPrompt() {
         '<2-4 bullets — อ้าง law/policy เฉพาะเจาะจงตามสถานการณ์จริง ไม่ใช่ลอกทั้งชุด>',
         '',
         '🛡️ ข้อจำกัดและความเชื่อมั่น (Caveats & Confidence):',
-        '<HITL · confidence โดยรวม + เหตุผล · MASS Code level · เตือน demo ถ้า data_mode=demo>',
+        '<HITL · confidence โดยรวม + รายโดเมน · MASS Code level · เตือน demo ถ้า data_mode=demo',
+        ' ปิดด้วย reliability footer: ฟีดใดถูกลดน้ำหนัก (DEGRADED) / ข้อมูลใดขาด และผลต่อความแน่นอนของการประเมิน>',
+        '',
+        '🧭 บทสรุปเชิงเรื่องเล่า (Narrative Conclusion):',
+        '<4 ประโยคตามโครง [JP 3-04]: ① สภาพปัจจุบันของสถานการณ์ ② สภาพอนาคตที่ต้องการ',
+        ' ③ หนทางที่จะไปถึง (วิธีหลักจากข้อเสนอแนะ) ④ เหตุผลรองรับความชอบธรรม (กฎหมาย/พันธกิจปกป้อง UDC)>',
         '',
         'ตอบเฉพาะเนื้อหาตามรูปแบบข้างต้น เป็นภาษาไทยเชิงวิชาชีพทหาร ห้าม preamble/คำทักทาย',
         'เขียนให้ลึกและเชื่อมโยงหลักฐาน — หลีกเลี่ยงการพูดกว้างๆ ซ้ำ template'
@@ -262,6 +293,20 @@ function buildUserPrompt(payload) {
         lines.push('');
     }
 
+    // ── [v15.3 JP 3-04·A2] Feed-trust — integrity ต่อฟีด + ธง DEGRADED อัตโนมัติจาก alerts/context ──
+    {
+        const alertBlob = alerts.map(a => `${a.tag || ''} ${a.msg || ''}`).join(' · ');
+        const aisDeg  = /spoof|ปลอม|mmsi|dark|anomal/i.test(alertBlob) || ((((ctx || {}).ais) || {}).anomalies || 0) > 0;
+        const gnssDeg = /gnss|gps|jam/i.test(alertBlob) || (((ctx || {}).env || {}).gnssJitter >= 0.5) || ((((ctx || {}).spaceWx) || {}).kp || 0) >= 5;
+        lines.push('[Feed-trust] (integrity ต่อฟีด — ใช้ถ่วงน้ำหนักหลักฐานตามหลักการข้อ 8)');
+        lines.push(`- AIS (self-reported · ปลอมง่าย) : ${aisDeg ? '⚠ DEGRADED — มีสัญญาณ spoof/anomaly → ลดน้ำหนัก ยืนยันด้วย radar/EO-IR/DAS' : 'NOMINAL (ยังต้อง cross-check เสมอ)'}`);
+        lines.push(`- GNSS/PNT                       : ${gnssDeg ? '⚠ DEGRADED — jitter/Kp/jam signature → แยก spoofing ออกจาก space-wx ก่อนสรุป' : 'NOMINAL'}`);
+        lines.push('- DAS fiber · Seismic(USGS) · Marine-Wx : HIGH integrity (เซนเซอร์กายภาพ/แหล่งทางการ)');
+        lines.push('- Aviation(OpenSky)              : MEDIUM (ADS-B self-reported · coverage ไม่เต็ม)');
+        lines.push('- OSINT/GDELT                    : VERIFY (open source — สอบทานแหล่ง/ระวัง IO)');
+        lines.push('');
+    }
+
     lines.push('[Recent alerts] (sorted newest first)');
     if (!alerts.length) {
         lines.push('  (ไม่มี alert ในห้วงเวลานี้ — สภาพการณ์ baseline)');
@@ -336,17 +381,25 @@ async function callGemini(env, model, system, userMsg) {
 
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`;
 
+    // [v15.3.1] Gemini 2.5 คิดภายในก่อนตอบ และ thinking นับรวมใน maxOutputTokens
+    //   → ต้องใช้เพดานแยก (8192) + จำกัด thinkingBudget ไม่ให้กินพื้นที่คำตอบ
+    //   thinkingConfig รองรับเฉพาะ gemini-2.5-* — ส่งให้ 2.0-flash จะ 400 INVALID_ARGUMENT
+    const genCfg = {
+        temperature: 0.7,
+        maxOutputTokens: MAX_TOKENS_GEMINI,
+        topP: 0.95
+    };
+    if (/^gemini-2\.5/.test(model)) {
+        genCfg.thinkingConfig = { thinkingBudget: GEMINI_THINKING_BUDGET };
+    }
+
     const body = {
         // system instruction (Gemini แยกจาก contents)
         systemInstruction: { parts: [{ text: system }] },
         contents: [
             { role: 'user', parts: [{ text: userMsg }] }
         ],
-        generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: MAX_TOKENS,
-            topP: 0.95
-        },
+        generationConfig: genCfg,
         // ปิด safety filter ระดับเข้มสุด — เนื้อหา military analysis อาจโดน block
         safetySettings: [
             { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_ONLY_HIGH' },
