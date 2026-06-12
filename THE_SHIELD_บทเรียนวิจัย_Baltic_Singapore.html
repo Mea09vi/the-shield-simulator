@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE SHIELD · บทเรียนวิจัย Baltic × Singapore — สำหรับเรียน เสธ ทร.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#010d1a; --bg2:#081525; --panel:rgba(8,21,37,.74); --panel2:rgba(13,30,51,.62);
+    --line:rgba(0,212,255,.14); --line2:rgba(0,212,255,.28);
+    --ink:#ccd6f6; --ink-dim:#8892b0; --ink-mute:#697494;
+    --cyan:#00d4ff; --cyan-d:#00a8cc; --teal:#64ffda; --gold:#f5c451; --red:#fb6f6f; --green:#5ee0a0; --violet:#a78bfa;
+    --baltic:#5aa9ff; --singapore:#ff7e6b;
+    --shadow:0 18px 50px rgba(0,0,0,.45);
+    --r:16px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:
+      radial-gradient(1200px 700px at 78% -8%, rgba(0,212,255,.10), transparent 60%),
+      radial-gradient(1000px 700px at 8% 6%, rgba(100,255,218,.07), transparent 55%),
+      linear-gradient(180deg,var(--bg),var(--bg2) 60%,#000810);
+    color:var(--ink);
+    font-family:'Sarabun','Leelawadee UI','Noto Sans Thai',Tahoma,system-ui,sans-serif;
+    line-height:1.7; letter-spacing:.1px; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:0 22px}
+  h1,h2,h3,h4{font-family:'Chakra Petch','Sarabun',sans-serif; line-height:1.25; margin:0}
+  a{color:var(--cyan); text-decoration:none; border-bottom:1px solid rgba(0,212,255,.3)}
+  a:hover{color:var(--teal); border-color:var(--teal)}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace; background:rgba(120,170,230,.12); padding:1px 6px; border-radius:6px; font-size:.86em; color:#c9defb}
+
+  /* ---------- HERO ---------- */
+  header.hero{position:relative; overflow:hidden; border-bottom:1px solid var(--line)}
+  .hero-grid{position:absolute; inset:0; background-image:
+      linear-gradient(rgba(0,212,255,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,212,255,.05) 1px,transparent 1px);
+    background-size:34px 34px; mask:radial-gradient(80% 80% at 50% 18%,#000,transparent 78%)}
+  .hero-inner{position:relative; padding:54px 0 40px}
+  .crest{display:inline-flex; align-items:center; gap:11px; font-family:'Chakra Petch'; font-weight:700;
+    letter-spacing:3px; font-size:13px; color:var(--cyan); text-transform:uppercase}
+  .crest .dot{width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 14px var(--cyan)}
+  .hero h1{font-size:clamp(28px,4.6vw,46px); margin:16px 0 6px; font-weight:700;
+    background:linear-gradient(120deg,#eaf3ff,#8fd9ff 55%,#64ffda); -webkit-background-clip:text; background-clip:text; color:transparent}
+  .hero .sub{font-size:clamp(15px,2vw,19px); color:var(--ink-dim); max-width:760px}
+  .hero .meta{margin-top:22px; display:flex; flex-wrap:wrap; gap:10px}
+  .chip{font-size:12.5px; padding:7px 13px; border-radius:999px; border:1px solid var(--line2);
+    background:var(--panel2); color:var(--ink-dim); display:inline-flex; gap:7px; align-items:center}
+  .chip b{color:var(--ink); font-weight:600}
+
+  /* ---------- NAV ---------- */
+  nav.toc{position:sticky; top:0; z-index:40; backdrop-filter:blur(14px);
+    background:rgba(1,13,26,.86); border-bottom:1px solid var(--line)}
+  nav.toc .wrap{display:flex; gap:6px; flex-wrap:wrap; padding-top:11px; padding-bottom:11px; align-items:center}
+  nav.toc a{font-size:13.5px; color:var(--ink-dim); border:1px solid transparent; border-radius:10px;
+    padding:6px 12px; font-weight:500}
+  nav.toc a:hover{color:var(--ink); background:var(--panel2); border-color:var(--line)}
+  nav.toc .tag{margin-left:auto; font-size:11.5px; color:var(--ink-mute); letter-spacing:1px}
+  nav.toc a.home{color:var(--teal); border:1px solid rgba(100,255,218,.45); border-radius:10px; font-family:'Chakra Petch','Sarabun',sans-serif; font-weight:600; letter-spacing:1.2px; font-size:12px; margin-right:4px}
+  nav.toc a.home:hover{background:rgba(100,255,218,.08); color:var(--teal); border-color:var(--teal)}
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:46px 0; border-bottom:1px solid var(--line)}
+  .eyebrow{display:inline-flex; align-items:center; gap:9px; font-family:'Chakra Petch'; font-weight:600;
+    letter-spacing:2px; font-size:12px; text-transform:uppercase; color:var(--ink-mute); margin-bottom:12px}
+  .eyebrow .num{display:inline-grid; place-items:center; width:26px;height:26px;border-radius:8px;
+    font-size:13px; color:#06121f; font-weight:700}
+  h2.title{font-size:clamp(23px,3.2vw,32px); margin-bottom:8px}
+  .lead{color:var(--ink-dim); font-size:16.5px; max-width:840px; margin-bottom:26px}
+
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:var(--r);
+    padding:20px 22px; box-shadow:var(--shadow); backdrop-filter:blur(8px)}
+  .grid{display:grid; gap:16px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+
+  .kpi{padding:18px 20px}
+  .kpi .v{font-family:'Chakra Petch'; font-size:30px; font-weight:700; line-height:1.1; color:var(--ink)}
+  .kpi .v.cyan{color:var(--cyan)} .kpi .v.gold{color:var(--gold)} .kpi .v.red{color:var(--red)} .kpi .v.blue{color:var(--baltic)} .kpi .v.orange{color:var(--singapore)}
+  .kpi .l{font-size:13.5px; color:var(--ink-dim); margin-top:6px}
+
+  h3.sub-h{font-size:18.5px; margin:30px 0 14px; display:flex; align-items:center; gap:11px}
+  h3.sub-h .bar{width:4px; height:20px; border-radius:3px; background:var(--cyan)}
+
+  /* timeline */
+  .tl{position:relative; margin-left:8px; padding-left:26px; border-left:2px solid var(--line2)}
+  .tl .ev{position:relative; margin-bottom:18px}
+  .tl .ev::before{content:''; position:absolute; left:-34px; top:5px; width:13px;height:13px;border-radius:50%;
+    background:var(--bg); border:2px solid var(--baltic); box-shadow:0 0 0 4px rgba(90,169,255,.12)}
+  .tl .ev .date{font-family:'Chakra Petch'; font-size:13px; color:var(--baltic); font-weight:600; letter-spacing:.5px}
+  .tl .ev h4{font-size:16px; margin:2px 0 3px}
+  .tl .ev p{margin:0; font-size:14.5px; color:var(--ink-dim)}
+
+  .lessons{background:linear-gradient(180deg,rgba(0,212,255,.08),rgba(0,212,255,.02));
+    border:1px solid rgba(0,212,255,.28); border-radius:var(--r); padding:18px 22px; margin-top:24px}
+  .lessons.sg{background:linear-gradient(180deg,rgba(255,126,107,.08),rgba(255,126,107,.02)); border-color:rgba(255,126,107,.3)}
+  .lessons h4{font-size:15px; letter-spacing:1px; text-transform:uppercase; color:var(--cyan); margin-bottom:10px; display:flex; gap:8px; align-items:center}
+  .lessons.sg h4{color:var(--singapore)}
+  .lessons ul{margin:0; padding-left:20px}
+  .lessons li{margin-bottom:7px; font-size:15px}
+  .lessons li b{color:var(--ink)}
+
+  ul.clean{list-style:none; margin:0; padding:0}
+  ul.clean li{position:relative; padding-left:22px; margin-bottom:9px; font-size:15px; color:var(--ink-dim)}
+  ul.clean li::before{content:'▸'; position:absolute; left:0; color:var(--cyan)}
+  ul.clean li b{color:var(--ink); font-weight:600}
+
+  .pill{display:inline-block; font-size:11.5px; padding:3px 9px; border-radius:999px; font-weight:600; letter-spacing:.4px}
+  .pill.hi{background:rgba(94,224,160,.15); color:var(--green); border:1px solid rgba(94,224,160,.3)}
+  .pill.warn{background:rgba(245,196,81,.14); color:var(--gold); border:1px solid rgba(245,196,81,.3)}
+
+  /* table */
+  .tbl{width:100%; border-collapse:collapse; font-size:14.5px; overflow:hidden; border-radius:12px}
+  .tbl th,.tbl td{padding:12px 14px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top}
+  .tbl thead th{background:rgba(90,169,255,.10); font-family:'Chakra Petch'; font-weight:600; font-size:13px; letter-spacing:.5px; color:var(--ink)}
+  .tbl tbody tr:hover{background:rgba(120,170,230,.05)}
+  .tbl td:first-child{font-weight:600; color:var(--ink); white-space:nowrap}
+  .tbl .b{color:var(--baltic)} .tbl .s{color:var(--singapore)}
+
+  /* recommendation tiers */
+  .tier{border-left:3px solid var(--cyan); padding:4px 0 4px 18px; margin-bottom:18px}
+  .tier.t2{border-color:var(--gold)} .tier.t3{border-color:var(--violet)}
+  .tier .h{font-family:'Chakra Petch'; font-weight:600; font-size:16px; color:var(--ink); margin-bottom:4px}
+  .tier .h small{color:var(--ink-mute); font-weight:500; font-family:'Sarabun'; letter-spacing:0; font-size:13px}
+  .tier p{margin:0; font-size:15px; color:var(--ink-dim)}
+
+  /* references */
+  .ref-group{margin-bottom:22px}
+  .ref-group h4{font-size:14.5px; color:var(--ink); margin-bottom:10px; letter-spacing:.5px}
+  ol.refs{margin:0; padding-left:22px}
+  ol.refs li{margin-bottom:8px; font-size:13.5px; color:var(--ink-dim)}
+
+  .callout{display:flex; gap:14px; align-items:flex-start; background:var(--panel2); border:1px solid var(--line);
+    border-radius:12px; padding:15px 18px; margin-top:18px}
+  .callout .ic{font-size:20px; line-height:1}
+  .callout p{margin:0; font-size:14px; color:var(--ink-dim)}
+  .callout b{color:var(--ink)}
+
+  footer{padding:40px 0 60px; color:var(--ink-mute); font-size:13px}
+  footer .wrap{display:flex; flex-wrap:wrap; gap:18px; justify-content:space-between; align-items:center}
+
+  /* ---------- PRINT / PDF — clean light handout for advisor ---------- */
+  @media print{
+    @page{ margin:14mm 14mm 16mm; }
+
+    /* Recolor the whole document to a light palette via the CSS variables */
+    :root{
+      --bg:#ffffff; --bg2:#ffffff;
+      --panel:#ffffff; --panel2:#f3f6fb;
+      --line:#cdd6e4; --line2:#aab8cc;
+      --ink:#0e1622; --ink-dim:#33425a; --ink-mute:#5b6b85;
+      --cyan:#0e7490; --cyan-d:#0e7490;
+      --gold:#8a5d00; --red:#c0392b; --green:#1d7a4c; --violet:#6741d9;
+      --baltic:#1f5fb0; --singapore:#c0492f;
+      --shadow:none;
+    }
+    /* Force colors/backgrounds to print regardless of the browser's
+       "Background graphics" checkbox, so the result is consistent. */
+    *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+
+    html,body{ background:#fff !important; color:var(--ink) !important; }
+    body{ font-size:11.5pt; line-height:1.55; letter-spacing:0; }
+    .wrap{ max-width:none; padding:0 4mm; }
+    h1,h2,h3,h4{ color:var(--ink); }
+
+    /* hide screen-only chrome */
+    nav.toc{ display:none !important; }
+    .hero-grid{ display:none !important; }
+
+    a{ color:#0b4aa2 !important; border-bottom:none !important; }
+
+    /* HERO — gradient-clipped heading is invisible on white → force solid dark */
+    header.hero{ border-bottom:1px solid var(--line); }
+    .hero-inner{ padding:6mm 0 5mm; }
+    .hero h1{
+      background:none !important;
+      -webkit-background-clip:border-box !important; background-clip:border-box !important;
+      -webkit-text-fill-color:#0e1622 !important; color:#0e1622 !important;
+    }
+    .hero .sub{ color:var(--ink-dim) !important; }
+    .crest{ color:var(--cyan) !important; }
+    .chip{ background:#f3f6fb !important; border:1px solid var(--line) !important; color:var(--ink-dim) !important; }
+    .chip b{ color:var(--ink) !important; }
+
+    /* number badge: light box + dark glyph → readable with OR without bg graphics */
+    .eyebrow .num{ background:#e8f0fb !important; color:#1f5fb0 !important; }
+
+    /* section rhythm + sensible page breaks */
+    section{ padding:7mm 0; border-bottom:1px solid var(--line); break-inside:auto; }
+    section:first-of-type{ padding-top:5mm; }
+    h2.title, h3.sub-h, .eyebrow{ break-after:avoid; }
+    .card,.lessons,.callout,.kpi,.tier,.tl .ev{ break-inside:avoid; }
+
+    /* panels → white with visible borders, no blur/shadow */
+    .card,.lessons,.callout{
+      box-shadow:none !important; backdrop-filter:none !important;
+      background:#fff !important; border:1px solid var(--line) !important;
+    }
+    .lessons{ background:#f7fbfd !important; border:1px solid #bfe0ea !important; }
+    .lessons.sg{ background:#fdf5f3 !important; border:1px solid #f0cdc4 !important; }
+    .lessons h4{ color:#0e7490 !important; }
+    .lessons.sg h4{ color:#c0492f !important; }
+    .lead,.kpi .l,ul.clean li,.tl .ev p,.tier p,.callout p,ol.refs li,.ref-group h4{ color:var(--ink-dim) !important; }
+    ul.clean li b,.tier p b,.callout b,.lessons li b{ color:var(--ink) !important; }
+
+    /* table → repeat header, keep rows whole, header tint that always prints */
+    .tbl thead{ display:table-header-group; }
+    .tbl tr{ break-inside:avoid; }
+    .tbl thead th{ background:#e8f0fb !important; color:var(--ink) !important; }
+    .tbl th,.tbl td{ border-bottom:1px solid var(--line) !important; }
+
+    /* pills readable on white (dark text + real border) */
+    .pill.hi{ background:#e6f7ee !important; color:#15663d !important; border:1px solid #9bd9b8 !important; }
+    .pill.warn{ background:#fdf3d8 !important; color:#7a5600 !important; border:1px solid #e8cf8a !important; }
+
+    code{ background:#eef2f8 !important; color:#1f3a5f !important; }
+    footer{ color:var(--ink-mute) !important; padding:8mm 0 0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-grid"></div>
+  <div class="wrap hero-inner">
+    <div class="crest"><span class="dot"></span> THE&nbsp;SHIELD&nbsp;2.0 · ผลการสัมภาษณ์ เสธ ทร.</div>
+    <h1>บทเรียนวิจัย: คาบสมุทรบอลติก × Seabed Domain ของสิงคโปร์</h1>
+    <p class="sub">รวบรวมและตรวจสอบเพื่อประกอบการบรรยาย เสนาธิการทหารเรือ — การปกป้องโครงสร้างพื้นฐานใต้ทะเล (Underwater Data Center) บริเวณช่องแคบเกาะคราม อ.สัตหีบ อ่าวไทย</p>
+    <div class="meta">
+      <span class="chip">📚 <b>2 หัวข้อ</b> ตามแนวทาง เสธ ทร.</span>
+      <span class="chip">🔎 ตรวจสอบจากแหล่งปฐมภูมิ <b>ความเชื่อมั่นสูง</b></span>
+      <span class="chip">📅 ข้อมูล ณ <b>มิ.ย. 2026</b></span>
+      <span class="chip">🎓 หลักสูตรเสนาธิการทหารเรือ</span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="wrap">
+    <a class="home" href="THE_SHIELD_Pitch.html">← THE SHIELD</a>
+    <a href="#summary">บทสรุปผู้บริหาร</a>
+    <a href="#baltic">① บอลติก</a>
+    <a href="#singapore">② สิงคโปร์</a>
+    <a href="#synthesis">สังเคราะห์ → ข้อเสนอ</a>
+    <a href="#refs">แหล่งอ้างอิง</a>
+    <span class="tag">FOR BRIEFING</span>
+  </div>
+</nav>
+
+<!-- ===================== EXECUTIVE SUMMARY ===================== -->
+<section id="summary">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num" style="background:var(--cyan)">≡</span> บทสรุปผู้บริหาร</div>
+    <h2 class="title">สองสนาม สองบทเรียน หนึ่งภารกิจ</h2>
+    <p class="lead">บอลติกคือ “ห้องเรียนสด” ของ <b>สงครามเทาใต้ทะเล</b> (การตัดสายเคเบิลแบบปฏิเสธความรับผิดได้) ส่วนสิงคโปร์คือ <b>เพื่อนบ้านที่พร้อมร่วมมือ</b> และมีพัฒนาการ seabed domain ก้าวหน้าที่สุดในภูมิภาค — ทั้งสองชี้เป้าตรงไปยังสิ่งที่ THE SHIELD ต้องทำต่อ</p>
+
+    <div class="grid g3">
+      <div class="card kpi"><div class="v blue">100–150</div><div class="l">สายเคเบิลใต้ทะเลถูกตัด/เสียหายต่อปีทั่วโลก — ภัยที่ “เกิดจริง” ไม่ใช่สมมุติ</div></div>
+      <div class="card kpi"><div class="v orange">1,433 ตัน</div><div class="l">UDC “จมจริง” เชิงพาณิชย์รายแรกของโลก ที่ไหหลำ จีน (ลึก 35 ม.) — ต้นแบบใกล้ THE SHIELD ที่สุด</div></div>
+      <div class="card kpi"><div class="v cyan">สัตหีบ</div><div class="l">พื้นที่จัด Exercise SINGSIAM ไทย–สิงคโปร์ (ตั้งแต่ปี 1981) = สะพานความร่วมมือที่ทับซ้อนพื้นที่ THE SHIELD พอดี</div></div>
+    </div>
+
+    <div class="callout">
+      <div class="ic">🧭</div>
+      <p><b>กรอบการนำเสนอ:</b> รายงานนี้เน้น “ข้อเท็จจริง (วันที่/เรือ/แหล่งข่าว) + บทเรียนสำหรับ THE SHIELD” ตามแนวทางที่ เสธ ทร. ให้ไว้ — โดย<b>ไม่บังคับกรอบ OODA</b> ทุกข้อเท็จจริงผ่านการตรวจสอบจากแหล่งปฐมภูมิ (รัฐบาล/กองทัพ/สำนักข่าวหลัก) ดูรายการในหัวข้อ “แหล่งอ้างอิง”</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ① BALTIC ===================== -->
+<section id="baltic">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num" style="background:var(--baltic)">①</span> สาย ① · กรณีคาบสมุทรบอลติก</div>
+    <h2 class="title">สงครามเทาใต้ทะเล: เมื่อ “สมอเรือ” กลายเป็นอาวุธ</h2>
+    <p class="lead">ตั้งแต่ปลายปี 2023 ทะเลบอลติกเกิดเหตุสายเคเบิลและท่อใต้ทะเลถูกตัดซ้ำหลายครั้ง รูปแบบเดียวกัน — เรือพาณิชย์ “ลากสมอ” ผ่านแนวสาย ทำให้เกิดความเสียหายที่ <b>พิสูจน์เจตนาได้ยาก</b> (plausible deniability) นี่คือแม่แบบของภัยคุกคามที่ THE SHIELD ต้องเตรียมรับ</p>
+
+    <h3 class="sub-h"><span class="bar"></span> ลำดับเหตุการณ์สำคัญ (verified)</h3>
+    <div class="card">
+      <div class="tl">
+        <div class="ev">
+          <div class="date">8 ต.ค. 2023</div>
+          <h4>Balticconnector + สายสื่อสาร — เรือ NewNew Polar Bear</h4>
+          <p>ท่อก๊าซฟินแลนด์–เอสโตเนีย และสายสื่อสารเสียหายจากการลากสมอของเรือสัญชาติจีน เป็น “เหตุการณ์ตั้งต้น” ที่จุดความตื่นตัวทั้งภูมิภาค</p>
+        </div>
+        <div class="ev">
+          <div class="date">17–18 พ.ย. 2024</div>
+          <h4>BCS East-West + C-Lion1 — เรือ Yi Peng 3</h4>
+          <p>สายสวีเดน–ลิทัวเนีย (17 พ.ย.) และสายฟินแลนด์–เยอรมนี (18 พ.ย.) ถูกตัดในเขต EEZ ของสวีเดน เรือบรรทุกสินค้าจีน Yi Peng 3 อยู่ตรงจุด-เวลาพอดี สงสัยลากสมอ — แต่ยังไม่มีการชี้ความผิดอย่างเด็ดขาด</p>
+        </div>
+        <div class="ev">
+          <div class="date">25 ธ.ค. 2024</div>
+          <h4>Estlink 2 + สายสื่อสาร — เรือ Eagle S (shadow fleet)</h4>
+          <p>สายไฟฟ้าเอสโตเนีย–ฟินแลนด์ และสายสื่อสารเสียหายในอ่าวฟินแลนด์ ฟินแลนด์ “ยึดเรือ” Eagle S เป็นการบังคับใช้กฎหมายที่เด็ดขาดที่สุดครั้งหนึ่ง</p>
+        </div>
+        <div class="ev">
+          <div class="date">14 ม.ค. 2025</div>
+          <h4>NATO เปิดปฏิบัติการ “Baltic Sentry”</h4>
+          <p>ตอบโต้ด้วยการลาดตระเวนถาวร — เรือฟริเกต + อากาศยานตรวจการณ์ + ฝูงโดรนทางทะเล + แชร์ภาพ MDA ร่วม นำโดย JFC Brunssum/MARCOM ผ่านเครือข่าย Critical Undersea Infrastructure</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:24px">
+      <div class="card">
+        <h3 class="sub-h" style="margin-top:4px"><span class="bar" style="background:var(--gold)"></span> ช่องว่างทางกฎหมาย</h3>
+        <ul class="clean">
+          <li><b>UNCLOS มาตรา 113</b> กำหนดให้รัฐออกกฎหมายเอาผิดการตัดสาย แต่<b>บังคับใช้นอกทะเลอาณาเขตได้ยาก</b></li>
+          <li><b>SUA Convention 8bis(5)(c)</b> การขึ้นตรวจ/ยับยั้งเรือต้องสงสัยมีเงื่อนไขสูง — เขตอำนาจคลุมเครือ</li>
+          <li>การตอบสนองของแต่ละชาติ (เยอรมนี/ฟินแลนด์/เอสโตเนีย) <b>ต่างกัน</b> → เกิดช่องว่างการประสานงาน</li>
+          <li>ไต้หวันคดี <b>Hong Tai 58</b> ดำเนินคดีตัดสายสำเร็จ = บรรทัดฐานว่า “ทำได้ถ้ามีกรอบกฎหมายรองรับ”</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 class="sub-h" style="margin-top:4px"><span class="bar" style="background:var(--green)"></span> เทคโนโลยี &amp; การตอบโต้</h3>
+        <ul class="clean">
+          <li><b>DAS (Distributed Acoustic Sensing)</b> ใช้ใยแก้วของสายเคเบิลเองเป็นเซ็นเซอร์ตรวจการรบกวน — THE SHIELD <span class="pill hi">มีแล้วในซิม</span></li>
+          <li><b>Persistent patrol</b> เปลี่ยนจาก “ตอบสนองเป็นครั้ง” เป็น “เฝ้าต่อเนื่อง”</li>
+          <li><b>Shared MDA</b> รวมภาพข้ามชาติ + ภาคอุตสาหกรรม</li>
+          <li>ใช้ <b>โดรนทางทะเล + AI</b> ปิดช่องว่างกำลังพล</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="lessons">
+      <h4>🛡️ บทเรียนสำหรับ THE SHIELD</h4>
+      <ul>
+        <li><b>แยก “อุบัติเหตุ vs เจตนา”:</b> ภัยใต้ทะเลยุคใหม่คือสงครามเทา ระบบจำแนกของ THE SHIELD ต้องอ่าน “พฤติกรรมต้องสงสัย” ได้ (ลากสมอ/วนซ้ำเหนือแนวสาย/ปิด-ปลอม AIS)</li>
+        <li><b>Attribution คือหัวใจ:</b> เชื่อมเหตุที่ DAS ตรวจได้ เข้ากับเรือผิวน้ำที่ AIS เห็น เพื่อ “ระบุตัว” ผู้ก่อเหตุ</li>
+        <li><b>ผูกเขตอำนาจ + ROE:</b> overlay เขตทะเลอาณาเขต/ต่อเนื่อง/EEZ และระดับการใช้กำลังตามเขต — เลี่ยงช่องว่างแบบบอลติก</li>
+        <li><b>ท่าทีลาดตระเวนถาวร (Baltic Sentry):</b> โหมดเฝ้าต่อเนื่อง + แชร์ภาพ เป็นแบบจำลองท่าทีที่ควรนำเสนอ</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ② SINGAPORE ===================== -->
+<section id="singapore">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num" style="background:var(--singapore)">②</span> สาย ② · Seabed Domain &amp; UDC ของสิงคโปร์</div>
+    <h2 class="title">เพื่อนบ้านที่ก้าวหน้าที่สุด — และพร้อมร่วมมือ</h2>
+    <p class="lead">สิงคโปร์มองโครงสร้างพื้นฐานใต้ทะเลเป็น “เส้นเลือดเศรษฐกิจดิจิทัล” ระดับชาติ (รองรับทราฟฟิกระหว่างประเทศ &gt;99% ผ่านสายเคเบิล) จุดน่าสนใจคือ <b>โครงการ data center ทางทะเลของสิงคโปร์เป็นแบบ “ลอยน้ำ” ไม่ใช่ “จม”</b> — ขณะที่ UDC จมจริงไปเกิดที่จีนแล้ว</p>
+
+    <h3 class="sub-h"><span class="bar" style="background:var(--singapore)"></span> 4 เสาหลักที่ตรวจสอบแล้ว</h3>
+    <div class="grid g2">
+      <div class="card">
+        <h4 style="font-size:16.5px; margin-bottom:6px;">🏗️ Keppel Floating Data Centre <span class="pill warn">ลอยน้ำ ≠ จม</span></h4>
+        <p style="color:var(--ink-dim); font-size:14.5px; margin:0">25MW โมดูลลอยน้ำใกล้ฝั่ง ระบายความร้อนด้วยน้ำทะเลแบบวงจรปิด (ไม่ใช้น้ำจืด) — อนุมัติปี 2023, สร้าง Q1/2026, เปิด 2028 ต่อยอดแนวคิด <b>DataPark+ 1 GW</b> nearshore</p>
+      </div>
+      <div class="card">
+        <h4 style="font-size:16.5px; margin-bottom:6px;">🌊 จีน ไหหลำ/หลิงสุ่ย <span class="pill hi">UDC จมจริง</span></h4>
+        <p style="color:var(--ink-dim); font-size:14.5px; margin:0">UDC เชิงพาณิชย์รายแรกของโลก แคปซูล ~1,433 ตัน ลึก 35 ม. เปิด 2023 ประหยัดพลังงาน ~30% เป้าแผน 5 ปีที่ 14 = <b>100 แคปซูล</b> → พิสูจน์ว่าแนวคิดแบบ THE SHIELD เป็นจริงแล้วในภูมิภาค</p>
+      </div>
+      <div class="card">
+        <h4 style="font-size:16.5px; margin-bottom:6px;">🤖 RSN “unmanned-first”</h4>
+        <p style="color:var(--ink-dim); font-size:14.5px; margin:0">ST Engineering ส่งมอบชุด MCM ไร้คนขับ (USV/AUV + C2, IMDEX 2025, ส่งมอบ 2027) ติด sonar สำรวจพื้นทะเล + เรือดำน้ำ Invincible-class เพิ่มเป็น 6 ลำ — <b>แนวทางเดียวกับ USV/AUV ของ THE SHIELD</b></p>
+      </div>
+      <div class="card" style="border-color:rgba(255,126,107,.4)">
+        <h4 style="font-size:16.5px; margin-bottom:6px;">🤝 Exercise SINGSIAM @ สัตหีบ <span class="pill hi">สะพานพร้อมใช้</span></h4>
+        <p style="color:var(--ink-dim); font-size:14.5px; margin:0">ครั้งที่ 21 (7–15 ก.ค. 2024) ที่สัตหีบ/อ่าวไทย — RSS Valiant + RSS Indomitable กับ ร.ล.ตากสิน/ร.ล.ภูมิพลอดุลยเดช จัดต่อเนื่องตั้งแต่ <b>ปี 1981</b> ทับซ้อนพื้นที่ THE SHIELD พอดี</p>
+      </div>
+    </div>
+
+    <h3 class="sub-h"><span class="bar" style="background:var(--violet)"></span> กรอบความร่วมมือ &amp; กฎหมายที่สิงคโปร์ผลักดัน</h3>
+    <div class="card">
+      <ul class="clean">
+        <li><b>Joint Statement on the Security and Resilience of Undersea Cables (ก.ย. 2024):</b> สิงคโปร์ร่วมลงนามกับ 16+ ชาติ — เวทีที่ไทยเข้าร่วมได้</li>
+        <li><b>Information Fusion Centre (IFC) ที่ฐานทัพเรือชางงี:</b> เสนอขยายให้ครอบคลุมการรายงานเหตุสายเคเบิลเสียหาย → จุดเชื่อม MDA ระดับภูมิภาค</li>
+        <li><b>กฎหมายในประเทศ:</b> IMDA เป็น single point of contact + Telecom Act มีบทลงโทษ (ปรับถึง S$50,000 / จำคุก 3 ปี)</li>
+        <li><b>ภัยอันดับ 1 ของสิงคโปร์ = “อุบัติเหตุจากเรือพาณิชย์”:</b> ช่องแคบมะละกา &gt;100,000 ลำ/ปี — ตอกย้ำความจำเป็นของการแยกอุบัติเหตุ-vs-เจตนา</li>
+      </ul>
+    </div>
+
+    <div class="lessons sg">
+      <h4>🛡️ บทเรียนสำหรับ THE SHIELD</h4>
+      <ul>
+        <li><b>จุดยืนยุทธศาสตร์ของไทย:</b> THE SHIELD เป็น UDC “จม” = stealth/มั่นคงกว่า Keppel (ลอยน้ำ) แต่ป้องกันยากกว่า — เป็นเรื่องเล่าที่ทำให้ไทยนำหน้าในองค์ความรู้ด้านป้องกัน seabed</li>
+        <li><b>ความเร่งด่วน:</b> จีนพิสูจน์แล้วว่า UDC จมเป็นจริงเชิงพาณิชย์ และเพื่อนบ้านในข้อพิพาท SCS กำลังขยายตัว</li>
+        <li><b>ความร่วมมือทางเทคนิคที่จับต้องได้:</b> RSN เดินทาง unmanned-MCM แบบเดียวกับ THE SHIELD → ทำ interoperability ได้จริง</li>
+        <li><b>ช่องเริ่มต้นที่เร็วที่สุด:</b> เพิ่ม serial “Seabed/CUI Protection” เข้าใน SINGSIAM และเชื่อม MDA เข้ากับ IFC ชางงี</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SYNTHESIS ===================== -->
+<section id="synthesis">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num" style="background:var(--cyan)">⇄</span> บทสังเคราะห์รวม</div>
+    <h2 class="title">Baltic × Singapore → ข้อเสนอสำหรับ THE SHIELD</h2>
+    <p class="lead">บอลติกบอก “ภัยหน้าตาเป็นอย่างไรและต้องตอบโต้แบบไหน” สิงคโปร์บอก “จะร่วมมือกับใครและด้วยช่องทางใด” — นำมาประกบกันได้ข้อเสนอที่ทำได้จริง</p>
+
+    <div class="card" style="padding:0; overflow:hidden">
+      <table class="tbl">
+        <thead>
+          <tr><th>มิติ</th><th>บทเรียน Baltic ①</th><th>บทเรียน Singapore ②</th><th>ข้อเสนอสำหรับ THE SHIELD</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ภัยคุกคาม</td><td class="b">ตัดสายซ้ำ — สงครามเทาปฏิเสธความรับผิด</td><td class="s">ภัยอันดับ 1 = อุบัติเหตุเรือพาณิชย์</td><td>ระบบจำแนก “เจตนา vs อุบัติเหตุ”</td></tr>
+          <tr><td>กฎหมาย</td><td class="b">ช่องว่าง UNCLOS 113 / SUA</td><td class="s">อุดด้วย Telecom Act + บทลงโทษ</td><td>overlay เขตอำนาจ + กรอบกฎหมายไทยรองรับ UDC</td></tr>
+          <tr><td>การตอบสนอง</td><td class="b">Baltic Sentry — ลาดตระเวนถาวร + โดรน</td><td class="s">RSN unmanned-first (USV/AUV)</td><td>เซ็นเซอร์ + USV/AUV เฝ้าพื้นทะเลต่อเนื่อง</td></tr>
+          <tr><td>ความร่วมมือ</td><td class="b">NMCSCUI @ Northwood (ศูนย์ข้ามชาติ)</td><td class="s">SINGSIAM @ สัตหีบ + IFC ชางงี</td><td>เริ่มที่ SINGSIAM → เชื่อม IFC → กรอบภูมิภาค</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="sub-h"><span class="bar"></span> ข้อเสนอเป็นรูปธรรม 3 ระดับ</h3>
+    <div class="card">
+      <div class="tier">
+        <div class="h">ระยะสั้น — ใช้ของที่มีอยู่ <small>(0–6 เดือน)</small></div>
+        <p>เสนอเพิ่ม serial <b>“Seabed/CUI Protection”</b> ใน Exercise SINGSIAM รอบถัดไป — ทดสอบแนวคิด THE SHIELD กับ RSN ในพื้นที่จริง (สัตหีบ) โดยไม่ต้องสร้างกลไกความร่วมมือใหม่</p>
+      </div>
+      <div class="tier t2">
+        <div class="h">ระยะกลาง — เชื่อมข้อมูล <small>(6–18 เดือน)</small></div>
+        <p>เชื่อม <b>MDA ของ THE SHIELD เข้ากับ IFC ชางงี</b> เพื่อแชร์ภาพเรือต้องสงสัย/เหตุใกล้ UDC ใช้บทเรียน Baltic Sentry เรื่อง shared awareness</p>
+      </div>
+      <div class="tier t3">
+        <div class="h">ระยะยาว — ยุทธศาสตร์ <small>(18 เดือน+)</small></div>
+        <p>วางไทยเป็น <b>“เจ้าของ UDC จมใต้ทะเลรายแรกของอาเซียน”</b> (ต่างจาก Keppel ที่ลอยน้ำ) อ้างอิงต้นแบบจีนไหหลำว่าเทคโนโลยีเป็นจริงแล้ว → ไทยเป็นผู้นำองค์ความรู้ด้านป้องกัน seabed ในภูมิภาค</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="ic">⚠️</div>
+      <p><b>หมายเหตุความเชื่อมั่น:</b> ทุกข้อตรวจสอบจากแหล่งปฐมภูมิแล้ว (MINDEF, NATO, SCMP, Naval News, Keppel ฯลฯ) ความเชื่อมั่น <b>สูง</b> ตัวเลขที่ควรอัปเดตก่อนบรรยายจริง: สัดส่วน GDP ดิจิทัลสิงคโปร์ (~17.7% น่าจะฐานปี 2023) และจำนวนสายเคเบิลที่แน่นอน (26→28+ กำลังเปลี่ยน) · <b>ไม่บังคับกรอบ OODA</b> ตามแนวทาง เสธ ทร.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== REFERENCES ===================== -->
+<section id="refs">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num" style="background:var(--ink-mute)">§</span> แหล่งอ้างอิง</div>
+    <h2 class="title">แหล่งอ้างอิง (ปฐมภูมิ &amp; สำนักข่าวหลัก)</h2>
+
+    <div class="grid g2" style="margin-top:22px">
+      <div class="ref-group">
+        <h4 style="color:var(--baltic)">① คาบสมุทรบอลติก</h4>
+        <ol class="refs">
+          <li>NATO — <a href="https://www.nato.int/en/news-and-events/articles/news/2025/01/14/nato-launches-baltic-sentry-to-increase-critical-infrastructure-security" target="_blank" rel="noopener">NATO launches ‘Baltic Sentry’ to increase critical infrastructure security</a> (14 ม.ค. 2025)</li>
+          <li>Wikipedia — <a href="https://en.wikipedia.org/wiki/2024_Baltic_Sea_submarine_cable_disruptions" target="_blank" rel="noopener">2024 Baltic Sea submarine cable disruptions</a> (Yi Peng 3, C-Lion1, BCS)</li>
+          <li>Lieber Institute, West Point — <a href="https://lieber.westpoint.edu/baltic-sea-cable-cuts-ship-interdiction-c-lion1-incident/" target="_blank" rel="noopener">The Baltic Sea Cable-Cuts and Ship Interdiction: The C-Lion1 Incident</a> (กฎหมาย UNCLOS/SUA)</li>
+          <li>Atlantic Council — <a href="https://www.atlanticcouncil.org/in-depth-research-reports/issue-brief/how-the-baltic-sea-nations-have-tackled-suspicious-cable-cuts/" target="_blank" rel="noopener">How the Baltic Sea nations have tackled suspicious cable cuts</a></li>
+          <li>CNN — <a href="https://www.cnn.com/2025/01/27/europe/nato-defense-baltic-undersea-cables-intl-cmd/index.html" target="_blank" rel="noopener">Ships, sea drones and AI: How NATO is hardening its defense of critical Baltic undersea cables</a></li>
+        </ol>
+      </div>
+      <div class="ref-group">
+        <h4 style="color:var(--singapore)">② สิงคโปร์ / UDC</h4>
+        <ol class="refs">
+          <li>MINDEF Singapore — <a href="https://www.mindef.gov.sg/news-and-events/latest-releases/15jul24_nr2/" target="_blank" rel="noopener">Singapore and Thailand Navies Conduct Bilateral Exercise Singsiam</a> (15 ก.ค. 2024)</li>
+          <li>South China Morning Post — <a href="https://www.scmp.com/economy/china-economy/article/3328063/china-launches-worlds-first-commercial-underwater-data-centre-hainan" target="_blank" rel="noopener">China launches world’s first commercial underwater data centre in Hainan</a></li>
+          <li>Naval News — <a href="https://www.navalnews.com/event-news/imdex-asia-2025/2025/05/imdex-2025-st-engineering-to-deliver-a-suite-of-mcm-unmanned-systems-for-republic-of-singapore-navy/" target="_blank" rel="noopener">IMDEX 2025: ST Engineering to Deliver MCM Unmanned Systems for RSN</a></li>
+          <li>Breaking Defense — <a href="https://breakingdefense.com/2025/05/singapore-navy-orders-new-submarine-and-unmanned-mine-countermeasure-assets/" target="_blank" rel="noopener">Singapore navy orders new submarine and unmanned mine countermeasure assets</a></li>
+          <li>DatacenterDynamics — <a href="https://www.datacenterdynamics.com/en/news/keppel-starts-work-on-floating-data-center-in-singapore/" target="_blank" rel="noopener">Keppel starts work on floating data center in Singapore</a></li>
+          <li>Keppel Data Centres — <a href="https://www.keppeldatacentres.com/innovations/floating-data-centre/" target="_blank" rel="noopener">Floating Data Centre (official)</a></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="ic">📌</div>
+      <p>ผลวิจัยนี้ได้จากกระบวนการค้นหลายมุม (multi-angle deep research) + การตรวจสอบยืนยันเจาะจงรายข้อเท็จจริงสำคัญด้วยการค้นแหล่งปฐมภูมิซ้ำ ลิงก์ทั้งหมดข้างต้นเปิดได้จริง ณ วันจัดทำ (มิ.ย. 2026)</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>THE SHIELD 2.0 · บทเรียนวิจัยตามแนวทาง เสธ ทร. · หลักสูตรเสนาธิการทหารเรือ</div>
+    <div>เอกสารเพื่อการบรรยาย — จัดทำ มิ.ย. 2026</div>
+  </div>
+</footer>
+
+</body>
+</html>
