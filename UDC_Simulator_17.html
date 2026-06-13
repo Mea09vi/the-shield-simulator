@@ -7906,7 +7906,7 @@ safetyZoneToggleBtn.addTo(map);
 //  การแสดงขอบเขตนี้บนแผนที่ช่วยให้เห็น:
 //    1. ระยะห่างระหว่าง UDC (เกาะคราม) กับ ฐานปฏิบัติการหลัก (สัตหีบ)
 //       → เป็น "critical link" ที่ DAS Cable สาย 2 เชื่อมถึง
-//    2. พื้นที่ที่ต้องได้รับการป้องกันคู่ขนาน (Dual Protection)
+//    2. พื้นที่ที่ต้องได้รับการป้องกันสามเส้นทาง (Triple-path Protection)
 //  แสดงด้วยสีส้มพร้อม fill โปร่งแสง และเส้นประ เพื่อแยกแยะจากเขตอื่น
 //  พิกัดนำเข้าจากไฟล์ KML (รูปแบบ lng,lat) แล้วแปลงเป็น [lat,lng] ของ Leaflet
 // ═══════════════════════════════════════════════════════════════
@@ -7978,11 +7978,12 @@ fleetZoneToggleBtn.addTo(map);
 //  UDC → กองเรือยุทธการ (Secondary/Backup Path)
 // ───────────────────────────────────────────────────────────────
 //  หลักการ Redundancy (ความซ้ำซ้อนเพื่อความเชื่อถือได้):
-//  การมีสาย Cable 2 เส้นที่เดินในเส้นทางต่างกัน คือหลักการ
+//  การมีสายเคเบิล ๓ เส้นที่เดินในเส้นทางต่างกัน คือหลักการ
 //  "Single Point of Failure" ที่ต้องหลีกเลี่ยงในระบบป้องกันวิกฤต:
 //    · สาย 1 (เกาะคราม): เส้นทางผ่านฝั่งตะวันตกของเกาะ
 //    · สาย 2 (กองเรือยุทธการ): เส้นทาง S-curve ตามพื้นท้องทะเลลงใต้
-//  หากภัยตัดสาย 1 → ข้อมูลสำคัญยังส่งได้ผ่านสาย 2 (และกลับกัน)
+//    · สาย 3 (ทุ่งโปรง · Recon นย.): เส้นทางสั้นไปท่าเรือทุ่งโปรง [v15.5]
+//  หากภัยตัดสายใดสายหนึ่ง → ข้อมูลสำคัญยังส่งได้ผ่านสายที่เหลือ
 //  DAS (Distributed Acoustic Sensing) ที่ฝังในสาย Fiber Optic
 //  สามารถตรวจจับการสั่นสะเทือน (Vibration) จาก UUV/เรือดำน้ำ
 //  ที่ผ่านใกล้ Cable ได้ในระยะ < 0.45nm — ทำหน้าที่เป็น "Tripwire"
@@ -11100,8 +11101,20 @@ function deployPVAt(lat, lng, opts) {
     let ny = (LAT_TOP - lat) / (LAT_TOP - LAT_BOT);
     nx = Math.max(-0.10, Math.min(1.10, nx));
     ny = Math.max(-0.10, Math.min(1.10, ny));
-    // [v15.3] AI ไม่วางเรือบนบก — ข้ามจุดที่เป็นฝั่ง
-    if (landMaskReady && nx>=0 && nx<=1 && ny>=0 && ny<=1 && isOnLand(nx,ny)) {
+    // [v15.3]+[v17.1.1 TERRAIN] เรือผิวน้ำต้องอยู่ในทะเล (น้ำลึก ≥ 2 ม.)
+    //   จุดบนบก/น้ำตื้น → เลื่อนหาจุดน้ำที่ใกล้ที่สุดแทนการข้าม
+    if (nx>=0 && nx<=1 && ny>=0 && ny<=1 && typeof findNearestWaterPoint === 'function') {
+        const w = findNearestWaterPoint(nx, ny, 2);
+        if (!w) {
+            addLog(`⚠️ [AI] ข้ามวาง PV — เป็นบก/น้ำตื้นทั้งบริเวณ (${lat.toFixed(3)}°N ${lng.toFixed(3)}°E)`, '#f59e0b'); return null;
+        }
+        if (w.moved) {
+            nx = w.nx; ny = w.ny;
+            lat = LAT_TOP  - ny * (LAT_TOP - LAT_BOT);
+            lng = LNG_LEFT + nx * (LNG_RIGHT - LNG_LEFT);
+            addLog(`🚢 [AI] เลื่อนจุดวาง PV เลี่ยงภูมิประเทศ/น้ำตื้น → ${lat.toFixed(3)}°N ${lng.toFixed(3)}°E`, '#fbbf24');
+        }
+    } else if (landMaskReady && nx>=0 && nx<=1 && ny>=0 && ny<=1 && isOnLand(nx,ny)) {
         addLog(`⚠️ [AI] ข้ามวาง PV — จุดเป็นบก (${lat.toFixed(3)}°N ${lng.toFixed(3)}°E)`, '#f59e0b'); return null;
     }
     const shipKey   = opts.ship || pvSelectedShip;
@@ -11140,8 +11153,20 @@ function deployGUUVAt(lat, lng, opts) {
     let ny = (LAT_TOP - lat) / (LAT_TOP - LAT_BOT);
     nx = Math.max(-0.10, Math.min(1.10, nx));
     ny = Math.max(-0.10, Math.min(1.10, ny));
-    // [v15.3] AI ไม่วาง GUUV บนบก — ยานใต้น้ำต้องอยู่ในทะเล
-    if (landMaskReady && nx>=0 && nx<=1 && ny>=0 && ny<=1 && isOnLand(nx,ny)) {
+    // [v15.3]+[v17.1.1 TERRAIN] ยานใต้น้ำต้องอยู่ในทะเลและน้ำลึกพอ (≥ 3 ม.)
+    //   จุดบนบก/น้ำตื้น → เลื่อนหาจุดน้ำที่ใกล้ที่สุดแทนการข้าม
+    if (nx>=0 && nx<=1 && ny>=0 && ny<=1 && typeof findNearestWaterPoint === 'function') {
+        const w = findNearestWaterPoint(nx, ny, 3);
+        if (!w) {
+            addLog(`⚠️ [AI] ข้ามวาง GUUV — เป็นบก/น้ำตื้นทั้งบริเวณ (${lat.toFixed(3)}°N ${lng.toFixed(3)}°E)`, '#f59e0b'); return null;
+        }
+        if (w.moved) {
+            nx = w.nx; ny = w.ny;
+            lat = LAT_TOP  - ny * (LAT_TOP - LAT_BOT);
+            lng = LNG_LEFT + nx * (LNG_RIGHT - LNG_LEFT);
+            addLog(`🤿 [AI] เลื่อนจุดวาง GUUV เลี่ยงภูมิประเทศ/น้ำตื้น → ${lat.toFixed(3)}°N ${lng.toFixed(3)}°E`, '#fbbf24');
+        }
+    } else if (landMaskReady && nx>=0 && nx<=1 && ny>=0 && ny<=1 && isOnLand(nx,ny)) {
         addLog(`⚠️ [AI] ข้ามวาง GUUV — จุดเป็นบก (${lat.toFixed(3)}°N ${lng.toFixed(3)}°E)`, '#f59e0b'); return null;
     }
     guuvUserCount++;
@@ -11152,7 +11177,14 @@ function deployGUUVAt(lat, lng, opts) {
         {nx:nx+rw, ny:ny},      // E
         {nx:nx,    ny:ny+rh},   // S apex
         {nx:nx-rw, ny:ny},      // W
-    ];
+    ].map(p => {
+        // [v17.1.1 TERRAIN] เส้นทางลาดตระเวนรูปข้าวหลามตัดต้องไม่พาดเกาะ
+        if (typeof findNearestWaterPoint === 'function' && p.nx>=0 && p.nx<=1 && p.ny>=0 && p.ny<=1) {
+            const s = findNearestWaterPoint(p.nx, p.ny, 0);
+            if (s) return {nx:s.nx, ny:s.ny};
+        }
+        return p;
+    });
     const depths = [20, 35, 50, 35];
     guardianUUVs.push({
         label, color:'#00d4ff', speed:0.00038, baseSpeed:0.00038,
@@ -12494,6 +12526,37 @@ function _trapNearestWater(nx, ny) {
     return null;                                       // ไม่พบน้ำใกล้เคียง → ทิ้งทุ่นนี้
 }
 
+// ── [v17.1.1 TERRAIN] หาจุดน้ำ (และลึกพอ) ที่ใกล้ที่สุด — ใช้วางกำลัง AI/STAFF ──
+//   ค้นเป็นวงรอบจุดเดิม (16 ทิศ × 40 วง ≈ ออกไปสูงสุด ~4.3 nm)
+//   เงื่อนไข: ไม่ใช่แผ่นดิน (land mask รวม DEM เกาะจริง) + น้ำลึก ≥ minDepthM
+//   คืน {nx, ny, moved} หรือ null ถ้านอกแผนที่/ไม่พบน้ำเลย
+function findNearestWaterPoint(nx, ny, minDepthM) {
+    if (nx < 0 || nx > 1 || ny < 0 || ny > 1) return null;
+    minDepthM = minDepthM || 0;
+    function ok(x, y) {
+        if (x < 0 || x > 1 || y < 0 || y > 1) return false;
+        if (typeof isOnLand === 'function' && landMaskReady && isOnLand(x, y)) return false;
+        if (minDepthM > 0) {
+            try {
+                if (typeof sampleBathyDepth === 'function' &&
+                    Math.abs(sampleBathyDepth(x, y)) < minDepthM) return false;
+            } catch (e) {}
+        }
+        return true;
+    }
+    if (ok(nx, ny)) return { nx: nx, ny: ny, moved: false };
+    const step = 0.004, RINGS = 40;
+    for (let r = 1; r <= RINGS; r++) {
+        for (let a = 0; a < 16; a++) {
+            const th = a / 16 * Math.PI * 2;
+            const tx = nx + Math.cos(th) * step * r, ty = ny + Math.sin(th) * step * r;
+            if (ok(tx, ty)) return { nx: tx, ny: ty, moved: true };
+        }
+    }
+    return null;
+}
+window.findNearestWaterPoint = findNearestWaterPoint;
+
 // ── [v15.7] วางสนามทุ่นดักตาม config ─────────────────────────
 function deployTrapMineField(cfg) {
     cfg = cfg || trapMineCfg;
@@ -13787,6 +13850,21 @@ function buildLandMask() {
         [[100.781,12.690],[100.789,12.689],[100.791,12.696],[100.783,12.697]],
     ];
     _EXTRA_ISLANDS.forEach(processRing);
+
+    // [v17.1.1 TERRAIN] ผสาน DEM จริง (LAND_ELEV_DATA 256×256 · MapTiler Terrain-RGB)
+    //   polygon เกาะด้านบนเป็นรูปคร่าว ๆ เล็กกว่าเกาะจริง → AI ยังวาง GUUV บนเกาะครามได้
+    //   จุดใดสูงกว่าระดับน้ำทะเล > 1 ม. ถือเป็นแผ่นดิน (ใต้น้ำ DEM clamp = 0)
+    if (typeof sampleLandElevation === 'function' && typeof LAND_ELEV_DATA !== 'undefined') {
+        for (let j = 0; j < LAND_MASK_RES; j++) {
+            for (let i = 0; i < LAND_MASK_RES; i++) {
+                const idx = j * LAND_MASK_RES + i;
+                if (landMask[idx]) continue;
+                if (sampleLandElevation((i + 0.5) / LAND_MASK_RES, (j + 0.5) / LAND_MASK_RES) > 1) {
+                    landMask[idx] = 1; landCells++;
+                }
+            }
+        }
+    }
 
     landMaskReady = true;
     console.log(`[LandMask] ✓ built — ${landCells}/${LAND_MASK_RES*LAND_MASK_RES} ` +
@@ -31352,6 +31430,27 @@ function _buildCOAs(tp, snap) {
 }
 
 /* ── จัดสรรกำลัง → จุดวาง + รัศมีตรวจการณ์จริงจาก catalog ───────── */
+/* ── [v17.1.1 TERRAIN] ข้อจำกัดภูมิประเทศ: เลื่อนตำแหน่งวางกำลังให้พ้นเกาะ/น้ำตื้น ──
+   ใช้ land mask (รวม DEM เกาะครามจริง) + bathymetry — GUUV ต้องลึก ≥ 3 ม. · PV ≥ 2 ม.
+   เรียกทั้งตอนสร้างแผน (mini-map ตรงกับของจริง) และตอนอนุมัติ (กัน mask ยังไม่พร้อม) */
+function _terrainAdjust(assets) {
+    if (typeof window.findNearestWaterPoint !== 'function') return assets;
+    assets.forEach(a => {
+        if (a.lat == null || a.lng == null || a.kind === 'HELO' || a.kind === 'SENTRY') return;
+        const minD = a.kind === 'GUUV' ? 3 : 2;
+        const nx = (a.lng - LNG_LEFT) / (LNG_RIGHT - LNG_LEFT);
+        const ny = (LAT_TOP - a.lat) / (LAT_TOP - LAT_BOT);
+        const w = window.findNearestWaterPoint(nx, ny, minD);
+        if (w && w.moved) {
+            a.lat = LAT_TOP  - w.ny * (LAT_TOP - LAT_BOT);
+            a.lng = LNG_LEFT + w.nx * (LNG_RIGHT - LNG_LEFT);
+            if (!a.terrainAdjusted) a.posTxt += ' · ปรับเลี่ยงภูมิประเทศ';
+            a.terrainAdjusted = true;
+        }
+    });
+    return assets;
+}
+
 function _allocate(coa, tp) {
     const cat = (typeof PV_SHIP_CATALOG !== 'undefined') ? PV_SHIP_CATALOG : {};
     const c1 = cat.naresuan   || { radarNm: 24, sonarNm: 8 };
@@ -31419,7 +31518,7 @@ function _allocate(coa, tp) {
             posTxt: 'สถานี CAP ' + gh.brg + '° / 5 nm', senTxt: 'เรดาร์/FLIR ~10 nm + dipping sonar',
             mission: 'CAP กดดันต่อเนื่องบนแกนหลัก' });
     }
-    return out;
+    return _terrainAdjust(out);   // [v17.1.1 TERRAIN] ตำแหน่งทุกหน่วยพ้นเกาะ/น้ำตื้นก่อนเสนอแผน
 }
 
 /* ── Decision Support Matrix ──────────────────────────────────── */
@@ -31633,6 +31732,7 @@ function runPlan() {
 function approvePlan() {
     const plan = state.plan;
     if (!plan || state.deployed || state.running) return;
+    _terrainAdjust(plan.assets);   // [v17.1.1 TERRAIN] safety net — เผื่อ land mask เพิ่งพร้อมหลังสร้างแผน
     const lines = plan.assets.map(a => '· ' + a.label + ' @ ' + a.posTxt + ' — ' + a.mission);
     const msg = 'ผู้บังคับบัญชาอนุมัติแผน ' + plan.coa.id + ' «' + plan.coa.name + '» หรือไม่?\n\nจะวางกำลังจริงบนแผนที่หลัก:\n' +
         lines.join('\n') + '\n\n(Human-in-the-loop — การตกลงใจเป็นของผู้บังคับบัญชา)';
