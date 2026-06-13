@@ -141,6 +141,20 @@
   .callout p{margin:0; font-size:14px; color:var(--ink-dim)}
   .callout b{color:var(--ink)}
 
+  /* ---------- FIGURES / IMAGERY ---------- */
+  figure.fig{margin:0; background:var(--panel); border:1px solid var(--line); border-radius:var(--r); overflow:hidden; box-shadow:var(--shadow)}
+  figure.fig.single{margin:24px 0 2px}
+  .figrow{display:grid; gap:16px; grid-template-columns:repeat(2,1fr); margin:24px 0 2px}
+  @media(max-width:760px){.figrow{grid-template-columns:1fr}}
+  figure.fig img{display:block; width:100%; height:240px; object-fit:cover; background:#020c17; border-bottom:1px solid var(--line)}
+  figure.fig.contain img{object-fit:contain}
+  figure.fig.tall img{height:340px}
+  figure.fig figcaption{padding:12px 16px 14px; font-size:13.5px; color:var(--ink-dim); line-height:1.55}
+  figure.fig figcaption b{color:var(--ink); font-weight:600}
+  figure.fig .cred{display:block; margin-top:6px; font-size:11px; color:var(--ink-mute); letter-spacing:.2px}
+  figure.fig .cred a{color:var(--ink-mute); border-bottom:1px dotted rgba(120,160,210,.45)}
+  figure.fig .cred a:hover{color:var(--teal); border-color:var(--teal)}
+
   footer{padding:40px 0 60px; color:var(--ink-mute); font-size:13px}
   footer .wrap{display:flex; flex-wrap:wrap; gap:18px; justify-content:space-between; align-items:center}
 
@@ -217,6 +231,14 @@
     /* pills readable on white (dark text + real border) */
     .pill.hi{ background:#e6f7ee !important; color:#15663d !important; border:1px solid #9bd9b8 !important; }
     .pill.warn{ background:#fdf3d8 !important; color:#7a5600 !important; border:1px solid #e8cf8a !important; }
+
+    /* figures: keep whole on the page, show the full image, light caption */
+    figure.fig{ break-inside:avoid; box-shadow:none !important; background:#fff !important; border:1px solid var(--line) !important; }
+    figure.fig img{ height:auto !important; max-height:72mm; object-fit:contain !important; background:#fff !important; border-bottom:1px solid var(--line) !important; }
+    .figrow{ gap:6mm; }
+    figure.fig figcaption{ color:var(--ink-dim) !important; }
+    figure.fig figcaption b{ color:var(--ink) !important; }
+    figure.fig .cred{ color:var(--ink-mute) !important; }
 
     code{ background:#eef2f8 !important; color:#1f3a5f !important; }
     footer{ color:var(--ink-mute) !important; padding:8mm 0 0; }
@@ -305,6 +327,21 @@
       </div>
     </div>
 
+    <div class="figrow">
+      <figure class="fig">
+        <img loading="lazy" src="img/newnew-polar-bear.jpg" alt="เรือ NewNew Polar Bear (เดิมชื่อ Baltic Fulmar)">
+        <figcaption><b>NewNew Polar Bear</b> (เดิมชื่อ Baltic Fulmar) — เรือสัญชาติจีนที่ต้องสงสัยลากสมอตัดท่อ Balticconnector เมื่อ ต.ค. 2023
+          <span class="cred">ภาพ: Alf van Beem / Wikimedia Commons · สาธารณสมบัติ (Public Domain)</span>
+        </figcaption>
+      </figure>
+      <figure class="fig">
+        <img loading="lazy" src="img/eagle-s.jpg" alt="เรือบรรทุกน้ำมัน Eagle S">
+        <figcaption><b>Eagle S</b> — เรือบรรทุกน้ำมัน “กองเรือเงา” ที่ฟินแลนด์ยึดหลังเหตุ Estlink 2 (ภาพ 31 ธ.ค. 2024 ใกล้เมือง Porvoo ฟินแลนด์)
+          <span class="cred">ภาพ: Htm / Wikimedia Commons · CC BY-SA 4.0</span>
+        </figcaption>
+      </figure>
+    </div>
+
     <div class="grid g2" style="margin-top:24px">
       <div class="card">
         <h3 class="sub-h" style="margin-top:4px"><span class="bar" style="background:var(--gold)"></span> ช่องว่างทางกฎหมาย</h3>
@@ -324,6 +361,21 @@
           <li>ใช้ <b>โดรนทางทะเล + AI</b> ปิดช่องว่างกำลังพล</li>
         </ul>
       </div>
+    </div>
+
+    <div class="figrow">
+      <figure class="fig contain">
+        <img loading="lazy" src="img/clion1-cable-map.png" alt="แผนที่เส้นทางสายเคเบิล C-Lion1 ในทะเลบอลติก">
+        <figcaption><b>เส้นทางสายเคเบิลสื่อสาร C-Lion1</b> (ฟินแลนด์–เยอรมนี) หนึ่งในสายที่ถูกตัดเมื่อ 18 พ.ย. 2024
+          <span class="cred">แผนที่: Dirk1981 / Wikimedia Commons · CC0 · ข้อมูล © OpenStreetMap</span>
+        </figcaption>
+      </figure>
+      <figure class="fig">
+        <img loading="lazy" src="img/balticconnector-damage.jpg" alt="ความเสียหายของท่อ Balticconnector ใต้ทะเล">
+        <figcaption><b>ความเสียหายจริงของท่อ Balticconnector</b> ใต้ทะเล — ภาพสำรวจหลังเหตุ ต.ค. 2023
+          <span class="cred">ภาพ: หน่วยรักษาชายแดนฟินแลนด์ (Rajavartiolaitos) · สาธารณสมบัติ</span>
+        </figcaption>
+      </figure>
     </div>
 
     <div class="lessons">
@@ -364,6 +416,13 @@
         <p style="color:var(--ink-dim); font-size:14.5px; margin:0">ครั้งที่ 21 (7–15 ก.ค. 2024) ที่สัตหีบ/อ่าวไทย — RSS Valiant + RSS Indomitable กับ ร.ล.ตากสิน/ร.ล.ภูมิพลอดุลยเดช จัดต่อเนื่องตั้งแต่ <b>ปี 1981</b> ทับซ้อนพื้นที่ THE SHIELD พอดี</p>
       </div>
     </div>
+
+    <figure class="fig single tall">
+      <img loading="lazy" src="img/htms-bhumibol.jpg" alt="ร.ล.ภูมิพลอดุลยเดช ของกองทัพเรือไทย">
+      <figcaption><b>ร.ล.ภูมิพลอดุลยเดช (FFG-471)</b> ของกองทัพเรือไทย ระหว่างการฝึกผสมในอ่าวไทย — เรือชั้นเดียวกับที่เข้าร่วมการฝึก SINGSIAM กับกองทัพเรือสิงคโปร์
+        <span class="cred">ภาพ: MC1 Toni Burton, U.S. Navy / “Naval Surface Warriors” · CC BY-SA 2.0</span>
+      </figcaption>
+    </figure>
 
     <h3 class="sub-h"><span class="bar" style="background:var(--violet)"></span> กรอบความร่วมมือ &amp; กฎหมายที่สิงคโปร์ผลักดัน</h3>
     <div class="card">
