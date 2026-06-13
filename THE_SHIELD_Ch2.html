@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>บทที่ ๒ แนวคิด ทฤษฎี และวรรณกรรมที่เกี่ยวข้อง · THE SHIELD — งานวิจัยศูนย์ข้อมูลใต้น้ำ (UDC)</title>
+<meta name="description" content="สรุปสาระสำคัญบทที่ ๒ ของงานวิจัย: ทบทวนนโยบายและเทคโนโลยี UDC สภาพแวดล้อมทางยุทธวิธี ๓ มิติ กฎหมายทะเล แนวคิดการป้องกันแบบบูรณาการ และเครื่องมือวิเคราะห์ — สังเคราะห์เป็นโมเดล The Shield 1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Saira:wght@400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-dark:#010d1a; --bg-deep:#000810; --bg-panel:#081525;
+    --panel:rgba(8,21,37,.74); --panel2:rgba(13,30,51,.62);
+    --text-main:#ccd6f6; --text-muted:#8892b0; --text-dim:#697494;
+    --cyan:#00d4ff; --teal:#64ffda; --green:#39ff14; --red:#ff6b61; --purple:#bd93f9; --gold:#f5c451;
+    --line:rgba(0,212,255,.14); --line2:rgba(0,212,255,.28);
+    --f-disp:'Saira','Prompt',system-ui,sans-serif;
+    --f-body:'Prompt','Saira',system-ui,sans-serif;
+    --f-mono:'Share Tech Mono','Courier New',monospace;
+    --shadow:0 18px 50px rgba(0,0,0,.45);
+    --r:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:
+      radial-gradient(1200px 700px at 78% -8%, rgba(0,212,255,.10), transparent 60%),
+      radial-gradient(1000px 700px at 8% 6%, rgba(100,255,218,.06), transparent 55%),
+      linear-gradient(180deg,var(--bg-dark),var(--bg-panel) 60%,var(--bg-deep));
+    color:var(--text-main); font-family:var(--f-body); font-weight:300;
+    line-height:1.78; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  }
+  ::selection{background:rgba(0,212,255,.35);color:#fff}
+  img{display:block;max-width:100%}
+  a{color:var(--cyan);text-decoration:none}
+  a:hover{color:var(--teal)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  b,strong{font-weight:500;color:var(--text-main)}
+  .accent{color:var(--cyan)} .accent-teal{color:var(--teal)} .accent-purple{color:var(--purple)}
+
+  /* ---------- hero ---------- */
+  header.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero-grid{position:absolute;inset:0;background-image:
+      linear-gradient(rgba(0,212,255,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,212,255,.05) 1px,transparent 1px);
+    background-size:34px 34px;mask:radial-gradient(80% 80% at 50% 18%,#000,transparent 78%)}
+  .hero-inner{position:relative;padding:56px 0 44px}
+  .crest{display:inline-flex;align-items:center;gap:11px;font-family:var(--f-mono);
+    letter-spacing:.3em;font-size:12px;color:var(--cyan);text-transform:uppercase}
+  .crest .dot{width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 14px var(--cyan)}
+  .ch-num{margin-top:26px;font-family:var(--f-mono);font-size:13px;letter-spacing:.32em;color:var(--text-dim)}
+  .hero h1{font-family:var(--f-disp);font-size:clamp(30px,5vw,52px);font-weight:700;margin:10px 0 8px;
+    background:linear-gradient(120deg,#eaf3ff,#8fd9ff 55%,#64ffda);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero .sub{font-size:clamp(14.5px,1.9vw,17.5px);color:var(--text-muted);max-width:860px}
+  .hero .sub b{color:#dfe9ff}
+  .hero .meta{margin-top:24px;display:flex;flex-wrap:wrap;gap:10px}
+  .chip{font-size:12.5px;padding:7px 14px;border-radius:999px;border:1px solid var(--line2);
+    background:var(--panel2);color:var(--text-muted);display:inline-flex;gap:7px;align-items:center}
+  .chip b{color:var(--text-main);font-weight:500}
+  .chip.ok{border-color:rgba(100,255,218,.45);color:var(--teal)}
+
+  .cine{position:relative;border:1px solid var(--line2);border-radius:var(--r);overflow:hidden;
+    box-shadow:var(--shadow);margin:34px 0 6px}
+  .cine img{width:100%;height:auto}
+  .cine figcaption{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;
+    align-items:flex-end;gap:14px;padding:34px 18px 12px;
+    background:linear-gradient(180deg,transparent,rgba(0,8,16,.88))}
+  .cine-t{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.22em;color:#9fd8ff;text-transform:uppercase}
+  .cine-ai{font-family:var(--f-mono);font-size:10px;letter-spacing:.18em;color:var(--text-dim);
+    border:1px solid rgba(136,146,176,.35);padding:3px 9px;border-radius:999px;white-space:nowrap}
+
+  /* ---------- sticky toc ---------- */
+  nav.toc{position:sticky;top:0;z-index:40;backdrop-filter:blur(14px);
+    background:rgba(1,13,26,.88);border-bottom:1px solid var(--line)}
+  nav.toc .wrap{display:flex;gap:6px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px;align-items:center}
+  nav.toc a{font-size:13px;color:var(--text-muted);border:1px solid transparent;border-radius:10px;
+    padding:5px 11px;font-weight:400}
+  nav.toc a:hover{color:var(--text-main);background:var(--panel2);border-color:var(--line)}
+  nav.toc a.home{color:var(--teal);border:1px solid rgba(100,255,218,.45);font-family:var(--f-mono);
+    letter-spacing:.12em;font-size:11.5px;margin-right:6px}
+  nav.toc a.home:hover{background:rgba(100,255,218,.08);border-color:var(--teal)}
+  nav.toc .tag{margin-left:auto;font-family:var(--f-mono);font-size:10.5px;color:var(--text-dim);letter-spacing:.18em}
+
+  /* ---------- sections ---------- */
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:var(--f-mono);
+    letter-spacing:.26em;font-size:11.5px;text-transform:uppercase;color:var(--cyan);margin-bottom:14px}
+  .eyebrow .num{display:inline-grid;place-items:center;min-width:30px;height:30px;border-radius:9px;
+    background:linear-gradient(135deg,var(--cyan),#0077a8);color:#06121f;font-weight:700;font-size:13px;letter-spacing:0;padding:0 7px}
+  h2.title{font-family:var(--f-disp);font-size:clamp(23px,3.2vw,31px);font-weight:700;color:#fff;margin-bottom:10px}
+  .lead{color:var(--text-muted);font-size:16px;max-width:880px;margin-bottom:26px}
+  .lead b{color:#dfe9ff;font-weight:500}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+    padding:20px 22px;box-shadow:var(--shadow);backdrop-filter:blur(8px)}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:880px){.g4{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+  @media(max-width:560px){.g4{grid-template-columns:1fr}}
+
+  .kpi{padding:18px 20px;text-align:left}
+  .kpi .v{font-family:var(--f-disp);font-size:28px;font-weight:700;line-height:1.15;color:var(--cyan)}
+  .kpi .v small{font-size:15px;font-weight:600;color:var(--text-muted)}
+  .kpi .l{font-size:13px;color:var(--text-muted);margin-top:6px}
+
+  h3.sub-h{font-family:var(--f-disp);font-size:18.5px;font-weight:600;color:#fff;
+    margin:34px 0 14px;display:flex;align-items:center;gap:11px}
+  h3.sub-h .bar{width:4px;height:20px;border-radius:3px;background:var(--cyan);box-shadow:0 0 10px rgba(0,212,255,.6)}
+  p.body{font-size:15px;color:var(--text-muted);max-width:880px;margin-bottom:14px}
+  p.body b{color:#dfe9ff;font-weight:500}
+
+  ul.clean{list-style:none}
+  ul.clean li{position:relative;padding-left:22px;margin-bottom:9px;font-size:14.5px;color:var(--text-muted)}
+  ul.clean li::before{content:'▸';position:absolute;left:0;color:var(--cyan)}
+  ul.clean li b{color:var(--text-main);font-weight:500}
+
+  /* case study cards */
+  .case{display:flex;flex-direction:column;gap:8px}
+  .case .flag{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.2em;color:var(--text-dim);text-transform:uppercase}
+  .case h4{font-family:var(--f-disp);font-size:17px;font-weight:600;color:#fff}
+  .case p{font-size:13.5px;color:var(--text-muted)}
+  .case .hl{margin-top:auto;padding-top:10px;font-size:12.5px;color:var(--teal);
+    border-top:1px dashed rgba(100,255,218,.25)}
+
+  /* risk cards */
+  .risk{border-top:3px solid var(--red);position:relative}
+  .risk.r2{border-top-color:var(--gold)} .risk.r3{border-top-color:var(--purple)}
+  .risk .tagline{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--red)}
+  .risk.r2 .tagline{color:var(--gold)} .risk.r3 .tagline{color:var(--purple)}
+  .risk h4{font-family:var(--f-disp);font-size:16.5px;font-weight:600;color:#fff;margin:6px 0 8px}
+  .risk p{font-size:13.5px;color:var(--text-muted)}
+
+  /* objectives */
+  .tier{border-left:3px solid var(--cyan);padding:6px 0 6px 20px;margin-bottom:20px}
+  .tier .h{font-family:var(--f-disp);font-weight:600;font-size:16.5px;color:#fff;margin-bottom:5px;display:flex;gap:12px;align-items:baseline}
+  .tier .h .no{font-family:var(--f-mono);color:var(--cyan);font-size:14px}
+  .tier p{font-size:14.5px;color:var(--text-muted);max-width:840px}
+  .prop{background:linear-gradient(180deg,rgba(100,255,218,.09),rgba(100,255,218,.02));
+    border:1px solid rgba(100,255,218,.3);border-radius:var(--r);padding:22px 24px;margin-top:28px}
+  .prop .h{font-family:var(--f-mono);font-size:11px;letter-spacing:.24em;color:var(--teal);
+    text-transform:uppercase;margin-bottom:10px;display:flex;gap:9px;align-items:center}
+  .prop p{font-size:15.5px;color:#dfe9ff;max-width:900px}
+  .prop p b{color:var(--teal);font-weight:500}
+
+  /* scope cards */
+  .scope-card h4{font-family:var(--f-disp);font-size:15px;font-weight:600;color:#fff;margin-bottom:6px;display:flex;gap:9px;align-items:center}
+  .scope-card h4 .ic{font-size:16px}
+  .scope-card p{font-size:13.5px;color:var(--text-muted)}
+  .scope-card p b{color:#dfe9ff;font-weight:500}
+
+  /* method timeline */
+  .tl{position:relative;margin-left:8px;padding-left:30px;border-left:2px solid var(--line2);max-width:900px}
+  .tl .ev{position:relative;margin-bottom:26px}
+  .tl .ev:last-child{margin-bottom:0}
+  .tl .ev::before{content:'';position:absolute;left:-39px;top:4px;width:14px;height:14px;border-radius:50%;
+    background:var(--bg-dark);border:3px solid var(--cyan);box-shadow:0 0 14px rgba(0,212,255,.55)}
+  .tl .ev .step{font-family:var(--f-mono);font-size:11.5px;color:var(--cyan);letter-spacing:.22em;text-transform:uppercase}
+  .tl .ev h4{font-family:var(--f-disp);font-size:17px;font-weight:600;color:#fff;margin:3px 0 6px}
+  .tl .ev p{font-size:14px;color:var(--text-muted)}
+  .tl .ev ul.clean{margin-top:8px}
+  .tl .ev ul.clean li{font-size:13.5px;margin-bottom:6px}
+
+  /* figure */
+  .fig{margin:30px 0 6px}
+  .fig .fig-box{background:#f4f7fb;border:1px solid var(--line2);border-radius:var(--r);
+    overflow:hidden;box-shadow:var(--shadow);padding:10px}
+  .fig .fig-box img{width:100%;height:auto;border-radius:8px}
+  .fig figcaption{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    padding:12px 6px 0;font-size:13px;color:var(--text-muted)}
+  .fig figcaption .t{color:#dfe9ff}
+  .fig figcaption .src{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;color:var(--text-dim)}
+
+  /* shield evolution */
+  .evo{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:10px;align-items:stretch;margin:26px 0 8px}
+  @media(max-width:760px){.evo{grid-template-columns:1fr}.evo .arr{transform:rotate(90deg);justify-self:center}}
+  .evo .stage{background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:16px 18px}
+  .evo .stage .v{font-family:var(--f-disp);font-weight:700;font-size:20px;color:var(--cyan)}
+  .evo .stage.s2 .v{color:var(--teal)} .evo .stage.s3 .v{color:var(--purple)}
+  .evo .stage .w{font-size:12.5px;color:var(--text-muted);margin-top:5px}
+  .evo .stage .w b{color:#dfe9ff;font-weight:500}
+  .evo .arr{align-self:center;color:var(--text-dim);font-size:20px}
+
+  /* zones mini-diagram */
+  .zones{display:grid;grid-template-columns:300px 1fr;gap:26px;align-items:center;margin-top:22px}
+  @media(max-width:760px){.zones{grid-template-columns:1fr}}
+  .zones svg{width:100%;height:auto}
+  .zone-leg{display:flex;flex-direction:column;gap:12px}
+  .zl{display:flex;gap:12px;align-items:flex-start;font-size:13.5px;color:var(--text-muted)}
+  .zl .sw{flex:none;width:14px;height:14px;border-radius:4px;margin-top:4px}
+  .zl b{color:var(--text-main);font-weight:500}
+
+  /* glossary */
+  .glos{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:8px}
+  @media(max-width:760px){.glos{grid-template-columns:1fr}}
+  .glos details{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .glos summary{cursor:pointer;list-style:none;padding:13px 16px;display:flex;gap:10px;align-items:baseline}
+  .glos summary::-webkit-details-marker{display:none}
+  .glos summary .no{font-family:var(--f-mono);font-size:11px;color:var(--cyan);flex:none}
+  .glos summary .term{font-size:14px;font-weight:500;color:#fff}
+  .glos summary .en{font-family:var(--f-mono);font-size:10.5px;color:var(--text-dim);margin-left:auto;white-space:nowrap}
+  .glos details p{padding:0 16px 14px;font-size:13px;color:var(--text-muted)}
+  .glos details[open]{border-color:var(--line2)}
+  .glos details[open] summary .term{color:var(--cyan)}
+
+  /* quote */
+  .quote{border-left:3px solid var(--teal);padding:8px 0 8px 22px;margin:24px 0;max-width:860px}
+  .quote p{font-size:15.5px;color:#dfe9ff;font-weight:300;font-style:italic}
+  .quote .who{margin-top:8px;font-size:12.5px;color:var(--text-dim);font-style:normal;font-family:var(--f-mono);letter-spacing:.08em}
+
+  /* benefits */
+  .ben .ic{font-size:22px;margin-bottom:8px}
+  .ben h4{font-family:var(--f-disp);font-size:15.5px;font-weight:600;color:#fff;margin-bottom:6px}
+  .ben p{font-size:13.5px;color:var(--text-muted)}
+
+  /* footer nav */
+  footer{padding:46px 0 64px}
+  .foot-nav{display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+  .btn{display:inline-flex;align-items:center;gap:10px;padding:13px 26px;border-radius:12px;
+    font-family:var(--f-disp);font-weight:600;font-size:14.5px;letter-spacing:.04em;
+    border:1px solid var(--line2);color:var(--text-main);transition:all .25s}
+  .btn:hover{border-color:var(--cyan);color:#fff;box-shadow:0 0 24px rgba(0,212,255,.25)}
+  .btn.primary{background:linear-gradient(135deg,rgba(0,212,255,.18),rgba(100,255,218,.1));
+    border-color:rgba(0,212,255,.5);color:#fff}
+  .disclaim{margin-top:30px;font-size:12px;color:var(--text-dim);text-align:center;font-family:var(--f-mono);letter-spacing:.06em}
+
+  /* ---------- data tables (ch.2) ---------- */
+  .t-cap{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin:26px 0 10px}
+  .t-cap .t{font-size:14px;color:#dfe9ff;font-weight:500}
+  .t-cap .src{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;color:var(--text-dim)}
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--panel);
+    box-shadow:var(--shadow);-webkit-overflow-scrolling:touch}
+  table.dtbl{width:100%;border-collapse:collapse;font-size:13.5px}
+  .dtbl th{background:rgba(0,212,255,.09);color:var(--cyan);font-family:var(--f-disp);font-weight:600;font-size:13px;
+    text-align:left;padding:11px 14px;border-bottom:1px solid var(--line2)}
+  .dtbl td{padding:11px 14px;border-bottom:1px solid var(--line);color:var(--text-muted);vertical-align:top;line-height:1.6}
+  .dtbl tbody tr:last-child td{border-bottom:none}
+  .dtbl td b{color:var(--text-main);font-weight:500}
+  .dtbl td.dim{color:var(--teal);font-family:var(--f-disp);font-weight:600;font-size:13px;white-space:nowrap;
+    border-right:1px solid var(--line);background:rgba(100,255,218,.04)}
+  .dtbl.w1100{min-width:1060px} .dtbl.w900{min-width:860px}
+
+  /* reveal */
+  .rv{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+  .rv.on{opacity:1;transform:none}
+
+  /* ===== Denmark MSP live demo (live WMS) ===== */
+  .msp-demo{margin:32px 0}
+  .msp-panel{background:var(--panel);border:1px solid var(--line2);border-radius:var(--r);
+    overflow:hidden;box-shadow:var(--shadow);backdrop-filter:blur(6px)}
+  .msp-head{padding:16px 18px 13px;border-bottom:1px solid var(--line)}
+  .msp-kicker{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;color:var(--teal);
+    display:inline-flex;align-items:center;gap:8px}
+  .msp-kicker::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green);
+    box-shadow:0 0 9px var(--green);animation:mspPulse 1.7s infinite}
+  @keyframes mspPulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .msp-title{font-family:var(--f-disp);font-weight:600;color:var(--text-main);font-size:17.5px;
+    margin-top:8px;line-height:1.42}
+  .msp-sub{color:var(--text-muted);font-size:12.5px;margin-top:4px;line-height:1.6}
+  .msp-tools{display:flex;flex-wrap:wrap;gap:8px;padding:13px 18px;border-bottom:1px solid var(--line);
+    background:rgba(0,212,255,.03)}
+  .msp-chip{font-family:var(--f-disp);font-size:12.5px;font-weight:500;color:var(--text-muted);
+    background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:30px;padding:6px 13px;
+    cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:7px;user-select:none}
+  .msp-chip:hover{color:var(--text-main);border-color:var(--line2)}
+  .msp-chip .dot{width:9px;height:9px;border-radius:3px;background:var(--c,#00d4ff);opacity:.55;transition:.2s}
+  .msp-chip.on{color:#04101f;background:var(--c,#00d4ff);border-color:transparent;
+    box-shadow:0 0 16px -3px var(--c,#00d4ff)}
+  .msp-chip.on .dot{opacity:1;background:rgba(4,16,31,.72)}
+  .msp-mapwrap{position:relative}
+  .msp-map{height:480px;width:100%;background:#04121f;z-index:1}
+  .msp-legend{position:absolute;left:12px;bottom:12px;z-index:500;background:rgba(3,12,22,.82);
+    border:1px solid var(--line2);border-radius:11px;padding:10px 12px;font-size:11.5px;
+    color:var(--text-muted);max-width:212px;backdrop-filter:blur(4px);pointer-events:none}
+  .msp-legend b{color:var(--text-main);font-family:var(--f-disp);font-weight:600;font-size:11px;
+    letter-spacing:.05em;display:block;margin-bottom:6px}
+  .msp-legend .lg{display:flex;align-items:center;gap:8px;margin:4px 0;line-height:1.3}
+  .msp-legend .sw{width:13px;height:13px;border-radius:3px;flex:0 0 auto;border:1px solid rgba(255,255,255,.2)}
+  .msp-fallback{position:absolute;inset:0;z-index:600;display:none;flex-direction:column;
+    align-items:center;justify-content:center;gap:11px;text-align:center;padding:30px;
+    background:rgba(3,10,20,.93);color:var(--text-muted);font-size:13.5px;line-height:1.6}
+  .msp-fallback.show{display:flex}
+  .msp-fallback a{color:var(--cyan)}
+  .msp-cred{padding:9px 18px;font-family:var(--f-mono);font-size:10.5px;color:var(--text-dim);
+    letter-spacing:.03em;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:6px}
+  .msp-map .leaflet-control-zoom a{background:rgba(8,21,37,.92);color:var(--cyan);border-color:var(--line2)}
+  .msp-map .leaflet-control-zoom a:hover{background:var(--bg-panel);color:var(--teal)}
+  .msp-map .leaflet-bar{border:1px solid var(--line2);box-shadow:0 4px 14px rgba(0,0,0,.5)}
+  .msp-map .leaflet-control-attribution{background:rgba(3,12,22,.72);color:var(--text-dim);font-size:9px}
+  .msp-map .leaflet-control-attribution a{color:var(--teal)}
+  @media(max-width:640px){.msp-map{height:390px}.msp-legend{max-width:152px;font-size:10.5px}}
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+</head>
+<body>
+
+<!-- ================= HERO ================= -->
+<header class="hero">
+  <div class="hero-grid"></div>
+  <div class="wrap hero-inner">
+    <span class="crest"><span class="dot"></span>THE SHIELD · RESEARCH DOSSIER</span>
+    <div class="ch-num">CHAPTER — 02 · บทที่ ๒</div>
+    <h1>แนวคิด ทฤษฎี และวรรณกรรมที่เกี่ยวข้อง</h1>
+    <p class="sub">การทบทวนวรรณกรรม (Literature Review) <b>๕ กลุ่มองค์ความรู้</b> —
+      จากนโยบายคลาวด์ภาครัฐและเทคโนโลยี UDC สภาพแวดล้อมทางยุทธวิธี ๓ มิติของอ่าวไทย
+      กรอบกฎหมายทะเล ไปจนถึงแนวคิดการป้องกันแบบบูรณาการ —
+      สังเคราะห์ขึ้นเป็น<b>กรอบแนวคิดการสร้างโมเดลการป้องกัน «The Shield 1.0»</b></p>
+    <div class="meta">
+      <span class="chip ok">✓ เสร็จสมบูรณ์</span>
+      <span class="chip">ผลลัพธ์ของบท <b>The Shield 1.0</b></span>
+      <span class="chip">วรรณกรรม <b>๕ กลุ่มองค์ความรู้</b></span>
+      <span class="chip">หลักสูตรเสนาธิการทหารเรือ <b>รุ่นที่ ๘๖</b></span>
+    </div>
+
+    <figure class="cine rv">
+      <img src="THE_SHIELD_Ch2_hero.webp" alt="ภาพจำลอง: เครนเรือปฏิบัติการกำลังหย่อนแคปซูลศูนย์ข้อมูลใต้น้ำลงสู่ทะเล">
+      <figcaption>
+        <span class="cine-t">UDC DEPLOYMENT OPERATION · LITERATURE REVIEW</span>
+        <span class="cine-ai">ภาพจำลองบรรยากาศ · AI-GENERATED</span>
+      </figcaption>
+    </figure>
+  </div>
+</header>
+
+<!-- ================= TOC ================= -->
+<nav class="toc">
+  <div class="wrap">
+    <a class="home" href="THE_SHIELD_Pitch.html#research">⌂ PITCH</a>
+    <a href="#intro">กล่าวนำ</a>
+    <a href="#policy">นโยบาย &amp; UDC</a>
+    <a href="#env">สภาพแวดล้อม ๓ มิติ</a>
+    <a href="#law">กฎหมาย &amp; MSP</a>
+    <a href="#defense">แนวคิดการป้องกัน</a>
+    <a href="#shield">The Shield 1.0</a>
+    <a href="#tools">เครื่องมือวิเคราะห์</a>
+    <a href="#summary">สรุป</a>
+    <span class="tag">CH.02 / 05</span>
+  </div>
+</nav>
+
+<!-- ================= 2.1 กล่าวนำ ================= -->
+<section id="intro">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">๒.๑</span>LITERATURE REVIEW — KNOWLEDGE MAP</div>
+    <h2 class="title rv">กล่าวนำ — แผนที่องค์ความรู้ของบทนี้</h2>
+    <p class="lead rv">การวางรากฐานเพื่อกำหนดบทบาทและแนวทางการจัดระเบียบพื้นที่ทางทะเลของกองทัพเรือ
+      ในการคุ้มครอง<b>ศูนย์ข้อมูลใต้น้ำ (Underwater Data Center: UDC)</b> ซึ่งเป็นโครงสร้างพื้นฐานสำคัญของชาติ
+      จำเป็นต้องอาศัย<b>การบูรณาการองค์ความรู้หลายมิติอย่างรอบด้าน</b> — บทนี้จึงทบทวนแนวคิด ทฤษฎี
+      และวรรณกรรมที่เกี่ยวข้องใน ๕ กลุ่ม แล้วสังเคราะห์ทั้งหมดขึ้นเป็น
+      <b>กรอบแนวคิดการสร้างโมเดลการป้องกัน «The Shield 1.0»</b> อันเป็นฐานสำหรับการดำเนินการวิจัยในบทต่อไป</p>
+
+    <div class="grid g3">
+      <div class="card scope-card rv">
+        <h4><span class="ic">🏛️</span>๒.๒ นโยบาย &amp; เทคโนโลยี UDC</h4>
+        <p>สถานภาพ <b>GDCC</b> และ Cloud First Policy · ข้อจำกัดศูนย์ข้อมูลบนบก ·
+        วิศวกรรมแคปซูลใต้น้ำ · กรณีศึกษา <b>Natick / Highlander / Lin-gang</b></p>
+      </div>
+      <div class="card scope-card rv">
+        <h4><span class="ic">🌊</span>๒.๓ สภาพแวดล้อมทางยุทธวิธี ๓ มิติ</h4>
+        <p>ปัจจัยเหนือผิวน้ำ–ใต้น้ำ–พื้นท้องทะเลของ<b>อ่าวไทยตอนบน</b>
+        ที่ชี้ขาดความเหมาะสมในการติดตั้งและการป้องกัน UDC (ตารางที่ ๒-๒)</p>
+      </div>
+      <div class="card scope-card rv">
+        <h4><span class="ic">⚖️</span>๒.๔ กฎหมาย &amp; การจัดระเบียบพื้นที่</h4>
+        <p><b>UNCLOS</b> · พ.ร.บ.เขตปลอดภัยในราชการทหาร ๒๔๗๘ · ระบบ <b>TSS</b> ·
+        บทเรียน MSP จากอินโดนีเซียและทะเลเหนือ</p>
+      </div>
+      <div class="card scope-card rv">
+        <h4><span class="ic">🛡️</span>๒.๕ แนวคิดการป้องกันแบบบูรณาการ</h4>
+        <p><b>HDHC</b> (Harbor Defense / Harbor Control) · กลไก <b>ศรชล.</b> ·
+        การวิเคราะห์ปัจจัย <b>เวลา–พื้นที่–กำลังรบ</b> (ตารางที่ ๒-๓)</p>
+      </div>
+      <div class="card scope-card rv">
+        <h4><span class="ic">🧭</span>๒.๖ เครื่องมือวิเคราะห์ทางยุทธศาสตร์</h4>
+        <p><b>SWOT / TOWS Matrix</b> · <b>GAP Analysis</b> · <b>PMESII</b> —
+        รากฐานทางวิชาการของการวิเคราะห์ในบทที่ ๓</p>
+      </div>
+      <div class="card scope-card rv" style="border-color:rgba(100,255,218,.4)">
+        <h4><span class="ic">⭐</span>ผลลัพธ์: The Shield 1.0 (๒.๕.๔)</h4>
+        <p>องค์ความรู้ทั้งหมดถูกสังเคราะห์เป็น<b>กรอบแนวคิดเชิงทฤษฎี</b> ของโมเดลการป้องกัน UDC —
+        Zoning Model · Multi-Domain Force · Centralized C2 (ตารางที่ ๒-๔ และภาพที่ ๒-๑๐)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2.2 นโยบาย & เทคโนโลยี UDC ================= -->
+<section id="policy">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">๒.๒</span>NATIONAL CLOUD POLICY &amp; UDC TECHNOLOGY</div>
+    <h2 class="title rv">นโยบายเศรษฐกิจดิจิทัล คลาวด์กลางภาครัฐ และเทคโนโลยีศูนย์ข้อมูลใต้น้ำ</h2>
+    <p class="lead rv">ประเทศไทยขับเคลื่อนบริการภาครัฐผ่านระบบ<b>คลาวด์กลางภาครัฐ (GDCC)</b>
+      ภายใต้การกำกับของกระทรวงดิจิทัลเพื่อเศรษฐกิจและสังคม โดยมี สดช. เป็นเจ้าของโครงการและงบประมาณ
+      และ บมจ.โทรคมนาคมแห่งชาติ (NT) เป็นผู้ดำเนินการทางเทคนิค —
+      ทว่าความต้องการประมวลผลที่โตแบบก้าวกระโดดในยุค AI กำลังชนเพดาน<b>ข้อจำกัดเชิงโครงสร้างของศูนย์ข้อมูลบนบก</b></p>
+
+    <div class="grid g4">
+      <div class="card kpi rv"><div class="v">๓๓<small>%</small></div><div class="l">สัดส่วนความจุศูนย์ข้อมูลต่อปริมาณการใช้ข้อมูลของไทย — ขณะที่ค่าเฉลี่ยโลกอยู่ที่ <b>๗๑%</b> สะท้อนช่องว่างความจุที่ต้องเร่งปิด</div></div>
+      <div class="card kpi rv"><div class="v">๒๐๐,๐๐๐<small> VM</small></div><div class="l">เป้าหมายขยายระบบ GDCC ในปี ๒๕๖๘ จากปัจจุบันราว ๔๐,๐๐๐ เครื่องเสมือน</div></div>
+      <div class="card kpi rv"><div class="v">๔,๔๘๔<small> ลบ.</small></div><div class="l">งบประมาณระบบคลาวด์กลางภาครัฐ ปีงบประมาณ ๒๕๖๙</div></div>
+      <div class="card kpi rv"><div class="v">๑,๒๐๐<small>+</small></div><div class="l">หน่วยงานรัฐที่ยื่นความจำนงใช้บริการ GDCC</div></div>
+    </div>
+
+    <h3 class="sub-h rv"><span class="bar"></span>ข้อจำกัดเชิงโครงสร้างของศูนย์ข้อมูลบนบก ๓ ประการ</h3>
+    <div class="grid g3">
+      <div class="card risk rv">
+        <span class="tagline">① ENERGY &amp; WATER</span>
+        <h4>พลังงานและน้ำหล่อเย็น</h4>
+        <p>ค่า PUE เฉลี่ยภูมิภาคเอเชียแปซิฟิกสูงถึง <b>๑.๖๑</b> ภายใต้ค่าไฟฟ้า ๔.๑๘–๔.๕๔ บาท/หน่วย
+        และต้องใช้น้ำจืดหล่อเย็นราว <b>๗.๕ ล้านลิตร/เมกะวัตต์/ปี</b> —
+        คาดการณ์ความต้องการน้ำของศูนย์ข้อมูลไทยสูงถึง <b>๒,๓๖๔.๕ ล้านลิตร</b> ภายในปี ๒๕๗๑
+        สวนทางนโยบายเศรษฐกิจสีเขียว</p>
+      </div>
+      <div class="card risk r2 rv">
+        <span class="tagline">② PHYSICAL RISK</span>
+        <h4>ความเสี่ยงทางกายภาพและภัยพิบัติ</h4>
+        <p>ที่ราบลุ่มภาคกลางเผชิญ<b>อุทกภัยซ้ำซาก</b> ขณะที่แผ่นดินไหวขนาด ๘.๒ ในเมียนมา (มี.ค. ๒๕๖๘)
+        ตามด้วยอาฟเตอร์ช็อกกว่า <b>๒๐๐ ครั้ง</b> ที่รับรู้ได้ถึงภาคเหนือของไทย
+        ตอกย้ำความเปราะบางของอาคารศูนย์ข้อมูลบนบก รวมถึงความเสี่ยงจากการก่อวินาศกรรมโดยตรง</p>
+      </div>
+      <div class="card risk r3 rv">
+        <span class="tagline">③ DATA SOVEREIGNTY</span>
+        <h4>อธิปไตยของข้อมูล</h4>
+        <p>ข้อมูลชั้นความลับระดับ <b>"ลับมาก" และ "ลับที่สุด"</b> ต้องจัดเก็บใน
+        <b>Sovereign Territory</b> ที่รัฐควบคุมได้เบ็ดเสร็จทั้งทางกายภาพและทางไซเบอร์ —
+        ศูนย์ข้อมูลเชิงพาณิชย์ทั่วไปไม่อาจตอบโจทย์นี้ได้อย่างสมบูรณ์</p>
+      </div>
+    </div>
+
+    <h3 class="sub-h rv"><span class="bar"></span>จาก Cloud First สู่คลาวด์อธิปไตย (Sovereign Cloud)</h3>
+    <p class="body rv">ทิศทางนโยบายคลาวด์ภาครัฐวิวัฒน์จาก <b>Cloud First Policy</b> ไปสู่สถาปัตยกรรม
+      <b>Hybrid Multi-Cloud</b> และมุ่งสู่ <b>Sovereign Cloud</b> สำหรับข้อมูลที่กระทบความมั่นคงแห่งรัฐ
+      โดยสำนักงานพัฒนารัฐบาลดิจิทัล (สพร.) ได้วางกรอบการจำแนกชั้นข้อมูลซึ่งชี้ชัดว่า
+      ข้อมูลชั้นสูงสุดสองระดับต้องการโครงสร้างพื้นฐานที่รัฐเป็นเจ้าของและป้องกันได้ในเชิงกายภาพ</p>
+
+    <div class="t-cap rv">
+      <span class="t">ตารางที่ ๒-๑ · ระดับชั้นข้อมูลภาครัฐกับนัยต่อโครงสร้างพื้นฐานจัดเก็บ</span>
+      <span class="src">ที่มา : สพร. (๒๕๖๕), หน้า ๑๗ — เรียบเรียงโดยผู้วิจัย</span>
+    </div>
+    <div class="tbl-wrap rv">
+      <table class="dtbl">
+        <thead><tr>
+          <th>ระดับชั้นข้อมูล</th><th>เทียบเคียงสากล</th><th>ระดับความอ่อนไหว</th><th>นัยสำคัญต่อการจัดเก็บ</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="dim">ลับมาก</td><td><b>Secret</b></td><td>Medium Sensitive</td>
+            <td>หากรั่วไหลจะเกิดความเสียหายร้ายแรงต่อความมั่นคงและผลประโยชน์แห่งรัฐ — ต้องควบคุมการเข้าถึงอย่างเข้มงวดทั้งบุคคลและสถานที่</td>
+          </tr>
+          <tr>
+            <td class="dim">ลับที่สุด</td><td><b>Top Secret</b></td><td>Highly Sensitive</td>
+            <td>เสียหายร้ายแรงที่สุด เช่น ข้อมูลกำลังรบและข่าวกรองยุทธศาสตร์ — ต้องการ <b>Sovereign Territory</b> ที่รัฐป้องกันได้เบ็ดเสร็จ ไม่อาจฝากไว้ในระบบเชิงพาณิชย์ทั่วไป</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="sub-h rv"><span class="bar"></span>เทคโนโลยีและองค์ประกอบทางวิศวกรรมของ UDC</h3>
+    <p class="body rv">ศูนย์ข้อมูลใต้น้ำตอบข้อจำกัดทั้งสามด้วยหลักวิศวกรรม <b>๓ จุดแข็ง</b> —
+      ใช้มหาสมุทรเป็นระบบหล่อเย็นธรรมชาติ (ไม่ใช้น้ำจืด) · ซ่อนพรางใต้ผิวน้ำพ้นจากภัยพิบัติบนบกและการก่อวินาศกรรม ·
+      และวางในเขตอำนาจรัฐที่กองทัพเรือป้องกันได้จริง องค์ประกอบหลักมีดังนี้</p>
+    <div class="grid g2">
+      <div class="card scope-card rv">
+        <h4><span class="ic">🛢️</span>แคปซูลทนแรงดัน (Pressure Vessel)</h4>
+        <p>ขนาดเทียบตู้คอนเทนเนอร์ ISO ๔๐ ฟุต (ยาว <b>๑๒.๒ ม.</b> ⌀ <b>๒.๘ ม.</b>) น้ำหนักรวมได้ถึง <b>๑,๓๐๐ ตัน</b>
+        ภายในรักษาความดัน ๑ บรรยากาศ บรรจุ<b>ไนโตรเจนแห้ง ๑๐๐%</b> ไร้ออกซิเจนและความชื้น —
+        ปฏิบัติการแบบ <b>Lights-Out</b> ไร้มนุษย์ ทำให้อัตราชำรุดของเซิร์ฟเวอร์เหลือเพียง <b>๑ ใน ๘</b> ของศูนย์ข้อมูลบนบก</p>
+      </div>
+      <div class="card scope-card rv">
+        <h4><span class="ic">⚖️</span>Pressure-Equalized Pods</h4>
+        <p>แนวทางทางเลือกของ <b>Subsea Cloud</b> — ปรับความดันภายในเท่าภายนอกด้วยของเหลวไดอิเล็กทริก
+        ทำให้ติดตั้งได้ลึกถึง <b>๓,๐๐๐ ม.</b> ซึ่งมนุษย์เข้าถึงไม่ได้ ต้องปฏิบัติงานด้วย <b>ROV</b> เท่านั้น —
+        ความลึกกลายเป็นเกราะป้องกันในตัวเอง</p>
+      </div>
+      <div class="card scope-card rv">
+        <h4><span class="ic">❄️</span>ระบบหล่อเย็นแบบ Passive</h4>
+        <p>แลกเปลี่ยนความร้อนกับมวลน้ำทะเลโดยตรง ทำค่า <b>PUE ต่ำถึง ๑.๐๗๕</b>
+        โดย<b>ไม่ใช้น้ำจืดแม้แต่ลิตรเดียว</b> — ตัดปัญหาการแย่งชิงทรัพยากรน้ำกับภาคเกษตรและชุมชน
+        และลดพลังงานหล่อเย็นลง ๔๐–๕๐%</p>
+      </div>
+      <div class="card scope-card rv">
+        <h4><span class="ic">🔌</span>สายสะดือ (Umbilical) และ Hub</h4>
+        <p>สายรวมพลังงานไฟฟ้าและใยแก้วนำแสงเชื่อมแคปซูลเข้ากับสถานีฝั่ง ผ่านโครงสร้าง Hub ใต้น้ำ
+        (⌀ <b>๓.๖ ม.</b>) ที่กระจายการเชื่อมต่อไปยังหลายแคปซูล —
+        เป็นจุดอ่อนสำคัญที่สุดของระบบซึ่งการออกแบบการป้องกันต้องให้น้ำหนักเป็นพิเศษ</p>
+      </div>
+      <div class="card scope-card rv" style="grid-column:1 / -1">
+        <h4><span class="ic">🔄</span>วงรอบอายุการใช้งาน</h4>
+        <p>โครงสร้างแคปซูลออกแบบให้มีอายุ <b>๒๐–๒๕ ปี</b> โดยกู้ขึ้นมาเปลี่ยนชุดเซิร์ฟเวอร์ทุก <b>๕ ปี</b>
+        พร้อมสารเคลือบป้องกันการเกาะของสิ่งมีชีวิต (Anti-fouling) —
+        ในมิติความมั่นคง UDC จึงมีสถานะเป็น<b>โครงสร้างพื้นฐานสำคัญใต้น้ำ (Critical Underwater Infrastructure: CUI)</b>
+        ที่ต้องได้รับการคุ้มครองตลอดวงรอบชีวิต ตั้งแต่การติดตั้ง ปฏิบัติการ ไปจนถึงการซ่อมบำรุง</p>
+      </div>
+    </div>
+
+    <figure class="fig rv">
+      <div class="fig-box"><img src="THE_SHIELD_Ch2_capsule.webp" alt="ภาพจำลอง: แคปซูลศูนย์ข้อมูลใต้น้ำ UDC วางบนฐานรากโครงเหล็กที่พื้นทะเล มีครีบระบายความร้อนและสายสะดือ"></div>
+      <figcaption>
+        <span class="t">ภาพประกอบ · แคปซูลศูนย์ข้อมูลใต้น้ำ (UDC) บนฐานรากโครงเหล็กที่พื้นทะเล — พร้อมครีบระบายความร้อนและสายสะดือ (Umbilical) เชื่อมสู่สถานีฝั่ง</span>
+        <span class="src">ภาพจำลองโดยปัญญาประดิษฐ์ เพื่อสื่อบรรยากาศ · AI-GENERATED</span>
+      </figcaption>
+    </figure>
+
+    <h3 class="sub-h rv"><span class="bar"></span>กรณีศึกษาระดับสากล — จากการทดลองสู่เชิงพาณิชย์</h3>
+    <div class="grid g3">
+      <div class="card case rv">
+        <span class="flag">🇺🇸 USA · MICROSOFT · 2015–2020</span>
+        <h4>Project Natick</h4>
+        <p>โครงการบุกเบิกของโลก — เฟส ๒ <b>"Northern Isles"</b> จมแคปซูลบรรจุเซิร์ฟเวอร์ ๘๖๔ เครื่อง
+        ใต้ทะเลหมู่เกาะออร์กนีย์ สกอตแลนด์ ทดสอบปฏิบัติการ Lights-Out เต็มวงรอบจนถึงปี 2020
+        โดยใช้พลังงานหมุนเวียนจากทะเล ๑๐๐%</p>
+        <div class="hl">พิสูจน์อัตราชำรุดต่ำกว่าบนบกถึง ๘ เท่า — ยืนยันความเป็นไปได้ทางวิศวกรรมของ UDC</div>
+      </div>
+      <div class="card case rv">
+        <span class="flag">🇨🇳 CHINA · HAINAN · 2021–2023</span>
+        <h4>Highlander UDC — ไห่หนาน</h4>
+        <p>UDC <b>เชิงพาณิชย์แห่งแรกของโลก</b> ที่ความลึก ๓๕ ม. แคปซูลหนัก <b>๑,๔๓๓ ตัน</b>
+        สมรรถนะเทียบเท่าคอมพิวเตอร์ ๖๐,๐๐๐ เครื่อง วางแผนขยายเป็น <b>๑๐๐ โมดูล</b>
+        รองรับยุทธศาสตร์ Global AI Leader 2030</p>
+        <div class="hl">ประหยัดไฟฟ้า ๑๒๒ ล้าน kWh · น้ำจืด ๑๐๕,๐๐๐ ตัน/ปี · พื้นที่ดิน ๖๘,๐๐๐ ตร.ม.</div>
+      </div>
+      <div class="card case rv">
+        <span class="flag">🇨🇳 CHINA · SHANGHAI LIN-GANG</span>
+        <h4>Lin-gang Wind-Powered UDC</h4>
+        <p>UDC <b>ขับเคลื่อนด้วยพลังงานลมนอกชายฝั่งแห่งแรกของโลก</b> ณ เขตพิเศษหลินกั่ง เซี่ยงไฮ้
+        ที่ความลึก ๓๕ ม. มูลค่าลงทุน ๑.๖ พันล้านหยวน (~๒๒๖ ล้านดอลลาร์สหรัฐ)
+        ตั้งเป้ากำลังผลิตรวม <b>๒๔ MW</b></p>
+        <div class="hl">ใช้พลังงานลม &gt;๙๕% · PUE &lt; ๑.๑๕ — เฟสแรก ๒.๓ MW ก่อสร้างแล้วเสร็จ</div>
+      </div>
+    </div>
+
+    <div class="prop rv">
+      <div class="h">◈ IMPLICATION — นัยสำคัญต่องานวิจัย</div>
+      <p>เทคโนโลยี UDC ผ่านการพิสูจน์แล้วทั้งทางวิศวกรรม (Natick) และทางพาณิชย์ (Highlander / Lin-gang)
+      คำถามของไทยจึงไม่ใช่ <b>"สร้างได้หรือไม่"</b> แต่คือ <b>"จะคุ้มครองอย่างไร"</b> —
+      ช่องว่างที่งานวิจัยนี้เข้าไปตอบด้วยการออกแบบการจัดระเบียบพื้นที่ทางทะเลและกลไกการป้องกันของกองทัพเรือ</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2.3 สภาพแวดล้อมทางยุทธวิธี ================= -->
+<section id="env">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">๒.๓</span>TACTICAL ENVIRONMENT — GULF OF THAILAND</div>
+    <h2 class="title rv">สภาพแวดล้อมทางยุทธวิธีของอ่าวไทย — การประเมิน ๓ มิติ</h2>
+    <p class="lead rv">อ่าวไทยเป็นทะเล<b>กึ่งปิด (Semi-enclosed Sea)</b> กว้างราว ๕๔๐–๕๕๕ กม. ยาว ๘๑๐–๘๓๘ กม.
+      ความลึกเฉลี่ยเพียง ๔๔ ม. — สำหรับการติดตั้งและป้องกัน UDC
+      งานวิจัยประเมินสภาพแวดล้อมแบบ<b>องค์รวม ๓ มิติ</b> ได้แก่ มิติเหนือผิวน้ำ มิติใต้น้ำ และมิติพื้นท้องทะเล
+      เพราะปัจจัยทางสมุทรศาสตร์เดียวกันนี้กำหนดทั้ง<b>ความเหมาะสมทางวิศวกรรม</b>และ<b>สมการการตรวจจับภัยคุกคาม</b></p>
+
+    <div class="grid g4">
+      <div class="card kpi rv"><div class="v">๒๐๒,๖๗๖<small> ตร.กม.</small></div><div class="l">พื้นที่อ่าวไทย — ทะเลกึ่งปิดที่ล้อมด้วยแผ่นดิน ๓ ด้าน</div></div>
+      <div class="card kpi rv"><div class="v">๔๔<small> ม.</small></div><div class="l">ความลึกเฉลี่ย (ลึกสุดราว ๘๖ ม.) — สนามรบน้ำตื้นโดยแท้</div></div>
+      <div class="card kpi rv"><div class="v">๒๐–๔๐<small> ม.</small></div><div class="l">ช่วงความลึกเหมาะสมต่อการติดตั้ง UDC ในอ่าวไทยตอนบน — นักประดาน้ำยังปฏิบัติงานได้</div></div>
+      <div class="card kpi rv"><div class="v">๘๐,๐๐๐–๑๒๐,๐๐๐</div><div class="l">เที่ยวการจราจรทางเรือต่อปี — ความหนาแน่นที่เป็นทั้งภัยคุกคามและฉากกำบัง</div></div>
+    </div>
+
+    <p class="body rv">ลักษณะทางสมุทรศาสตร์สำคัญ: พื้นท้องทะเลเป็น<b>โคลนเลนราวร้อยละ ๖๐</b>
+      อุณหภูมิน้ำ ๒๖.๕–๒๘.๕ °C ความเค็ม ๓๑.๑–๓๑.๒ PSU ความเร็วเสียงใต้น้ำราว <b>๑,๕๓๔–๑,๕๓๕ ม./วินาที</b> —
+      โครงสร้างความเร็วเสียงในน้ำตื้นก่อให้เกิด <b>Shadow Zone</b> ที่โซนาร์ตรวจไม่ถึง
+      ขณะที่ภัยคุกคามจริงของสนามรบน้ำตื้นคือ <b>SDV (Swimmer Delivery Vehicle) · เรือดำน้ำขนาดเล็ก (Midget Submarine) · UUV</b>
+      ซึ่งอาศัยข้อจำกัดทางเสียงเหล่านี้แทรกซึม — เทคโนโลยี <b>DAS/OTDR</b> ที่เปลี่ยนสายเคเบิลให้เป็นเซนเซอร์แบบ Tripwire
+      จึงเป็นมาตรการชดเชยที่สำคัญ</p>
+
+    <figure class="fig rv">
+      <div class="fig-box"><img src="THE_SHIELD_Ch2_gulfseabed.webp" alt="ภาพจำลอง: สภาพน้ำขุ่นและพื้นโคลนทรายของอ่าวไทยตอนบน ยาน ROV สำรวจในทัศนวิสัยจำกัด"></div>
+      <figcaption>
+        <span class="t">ภาพประกอบ · สภาพน้ำขุ่นและพื้นท้องทะเลโคลนทรายของอ่าวไทยตอนบน — ยานสำรวจใต้น้ำ (ROV) ปฏิบัติงานในทัศนวิสัยจำกัด ซึ่งเป็นทั้งข้อจำกัดและฉากกำบังเชิงยุทธวิธี</span>
+        <span class="src">ภาพจำลองโดยปัญญาประดิษฐ์ เพื่อสื่อบรรยากาศ · AI-GENERATED</span>
+      </figcaption>
+    </figure>
+
+    <div class="t-cap rv">
+      <span class="t">ตารางที่ ๒-๒ · ปัจจัยสภาพแวดล้อมทางยุทธวิธี ๓ มิติ ที่มีผลต่อการติดตั้งและป้องกัน UDC ในอ่าวไทยตอนบน</span>
+      <span class="src">ที่มา : ผู้วิจัย</span>
+    </div>
+    <div class="tbl-wrap rv">
+      <table class="dtbl w1100">
+        <thead><tr>
+          <th>มิติ</th><th>ปัจจัย</th><th>เครื่องมือ / ทฤษฎีที่เกี่ยวข้อง</th><th>ผลกระทบต่อ UDC</th><th>ข้อพิจารณาเฉพาะอ่าวไทยตอนบน</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="dim" rowspan="2">เหนือผิวน้ำ</td>
+            <td><b>การจราจรทางเรือ / เส้นทาง SLOC</b></td>
+            <td>AIS (Class A/B) · VTS · MDA · ภาพถ่ายดาวเทียม SAR/EO · AI วิเคราะห์ (YOLO v11, Bi-LSTM)</td>
+            <td>จราจรหนาแน่น ๘๐,๐๐๐–๑๒๐,๐๐๐ เที่ยว/ปี เสี่ยงสมอเรือและอวนลากทำลายเคเบิล เสียงรบกวนสูง รวมถึง <b>Dark Vessels</b> ปิด AIS และการปลอมสัญญาณ (Spoofing)</td>
+            <td>เลือกที่ตั้งหลบแนวจราจรหลัก ประกอบการพิจารณา TSS / Q-Route และโครงการ Landbridge ในอนาคต</td>
+          </tr>
+          <tr>
+            <td><b>สภาพอากาศ / Sea State</b></td>
+            <td>การพยากรณ์เชิงตัวเลข (NWP) · ดาวเทียมอุตุนิยมวิทยา · มาตรา Beaufort · Combined Sea State</td>
+            <td>Sea State ๔–๕ ขึ้นไปกระทบเรือสนับสนุนและอุปกรณ์ผิวน้ำ หมอกและฝนลดประสิทธิภาพการตรวจการณ์ด้วยสายตา/EO/เรดาร์</td>
+            <td>ฤดูมรสุมจำกัดห้วงเวลาติดตั้ง–ซ่อมบำรุง · ปรากฏการณ์ Ducting ในบางฤดูทำให้การตรวจจับด้วยเสียงได้เปรียบการตรวจการณ์ด้วยสายตา</td>
+          </tr>
+          <tr>
+            <td class="dim" rowspan="5">ใต้น้ำ</td>
+            <td><b>โครงสร้างความเร็วเสียง (SSP) / อุณหภูมิ / ความเค็ม</b></td>
+            <td>CTD · XBT · MODAS/NCOM · Nomogram · เครื่องวัด ABP5 (SAIV) · สมการ Mackenzie (1981)</td>
+            <td>กำหนดเส้นทางการแพร่ของคลื่นเสียงโซนาร์ — การหักเหในน้ำตื้นสร้าง <b>Shadow Zone</b> ให้ภัยคุกคามซ่อนตัว</td>
+            <td>Salt Wedge บริเวณปากแม่น้ำ · ไม่มี Convergence Zone — พึ่งการตรวจจับแบบ Direct Path / Bottom Bounce เท่านั้น</td>
+          </tr>
+          <tr>
+            <td><b>Natural Cooling / พลังงาน</b></td>
+            <td>ค่า PUE · Passive Heat Exchanger</td>
+            <td>มวลน้ำเย็นช่วยลดพลังงานหล่อเย็นลง ๔๐–๕๐% (PUE &lt; ๑.๑) เพิ่มขีดความสามารถรองรับงานประมวลผล AI</td>
+            <td>ความลึก ๒๐–๔๐ ม. เพียงพอต่อการหล่อเย็น แต่อุณหภูมิน้ำผันแปรตามฤดูกาล ต้องเผื่อในการออกแบบ</td>
+          </tr>
+          <tr>
+            <td><b>เสียงแวดล้อม / เสียงชีวภาพ</b></td>
+            <td>Passive Sonar · Spectrum Level · ฐานข้อมูล Acoustic Signature · Wenz Curves</td>
+            <td>เสียงกุ้งดีดขัน (ย่าน 100 Hz–10 kHz) ผสมเสียงเรือสินค้า ทำให้อัตราการแจ้งเตือนผิดพลาด (False Alarm) สูง</td>
+            <td>ต้องจัดทำฐานข้อมูลเสียงแวดล้อมเฉพาะพื้นที่ เพื่อสอนระบบให้แยกเสียงภัยคุกคามจากเสียงธรรมชาติ</td>
+          </tr>
+          <tr>
+            <td><b>ความขุ่น / กระแสน้ำ / Biofouling</b></td>
+            <td>การตรวจวัด In situ · แบบจำลองน้ำขึ้นน้ำลง · ADCP · สารเคลือบ Anti-fouling</td>
+            <td>ความขุ่นจำกัดการใช้กล้องและ ROV กระแสน้ำสร้างภาระต่อโครงสร้าง เพรียงและแมงกะพรุนอุดตันช่องทางน้ำหล่อเย็น</td>
+            <td>ตะกอนจากแม่น้ำเจ้าพระยาสูง · น้ำอุ่นเร่งการเกาะของสิ่งมีชีวิต — ต้องใช้ ROV ตรวจสภาพและสารเคลือบพิเศษ</td>
+          </tr>
+          <tr>
+            <td><b>การตรวจจับทาง Acoustics</b></td>
+            <td>WADER · NCW · สมการโซนาร์ (Urick) · SNR · PSR/TSR</td>
+            <td>ประเมินระยะและความน่าจะเป็นในการตรวจจับ (PoD) เพื่อป้องกัน <b>Seabed Warfare</b> — ภัยจริงของน้ำตื้นคือ SDV, Midget Submarine และ UUV</td>
+            <td>UDC บริเวณปากอ่าวสามารถทำหน้าที่เครือข่ายแจ้งเตือนล่วงหน้า (Early Warning) ต่อเรือดำน้ำ/UUV ของชาติเพื่อนบ้านได้ในตัว</td>
+          </tr>
+          <tr>
+            <td class="dim" rowspan="5">พื้นท้องทะเล</td>
+            <td><b>Bathymetry / ความลาดชัน</b></td>
+            <td>Multibeam Echo Sounder · แผนที่ ENC/DNC · Site Suitability Analysis</td>
+            <td>ความลึกและความราบเรียบกำหนดรูปแบบฐานรากและวิธีติดตั้ง — ช่วง ๒๐–๔๐ ม. นักประดาน้ำยังปฏิบัติงานได้</td>
+            <td>อ่าวตอนบนตื้น ๑๕–๔๐ ม. พื้นราบเรียบเหมาะติดตั้ง แต่จำกัดรูปแบบการสะท้อนของคลื่นเสียง</td>
+          </tr>
+          <tr>
+            <td><b>องค์ประกอบพื้นทะเล / การฝังตัว</b></td>
+            <td>Bottom Sampling · STRATAFORM · High-Frequency Bottom Loss (HFBL)</td>
+            <td>พื้นโคลน/ตะกอนเสี่ยงการจมตัวของแคปซูลและการสูญเสียประสิทธิภาพระบายความร้อน · Bottom Loss สูงทำให้ Bottom Bounce ระยะสั้น</td>
+            <td>โคลนเลนราว ๖๐% โดยเฉพาะปากแม่น้ำเสี่ยงสุด — ควรเลือกพื้นทรายปนโคลนเนื้อแน่นเป็นจุดวางแคปซูล</td>
+          </tr>
+          <tr>
+            <td><b>CUI / ความหนาแน่นสิ่งกีดขวาง</b></td>
+            <td>Side-scan Sonar · One Marine Map · ข้อมูลสัมปทานปิโตรเลียม</td>
+            <td>ท่อก๊าซ สายเคเบิลสื่อสาร (เช่น SJC2) ซากเรือ และปะการังเทียม ทั้งกีดขวางการวางตัวและบดบังการตรวจจับ (Clutter)</td>
+            <td>ต้องบูรณาการแผนที่ CUI ทุกระบบก่อนกำหนดจุดติดตั้ง · DAS ทำหน้าที่ Tripwire ตรวจการลากสมอใกล้แนวเคเบิล</td>
+          </tr>
+          <tr>
+            <td><b>สงครามทุ่นระเบิด (Mine Warfare)</b></td>
+            <td>การปฏิบัติการต่อต้านทุ่นระเบิด (MCM) · เรือ MCM ชั้นลาดหญ้า/บางระจัน · Side-scan + Synthetic Aperture Sonar</td>
+            <td>UDC เป็นเป้าหมายอยู่กับที่ (Fixed Asset) เสี่ยงถูกวางทุ่นระเบิดปิดล้อมทั้งที่ตั้งและเส้นทางส่งกำลังบำรุง</td>
+            <td>กำหนดวงรอบการกวาดตรวจทุ่นระเบิดสม่ำเสมอ ควบคู่เขตควบคุมการทอดสมอ</td>
+          </tr>
+          <tr>
+            <td><b>เฝ้าตรวจการแทรกซึม / การลากสมอบนแนวเคเบิล</b></td>
+            <td>DAS (Distributed Acoustic Sensing) + OTDR</td>
+            <td>เปลี่ยนสายเคเบิลทั้งเส้นให้เป็นเซนเซอร์ตรวจการสั่นสะเทือนและการลากสมอ — มาตรการรับมือปฏิบัติการ Grey-zone โดยตรง</td>
+            <td>ช่วยอุดช่องว่างการแจ้งเตือนในย่าน Shadow Zone ของอ่าวตอนบน</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prop rv">
+      <div class="h">◈ KEY INSIGHT — ข้อค้นพบจากมิติสภาพแวดล้อม</div>
+      <p>อ่าวไทยตอนบน<b>เหมาะสมทางวิศวกรรม</b> (ตื้น พื้นราบ ใกล้ฝั่ง ใกล้ศูนย์เศรษฐกิจ)
+      แต่<b>ท้าทายทางยุทธวิธี</b> (Shadow Zone จราจรหนาแน่น เสียงรบกวนสูง) —
+      การป้องกัน UDC จึงพึ่งเซนเซอร์ชนิดเดียวไม่ได้ ต้องเป็น<b>เครือข่ายตรวจจับหลายชั้นหลายมิติ</b>
+      ที่ออกแบบจากข้อมูลสมุทรศาสตร์จริงของพื้นที่</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2.4 กฎหมาย & การจัดระเบียบพื้นที่ ================= -->
+<section id="law">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">๒.๔</span>LEGAL FRAMEWORK &amp; MARITIME SPATIAL PLANNING</div>
+    <h2 class="title rv">กรอบกฎหมายและการจัดระเบียบพื้นที่ทางทะเล</h2>
+    <p class="lead rv">การคุ้มครอง UDC ต้องยืนอยู่บนฐานกฎหมาย ๓ ระดับ —
+      <b>กฎหมายระหว่างประเทศ (UNCLOS)</b> ที่ให้อำนาจแต่ก็จำกัดอำนาจ ·
+      <b>กฎหมายภายใน</b> ที่เป็นเครื่องมือ Hard Power ของรัฐ ·
+      และ<b>เครื่องมือจัดระเบียบพื้นที่</b> (TSS / MSP) ที่แปลงข้อกฎหมายให้เป็นรูปธรรมบนแผนที่เดินเรือ</p>
+
+    <h3 class="sub-h rv"><span class="bar"></span>อนุสัญญาสหประชาชาติว่าด้วยกฎหมายทะเล ค.ศ. 1982 (UNCLOS)</h3>
+    <div class="tier rv">
+      <div class="h"><span class="no">ข้อ ๕๖ / ๘๐</span>สิทธิอธิปไตยและเขตอำนาจใน EEZ</div>
+      <p>รัฐชายฝั่งมี<b>เขตอำนาจ (Jurisdiction)</b> เหนือการสร้างและใช้งานเกาะเทียม สิ่งติดตั้ง
+      และสิ่งก่อสร้างในเขตเศรษฐกิจจำเพาะ — เป็นฐานอำนาจหลักในการติดตั้ง UDC นอกทะเลอาณาเขต</p>
+    </div>
+    <div class="tier rv" style="border-left-color:var(--red)">
+      <div class="h"><span class="no" style="color:var(--red)">ข้อ ๖๐ วรรค ๕</span>Safety Zone ๕๐๐ เมตร — จุดอ่อนสำคัญ</div>
+      <p>เขตปลอดภัยรอบสิ่งติดตั้งกำหนดได้<b>ไม่เกิน ๕๐๐ ม.</b> —
+      ระยะที่แคบเกินกว่าจะหยุดยั้งภัยคุกคามความเร็วสูงหรือ UUV ได้ทันการณ์
+      งานวิจัยนี้จึงต้องออกแบบกลไกก้าวข้ามข้อจำกัดดังกล่าวด้วยกฎหมายภายใน</p>
+    </div>
+    <div class="tier rv">
+      <div class="h"><span class="no">ข้อ ๑๗</span>สิทธิการผ่านโดยสุจริต (Innocent Passage)</div>
+      <p>เรือทุกชาติมีสิทธิผ่านทะเลอาณาเขตโดยสุจริต — รัฐชายฝั่งห้ามเรือต่างชาติแบบเหวี่ยงแหไม่ได้
+      ทำให้การ "ปิดทะเล" รอบ UDC โดยตรงขัดต่อพันธกรณีระหว่างประเทศ ต้องใช้การจัดระเบียบพื้นที่แทน</p>
+    </div>
+
+    <h3 class="sub-h rv"><span class="bar"></span>กฎหมายภายใน — เครื่องมือ Hard Power ที่มีอยู่จริง</h3>
+    <p class="body rv"><b>พระราชบัญญัติว่าด้วยเขตปลอดภัยในราชการทหาร พุทธศักราช ๒๔๗๘</b>
+      (มาตรา ๓, ๔ และ ๖) ให้อำนาจตรา<b>พระราชกฤษฎีกา</b>กำหนดเขตปลอดภัยรอบที่ตั้งทางทหาร
+      พร้อมบทลงโทษผู้ฝ่าฝืน โดยมีแบบอย่างที่ใช้งานจริงคือ <b>พ.ร.ฎ. เขตปลอดภัยฯ สัตหีบ พ.ศ. ๒๕๓๖</b> —
+      นี่คือกลไกที่ทำให้รัฐขยายการคุ้มครอง UDC ได้กว้างกว่า ๕๐๐ ม. ของ UNCLOS อย่างมีฐานกฎหมายรองรับ</p>
+    <p class="body rv">บทเรียนสำคัญ: เขตหวงห้ามตามประกาศยุคเก่า (พ.ศ. ๒๕๐๒)
+      ซึ่งแผนที่แนบท้าย<b>ไม่ระบุพิกัดมูลฐานทางราบ (Geodetic Datum)</b> เคยเป็นเหตุให้<b>ศาลยกฟ้อง</b>คดีรุกล้ำเขตทหารมาแล้ว —
+      เขตคุ้มครอง UDC จึงต้องผูกพิกัดมาตรฐานสากล (WGS-84) ตั้งแต่ชั้นร่างกฎหมาย
+      นอกจากนี้การบริหารทะเลไทยยังกระจายแบบ <b>Sector-by-Sector ใน ๑๗ กระทรวง/หน่วยงาน</b>
+      โดยไร้ผังแม่บทเชิงพื้นที่ฉบับเดียว — ช่องว่างเชิงบูรณาการที่งานวิจัยนี้ต้องออกแบบกลไกมาอุด</p>
+
+    <figure class="fig rv">
+      <div class="fig-box"><img src="THE_SHIELD_Ch2_lawzones.jpg" alt="แผนภาพเขตทางทะเลตามอนุสัญญาสหประชาชาติว่าด้วยกฎหมายทะเล ค.ศ. 1982 — ทะเลอาณาเขต เขตต่อเนื่อง เขตเศรษฐกิจจำเพาะ และทะเลหลวง"></div>
+      <figcaption>
+        <span class="t">ภาพที่ ๒-๗ · เขตทางทะเลภายใต้อนุสัญญาสหประชาชาติว่าด้วยกฎหมายทะเล ค.ศ. 1982 (UNCLOS)</span>
+        <span class="src">ที่มา : แผนกกฎหมายปฏิบัติการทางทหาร สำนักงานพระธรรมนูญทหารเรือ</span>
+      </figcaption>
+    </figure>
+
+    <h3 class="sub-h rv"><span class="bar"></span>ระบบแบ่งแนวจราจร (Traffic Separation Scheme: TSS)</h3>
+    <p class="body rv">TSS คือเครื่องมือจัดระเบียบการเดินเรือที่ได้รับการรับรองโดย IMO ประกอบด้วย ๓ องค์ประกอบ
+      และบังคับพฤติกรรมเรือผ่าน <b>COLREGs ข้อ ๑๐</b> — เรือที่จำเป็นต้องตัดผ่านช่องจราจรต้องตัดให้
+      <b>ใกล้มุมฉาก (~๙๐°)</b> มากที่สุด ทำให้เรือที่เคลื่อนที่ "ผิดแบบแผน" ใกล้เขต UDC
+      ถูกจำแนกเป็นพฤติกรรมต้องสงสัยได้ทันทีจากข้อมูล AIS/เรดาร์</p>
+    <div class="grid g3">
+      <div class="card scope-card rv">
+        <h4><span class="ic">➡️</span>Traffic Lanes</h4>
+        <p>ช่องทางเดินเรือ<b>ทิศทางเดียว</b> แยกกระแสจราจรขาเข้า–ขาออก ลดความเสี่ยงการเผชิญหน้า
+        และทำให้แบบแผนจราจรรอบ UDC คาดการณ์ได้</p>
+      </div>
+      <div class="card scope-card rv">
+        <h4><span class="ic">⏸️</span>Separation Zone</h4>
+        <p>แนวกันชนกลางระหว่างช่องจราจรสวนทาง — เป็นพื้นที่ที่เรือทั่วไป "ไม่ควรอยู่"
+        จึงใช้เป็นแถบเฝ้าระวังที่ความผิดปกติเด่นชัดที่สุด</p>
+      </div>
+      <div class="card scope-card rv">
+        <h4><span class="ic">🚤</span>Inshore Traffic Zone</h4>
+        <p>เขตชายฝั่งสำหรับเรือประมงและเรือขนาดเล็ก แยกออกจากเรือพาณิชย์ขนาดใหญ่ —
+        ลดความหนาแน่นและเสียงรบกวนในพื้นที่ใกล้แนวเคเบิลเข้าฝั่ง</p>
+      </div>
+    </div>
+
+    <figure class="fig rv">
+      <div class="fig-box"><img src="THE_SHIELD_Ch2_tss.webp" alt="ภาพจำลอง: ระบบแบ่งแนวจราจรทางเรือ TSS ช่องจราจรทิศทางเดียวคั่นด้วยเขตแบ่งแยกกลาง"></div>
+      <figcaption>
+        <span class="t">ภาพประกอบ · ระบบแบ่งแนวจราจรทางเรือ (Traffic Separation Scheme) — ช่องจราจรทิศทางเดียวคั่นด้วยเขตแบ่งแยกกลาง ทำให้แบบแผนการเดินเรือรอบที่ตั้ง UDC คาดการณ์ได้และตรวจจับพฤติกรรมผิดปกติได้ทันที</span>
+        <span class="src">ภาพจำลองโดยปัญญาประดิษฐ์ เพื่อสื่อบรรยากาศ · AI-GENERATED</span>
+      </figcaption>
+    </figure>
+
+    <h3 class="sub-h rv"><span class="bar"></span>บทเรียนจากต่างประเทศ (Benchmarking)</h3>
+    <div class="grid g2">
+      <div class="card case rv">
+        <span class="flag">🇮🇩 INDONESIA · SUNDA &amp; LOMBOK STRAITS</span>
+        <h4>TSS ช่องแคบซุนดา–ลอมบอก + Merak VTS</h4>
+        <p>อินโดนีเซียเป็นประเทศแรกที่ผลักดัน TSS ใน<b>เส้นทางเดินเรือหมู่เกาะ (ASL)</b> ผ่าน IMO สำเร็จ
+        พร้อมตั้งสถานี VTS ควบคุม — พิสูจน์ว่ารัฐชายฝั่งกำลังพัฒนาสามารถใช้กลไกสากล
+        จัดระเบียบทะเลของตนได้จริง</p>
+        <div class="hl">ผลลัพธ์: อุบัติเหตุทางเรือและเหตุสมอเรือทำลายสายเคเบิลใต้น้ำลดลงชัดเจน</div>
+      </div>
+      <div class="card case rv">
+        <span class="flag">🇳🇱🇩🇰🇩🇪 NORTH SEA · MSP</span>
+        <h4>การวางผังพื้นที่ทะเลเหนือ — คุ้มครอง CUI</h4>
+        <p>เนเธอร์แลนด์ เดนมาร์ก และเยอรมนี บรรจุโครงสร้างพื้นฐานใต้น้ำเป็น<b>"เขตคุ้มครองพิเศษ"</b>
+        ในผังแม่บททะเลแห่งชาติ (National Marine Spatial Plan) ให้<b>ลำดับความสำคัญเหนือกิจกรรมเศรษฐกิจ</b>อื่น
+        พร้อมข้อห้ามอวนลากและทอดสมอตามแนวเคเบิล</p>
+        <div class="hl">ต้นแบบการยก CUI ขึ้นเป็นวาระผังเมืองทางทะเลระดับชาติ — แนวทางเดียวกับที่งานวิจัยนี้เสนอ</div>
+      </div>
+    </div>
+
+    <!-- ============ Denmark MSP · live WMS demonstration ============ -->
+    <figure class="fig rv msp-demo" id="mspDemo">
+      <div class="msp-panel">
+        <div class="msp-head">
+          <span class="msp-kicker">LIVE WMS · ดึงข้อมูลสดจากระบบราชการเดนมาร์ก</span>
+          <h3 class="msp-title">สาธิตด้วยข้อมูลจริง: แผนผังการใช้พื้นที่ทางทะเลของเดนมาร์ก (Danmarks Havplan 2024)</h3>
+          <div class="msp-sub">โซนจริงตามแผนแม่บทที่ประกาศใช้ ๒๘ มิ.ย. ๒๐๒๔ — ลากเลื่อน/ซูมได้ และกดปุ่มเพื่อซ้อนชั้นข้อมูลรายธีม แล้วเทียบกับแนวคิดจัดระเบียบพื้นที่อ่าวไทยของ THE SHIELD</div>
+        </div>
+        <div class="msp-tools" id="mspTools">
+          <span class="msp-chip on" data-l="plan"  style="--c:#00d4ff"><i class="dot"></i>โซนแผนแม่บท (havplan)</span>
+          <span class="msp-chip"    data-l="wind"  style="--c:#f5c451"><i class="dot"></i>กังหันลมนอกฝั่ง</span>
+          <span class="msp-chip"    data-l="mil"   style="--c:#ff6b61"><i class="dot"></i>เขตทหาร</span>
+          <span class="msp-chip"    data-l="nat"   style="--c:#39ff14"><i class="dot"></i>เขตอนุรักษ์ Natura 2000</span>
+          <span class="msp-chip"    data-l="route" style="--c:#bd93f9"><i class="dot"></i>ความหนาแน่นการเดินเรือ</span>
+        </div>
+        <div class="msp-mapwrap">
+          <div id="mspMap" class="msp-map" role="img" aria-label="แผนที่อินเทอร์แอกทีฟแสดงผังการใช้พื้นที่ทางทะเลของเดนมาร์ก"></div>
+          <div class="msp-legend">
+            <b>ชั้นข้อมูล · MSP</b>
+            <div class="lg"><span class="sw" style="background:#00d4ff"></span>โซนแผนแม่บท (ทางการ)</div>
+            <div class="lg"><span class="sw" style="background:#f5c451"></span>พลังงานลมนอกฝั่ง</div>
+            <div class="lg"><span class="sw" style="background:#ff6b61"></span>เขตทหาร</div>
+            <div class="lg"><span class="sw" style="background:#39ff14"></span>อนุรักษ์ธรรมชาติ</div>
+            <div class="lg"><span class="sw" style="background:#bd93f9"></span>เส้นทางเดินเรือหนาแน่น</div>
+          </div>
+          <div class="msp-fallback" id="mspFallback">
+            <div>⚠️ ไม่สามารถโหลดแผนที่สดได้ในขณะนี้<br>(เซิร์ฟเวอร์ MSP ของราชการเดนมาร์กอาจไม่ว่างชั่วคราว)</div>
+            <a href="https://havplan.dk/" target="_blank" rel="noopener">เปิดดูแผนที่ต้นทางที่ havplan.dk ↗</a>
+          </div>
+        </div>
+        <div class="msp-cred">
+          <span>SOURCE · havplan.dk (Søfartsstyrelsen) GeoServer WMS + EMODnet Human Activities</span>
+          <span>REAL-TIME WMS FETCH · EPSG:3857</span>
+        </div>
+      </div>
+      <figcaption>
+        <span class="t">การสาธิตด้วยข้อมูลจริง · แผนผังการใช้พื้นที่ทางทะเล (Maritime Spatial Plan) ของเดนมาร์ก ดึงสดผ่านระบบ WMS ของกรมเจ้าท่าเดนมาร์ก — แสดงการแบ่งทะเลเป็นโซนหน้าที่ (เดินเรือ · พลังงาน · อนุรักษ์ · ทหาร) อย่างเป็นระบบ ซึ่งเป็นตรรกะเดียวกับที่ THE SHIELD เสนอให้นำมาใช้จัดระเบียบและคุ้มครองพื้นที่รอบ UDC ในอ่าวไทย</span>
+        <span class="src">ข้อมูลสดจาก havplan.dk · EMODnet Human Activities (ยุโรป) · แสดงผลด้วย Leaflet — LIVE DATA</span>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ================= 2.5 แนวคิดการป้องกันแบบบูรณาการ ================= -->
+<section id="defense">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">๒.๕</span>INTEGRATED DEFENSE CONCEPTS</div>
+    <h2 class="title rv">แนวคิดการป้องกันโครงสร้างพื้นฐานสำคัญทางทะเล</h2>
+    <p class="lead rv">UDC คือ <b>Maritime Critical Infrastructure</b> ที่เผชิญภัยคุกคามแบบผสมผสานทั้ง
+      <b>Cyber–Physical Threats</b> และ<b>สงครามพื้นท้องทะเล (Seabed Warfare)</b> —
+      การป้องกันจึงต้องบูรณาการสามแนวคิดเข้าด้วยกัน: หลักนิยมการป้องกันฐานทัพ/ท่าเรือของฝ่ายทหาร
+      กลไกอำนวยการของ ศรชล. และการวิเคราะห์ปัจจัย<b>เวลา–พื้นที่–กำลังรบ</b>ตามศิลปะการยุทธ์</p>
+
+    <h3 class="sub-h rv"><span class="bar"></span>๒.๕.๑ — หลักนิยม Harbor Defense &amp; Harbor Control (HDHC)</h3>
+    <div class="grid g2">
+      <div class="card scope-card rv">
+        <h4><span class="ic">🛡️</span>Harbor Defense — การป้องกันเชิงรุก</h4>
+        <p>จัดการป้องกันเป็น<b>แนวลึกหลายชั้น (Defense in Depth + Layered Defense)</b>
+        ผสานเรือผิวน้ำ อากาศยาน และยานใต้น้ำไร้คนขับ ภายใต้เครือข่าย <b>NCW</b> —
+        ภัยคุกคามต้องถูกตรวจพบและสกัดตั้งแต่ชั้นนอกสุด ก่อนเข้าถึงทรัพย์สินที่คุ้มครอง</p>
+      </div>
+      <div class="card scope-card rv">
+        <h4><span class="ic">🚦</span>Harbor Control — การควบคุมเชิงระเบียบ</h4>
+        <p>ควบคุมการเข้า–ออกพื้นที่ด้วยมาตรการ <b>Routing · Movement Control · Reporting · Convoy</b>
+        บนฐานข้อมูล <b>MDA</b> ที่ต่อเนื่อง — ยกระดับจากภาวะปกติสู่ภาวะสงครามได้โดยไม่ต้องรื้อโครงสร้างใหม่</p>
+      </div>
+    </div>
+    <div class="quote rv">
+      <p>"การนำหลักนิยม HDHC มาประยุกต์กับ UDC คือการยกระดับศูนย์ข้อมูลใต้น้ำให้ได้รับการคุ้มครอง
+      เทียบเท่าฐานทัพเรือแห่งหนึ่ง — เพียงแต่ฐานทัพแห่งนี้จมอยู่ใต้ผิวน้ำ"</p>
+      <div class="who">— สังเคราะห์จากหลักนิยมการป้องกันท่าเรือและฐานทัพ</div>
+    </div>
+
+    <figure class="fig rv">
+      <div class="fig-box"><img src="THE_SHIELD_Ch2_layers.webp" alt="ภาพจำลอง: การป้องกันแบบแนวลึกหลายชั้น วงแหวนเฝ้าตรวจซ้อนชั้นรอบที่ตั้ง UDC พร้อมเรือตรวจการณ์"></div>
+      <figcaption>
+        <span class="t">ภาพประกอบ · การป้องกันแบบแนวลึกหลายชั้น (Defense in Depth + Layered Defense) — วงแหวนเฝ้าตรวจซ้อนชั้นรอบที่ตั้ง UDC ภัยคุกคามต้องถูกสกัดตั้งแต่ชั้นนอกสุดก่อนเข้าถึงทรัพย์สินที่คุ้มครอง</span>
+        <span class="src">ภาพจำลองโดยปัญญาประดิษฐ์ เพื่อสื่อบรรยากาศ · AI-GENERATED</span>
+      </figcaption>
+    </figure>
+
+    <h3 class="sub-h rv"><span class="bar"></span>๒.๕.๒ — กลไกอำนวยการ: ศรชล. และเครือข่ายความมั่นคงทางทะเล</h3>
+    <p class="body rv"><b>ศูนย์อำนวยการรักษาผลประโยชน์ของชาติทางทะเล (ศรชล.)</b> ตาม พ.ร.บ. ๒๕๖๒
+      มีฐานะเป็น<b>"กลไกอำนวยการกลาง"</b> ที่เชื่อม ๗ หน่วยงานหลักทางทะเลเข้าด้วยกัน —
+      จุดแข็งที่งานวิจัยนำมาต่อยอดมี ๔ ประการ</p>
+    <ul class="clean rv">
+      <li><b>Data-Driven Operations</b> — โครงการ One Marine Chart และ Big Data สู่ภาพสถานการณ์ร่วม (COP) ผืนเดียวของทะเลไทย</li>
+      <li><b>เทคโนโลยี MDA</b> — AIS / VMS / เรดาร์ชายฝั่ง / ดาวเทียม / UAV–UUV ผสาน AI วิเคราะห์แบบ Near Real-time ตรวจจับ <b>Dark Vessels</b> ที่ปิดสัญญาณ</li>
+      <li><b>MECC Model</b> — วงรอบบริหาร (ตามแนว PDCA): บูรณาการยุทธศาสตร์ทางทะเล → บังคับใช้และปฏิบัติ → ติดตามประเมินผล → ปรับปรุงต่อเนื่อง</li>
+      <li><b>มิติไซเบอร์</b> — ประสาน สกมช. คุ้มครอง <b>"เส้นทางคมนาคมดิจิทัล" (Digital SLOC)</b> ซึ่ง UDC และสายเคเบิลใต้น้ำเป็นหัวใจ</li>
+    </ul>
+
+    <figure class="fig rv">
+      <div class="fig-box"><img src="THE_SHIELD_Ch2_opsroom.webp" alt="ภาพจำลอง: ศูนย์อำนวยการร่วม เจ้าหน้าที่ประจำคอนโซล จอผนังแสดงภาพสถานการณ์ทางทะเลรวมศูนย์"></div>
+      <figcaption>
+        <span class="t">ภาพประกอบ · ศูนย์อำนวยการร่วม — การหลอมรวมภาพสถานการณ์ทางทะเล (MDA → Common Operational Picture) จากหลายเซนเซอร์สู่จอแสดงผลเดียว เพื่อการบัญชาการรวมศูนย์แบบ Near Real-time</span>
+        <span class="src">ภาพจำลองโดยปัญญาประดิษฐ์ เพื่อสื่อบรรยากาศ · AI-GENERATED</span>
+      </figcaption>
+    </figure>
+
+    <h3 class="sub-h rv"><span class="bar"></span>๒.๕.๓ — การวิเคราะห์ปัจจัยเวลา–พื้นที่–กำลังรบ (Time–Space–Force)</h3>
+    <p class="body rv">ตาม<b>ศิลปะการยุทธ์ (Operational Art)</b> ผู้วางแผนต้องจัดความสัมพันธ์ของสามปัจจัย
+      ให้เกื้อกูลกัน — งานวิจัยนี้ใช้กรอบดังกล่าวเป็นแกนสังเคราะห์แนวคิดทั้งบทเข้าเป็นโมเดลเดียว</p>
+
+    <div class="t-cap rv">
+      <span class="t">ตารางที่ ๒-๓ · การประยุกต์ปัจจัยเวลา–พื้นที่–กำลังรบ กับการป้องกัน UDC</span>
+      <span class="src">ที่มา : ผู้วิจัย</span>
+    </div>
+    <div class="tbl-wrap rv">
+      <table class="dtbl w900">
+        <thead><tr>
+          <th>ปัจจัยทางการยุทธ์</th><th>ทฤษฎี / แนวคิดที่เกี่ยวข้อง</th><th>การประยุกต์กับการป้องกัน UDC</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="dim">พื้นที่ (Space)</td>
+            <td>การจัดระเบียบพื้นที่ทางทะเล (MSP) · TSS · เขตปลอดภัยตามกฎหมาย</td>
+            <td>ใช้กฎหมายและผังพื้นที่จำกัด<b>เสรีในการเคลื่อนที่</b>ของภัยคุกคาม สถาปนา <b>Battle Space Dominance</b> รอบที่ตั้ง UDC</td>
+          </tr>
+          <tr>
+            <td class="dim">เวลา (Time)</td>
+            <td>MDA · เครือข่ายเซนเซอร์ · การแจ้งเตือนล่วงหน้า (Early Warning)</td>
+            <td>ตรวจจับให้ไกลและเร็วที่สุดเพื่อซื้อ<b>เวลาตอบโต้ (Reaction Time)</b> ให้กำลังที่อยู่ห่างออกไปเข้าถึงพื้นที่ทันการณ์</td>
+          </tr>
+          <tr>
+            <td class="dim">กำลังรบ (Force)</td>
+            <td>NCW · การปฏิบัติการหลายมิติ (Multi-Domain) · Force Multiplier</td>
+            <td>ผนึกกำลังใต้น้ำ (USW Center + UUV) ผิวน้ำ–อากาศ (ทรภ.๑) และชายฝั่ง (สอ.รฝ.) ให้เครือข่ายทำหน้าที่<b>ทวีกำลัง</b>แทนการเพิ่มจำนวนเรือ</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prop rv">
+      <div class="h">◈ OPERATIONAL EQUATION — สมการทางยุทธการของโมเดล</div>
+      <p>ใช้ <b>พื้นที่</b> (กฎหมาย + MSP) จำกัดเสรีการเคลื่อนที่ของภัยคุกคาม →
+      สร้าง <b>เวลา</b> (MDA + Early Warning) ให้ฝ่ายเรามากกว่า →
+      เปิดโอกาสให้ <b>กำลังรบ</b> พหุมิติเข้าสกัดกั้นอย่างเฉียบขาด ณ จุดและเวลาที่ได้เปรียบ</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= THE SHIELD 1.0 ================= -->
+<section id="shield">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">๒.๕.๔</span>SYNTHESIS — THE SHIELD 1.0</div>
+    <h2 class="title rv">กรอบแนวคิดการสร้างโมเดลการป้องกัน «The Shield 1.0»</h2>
+    <p class="lead rv">จุดบรรจบขององค์ความรู้ทั้งบท — สังเคราะห์สภาพแวดล้อมทางยุทธวิธี (๒.๓)
+      กรอบกฎหมาย (๒.๔) และปัจจัยเวลา–พื้นที่–กำลังรบ (๒.๕.๓) ขึ้นเป็นโมเดลการป้องกัน UDC เชิงทฤษฎี
+      ที่<b>ก้าวข้ามข้อจำกัด Safety Zone ๕๐๐ ม.</b> ของ UNCLOS ข้อ ๖๐ วรรค ๕
+      ด้วยอำนาจตาม <b>พ.ร.บ. เขตปลอดภัยในราชการทหาร ๒๔๗๘</b> — ตราพระราชกฤษฎีกา
+      พร้อมแผนที่พิกัดมาตรฐานสากลแนบท้าย</p>
+
+    <div class="zones rv">
+      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="แผนภาพเขตการป้องกันสองชั้นรอบ UDC">
+        <circle cx="150" cy="150" r="138" fill="rgba(245,196,81,.05)" stroke="#f5c451" stroke-width="1.5" stroke-dasharray="7 5"/>
+        <circle cx="150" cy="150" r="84" fill="rgba(255,107,97,.07)" stroke="#ff6b61" stroke-width="1.5"/>
+        <circle cx="150" cy="150" r="7" fill="#00d4ff"/>
+        <circle cx="150" cy="150" r="16" fill="none" stroke="#00d4ff" stroke-width="1.5" opacity=".7">
+          <animate attributeName="r" values="12;26;12" dur="3s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values=".8;.1;.8" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <text x="150" y="138" text-anchor="middle" fill="#9fd8ff" font-size="10" font-family="monospace">UDC</text>
+        <text x="150" y="86" text-anchor="middle" fill="#ff6b61" font-size="9.5" font-family="monospace">MEZ · 2–5 nm</text>
+        <text x="150" y="32" text-anchor="middle" fill="#f5c451" font-size="9.5" font-family="monospace">BUFFER · 5–10 nm + TSS</text>
+      </svg>
+      <div class="zone-leg">
+        <div class="zl"><span class="sw" style="background:#00d4ff"></span>
+          <span><b>UDC Cluster</b> — แคปซูลศูนย์ข้อมูล + Hub + แนวสายสะดือเข้าฝั่ง บนพิกัดที่ประกาศในพระราชกฤษฎีกา</span></div>
+        <div class="zl"><span class="sw" style="background:#ff6b61"></span>
+          <span><b>Maritime Exclusion Zone (MEZ)</b> · รัศมี ๒–๕ ไมล์ทะเล — เขตหวงห้ามเด็ดขาด
+          ห้ามเรือทุกประเภทที่ไม่ได้รับอนุญาต บังคับใช้ด้วยอำนาจ พ.ร.บ. ๒๔๗๘</span></div>
+        <div class="zl"><span class="sw" style="background:#f5c451"></span>
+          <span><b>Restricted / Buffer Zone</b> · รัศมี ๕–๑๐ ไมล์ทะเล — เขตจำกัดพฤติกรรม
+          (ห้ามทอดสมอ ห้ามอวนลาก ห้ามลอยลำ) ควบคู่ TSS จัดระเบียบจราจร และ MDA เฝ้าตรวจ ๒๔/๗</span></div>
+      </div>
+    </div>
+
+    <h3 class="sub-h rv"><span class="bar"></span>สถาปัตยกรรมของโมเดล — ๓ องค์ประกอบหลัก</h3>
+    <div class="tier rv">
+      <div class="h"><span class="no">①</span>Zoning Model — เกราะชั้นนอก (Outer Shield)</div>
+      <p>เขตป้องกันสองชั้นตามแผนภาพข้างต้น แปลงหลักการ <b>"ใช้พื้นที่จำกัดเสรีภัยคุกคาม"</b>
+      ให้เป็นเส้นบนแผนที่เดินเรือที่มีผลทางกฎหมายจริง</p>
+    </div>
+    <div class="tier rv">
+      <div class="h"><span class="no">②</span>Multi-Domain Force Integration — การผนึกกำลังพหุมิติ</div>
+      <p>มอบความรับผิดชอบเป็นรายมิติ: ชายฝั่ง = <b>สอ.รฝ.</b> · ผิวน้ำ–อากาศ = <b>ทรภ.๑</b> ·
+      ใต้น้ำ = <b>ศูนย์สงครามใต้น้ำ (USW Center) + UUV</b> · พื้นท้องทะเล = <b>กรมอุทกศาสตร์</b>
+      (ร.ล.สุริยะ / ร.ล.ศุกร์ พร้อม Multibeam และ ROV)</p>
+    </div>
+    <div class="tier rv">
+      <div class="h"><span class="no">③</span>Centralized C2 — การบัญชาการรวมศูนย์</div>
+      <p>โครงข่าย <b>NCW</b> หลอมรวมภาพสถานการณ์ทุกมิติ มี <b>Underwater Element Coordinator</b>
+      ประสานการปฏิบัติใต้น้ำ และใช้ <b>AI / Big Data</b> วิเคราะห์แจ้งเตือนล่วงหน้า
+      เพื่อสั่งการตอบโต้จากศูนย์เดียว</p>
+    </div>
+
+    <div class="t-cap rv">
+      <span class="t">ตารางที่ ๒-๔ · โครงสร้างโมเดล The Shield 1.0 — มิติ องค์ประกอบ ผู้รับผิดชอบ และปัจจัยความเสี่ยง</span>
+      <span class="src">ที่มา : ผู้วิจัย</span>
+    </div>
+    <div class="tbl-wrap rv">
+      <table class="dtbl w1100">
+        <thead><tr>
+          <th>มิติทางการยุทธ์</th><th>องค์ประกอบของโมเดล</th><th>ผู้รับผิดชอบหลัก</th><th>รายละเอียดการปฏิบัติ</th><th>ปัจจัยความเสี่ยง</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td class="dim">พื้นที่</td>
+            <td><b>Outer Shield</b> — MEZ ๒–๕ nm + Buffer ๕–๑๐ nm + TSS</td>
+            <td>ศรชล. ร่วมกับกรมเจ้าท่า / IMO</td>
+            <td>ตราพระราชกฤษฎีกาเขตปลอดภัย ประกาศผ่านแผนที่เดินเรือและประกาศชาวเรือ บังคับพฤติกรรมผ่าน COLREGs ข้อ ๑๐</td>
+            <td>แรงเสียดทานจากประมงพื้นบ้านและผู้ประกอบการเดินเรือ — ต้องมีกระบวนการมีส่วนร่วม</td>
+          </tr>
+          <tr>
+            <td class="dim">เวลา</td>
+            <td><b>Centralized C2</b> — NCW + AI Early Warning</td>
+            <td>ศปก.ทร. / ศรชล. (COP ร่วม)</td>
+            <td>หลอมรวมข้อมูล AIS เรดาร์ ดาวเทียม และเซนเซอร์ใต้น้ำ วิเคราะห์พฤติกรรมผิดแบบแผนแบบ Near Real-time</td>
+            <td>ความหน่วงของข้อมูลต่างหน่วยงาน · ภัยไซเบอร์ต่อตัวโครงข่าย C2 เอง</td>
+          </tr>
+          <tr>
+            <td class="dim">กำลังรบ — ใต้น้ำ</td>
+            <td>เครือข่ายโซนาร์ + DAS + UUV ลาดตระเวน</td>
+            <td>ศูนย์สงครามใต้น้ำ ศปก.ทร.</td>
+            <td>เฝ้าตรวจ SDV / Midget / UUV ในย่าน Shadow Zone ด้วยเซนเซอร์หลายชนิดเสริมกัน มี Underwater Element Coordinator กำกับ</td>
+            <td>สภาพเสียงน้ำตื้นจำกัดระยะตรวจจับ · False Alarm จากเสียงชีวภาพ</td>
+          </tr>
+          <tr>
+            <td class="dim">กำลังรบ — ผิวน้ำ/อากาศ</td>
+            <td>เรือตรวจการณ์ + อากาศยานลาดตระเวน</td>
+            <td>ทัพเรือภาคที่ ๑ (ทรภ.๑)</td>
+            <td>ลาดตระเวนแสดงกำลัง ตรวจค้น และสกัดกั้นเป้าผิวน้ำต้องสงสัยใน MEZ/Buffer ตามขั้นการใช้กำลัง</td>
+            <td>จำนวนเรือจำกัดเทียบพื้นที่ — ต้องพึ่ง Early Warning เพื่อจัดวางกำลังล่วงหน้า</td>
+          </tr>
+          <tr>
+            <td class="dim">กำลังรบ — พื้นท้องทะเล</td>
+            <td>สำรวจ/พิสูจน์ทราบพื้นท้องทะเลเป็นวงรอบ</td>
+            <td>กรมอุทกศาสตร์ (ร.ล.สุริยะ / ร.ล.ศุกร์)</td>
+            <td>Multibeam + Side-scan + ROV จัดทำ Baseline พื้นท้องทะเลและตรวจความเปลี่ยนแปลง (Change Detection) รอบที่ตั้ง</td>
+            <td>วัตถุต้องสงสัย/ทุ่นระเบิดแยกยากจาก Clutter ในพื้นโคลน</td>
+          </tr>
+          <tr>
+            <td class="dim">กำลังรบ — ชายฝั่ง</td>
+            <td>เรดาร์ชายฝั่ง + อาวุธปล่อยฐานบก</td>
+            <td>หน่วยบัญชาการต่อสู้อากาศยานและรักษาฝั่ง (สอ.รฝ.)</td>
+            <td>เฝ้าตรวจและพร้อมสนับสนุนการยิงคุ้มครองจากฝั่ง ครอบคลุมแนวสายสะดือและสถานีรับขึ้นฝั่ง (Landing Station)</td>
+            <td>จุดเชื่อมต่อบนฝั่งเป็นเป้านิ่งต่อการก่อวินาศกรรมภาคพื้น</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <figure class="fig rv">
+      <div class="fig-box" style="background:#06121f;padding:0">
+        <img src="THE_SHIELD_Ch2_model.webp" alt="แผนภาพจำลองโมเดล The Shield 1.0 — เขตป้องกันหลายชั้นรอบศูนย์ข้อมูลใต้น้ำ ผนึกกำลังหลายมิติภายใต้การบัญชาการรวมศูนย์" style="border-radius:14px">
+      </div>
+      <figcaption>
+        <span class="t">ภาพที่ ๒-๑๐ · กรอบแนวคิดโมเดลการป้องกัน The Shield 1.0</span>
+        <span class="src">ที่มา : ผู้วิจัย</span>
+      </figcaption>
+    </figure>
+
+    <h3 class="sub-h rv"><span class="bar"></span>เส้นทางวิวัฒน์ของโมเดลตลอดงานวิจัย</h3>
+    <div class="evo rv">
+      <div class="stage s1">
+        <div class="v">SHIELD 1.0</div>
+        <div class="w"><b>บทที่ ๒ — กรอบทฤษฎี</b> · สังเคราะห์จากวรรณกรรม กฎหมาย และหลักนิยม เป็นโมเดลเชิงแนวคิด</div>
+      </div>
+      <div class="arr">➜</div>
+      <div class="stage s2">
+        <div class="v">SHIELD 2.0</div>
+        <div class="w"><b>บทที่ ๓ — ผูกพื้นที่จริง</b> · ปรับเทียบกับข้อมูลอ่าวไทยตอนบน ผลสัมภาษณ์เชิงลึก และ SWOT/TOWS</div>
+      </div>
+      <div class="arr">➜</div>
+      <div class="stage s3">
+        <div class="v">SHIELD 3.0</div>
+        <div class="w"><b>บทที่ ๔ — ระบบบูรณาการ</b> · ยกร่างเป็นข้อเสนอเชิงนโยบาย โครงสร้างกำลัง และแผนแม่บทที่นำไปปฏิบัติได้</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2.6 เครื่องมือวิเคราะห์ ================= -->
+<section id="tools">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">๒.๖</span>STRATEGIC ANALYSIS TOOLKIT</div>
+    <h2 class="title rv">เครื่องมือวิเคราะห์ทางยุทธศาสตร์ที่ใช้ในงานวิจัย</h2>
+    <p class="lead rv">บทที่ ๓ จะวิเคราะห์สถานภาพและออกแบบยุทธศาสตร์ด้วยเครื่องมือมาตรฐาน ๓ ชุด
+      ซึ่งทบทวนหลักวิชาไว้ในบทนี้</p>
+    <div class="grid g3">
+      <div class="card ben rv">
+        <div class="ic">⚔️</div>
+        <h4>SWOT Analysis + TOWS Matrix</h4>
+        <p>พัฒนาขึ้นในทศวรรษ 1960 โดย <b>Albert Humphrey</b> (Stanford Research Institute) —
+        วิเคราะห์จุดแข็ง–จุดอ่อน (ปัจจัยภายใน) และโอกาส–ภัยคุกคาม (ปัจจัยภายนอก)
+        แล้วจับคู่เป็นยุทธศาสตร์ <b>SO · ST · WO · WT</b> ผ่าน TOWS Matrix
+        เพื่อแปลงผลวิเคราะห์ให้เป็นทางเลือกเชิงรุก–เชิงรับที่จับต้องได้</p>
+      </div>
+      <div class="card ben rv">
+        <div class="ic">📐</div>
+        <h4>GAP Analysis</h4>
+        <p>เทียบสถานภาพปัจจุบัน (<b>As-Is</b>) กับสภาพที่พึงประสงค์ (<b>To-Be</b>) ใน ๔ ขั้นตอน
+        โดยงานวิจัยจำแนกช่องว่างเป็น ๓ ประเภท:
+        <b>กฎหมายและกระบวนการ · ขีดความสามารถและเทคโนโลยี · การประสานงานและบูรณาการ</b> —
+        ผลลัพธ์คือบัญชีช่องว่างที่ยุทธศาสตร์ต้องอุดเป็นรายข้อ</p>
+      </div>
+      <div class="card ben rv">
+        <div class="ic">🌐</div>
+        <h4>PMESII Framework</h4>
+        <p>กรอบวิเคราะห์สภาวะแวดล้อมการปฏิบัติการของฝ่ายเสนาธิการสหรัฐฯ/NATO —
+        มอง ๖ มิติ: <b>การเมือง ทหาร เศรษฐกิจ สังคม สารสนเทศ โครงสร้างพื้นฐาน</b>
+        (ขยายเป็น PMESII-PT เมื่อรวมมิติกายภาพและเวลา)
+        ใช้ตรวจสอบว่าข้อเสนอของโมเดลครอบคลุมผลกระทบทุกมิติของชาติ ไม่ใช่เฉพาะมิติทหาร</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2.7 สรุป ================= -->
+<section id="summary">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">๒.๗</span>CHAPTER SUMMARY</div>
+    <h2 class="title rv">สรุปท้ายบท — จากวรรณกรรมสู่โจทย์วิจัย</h2>
+    <p class="lead rv">การทบทวนวรรณกรรมทั้ง ๕ กลุ่มชี้ข้อสรุปเดียวกัน:
+      อ่าวไทยตอนบน<b>มีความเหมาะสมเชิงวิศวกรรม</b>ต่อการติดตั้ง UDC
+      แต่<b>ติดข้อจำกัดเชิงกฎหมาย</b> (Safety Zone ๕๐๐ ม.) และ<b>การบริหารทะเลแบบแยกส่วน</b> (๑๗ หน่วยงาน) —
+      กลไกที่มีอยู่จึง<b>ยังไม่เพียงพอ</b>ต่อภัยคุกคามยุค Seabed Warfare และปฏิบัติการ Grey-zone</p>
+
+    <div class="prop rv">
+      <div class="h">◈ SYNTHESIS — สิ่งที่บทนี้ส่งมอบ</div>
+      <p>บทที่ ๒ ส่งมอบ <b>กรอบแนวคิด The Shield 1.0</b> (ตารางที่ ๒-๔ และภาพที่ ๒-๑๐) —
+      โมเดลการป้องกันเชิงทฤษฎีที่ผนวก <b>Zoning Model + Multi-Domain Force + Centralized C2</b>
+      บนฐานกฎหมายไทยที่ใช้ได้จริง พร้อมเข้าสู่การทดสอบกับพื้นที่จริงในบทที่ ๓
+      ด้วยกระบวนการฝ่ายอำนวยการ การเทียบเคียงต่างประเทศ (Benchmarking)
+      การวิเคราะห์ SWOT/TOWS และการสัมภาษณ์เชิงลึกผู้เชี่ยวชาญ</p>
+    </div>
+
+    <p class="body rv" style="margin-top:22px">โครงสร้างการนำเสนอเอกสารฉบับเต็มของบทนี้ประกอบด้วยตาราง ๔ รายการ
+      และภาพประกอบ ๑๐ รายการ — หน้าเว็บนี้คัดเฉพาะองค์ประกอบสำคัญมาเรียบเรียงใหม่
+      เพื่อการสื่อสารที่กระชับ ผู้สนใจรายละเอียดเชิงอ้างอิงโปรดดูเอกสารวิจัยฉบับสมบูรณ์</p>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap">
+    <div class="foot-nav rv">
+      <a class="btn" href="THE_SHIELD_Ch1.html">← บทที่ ๑ · บทนำ</a>
+      <a class="btn primary" href="THE_SHIELD_Pitch.html#research">⌂ กลับหน้านำเสนองานวิจัย</a>
+      <span class="btn" style="opacity:.45;cursor:default">บทที่ ๓ · ระเบียบวิธีวิจัย (อยู่ระหว่างจัดทำ)</span>
+    </div>
+    <p class="disclaim">THE SHIELD · RESEARCH DOSSIER — CHAPTER 02 · หลักสูตรเสนาธิการทหารเรือ รุ่นที่ ๘๖ ·
+    เนื้อหาคัดย่อจากเอกสารวิจัยเพื่อการนำเสนอ มิใช่เอกสารราชการฉบับสมบูรณ์</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); } });
+  }, {threshold:.12});
+  document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+})();
+</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script>
+/* ===== Denmark MSP · live WMS demo (lazy-init on scroll) ===== */
+(function(){
+  var el = document.getElementById('mspMap');
+  if(!el) return;
+  var started = false;
+  function fail(){ var f = document.getElementById('mspFallback'); if(f) f.classList.add('show'); }
+  function start(){
+    if(started) return; started = true;
+    if(!window.L){ fail(); return; }
+    var EMO = 'https://ows.emodnet-humanactivities.eu/wms';
+    var map = L.map(el, {
+      center:[56.0,10.6], zoom:6, minZoom:5, maxZoom:11,
+      scrollWheelZoom:false, maxBounds:[[53.0,2.5],[59.2,17.4]], maxBoundsViscosity:0.7
+    });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      subdomains:'abcd', maxZoom:19, attribution:'&copy; OpenStreetMap, &copy; CARTO'
+    }).addTo(map);
+    var plan = L.tileLayer.wms('https://havplan.dk/geoserver/havplan/wms', {
+      layers:'Danmarks_havplan_af_28_juni_2024', format:'image/png',
+      transparent:true, version:'1.3.0', opacity:0.80,
+      attribution:'havplan.dk / Søfartsstyrelsen'
+    });
+    function emo(name, op){
+      return L.tileLayer.wms(EMO, {
+        layers:name, format:'image/png', transparent:true, version:'1.3.0',
+        opacity:op, attribution:'EMODnet Human Activities'
+      });
+    }
+    var layers = {
+      plan:  plan,
+      wind:  emo('windfarmspoly', 0.85),
+      mil:   emo('militaryareaspoly', 0.70),
+      nat:   emo('natura2000areas', 0.62),
+      route: emo('routedensity_all', 0.60)
+    };
+    var errs = 0;
+    plan.on('tileerror', function(){ if(++errs >= 12) fail(); });
+    plan.addTo(map); // hero layer default ON
+    document.querySelectorAll('#mspTools .msp-chip').forEach(function(chip){
+      chip.addEventListener('click', function(){
+        var ly = layers[chip.getAttribute('data-l')]; if(!ly) return;
+        if(map.hasLayer(ly)){ map.removeLayer(ly); chip.classList.remove('on'); }
+        else { ly.addTo(map); ly.bringToFront(); chip.classList.add('on'); }
+      });
+    });
+    setTimeout(function(){ map.invalidateSize(); }, 250);
+  }
+  if('IntersectionObserver' in window){
+    var mio = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ start(); mio.disconnect(); } });
+    }, {rootMargin:'250px'});
+    mio.observe(el);
+  } else { start(); }
+})();
+</script>
+</body>
+</html>
