@@ -403,20 +403,100 @@ body.menu-open #burger span:nth-child(3){top:19px;transform:rotate(-45deg)}
   border-top:1px dashed rgba(136,146,176,.16);
 }
 .comp-card li::before{content:"▸";position:absolute;left:2px;color:var(--teal);font-size:12px}
-.evo{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:14px;align-items:stretch;margin-top:56px}
-@media (max-width:860px){.evo{grid-template-columns:1fr}.evo-arrow{transform:rotate(90deg);margin:0 auto}}
-.evo-step{
-  border:1px solid var(--line);border-radius:14px;padding:26px 24px;
-  background:rgba(8,21,37,.6);text-align:left;
+/* ---------- lineage: assembly view — product spine (left) · input components (right) ---------- */
+.lineage{margin-top:52px;display:flex;flex-direction:column}
+.ln-node{
+  display:grid;grid-template-columns:86px minmax(0,0.92fr) minmax(0,1.18fr);
+  gap:22px;position:relative;padding-bottom:50px;align-items:start;
 }
-.evo-step.current{border-color:rgba(100,255,218,.5);box-shadow:0 0 34px rgba(100,255,218,.12)}
-.evo-step .v{
-  font-family:var(--f-disp);font-weight:800;font-size:30px;color:#fff;letter-spacing:.04em;
+.ln-node:last-child{padding-bottom:0}
+/* vertical spine linking versions */
+.ln-node:not(:last-child) .ln-rail::after{
+  content:'';position:absolute;left:50%;top:96px;bottom:-50px;width:2px;transform:translateX(-50%);
+  background:linear-gradient(to bottom,var(--ac),rgba(136,146,176,.18));
 }
-.evo-step .v small{font-size:13px;color:var(--teal);letter-spacing:.18em;font-weight:600}
-.evo-step p{font-size:13.5px;color:var(--text-muted);margin-top:10px}
-.evo-arrow{
-  align-self:center;color:var(--cyan);font-size:26px;font-family:var(--f-disp);
+.ln-rail{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:4px}
+.ln-badge{
+  width:86px;height:86px;border-radius:16px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;line-height:1;
+  border:1.5px solid var(--ac);
+  background:radial-gradient(circle at 50% 32%,color-mix(in srgb,var(--ac) 24%,transparent),rgba(8,21,37,.95));
+  box-shadow:0 0 26px color-mix(in srgb,var(--ac) 22%,transparent);position:relative;z-index:2;
+}
+.ln-badge b{font-family:var(--f-disp);font-weight:800;font-size:28px;color:#fff;letter-spacing:.02em}
+.ln-badge span{font-family:var(--f-mono);font-size:8px;letter-spacing:.18em;color:var(--ac);margin-top:4px}
+.ln-down{color:var(--ac);font-size:15px;opacity:.7;line-height:1}
+/* product card (the version itself) */
+.ln-card{
+  border:1px solid var(--line);border-left:3px solid var(--ac);border-radius:14px;
+  padding:18px 18px 16px;background:linear-gradient(135deg,rgba(8,21,37,.78),rgba(8,21,37,.42));
+  position:relative;
+}
+.ln-node.final .ln-card{box-shadow:0 0 40px color-mix(in srgb,var(--ac) 14%,transparent)}
+.ln-top{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-bottom:11px}
+.ln-pill{
+  font-family:var(--f-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+  border:1px solid rgba(136,146,176,.32);border-radius:4px;padding:3px 8px;color:var(--text-muted);white-space:nowrap;
+}
+.ln-pill.ac{border-color:var(--ac);color:var(--ac)}
+.ln-name{font-family:var(--f-disp);font-weight:700;font-size:clamp(16px,1.7vw,20px);color:#fff;line-height:1.32}
+.ln-name em{font-style:normal;color:var(--ac)}
+.ln-sub{font-size:12.5px;color:var(--text-muted);margin-top:6px;line-height:1.55}
+.ln-res{
+  margin-top:14px;display:flex;gap:9px;align-items:flex-start;
+  border-top:1px dashed color-mix(in srgb,var(--ac) 32%,transparent);padding-top:12px;
+}
+.ln-res .ar{color:var(--ac);font-size:15px;line-height:1.4;font-weight:700}
+.ln-res .tx{font-size:12.5px;color:var(--text-main);line-height:1.55}
+.ln-res .tx b{color:#fff;font-weight:700}
+.ln-res .tx em{font-style:normal;color:var(--ac);font-weight:600}
+/* ---- assembly column (input components on the right) ---- */
+.ln-asm{position:relative;padding-left:30px}
+.asm-merge{
+  font-family:var(--f-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ac);margin-bottom:12px;display:flex;align-items:center;gap:7px;
+}
+.asm-merge .am-ar{font-size:13px;transform:translateY(-1px)}
+.asm-merge b{font-family:var(--f-disp);font-size:13px;font-weight:800;letter-spacing:.02em}
+/* collector bus */
+.ln-asm::before{
+  content:'';position:absolute;left:11px;top:36px;bottom:10px;width:2px;border-radius:2px;
+  background:linear-gradient(to bottom,color-mix(in srgb,var(--ac) 60%,transparent),color-mix(in srgb,var(--ac) 12%,transparent));
+}
+.asm-grid{display:flex;flex-direction:column;gap:9px}
+.asm-item{
+  position:relative;border:1px solid var(--line);border-radius:10px;padding:9px 12px;
+  background:color-mix(in srgb,var(--ac) 4%,rgba(2,16,25,.5));
+}
+/* feeder: dot on the bus + stub into the item */
+.asm-item::before{
+  content:'';position:absolute;left:-19px;top:17px;width:17px;height:2px;
+  background:color-mix(in srgb,var(--ac) 60%,transparent);
+}
+.asm-item::after{
+  content:'';position:absolute;left:-22px;top:13px;width:9px;height:9px;border-radius:50%;
+  background:var(--bg-dark);border:2px solid var(--ac);
+}
+.asm-item.base{border-style:dashed;border-color:color-mix(in srgb,var(--ac) 50%,transparent);
+  background:color-mix(in srgb,var(--ac) 7%,rgba(2,16,25,.5))}
+.asm-tag{
+  font-family:var(--f-mono);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ac);display:block;margin-bottom:3px;
+}
+.asm-h{font-size:12.5px;color:#fff;font-weight:600;line-height:1.4}
+.asm-d{font-size:11px;color:var(--text-muted);line-height:1.5;margin-top:3px}
+.asm-mini{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.asm-mini span{
+  font-family:var(--f-mono);font-size:8.5px;letter-spacing:.02em;padding:2px 6px;border-radius:5px;
+  border:1px solid color-mix(in srgb,var(--ac) 34%,transparent);color:var(--text-main);white-space:nowrap;
+}
+@media (max-width:860px){
+  .ln-node{grid-template-columns:1fr;gap:14px;padding-bottom:34px}
+  .ln-rail{flex-direction:row;justify-content:flex-start;gap:14px}
+  .ln-node:not(:last-child) .ln-rail::after{display:none}
+  .ln-badge{width:72px;height:58px}
+  .ln-down{transform:rotate(-90deg)}
+  .ln-asm{padding-left:24px}
 }
 .footnote{
   margin-top:26px;font-size:12.5px;color:var(--text-muted);
@@ -460,6 +540,14 @@ body.menu-open #burger span:nth-child(3){top:19px;transform:rotate(-45deg)}
 }
 .badge.done{border:1px solid rgba(100,255,218,.5);color:var(--teal);background:rgba(100,255,218,.07)}
 .badge.wip{border:1px solid rgba(189,147,249,.5);color:var(--purple);background:rgba(189,147,249,.08)}
+.tl-more{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--f-disp);font-size:12.5px;font-weight:600;letter-spacing:.05em;
+  padding:4px 14px;border-radius:999px;
+  border:1px solid rgba(0,212,255,.45);color:#9fd8ff;background:rgba(0,212,255,.07);
+  text-decoration:none;transition:all .25s;
+}
+.tl-more:hover{border-color:var(--cyan);color:#fff;background:rgba(0,212,255,.16);box-shadow:0 0 16px rgba(0,212,255,.3)}
 .tl-item p{font-size:14.5px;color:var(--text-muted);max-width:840px}
 .meth-chips{display:flex;flex-wrap:wrap;gap:12px;margin-top:54px}
 .meth-chips .chip{
@@ -958,11 +1046,11 @@ footer .mono-line{
           <text x="833.4" y="13">100°55'E</text>
         </g>
 
-        <!-- SLOC — เรือพาณิชย์แยกร่องน้ำตะวันตกเกาะคราม (ตาม Simulator) -->
+        <!-- เขตปลอดภัยในราชการทหารแห่งกองทัพเรือ (เส้นเขต — ตาม Simulator) -->
         <polyline points="639.9,-379.4 208.8,324.2 306.8,1127.2" fill="none" stroke="#64ffda" stroke-width="1.6" opacity=".62" stroke-dasharray="10 8">
           <animate attributeName="stroke-dashoffset" from="0" to="-72" dur="3.2s" repeatCount="indefinite"/>
         </polyline>
-        <text transform="rotate(-58.5 314 136)" x="314" y="136" text-anchor="middle" font-family="Share Tech Mono" font-size="10" fill="#64ffda" letter-spacing="2" paint-order="stroke" stroke="#021019" stroke-width="3" stroke-linejoin="round">SLOC · แยกเรือพาณิชย์ร่องน้ำตะวันตก</text>
+        <text transform="rotate(-58.5 314 136)" x="314" y="136" text-anchor="middle" font-family="Share Tech Mono" font-size="10" fill="#64ffda" letter-spacing="1" paint-order="stroke" stroke="#021019" stroke-width="3" stroke-linejoin="round">เขตปลอดภัยในราชการทหารแห่งกองทัพเรือ</text>
 
         <!-- TSS ๓ — ร่องน้ำเข้าท่าเรือสัตหีบ (กรอบจริงจาก Simulator) -->
         <rect x="600.7" y="324.2" width="229.3" height="234.8" fill="rgba(100,255,218,.05)" stroke="#64ffda" stroke-width="1.3" stroke-dasharray="9 7" opacity=".75"/>
@@ -1042,12 +1130,12 @@ footer .mono-line{
           <text x="0" y="-14" text-anchor="middle" font-family="Share Tech Mono" font-size="10.5" fill="#39ff14" paint-order="stroke" stroke="#021019" stroke-width="2.4" stroke-linejoin="round">สอ.รฝ. · เขาคลองถูป</text>
           <text x="0" y="24" text-anchor="middle" font-family="Share Tech Mono" font-size="9" fill="#8892b0" paint-order="stroke" stroke="#021019" stroke-width="2.4" stroke-linejoin="round">มิติชายฝั่ง · RADAR 25 nm</text>
         </g>
-        <!-- ทรภ.1 -->
-        <g transform="translate(747.7 163.5)">
+        <!-- ทรภ.1 — กองบัญชาการทัพเรือภาคที่ 1 (เลขที่ 1007 อ.สัตหีบ จ.ชลบุรี ≈ 12°39.8'N 100°54.0'E) -->
+        <g transform="translate(796 394)">
           <path d="M-14 6 L-8 -4 L10 -4 L16 6 Z" fill="none" stroke="#ccd6f6" stroke-width="1.5"/>
           <line x1="0" y1="-4" x2="0" y2="-12" stroke="#ccd6f6" stroke-width="1.5"/>
-          <text x="2" y="24" text-anchor="middle" font-family="Share Tech Mono" font-size="10.5" fill="#ccd6f6" paint-order="stroke" stroke="#021019" stroke-width="2.4" stroke-linejoin="round">ทรภ.1</text>
-          <text x="2" y="38" text-anchor="middle" font-family="Share Tech Mono" font-size="9" fill="#8892b0" paint-order="stroke" stroke="#021019" stroke-width="2.4" stroke-linejoin="round">มิติผิวน้ำ-อากาศ</text>
+          <text x="2" y="-18" text-anchor="middle" font-family="Share Tech Mono" font-size="10.5" fill="#ccd6f6" paint-order="stroke" stroke="#021019" stroke-width="2.4" stroke-linejoin="round">บก.ทรภ.๑</text>
+          <text x="2" y="22" text-anchor="middle" font-family="Share Tech Mono" font-size="9" fill="#8892b0" paint-order="stroke" stroke="#021019" stroke-width="2.4" stroke-linejoin="round">มิติผิวน้ำ-อากาศ</text>
         </g>
         <!-- ศสต. -->
         <g transform="translate(581.1 464.8)">
@@ -1057,8 +1145,10 @@ footer .mono-line{
           <text x="0" y="22" text-anchor="middle" font-family="Share Tech Mono" font-size="10.5" fill="#bd93f9" paint-order="stroke" stroke="#021019" stroke-width="2.4" stroke-linejoin="round">ศสต.ศปก.ทร.</text>
           <text x="0" y="36" text-anchor="middle" font-family="Share Tech Mono" font-size="9" fill="#8892b0" paint-order="stroke" stroke="#021019" stroke-width="2.4" stroke-linejoin="round">มิติใต้น้ำ</text>
         </g>
-        <!-- อศ. -->
-        <g transform="translate(493 414.6)">
+        <!-- อศ. · ร.ล.สุริยะ — สำรวจวิ่งเป็นสี่เหลี่ยม (ออกซ้าย → ลงล่าง → ไปขวา → ขึ้นบน) -->
+        <g>
+          <animateMotion dur="24s" repeatCount="indefinite" rotate="0"
+            path="M493 414.6 L401 414.6 L401 500 L493 500 Z"/>
           <path d="M-13 0 L-7 -8 L9 -8 L15 0 Z" fill="none" stroke="#00d4ff" stroke-width="1.5"/>
           <path d="M-8 2 L0 16 L8 2" fill="none" stroke="#00d4ff" stroke-width="1" opacity=".6"/>
           <text x="0" y="30" text-anchor="middle" font-family="Share Tech Mono" font-size="10.5" fill="#00d4ff" paint-order="stroke" stroke="#021019" stroke-width="2.4" stroke-linejoin="round">อศ. · ร.ล.สุริยะ</text>
@@ -1075,7 +1165,7 @@ footer .mono-line{
           <path d="M904 465 C 890 361 905 170 885 118">
             <animate attributeName="stroke-dashoffset" from="0" to="-48" dur="2.8s" repeatCount="indefinite"/>
           </path>
-          <path d="M762 156 C 808 128 800 110 818 100">
+          <path d="M800 378 C 858 300 822 175 845 118">
             <animate attributeName="stroke-dashoffset" from="0" to="-48" dur="2.8s" repeatCount="indefinite"/>
           </path>
           <path d="M652 290 C 700 240 760 210 818 118">
@@ -1168,26 +1258,147 @@ footer .mono-line{
       </figcaption>
     </figure>
 
-    <div class="evo rv">
-      <div class="evo-step">
-        <div class="v">1.0 <small>· CONCEPT</small></div>
-        <p><b>ต้นแบบเชิงแนวคิด (บทที่ 2)</b> — นิยาม 3 องค์ประกอบของโมเดล และพิสูจน์ความสมเหตุสมผลด้วย
-        Conceptual Visualization บนแผนที่ GIS</p>
+    <div class="lineage rv">
+
+      <!-- ===== The Shield 1.0 · บทที่ ๒ ===== -->
+      <div class="ln-node n1" style="--ac:#00d4ff">
+        <div class="ln-rail">
+          <div class="ln-badge"><b>1.0</b><span>CONCEPT</span></div>
+          <div class="ln-down">▼</div>
+        </div>
+        <div class="ln-card">
+          <div class="ln-top">
+            <span class="ln-pill ac">บทที่ ๒</span>
+            <span class="ln-pill">Conceptual Design</span>
+            <span class="ln-pill">ตาราง + ภาพ (GIS)</span>
+          </div>
+          <div class="ln-name">The Shield <em>1.0</em><br>กรอบแนวคิดการสร้างโมเดลการป้องกัน</div>
+          <div class="ln-sub">กรอบแนวคิดขั้นต้นเชิงทฤษฎี · สังเคราะห์จากการทบทวนวรรณกรรม (ตารางที่ ๒-๓/๒-๔ · ภาพที่ ๒-๑๐)</div>
+          <div class="ln-res">
+            <span class="ar">⟹</span>
+            <span class="tx">นิยาม <b>๓ องค์ประกอบ</b> ของโมเดล : <em>Zoning</em> (Space) · <em>Multi-Domain Force</em> (Force) · <em>Centralized C2</em> (Time)</span>
+          </div>
+        </div>
+        <div class="ln-asm">
+          <div class="asm-merge"><span class="am-ar">◄</span> ส่วนประกอบที่นำมาประกอบเป็น <b>1.0</b></div>
+          <div class="asm-grid">
+            <div class="asm-item data">
+              <span class="asm-tag">๒.๓ · ENVIRONMENT</span>
+              <div class="asm-h">ปัจจัยสภาพแวดล้อม ๓ มิติ</div>
+              <div class="asm-d">สภาพแวดล้อมการปฏิบัติการทางทะเลที่เกี่ยวข้องกับ UDC</div>
+              <div class="asm-mini"><span>เหนือผิวน้ำ · METOC/Dark Vessels</span><span>ใต้ผิวน้ำ · Acoustic/Seabed Warfare</span><span>พื้นท้องทะเล · แคปซูล+Umbilical</span></div>
+            </div>
+            <div class="asm-item data">
+              <span class="asm-tag">๒.๔ · LEGAL &amp; ZONING</span>
+              <div class="asm-h">ฐานอำนาจกฎหมาย + การจัดระเบียบพื้นที่</div>
+              <div class="asm-d">บรรทัดฐานทางกฎหมายและเครื่องมือจัดระเบียบพื้นที่ทางทะเล</div>
+              <div class="asm-mini"><span>UNCLOS</span><span>พ.ร.บ.เขตปลอดภัยฯ ๒๔๗๘</span><span>พ.ร.ฎ. ๒๕๓๖</span><span>MSP/MEZ/Buffer/TSS</span></div>
+            </div>
+            <div class="asm-item data">
+              <span class="asm-tag">๒.๕ · TIME–SPACE–FORCE</span>
+              <div class="asm-h">ความสัมพันธ์ เวลา–พื้นที่–กำลังรบ</div>
+              <div class="asm-d">เน้นมิติ <b style="color:#fff">Force</b> และ <b style="color:#fff">Time</b> เป็นหลัก · Space กำหนดกรอบคร่าว ๆ ยังไม่ระบุพิกัดเจาะจง</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="evo-arrow">›</div>
-      <div class="evo-step">
-        <div class="v">2.0 <small>· MDA</small></div>
-        <p><b>หมุดหมายฝั่งซิมูเลเตอร์ (v12)</b> — ยกระดับการรับรู้สถานการณ์ทางทะเล (MDA)
-        เชื่อมข้อมูลจริงหลายแหล่งเข้าแผนที่สถานการณ์เดียว</p>
+
+      <!-- ===== The Shield 2.0 · บทที่ ๓ ===== -->
+      <div class="ln-node n2" style="--ac:#64ffda">
+        <div class="ln-rail">
+          <div class="ln-badge"><b>2.0</b><span>SITE-FIT</span></div>
+          <div class="ln-down">▼</div>
+        </div>
+        <div class="ln-card">
+          <div class="ln-top">
+            <span class="ln-pill ac">บทที่ ๓ · ขั้นต้น</span>
+            <span class="ln-pill">Preliminary Design</span>
+            <span class="ln-pill">Simulator.html</span>
+          </div>
+          <div class="ln-name">The Shield <em>2.0</em><br>โมเดลการป้องกันที่นำเสนอ</div>
+          <div class="ln-sub">นำ 1.0 มาผูกกับพื้นที่จริงในเขตรับผิดชอบกองทัพเรือ ผ่านกระบวนการพิจารณาของฝ่ายอำนวยการ</div>
+          <div class="ln-res">
+            <span class="ar">⟹</span>
+            <span class="tx">ยกระดับเป็น <b>โมเดลที่ผูกพิกัด Space จริง</b> รอบ UDC ที่ <em>ทิศตะวันออกเกาะคราม</em> — พร้อมทดสอบบนซิมูเลเตอร์</span>
+          </div>
+        </div>
+        <div class="ln-asm">
+          <div class="asm-merge"><span class="am-ar">◄</span> ส่วนประกอบที่นำมาประกอบเป็น <b>2.0</b></div>
+          <div class="asm-grid">
+            <div class="asm-item base">
+              <span class="asm-tag">BASE · รุ่นก่อนหน้า</span>
+              <div class="asm-h">The Shield 1.0</div>
+              <div class="asm-d">กรอบ ๓ องค์ประกอบ : Zoning · Multi-Domain Force · Centralized C2</div>
+            </div>
+            <div class="asm-item data">
+              <span class="asm-tag">INPUT · พื้นที่จริง</span>
+              <div class="asm-h">ปัจจัยพื้นที่ในเขตรับผิดชอบ ทร.</div>
+              <div class="asm-d">ข้อมูลภูมิศาสตร์–สมุทรศาสตร์ในพื้นที่ ทรภ.๑</div>
+              <div class="asm-mini"><span>ทรภ.๑ · สัตหีบ</span><span>เกาะคราม</span><span>ความลึก/ภูมิประเทศใต้ทะเล</span></div>
+            </div>
+            <div class="asm-item proc">
+              <span class="asm-tag">PROCESS · ฝ่ายอำนวยการ</span>
+              <div class="asm-h">กระบวนการพิจารณา (Staff Estimate)</div>
+              <div class="asm-d">พิจารณา <b style="color:#fff">๓ พื้นที่ตัวเลือก</b> ด้วยเกณฑ์ตาม อทร.๘๓๐๒</div>
+              <div class="asm-mini"><span>ความเหมาะสม</span><span>ความเป็นไปได้</span><span>ความยอมรับได้</span></div>
+            </div>
+            <div class="asm-item data">
+              <span class="asm-tag">OUTPUT · พื้นที่ที่เลือก</span>
+              <div class="asm-h">ทิศตะวันออกเกาะคราม</div>
+              <div class="asm-d">ผ่านครบทุกเกณฑ์ : ลึก ๓๐–๔๔ ม. · เกราะกำบังธรรมชาติ · ในเขต พ.ร.ฎ. ๒๕๓๖ · นอกร่องน้ำ TSS</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="evo-arrow">›</div>
-      <div class="evo-step current">
-        <div class="v">3.0 <small>· FULL C2</small></div>
-        <p><b>ระบบบูรณาการเฝ้าระวังและป้องกัน ครบ 7 โดเมน + AI ฝ่ายเสนาธิการ</b> —
-        รอการสังเคราะห์เป็น «The Finalized Shield Model» ในบทที่ 4</p>
+
+      <!-- ===== The Shield 3.0 · บทที่ ๔ ===== -->
+      <div class="ln-node n3 final" style="--ac:#bd93f9">
+        <div class="ln-rail">
+          <div class="ln-badge"><b>3.0</b><span>FINAL</span></div>
+        </div>
+        <div class="ln-card">
+          <div class="ln-top">
+            <span class="ln-pill ac">บทที่ ๔</span>
+            <span class="ln-pill">Detailed Design</span>
+            <span class="ln-pill">Simulator.html · v17</span>
+          </div>
+          <div class="ln-name">The Shield <em>3.0</em><br>ระบบบูรณาการเฝ้าระวังและป้องกันโครงสร้างพื้นฐานใต้น้ำ</div>
+          <div class="ln-sub">นำ 2.0 เข้าสู่กระบวนการวิเคราะห์เชิงกลยุทธ์และการสัมภาษณ์ผู้เชี่ยวชาญ เพื่อปิดช่องว่างและสรุปเป็นโมเดลฉบับสมบูรณ์</div>
+          <div class="ln-res">
+            <span class="ar">⟹</span>
+            <span class="tx"><b>2.0 + ข้อค้นพบและข้อเสนอแนะ = 3.0</b><br><em>«The Finalized Shield Model»</em></span>
+          </div>
+        </div>
+        <div class="ln-asm">
+          <div class="asm-merge"><span class="am-ar">◄</span> ส่วนประกอบที่นำมาประกอบเป็น <b>3.0</b></div>
+          <div class="asm-grid">
+            <div class="asm-item base">
+              <span class="asm-tag">BASE · รุ่นก่อนหน้า</span>
+              <div class="asm-h">The Shield 2.0</div>
+              <div class="asm-d">โมเดลที่ผูกพิกัดจริง รอบ UDC ทิศตะวันออกเกาะคราม</div>
+            </div>
+            <div class="asm-item proc">
+              <span class="asm-tag">PROCESS · วิเคราะห์เชิงกลยุทธ์</span>
+              <div class="asm-h">สายการวิเคราะห์ (บทที่ ๓ → ๔)</div>
+              <div class="asm-mini"><span>Benchmark</span><span>PMESII</span><span>SWOT</span><span>TOWS</span><span>GAP Analysis</span></div>
+            </div>
+            <div class="asm-item data">
+              <span class="asm-tag">INPUT · สัมภาษณ์</span>
+              <div class="asm-h">ผู้เชี่ยวชาญ ๕ ด้าน</div>
+              <div class="asm-d">ยืนยันและเติมเต็มโมเดลจากมุมมองผู้ปฏิบัติจริง</div>
+              <div class="asm-mini"><span>ผู้บริหาร ทร.</span><span>ผู้บริหาร ศรชล.</span><span>นักกฎหมายทางทะเล</span><span>กำกับข้อมูลภาครัฐ · สป.กห.</span><span>ผู้บริหาร อศ.</span></div>
+            </div>
+            <div class="asm-item data">
+              <span class="asm-tag">OUTPUT · สังเคราะห์</span>
+              <div class="asm-h">ข้อค้นพบและข้อเสนอแนะสำคัญ</div>
+              <div class="asm-d">ปิดช่องว่าง (GAP) → ปรับปรุงโมเดล 2.0 ให้สมบูรณ์</div>
+            </div>
+          </div>
+        </div>
       </div>
+
     </div>
-    <p class="footnote rv">* THE SHIELD 2.0 / 3.0 เป็นชื่อรุ่นของซิมูเลเตอร์ที่พัฒนาคู่ขนานกับงานวิจัย — โมเดลฉบับสมบูรณ์จะสรุปในบทที่ 4 หลังการสัมภาษณ์ผู้เชี่ยวชาญ</p>
+    <p class="footnote rv">* อ่านแผนภาพ : <b>แกนตั้งด้านซ้าย</b> คือสายพัฒนาของโมเดล (1.0 → 2.0 → 3.0 ตามบทที่ ๒ → ๓ → ๔) — <b>คอลัมน์ด้านขวา</b> คือส่วนประกอบ (input/process/output) ที่นำมา “ประกอบ” ขึ้นเป็นโมเดลในแต่ละรุ่น โดยรุ่นถัดไปรับโมเดลรุ่นก่อนหน้า (BASE) เป็นปัจจัยตั้งต้น</p>
   </div>
 </section>
 
@@ -1214,6 +1425,7 @@ footer .mono-line{
           <span class="tl-ch">CHAPTER — 01</span>
           <span class="tl-title">บทนำ</span>
           <span class="badge done">✓ เสร็จสมบูรณ์</span>
+          <a class="tl-more" href="THE_SHIELD_Ch1.html">ศึกษาเพิ่มเติม ↗</a>
         </div>
         <p>นิยามปัญหา 3 ด้าน (นโยบาย-กฎหมาย-ขีดความสามารถ) วัตถุประสงค์ 3 ข้อ ขอบเขต และข้อเสนอการวิจัย:
         บทบาทที่ชัดเจน + การจัดระเบียบพื้นที่ + การบูรณาการเฝ้าระวังหลายมิติ
@@ -1224,6 +1436,7 @@ footer .mono-line{
           <span class="tl-ch">CHAPTER — 02</span>
           <span class="tl-title">แนวคิด ทฤษฎี และวรรณกรรมที่เกี่ยวข้อง</span>
           <span class="badge done">✓ เสร็จสมบูรณ์</span>
+          <a class="tl-more" href="THE_SHIELD_Ch2.html">ศึกษาเพิ่มเติม ↗</a>
         </div>
         <p>เทคโนโลยี UDC และกรณีศึกษาโลก (Natick · Highlander · Lin-gang) กฎหมายทะเล UNCLOS/ไทย
         หลักนิยม Defense in Depth · MSP/TSS · NCW · MDA — และให้กำเนิด
@@ -1376,6 +1589,15 @@ footer .mono-line{
           <span>Balticconnector</span><span>Yi Peng 3</span><span>Eagle S · Estlink 2</span><span>Baltic Sentry</span><span>ข้อเสนอ ๓ ระดับ</span>
         </div>
         <div class="dc-open">เปิดบทเรียนวิจัย</div>
+      </a>
+      <a class="doc-card rv" href="Sensor_Summary_CNS.html">
+        <div class="dc-kick">Sensor &amp; Data Sources · Credibility Tiers</div>
+        <h3>สรุปแหล่งข้อมูลและเซ็นเซอร์ของระบบจำลอง</h3>
+        <p>จำแนกทุกแหล่งข้อมูลและเซ็นเซอร์ในซิมูเลเตอร์ตามระดับความจริง — LIVE (ฟีดสดจริง) · BAKED (ข้อมูลจริงฝังในระบบ) · SIMULATED (แบบจำลองทางวิศวกรรม) ครอบคลุม ๖ โดเมนตรวจจับ และการวิเคราะห์ด้วย AI ๒ ชั้น เพื่อความโปร่งใสและตรวจสอบย้อนกลับได้</p>
+        <div class="dc-stats">
+          <span>LIVE · BAKED · SIM</span><span>๖ โดเมนตรวจจับ</span><span>AIS · USGS · Open-Meteo</span><span>HYCOM · GDELT</span><span>AI Staff Planner</span>
+        </div>
+        <div class="dc-open">เปิดสรุปแหล่งข้อมูล</div>
       </a>
     </div>
   </div>
