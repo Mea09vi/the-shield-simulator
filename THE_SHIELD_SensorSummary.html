@@ -71,6 +71,7 @@
   .nav-logo .word{font-family:var(--f-disp);font-weight:800;letter-spacing:.26em;
     font-size:15px;color:#fff;white-space:nowrap}
   .nav-logo .word b{color:var(--cyan);font-weight:800}
+  .topnav .home-btn{display:inline-flex;align-items:center;gap:7px;margin-right:8px;padding:7px 13px;color:#64ffda;background:rgba(100,255,218,.06);border:1px solid rgba(100,255,218,.40);border-radius:9px;font-family:ui-monospace,'JetBrains Mono','Sarabun',Consolas,monospace;font-weight:600;font-size:13px;letter-spacing:.04em;line-height:1;white-space:nowrap;text-decoration:none;transition:background .18s,border-color .18s,box-shadow .18s,transform .18s}.topnav .home-btn .hb-ico{flex:none;transition:transform .18s}.topnav .home-btn:hover{background:rgba(100,255,218,.13);border-color:#64ffda;box-shadow:0 0 0 1px rgba(100,255,218,.22),0 4px 16px rgba(100,255,218,.16)}.topnav .home-btn:hover .hb-ico{transform:translateY(-1px)}.topnav .home-btn:active{transform:translateY(0)}.topnav .home-btn:focus-visible{outline:2px solid #64ffda;outline-offset:2px}
   .nav-links{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
   .nav-links a{font-family:var(--f-disp);font-weight:500;font-size:12px;letter-spacing:.12em;
     text-transform:uppercase;color:var(--text-main);text-decoration:none;padding:7px 12px;
@@ -221,16 +222,8 @@
 
 <!-- ===================== TOP NAV (เชื่อมต่อกับ THE_SHIELD_Pitch.html) ===================== -->
 <nav class="topnav" aria-label="เมนูหลัก">
-  <a class="nav-logo" href="THE_SHIELD_Pitch.html" aria-label="THE SHIELD — กลับสู่หน้านำเสนอ">
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 2 L21 5.5 V11 C21 16.5 17.2 20.6 12 22 C6.8 20.6 3 16.5 3 11 V5.5 Z" fill="none" stroke="#00d4ff" stroke-width="1.6"/>
-      <circle cx="12" cy="11" r="3" fill="none" stroke="#64ffda" stroke-width="1.3"/>
-      <circle cx="12" cy="11" r="6.2" fill="none" stroke="#00d4ff" stroke-width=".7" opacity=".5"/>
-    </svg>
-    <span class="word">THE <b>SHIELD</b></span>
-  </a>
+  <a class="home-btn" href="THE_SHIELD_Pitch.html" aria-label="กลับหน้านำเสนอ THE SHIELD"><svg class="hb-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.3h13V10"/><path d="M10 19.3v-5.5h4v5.5"/></svg><span>Home</span></a>
   <div class="nav-links">
-    <a href="THE_SHIELD_Pitch.html">หน้านำเสนอ</a>
     <a href="THE_SHIELD_Pitch.html#docs">เอกสาร</a>
     <a class="nav-cta" href="UDC_Simulator_17.html">เปิด Simulator 3.0</a>
   </div>

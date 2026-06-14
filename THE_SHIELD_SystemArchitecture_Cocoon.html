@@ -196,11 +196,7 @@
   .toolbar-actions button:hover{ background:rgba(51,65,85,.9); color:#fff; border-color:#475569;}
 
   /* ===== FLOATING BACK BUTTON (เฉพาะหน้าจอ — ไม่ติดไปกับงานพิมพ์/ภาพส่งออก) ===== */
-  #backbtn{ position:relative; z-index:130; display:inline-block; white-space:nowrap;
-    color:var(--teal); background:rgba(1,13,26,.85); border:1px solid rgba(100,255,218,.45); border-radius:.4rem;
-    padding:.35rem .8rem; font-family:var(--mono); font-size:12px; letter-spacing:.18em; text-transform:uppercase;
-    text-decoration:none; transition:background .2s, border-color .2s;}
-  #backbtn:hover{ background:rgba(100,255,218,.08); border-color:var(--teal);}
+  #topbar .home-btn{display:inline-flex;align-items:center;gap:7px;margin-right:8px;padding:7px 13px;color:#64ffda;background:rgba(100,255,218,.06);border:1px solid rgba(100,255,218,.40);border-radius:9px;font-family:ui-monospace,'JetBrains Mono','Sarabun',Consolas,monospace;font-weight:600;font-size:13px;letter-spacing:.04em;line-height:1;white-space:nowrap;text-decoration:none;transition:background .18s,border-color .18s,box-shadow .18s,transform .18s}#topbar .home-btn .hb-ico{flex:none;transition:transform .18s}#topbar .home-btn:hover{background:rgba(100,255,218,.13);border-color:#64ffda;box-shadow:0 0 0 1px rgba(100,255,218,.22),0 4px 16px rgba(100,255,218,.16)}#topbar .home-btn:hover .hb-ico{transform:translateY(-1px)}#topbar .home-btn:active{transform:translateY(0)}#topbar .home-btn:focus-visible{outline:2px solid #64ffda;outline-offset:2px}
 
   /* ===== CLICK-DETAIL : DRAWER (แผงรายละเอียดบล็อก) ===== */
   [data-kind]{ cursor:pointer; }
@@ -258,7 +254,7 @@
     @page{ size:A2 landscape; margin:0; }
     html,body{ background:#010d1a; } #stage{ padding:0; }
     #sheet{ transform:none !important; box-shadow:none; border:none; }
-    #topbar, .toolbar, #backbtn{ display:none !important; }
+    #topbar, .toolbar, .home-btn{ display:none !important; }
     #dscrim, #drawer, .blk-cue{ display:none !important; }
   }
 </style>
@@ -267,7 +263,7 @@
 
 <!-- SLIM TOP BAR (เฉพาะหน้าจอ — ปุ่มย้อนกลับซ้าย · เมนู export ขวา) -->
 <div id="topbar">
-  <a id="backbtn" href="THE_SHIELD_Pitch.html">&larr; THE SHIELD</a>
+  <a class="home-btn" href="THE_SHIELD_Pitch.html" aria-label="กลับหน้านำเสนอ THE SHIELD"><svg class="hb-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.3h13V10"/><path d="M10 19.3v-5.5h4v5.5"/></svg><span>Home</span></a>
   <div class="toolbar" id="toolbar">
     <div class="toolbar-actions">
       <button onclick="copyAsImage(this)">📋 Copy</button>

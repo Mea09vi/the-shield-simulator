@@ -78,9 +78,7 @@
   nav.toc a{font-size:13px;color:var(--text-muted);border:1px solid transparent;border-radius:10px;
     padding:5px 11px;font-weight:400}
   nav.toc a:hover{color:var(--text-main);background:var(--panel2);border-color:var(--line)}
-  nav.toc a.home{color:var(--teal);border:1px solid rgba(100,255,218,.45);font-family:var(--f-mono);
-    letter-spacing:.12em;font-size:11.5px;margin-right:6px}
-  nav.toc a.home:hover{background:rgba(100,255,218,.08);border-color:var(--teal)}
+  nav.toc a.home-btn{display:inline-flex;align-items:center;gap:7px;margin-right:8px;padding:7px 13px;color:#64ffda;background:rgba(100,255,218,.06);border:1px solid rgba(100,255,218,.40);border-radius:9px;font-family:ui-monospace,'JetBrains Mono','Sarabun',Consolas,monospace;font-weight:600;font-size:13px;letter-spacing:.04em;line-height:1;white-space:nowrap;text-decoration:none;transition:background .18s,border-color .18s,box-shadow .18s,transform .18s}nav.toc a.home-btn .hb-ico{flex:none;transition:transform .18s}nav.toc a.home-btn:hover{background:rgba(100,255,218,.13);border-color:#64ffda;box-shadow:0 0 0 1px rgba(100,255,218,.22),0 4px 16px rgba(100,255,218,.16)}nav.toc a.home-btn:hover .hb-ico{transform:translateY(-1px)}nav.toc a.home-btn:active{transform:translateY(0)}nav.toc a.home-btn:focus-visible{outline:2px solid #64ffda;outline-offset:2px}
   nav.toc .tag{margin-left:auto;font-family:var(--f-mono);font-size:10.5px;color:var(--text-dim);letter-spacing:.18em}
 
   /* ---------- sections ---------- */
@@ -340,7 +338,7 @@
 <!-- ================= TOC ================= -->
 <nav class="toc">
   <div class="wrap">
-    <a class="home" href="THE_SHIELD_Pitch.html#research">⌂ PITCH</a>
+    <a class="home-btn" href="THE_SHIELD_Pitch.html" aria-label="กลับหน้านำเสนอ THE SHIELD"><svg class="hb-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.3h13V10"/><path d="M10 19.3v-5.5h4v5.5"/></svg><span>Home</span></a>
     <a href="#bg">ความเป็นมา</a>
     <a href="#problem">ปัญหาวิจัย</a>
     <a href="#obj">วัตถุประสงค์</a>
