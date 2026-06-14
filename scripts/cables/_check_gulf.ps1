@@ -1,4 +1,5 @@
-$j = Get-Content cables-overpass-raw.json -Raw | ConvertFrom-Json
+$inFile = Join-Path $PSScriptRoot 'cables-overpass-raw.json'
+$j = Get-Content $inFile -Raw | ConvertFrom-Json
 $inGulf = 0
 $gulfNames = @{}
 $allNames = @{}

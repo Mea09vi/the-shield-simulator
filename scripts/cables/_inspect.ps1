@@ -1,4 +1,5 @@
-$j = Get-Content cables-overpass-raw.json -Raw | ConvertFrom-Json
+$inFile = Join-Path $PSScriptRoot 'cables-overpass-raw.json'
+$j = Get-Content $inFile -Raw | ConvertFrom-Json
 Write-Host "total elements:" $j.elements.Count
 $j.elements | ForEach-Object {
     $t = $_.tags

@@ -752,13 +752,13 @@ window.BLOCK_DETAILS = {"p1":{"id":"p1","titleTH":"การจำลองภ�
       .then(function(){ setTimeout(function(){btn.textContent=o;},2000); }); };
   window.downloadPNG=function(btn){ var o=btn.textContent; btn.textContent='⏳ ...';
     _capture().then(function(c){ var a=document.createElement('a');
-      a.download='TheShield_SystemArchitecture_Cocoon.png'; a.href=c.toDataURL('image/png'); a.click(); btn.textContent='✓ Done!'; })
+      a.download='THE_SHIELD_SystemArchitecture_Cocoon.png'; a.href=c.toDataURL('image/png'); a.click(); btn.textContent='✓ Done!'; })
       .catch(function(){ btn.textContent='✗ Failed'; })
       .then(function(){ setTimeout(function(){btn.textContent=o;},2000); }); };
   window.downloadPDF=function(btn){ var o=btn.textContent; btn.textContent='⏳ ...';
     _capture().then(function(c){ var img=c.toDataURL('image/png'); var J=window.jspdf.jsPDF;
       var pdf=new J({orientation:'landscape',unit:'px',format:[c.width,c.height],hotfixes:['px_scaling']});
-      pdf.addImage(img,'PNG',0,0,c.width,c.height); pdf.save('TheShield_SystemArchitecture_Cocoon.pdf'); btn.textContent='✓ Done!'; })
+      pdf.addImage(img,'PNG',0,0,c.width,c.height); pdf.save('THE_SHIELD_SystemArchitecture_Cocoon.pdf'); btn.textContent='✓ Done!'; })
       .catch(function(){ btn.textContent='✗ Failed'; })
       .then(function(){ setTimeout(function(){btn.textContent=o;},2000); }); };
 

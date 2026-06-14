@@ -17,11 +17,14 @@ _เวอร์ชันเก่า/
 
 # --- Local raw data dumps & scratch mockups (NEVER commit — large / WIP) ---
 _data_raw/
+_scratch/
 Sim2_UI_Mockup.html
 _RTN_theme_preview.html
 
 # --- Appendix / large binaries we don't want in git ---
 *.docx
+# Research/source PDFs and ALL account/credential PDFs stay LOCAL only.
+*.pdf
 ภาคผนวก_Viewer.html
 ภาคผนวก_Viewer.html.before-embed.bak
 

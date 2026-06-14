@@ -1,6 +1,7 @@
 # Filter TeleGeography GeoJSON to bbox covering Gulf of Thailand + Andaman + SCS
 # Output: cables-tg-static.js with same shape as cables-static.js
-$j = Get-Content tg-cables-raw.json -Raw | ConvertFrom-Json
+$inFile = Join-Path $PSScriptRoot 'tg-cables-raw.json'
+$j = Get-Content $inFile -Raw | ConvertFrom-Json
 Write-Host "Total cables in TG dataset:" $j.features.Count
 
 # Bbox of interest: lat 0-15, lon 95-115 (wider to catch any cable that passes near)

@@ -1,5 +1,13 @@
 # Convert TeleGeography GeoJSON -> cables-static.js (real cable paths)
-$j = Get-Content tg-cables-raw.json -Raw | ConvertFrom-Json
+# ACTIVE pipeline: this is the generator that produced the deployed cables-static.js.
+# Paths are anchored to this script's own folder so it runs from any working dir.
+# Input (tg-cables-raw.json) lives beside this script in scripts/cables/;
+# output cables-static.js is written to the repo root where the simulator loads it.
+$ScriptDir = $PSScriptRoot
+$RepoRoot  = (Resolve-Path (Join-Path $ScriptDir '..\..')).Path
+$inFile    = Join-Path $ScriptDir 'tg-cables-raw.json'
+$outFile   = Join-Path $RepoRoot  'cables-static.js'
+$j = Get-Content $inFile -Raw | ConvertFrom-Json
 
 $minLat = 0.0;  $maxLat = 15.0
 $minLon = 95.0; $maxLon = 115.0
@@ -62,9 +70,9 @@ if ($lines.Count -gt 1) { $lines[$lines.Count-1] = $lines[$lines.Count-1].TrimEn
 [void]$lines.Add("console.log('[MDA Cables] TeleGeography snapshot:', window.MDA_CABLES_STATIC.elements.length, 'segments');")
 
 [System.IO.File]::WriteAllText(
-    (Join-Path (Get-Location) 'cables-static.js'),
+    $outFile,
     ($lines -join "`r`n"),
     (New-Object System.Text.UTF8Encoding $true)
 )
 Write-Host "wrote cables-static.js with $cnt segments"
-Write-Host "file size:" ((Get-Item cables-static.js).Length) "bytes"
+Write-Host "file size:" ((Get-Item $outFile).Length) "bytes"

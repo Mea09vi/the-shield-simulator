@@ -1,42 +1,65 @@
-# The Shield Simulator — UDC v12
-> THE SHIELD — Underwater Data Center GIS Simulator
+# THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator
+> Underwater Data Center (UDC) · Maritime Domain Awareness simulator สำหรับงานวิจัย กองทัพเรือ (Royal Thai Navy)
+> ครอบคลุมพื้นที่อ่าวไทยตอนบนและฐานทัพเรือสัตหีบ
 
-Single-file HTML5 tactical simulator สำหรับงานวิจัย Royal Thai Navy  
-ครอบคลุมพื้นที่อ่าวไทยตอนบนและฐานทัพเรือสัตหีบ
+Single-file HTML5 tactical simulator — เปิดในเบราว์เซอร์ได้ทันที ไม่ต้องติดตั้ง/ไม่มี build step
+
+**Live (GitHub Pages):** <https://mea09vi.github.io/the-shield-simulator/>
 
 ---
 
 ## Current Version
 
-**v12.7.0** — code cleanup + folder reorganization  
-- `var → const` ทั่วไฟล์, ลบ MapTiler orphan references  
-- เพิ่ม comment convention guide ใน file header  
-- จัดโครงสร้าง folder ใหม่ (`data/`, `assets/`, `infrastructure/`, `docs/`, `scripts/`)
+**v17.2.5 · 7-Domain + AI Staff**
 
 | Version | สิ่งสำคัญ |
 |---------|-----------|
-| v12.7.0 | Code cleanup + folder reorg |
-| v12.6.6 | ZULU clock ย้ายเข้า header (sticky) |
-| v12.6.5 | Layers & Tools panel ลง 60px จาก top |
-| v12.6.4 | ลบ MapTiler mode ออก (3 modes → 2 modes) |
-| v12.6.4a | Fix boot screen hang (missing `}` after MapTiler removal) |
-| v11–v12 | 3D Dive, SVP acoustic model, time-replay |
-| v10 | DEM offline cache, land elevation pre-baked |
-| v09 | AIS WebSocket (AISStream.io) integration |
+| v17.2.5 | ปุ่ม **PITCH** ใน header → ลิงก์กลับหน้านำเสนอ `THE_SHIELD_Pitch.html` |
+| v17.2.4 | ปรับยศผู้พัฒนาในส่วนหัวไฟล์ |
+| v17.0.0 | **ฝ่ายเสนาธิการ AI (AI Staff Planner)** — ผู้ช่วยวางแผนเชิงยุทธการ |
+| v16.x   | 7-Domain MDA, FXAA/SSAO 3D pipeline, UI regroup |
+| v15.x   | ขยาย font set (Thai + HUD), 4D ocean (HYCOM live) |
+| v13–v14 | Static seamark/cable snapshots, AI proxy worker |
+| v11–v12 | 3D Dive, SVP acoustic model, time-replay, code cleanup |
+| v09–v10 | AIS WebSocket, DEM offline cache |
+
+> Changelog แบบละเอียดอยู่ใน comment ส่วนหัวของ `UDC_Simulator_17.html` (tag `[vXX.x.x]`)
+
+---
+
+## Page Ecosystem (เอกสารชุด THE SHIELD)
+
+ทุกหน้าเป็นไฟล์ HTML เดี่ยวที่ root และเชื่อมโยงกันด้วย relative link — **อย่าย้ายเข้าโฟลเดอร์ย่อย** มิฉะนั้นลิงก์ข้ามหน้าจะพัง
+
+| ไฟล์ | บทบาท |
+|------|-------|
+| `index.html` | **จุดเข้า GitHub Pages** — สำเนาตรงของ `UDC_Simulator_17.html` (byte-identical) |
+| `UDC_Simulator_17.html` | **ตัวจำลองหลัก** (single-file). ปุ่ม PITCH ลิงก์ไป `THE_SHIELD_Pitch.html` |
+| `THE_SHIELD_Pitch.html` | หน้านำเสนอ (hub) — ลิงก์ไปไดอะแกรม, สรุปเซ็นเซอร์, บทเรียน และบทวิจัย |
+| `THE_SHIELD_Ch1.html` / `THE_SHIELD_Ch2.html` | บทวิจัย 1–2 (พร้อมภาพประกอบใน `img/`) |
+| `THE_SHIELD_บทเรียนวิจัย_Baltic_Singapore.html` | กรณีศึกษา Baltic / Singapore |
+| `THE_SHIELD_SensorSummary.html` | สรุปแหล่งข้อมูล/เซ็นเซอร์ (CNS) — *เดิมชื่อ `Sensor_Summary_CNS.html`* |
+| `THE_SHIELD_SystemArchitecture.html` | ไดอะแกรมสถาปัตยกรรมระบบ (standalone) |
+| `THE_SHIELD_SystemArchitecture_Cocoon.html` | ไดอะแกรมสถาปัตยกรรม (เลย์เอาต์ Cocoon) — ลิงก์จาก Pitch |
+| `THE_SHIELD_KnowledgeFlowchart.html` | ผังความรู้/กระบวนการ (standalone) |
+
+> **หมายเหตุการเปลี่ยนชื่อ (v17.2.5 reorg):** หน้าที่ deploy ทั้งหมดใช้ prefix `THE_SHIELD_` มาตรฐานแล้ว
+> (เดิม `TheShield_*` และ `Sensor_Summary_CNS.html`). ลิงก์ภายในทุกจุดถูกแก้ตามแล้ว
+> URL สาธารณะของหน้าที่เปลี่ยนชื่อจะเปลี่ยนตามไปด้วย
 
 ---
 
 ## Features
 
-- **2D Map** (Leaflet 1.9) — multi-layer basemaps (Esri Ocean / GEBCO 2023),
-  AIS live feed, reef/safety/fleet zones, SLOC, cable & landing infrastructure,
-  patrol/survey assets, sonar-equation overlays
-- **3D Dive** (Three.js r128) — DEM-driven terrain (offline cache),
-  FFT ocean surface, acoustic ray tracing (4×9 = 36 rays, SVP-aware),
-  shadow zones, UDC sensor model
-- **Time-replay** — RAM ring buffer (≈ 1 h @ 10 s tick), draggable panel
-- **AIS** — AISStream.io (WebSocket) + Kpler REST (via Cloudflare Worker proxy)
-- **Nautical Chart** — 2-mode cycle: OFF → Esri Ocean → GEBCO 2023 → OFF
+- **2D Map** (Leaflet 1.9.4) — basemaps หลายชั้น (Esri Ocean / GEBCO 2023), AIS live feed,
+  reef/safety/fleet zones, SLOC, สายเคเบิลใต้น้ำ + landing, patrol/survey assets, sonar-equation overlays
+- **3D Dive** (Three.js r128) — terrain จาก DEM (offline cache), FFT ocean surface,
+  acoustic ray tracing (SVP-aware), shadow zones, UDC sensor model · post-FX: Bloom + SSAO + FXAA
+- **AI Staff Planner** (v17) — ฝ่ายเสนาธิการ AI ผ่าน proxy worker (Cloudflare Workers AI / Google Gemini)
+- **Time-replay** — RAM ring buffer (≈ 1 ชม. @ 10 วิ/tick)
+- **AIS** — AISStream.io (WebSocket) + Kpler REST (ผ่าน Cloudflare Worker proxy)
+- **4D Ocean** — HYCOM ESPC-D live (ผ่าน `ocean4d_live_server.js`) → sound speed (Mackenzie 1981),
+  มี baked snapshot สำรองในตัว
 - **SVP / Sound Speed** — WOA23 annual profile สัตหีบ
 
 ---
@@ -45,99 +68,102 @@ Single-file HTML5 tactical simulator สำหรับงานวิจัย 
 
 ```
 01_Simulator/
-├── UDC_Simulator_12.html     ← main simulator (single file, ~21,000 lines)
-├── index.html                ← GitHub Pages entry point
-├── README.md
-├── .gitignore
+├── index.html                       ← GitHub Pages entry (สำเนา UDC_Simulator_17.html)
+├── UDC_Simulator_17.html            ← ตัวจำลองหลัก (single file)
+├── THE_SHIELD_*.html                ← เอกสารชุด (ดู Page Ecosystem ด้านบน)
+├── cables-static.js                 ← ข้อมูลสายเคเบิลใต้น้ำ (สร้างจาก scripts/cables/)
+├── seamarks-static.js               ← ข้อมูล IALA seamark (offline fallback)
+├── ocean4d_live_server.js           ← Node helper: serve folder + /ocean4d (HYCOM live)
+├── README.md   ·   .gitignore
 │
 ├── data/
-│   ├── gis/
-│   │   ├── bathy_all.geojson              ← bathymetry รอบอ่าวไทยตอนบน
-│   │   ├── bathy_sattahip_dmr.geojson     ← DMR bathymetric contours สัตหีบ
-│   │   └── eec_region.geojson             ← EEC boundary (3 จังหวัด)
-│   ├── dem/
-│   │   ├── land_elevation_sattahip.json   ← local DEM cache (fallback offline)
-│   │   └── cache/                         ← (gitignored) MapTiler Terrain-RGB tiles
-│   └── ocean/
-│       ├── svp_sattahip_annual.json       ← WOA23 annual SVP profile
-│       ├── tl_grid.json                   ← transmission loss grid (metadata)
-│       └── tl_grid.bin                    ← transmission loss grid (binary)
+│   ├── gis/        bathy_all · bathy_sattahip_dmr · eec_region (.geojson)
+│   ├── dem/        land_elevation_sattahip.json (+ cache/ — gitignored)
+│   ├── ocean/      svp_sattahip_annual.json · tl_grid.json/.bin
+│   └── AIS (SeaVision)/   searches-export-*.json
 │
-├── assets/
-│   └── navy_logo.png                      ← boot-screen logo
+├── assets/         navy_logo.png (boot-screen logo)
+├── img/            ภาพประกอบบทวิจัย (Baltic cable damage, Eagle S, HTMS Bhumibol ฯลฯ)
 │
-├── infrastructure/
-│   ├── cloudflare-worker-ais-proxy.js     ← Cloudflare Worker (Kpler proxy)
-│   └── OpenApiSpec-AIS.json               ← AISStream.io API spec
+├── infrastructure/ cloudflare-worker-ais-proxy.js · OpenApiSpec-AIS.json   (Kpler/AIS proxy)
+├── workers/        ai-proxy.js · wrangler.toml · DEPLOY.md                  (AI Staff proxy)
 │
-├── docs/
-│   └── UDC_Research_Summary.md            ← research context + decisions
+├── docs/           UDC_Research_Summary.md
 │
-└── scripts/
-    └── tools/
-        ├── build_tl_grid.py               ← สร้าง TL grid จาก SVP
-        ├── fetch_svp_woa23.py             ← ดึง SVP data จาก WOA23
-        └── rewrite_section_markers.py     ← utility: standardize section dividers
+├── scripts/
+│   ├── cables/     ไปป์ไลน์ข้อมูลสายเคเบิล (ดู scripts/cables/README.md)
+│   │               _convert_tg.ps1 (ACTIVE, TeleGeography) · _convert_cables.ps1 (LEGACY, Overpass)
+│   │               + raw JSON inputs + สคริปต์ตรวจสอบ (_filter_tg / _check_gulf / _inspect)
+│   └── tools/      build_tl_grid.py · fetch_svp_woa23.py · rewrite_section_markers.py
+│                   check_js_syntax.js (ตรวจ syntax ของ inline <script> ทุกบล็อก)
+│
+└── (gitignored)    _scratch/ · _เวอร์ชันเก่า/ · _bathy/ · _data_raw/
 ```
 
 ---
 
 ## Running
 
-เปิดไฟล์ `UDC_Simulator_12.html` ใน browser ตรงๆ ได้เลย  
-(ต้องต่อ internet สำหรับ tile layers + AIS WebSocket)
+เปิดไฟล์ `UDC_Simulator_17.html` (หรือ `index.html`) ในเบราว์เซอร์ได้โดยตรง
+(ต้องต่ออินเทอร์เน็ตสำหรับ tile layers + AIS WebSocket + AI Staff)
 
-GitHub Pages: `https://mea09vi.github.io/the-shield-simulator/`
+ฟีเจอร์ที่ต้องมี server ฝั่งหลังบ้าน:
+- **AI Staff Planner** → deploy `workers/ai-proxy.js` (ดู `workers/DEPLOY.md`)
+- **AIS / Kpler proxy** → deploy `infrastructure/cloudflare-worker-ais-proxy.js`
+- **4D Ocean live** → รัน `node ocean4d_live_server.js` แล้วเปิดผ่าน localhost (same-origin)
 
 ---
 
-## API Keys
+## Regenerating data files
 
-โค้ดที่ commit ไว้ใช้ **placeholder เท่านั้น** — ก่อนใช้งานจริงให้แก้ใน `UDC_Simulator_12.html`:
+| ไฟล์ที่ root | สร้างจาก | คำสั่ง |
+|-------------|---------|-------|
+| `cables-static.js` | `scripts/cables/tg-cables-raw.json` (TeleGeography) | `pwsh scripts/cables/_convert_tg.ps1` |
+| `data/ocean/tl_grid.*` | SVP profile | `python scripts/tools/build_tl_grid.py` |
 
-| ตัวแปร | สมัครฟรีที่ | ใช้ทำอะไร |
-|--------|------------|-----------|
-| `AIS_API_KEY` | https://aisstream.io/ | WebSocket AIS live feed |
-| `KPLER_PROXY_URL` | self-host Cloudflare Worker | Kpler AIS REST proxy |
+> ⚠️ converter ของ cable เขียนทับ `cables-static.js` ที่ root — อย่ารัน LEGACY (`_convert_cables.ps1`)
+> เว้นแต่ตั้งใจกลับไปใช้ข้อมูล Overpass. รายละเอียดใน `scripts/cables/README.md`
 
-> **Kpler API key** เก็บเป็น secret ฝั่ง Cloudflare Worker เท่านั้น — ไม่อยู่ใน client code  
-> ดูตัวอย่าง worker ที่ `infrastructure/cloudflare-worker-ais-proxy.js`
+---
+
+## API Keys & Secrets
+
+โค้ดที่ commit ใช้ **placeholder เท่านั้น** — secret จริงเก็บฝั่ง Worker หรือ local เสมอ:
+
+| ตัวแปร / secret | อยู่ที่ | ใช้ทำอะไร |
+|------------------|--------|-----------|
+| `AIS_API_KEY` | client (placeholder) | WebSocket AIS live feed (aisstream.io) |
+| Kpler key | Cloudflare Worker secret | Kpler AIS REST proxy |
+| AI provider key | Cloudflare Worker secret | AI Staff (Workers AI / Gemini) |
+
+> ไฟล์ credential/บัญชี (`*Account*.pdf`, `*credentials*.json`, `*.env`, `.wrangler/`) และ PDF ทั้งหมด
+> ถูก **gitignore** ไว้ — ห้าม commit เด็ดขาด
+
+---
+
+## Tech Stack
+
+Leaflet 1.9.4 · Three.js r128 (+Bloom/SSAO/FXAA) · Chart.js 4.4.1 · augmented-ui 2.0.0 · Leaflet.heat ·
+AISStream.io (WebSocket) · Cloudflare Workers (Kpler + AI proxy) · HYCOM ESPC-D (4D ocean) ·
+DEM pre-baked offline (© MapTiler Terrain-RGB, decoded v10)
+
+**Fonts** — Thai: Sarabun / Prompt / Kanit / IBM Plex Sans Thai / Noto Sans Thai / Chakra Petch ·
+HUD/mono: Share Tech Mono / Saira / Orbitron / JetBrains Mono / Rajdhani / Audiowide
+
+**Theme** — Combat Information Center (CIC) dark theme: น้ำเงินเข้ม = ทะเล · เขียว = ปลอดภัย · เหลือง/ส้ม = เตือน · แดง = ภัยคุกคาม
 
 ---
 
 ## Code Conventions
 
-### Comment Style
 ```javascript
 // ═══════════════════════════════════════  ← Major section
 // ───────────────────────────────────────  ← Sub-section
-[v09] / [v10] / [v11]    // "Added in version X" — historical marker
-/* v12.x.x — desc */     // "Changed in v12.x.x" — inline change note
+[v09] / [v16] / [v17]    // "Added in version X" — historical marker
+/* v17.x.x — desc */     // "Changed in v17.x.x" — inline change note
 ```
-
-### Version Tagging
 - Feature เพิ่มครั้งแรกใน version ไหน → tag `[vXX]` ไว้ใกล้ declaration
-- การแก้ไขใน v12+ → `/* v12.x.x — สิ่งที่เปลี่ยน */` ต่อท้าย line ที่แก้
-
-### Tech Stack
-- **Leaflet 1.9** — 2D map engine
-- **Three.js r128** — 3D Dive visualization
-- **Chart.js 4.4.1** — SVP / TL graphs
-- **AISStream.io** — WebSocket AIS feed
-- **Cloudflare Worker** — Kpler API proxy (server-side key)
-- **DEM data** — pre-baked offline (© MapTiler Terrain-RGB v2, decoded at v10)
-
----
-
-## Architecture Decisions
-
-| ข้อตัดสินใจ | เหตุผล |
-|------------|--------|
-| Single HTML file | GitHub Pages ไม่มี build step — deploy ง่าย, portable |
-| Cloudflare Worker proxy | ซ่อน Kpler API key จาก client; CORS-safe |
-| DEM pre-baked offline | MapTiler quota จำกัด; ใช้ฟรีไม่ได้ใน production |
-| 2-mode nautical chart (Esri/GEBCO) | ลบ MapTiler tile layer ออก (v12.6.4) เพื่อไม่ใช้ API key ใน public repo |
-| Leaflet ไม่ใช้ MapLibre | codebase เริ่มต้นด้วย Leaflet; 3D ใช้ Three.js แยก |
+- การแก้ไข → `/* vXX.x.x — สิ่งที่เปลี่ยน */` ต่อท้าย line ที่แก้
 
 ---
 
