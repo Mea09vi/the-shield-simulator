@@ -294,6 +294,46 @@ body.menu-open #burger span:nth-child(3){top:19px;transform:rotate(-45deg)}
   .cine figcaption{flex-direction:column;align-items:flex-start;gap:4px;padding:13px 16px 11px}
 }
 
+/* ---------- reel phase marker (mission-lifecycle lower-third) ---------- */
+.reel-figure{position:relative}
+.reel-phase{
+  position:absolute;left:18px;top:16px;z-index:4;
+  display:flex;align-items:center;gap:12px;
+  padding:9px 15px 9px 12px;max-width:min(78%,560px);
+  background:linear-gradient(135deg,rgba(1,13,26,.88),rgba(1,13,26,.60));
+  border:1px solid rgba(100,255,218,.30);border-left:3px solid var(--teal);
+  border-radius:11px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  opacity:0;transform:translateY(-7px);
+  transition:opacity .55s ease,transform .55s ease;pointer-events:none;
+}
+.reel-phase.show{opacity:1;transform:none}
+.reel-phase .rp-num{font-family:'Share Tech Mono',monospace;font-size:23px;line-height:1;color:var(--teal);letter-spacing:.03em}
+.reel-phase .rp-txt{display:flex;flex-direction:column;gap:3px;min-width:0}
+.reel-phase .rp-en{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.24em;color:#eaf2ef;line-height:1}
+.reel-phase .rp-th{font-family:'Prompt',sans-serif;font-size:13px;letter-spacing:.01em;color:var(--text-muted);line-height:1.2}
+.reel-phase.alert{border-color:rgba(255,90,80,.45);border-left-color:#ff5a50;background:linear-gradient(135deg,rgba(26,6,4,.88),rgba(26,6,4,.58))}
+.reel-phase.alert .rp-num{color:#ff7a70}
+@media (max-width:660px){
+  .reel-phase{left:12px;top:11px;padding:7px 11px 7px 9px;gap:9px;max-width:84%}
+  .reel-phase .rp-num{font-size:18px}
+  .reel-phase .rp-en{font-size:10.5px;letter-spacing:.18em}
+  .reel-phase .rp-th{font-size:11px}
+}
+/* ---------- reel scroll-play unmute fallback button ---------- */
+.reel-figure .reel-unmute{
+  position:absolute;right:16px;bottom:16px;z-index:6;
+  display:inline-flex;align-items:center;gap:7px;cursor:pointer;
+  padding:9px 15px;font-family:'Prompt',sans-serif;font-size:13px;letter-spacing:.02em;color:#eaf2ef;
+  background:linear-gradient(135deg,rgba(1,13,26,.92),rgba(1,13,26,.72));
+  border:1px solid rgba(100,255,218,.45);border-left:3px solid var(--teal);border-radius:24px;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  box-shadow:0 4px 18px rgba(0,0,0,.45);transition:transform .15s ease,border-color .2s ease;
+  animation:reelUnmutePulse 2.1s ease-in-out infinite;
+}
+.reel-figure .reel-unmute:hover{transform:translateY(-1px);border-color:var(--teal)}
+.reel-figure .reel-unmute span:first-child{font-size:15px;line-height:1}
+@keyframes reelUnmutePulse{0%,100%{box-shadow:0 4px 18px rgba(0,0,0,.45)}50%{box-shadow:0 4px 22px rgba(100,255,218,.40)}}
+@media (max-width:660px){.reel-figure .reel-unmute{right:11px;bottom:11px;padding:7px 12px;font-size:12px}}
 /* ---------- cards ---------- */
 .grid{display:grid;gap:22px}
 .g2{grid-template-columns:1fr 1fr}
@@ -1253,14 +1293,17 @@ footer .mono-line{
       </figcaption>
     </figure>
 
-    <figure class="cine rv" style="margin-top:50px">
-      <video autoplay muted loop playsinline preload="metadata"
-             aria-label="วิดีโอจำลอง: นักประดาน้ำกองทัพเรือและยาน ROV ติดธงชาติไทยซ่อมบำรุงแคปซูลศูนย์ข้อมูลบนพื้นทะเล">
-        <source src="THE_SHIELD_Pitch_seabed.mp4" type="video/mp4">
+    <figure class="cine rv reel-figure" style="margin-top:50px">
+      <video id="reelVid" loop playsinline preload="metadata" aria-label="วิดีโอจำลองวงรอบภารกิจ The Shield ครบทุกมิติ — เฝ้าตรวจการณ์ เตรียมกำลัง วางกำลัง ตรวจจับ–พิสูจน์ทราบ ตกลงใจสั่งการ ตอบโต้ทั้งใต้น้ำและผิวน้ำ จนถึงการซ่อมบำรุงดำรงสภาพ">
+        <source src="THE_SHIELD_Pitch_film.mp4" type="video/mp4">
       </video>
+      <div class="reel-phase" id="reelPhase" aria-hidden="true">
+        <span class="rp-num"></span>
+        <span class="rp-txt"><span class="rp-en"></span><span class="rp-th"></span></span>
+      </div>
       <figcaption>
-        <span class="cine-t">SEABED OPS · สำรวจ–พิสูจน์ทราบ–ซ่อมบำรุง</span>
-        <span class="cine-ai">วิดีโอจำลองบรรยากาศ · AI-GENERATED</span>
+        <span class="cine-t">MISSION LIFECYCLE · วงรอบปฏิบัติการ ๗ ระยะ</span>
+        <span class="cine-ai">ภาพจำลองบรรยากาศ · AI-GENERATED</span>
       </figcaption>
     </figure>
 
@@ -1844,6 +1887,104 @@ if(cv && cv.getContext){
   function go(el){var u=el&&el.getAttribute?el.getAttribute('data-extlink'):null;if(u){window.open(u,'_blank','noopener,noreferrer');}}
   document.addEventListener('click',function(e){var t=e.target;var el=t&&t.closest?t.closest('[data-extlink]'):null;if(el){e.preventDefault();go(el);}},false);
   document.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '||e.key==='Spacebar'){var t=e.target;var el=t&&t.closest?t.closest('[data-extlink]'):null;if(el){e.preventDefault();go(el);}}},false);
+})();
+</script>
+<script>
+/* mission-lifecycle reel — phase lower-third sync (internal node-injected) */
+(function(){
+  var v=document.getElementById('reelVid'), box=document.getElementById('reelPhase');
+  if(!v||!box) return;
+  var numEl=box.querySelector('.rp-num'), enEl=box.querySelector('.rp-en'), thEl=box.querySelector('.rp-th');
+  var BEATS=[
+    {t:0, n:'๐๑', en:'WATCH',   th:'เฝ้าตรวจการณ์ทางทะเล · MDA'},
+    {t:7, n:'๐๒', en:'PREPARE', th:'เตรียมกำลังพล–ยุทโธปกรณ์'},
+    {t:14,n:'๐๓', en:'DEPLOY',  th:'วางกำลังสู่พื้นที่ปฏิบัติการ'},
+    {t:22,n:'๐๔', en:'DETECT',  th:'ตรวจจับ–พิสูจน์ทราบภัยคุกคาม'},
+    {t:30,n:'๐๕', en:'DECIDE',  th:'ตกลงใจสั่งการ ตามกฎการใช้กำลัง'},
+    {t:37,n:'๐๖', en:'RESPOND', th:'ตอบโต้ใต้น้ำ (Copperhead) + สกัดกั้นผิวน้ำ (ศรชล.)', alert:true},
+    {t:45,n:'๐๗', en:'SUSTAIN', th:'ซ่อมบำรุง–ดำรงสภาพใต้ทะเล'},
+    {t:53,end:true}
+  ];
+  var cur=-1;
+  function pick(ct){ for(var i=BEATS.length-1;i>=0;i--){ if(ct>=BEATS[i].t) return i; } return 0; }
+  function upd(){
+    var i=pick(v.currentTime||0);
+    if(i===cur) return; cur=i;
+    var b=BEATS[i];
+    if(b.end){ box.classList.remove('show'); return; }
+    numEl.textContent=b.n; enEl.textContent=b.en; thEl.textContent=b.th;
+    box.classList.toggle('alert', !!b.alert);
+    box.classList.add('show');
+  }
+  v.addEventListener('timeupdate', upd);
+  v.addEventListener('seeked', upd);
+  v.addEventListener('loadeddata', upd);
+})();
+</script>
+<script>
+/* reel scroll-play — autoplay WITH SOUND on scroll-into-view + first-gesture unlock + muted fallback (internal node-injected) */
+(function(){
+  var v=document.getElementById('reelVid');
+  if(!v) return;
+  var fig=v.closest('.reel-figure')||v.parentNode;
+  var started=false, unlocked=false, raf=0;
+
+  var btn=document.createElement('button');
+  btn.type='button'; btn.className='reel-unmute';
+  btn.setAttribute('aria-label','เปิดเสียงวิดีโอ');
+  btn.innerHTML='<span aria-hidden="true">🔊</span><span>แตะเพื่อเปิดเสียง</span>';
+  btn.style.display='none';
+  btn.addEventListener('click',function(){ unlocked=true; v.muted=false; var p=v.play(); if(p&&p.catch) p.catch(function(){}); btn.style.display='none'; });
+  fig.appendChild(btn);
+
+  function playSound(){
+    v.muted=false;
+    var p=v.play();
+    if(p&&p.catch){ p.catch(function(){ v.muted=true; var q=v.play(); if(q&&q.catch) q.catch(function(){}); if(!unlocked) btn.style.display=''; }); }
+  }
+  function resume(){ if(unlocked) v.muted=false; var p=v.play(); if(p&&p.catch) p.catch(function(){}); }
+
+  function onGesture(){
+    unlocked=true;
+    if(started && v.muted){ v.muted=false; btn.style.display='none'; var p=v.play(); if(p&&p.catch) p.catch(function(){}); }
+    document.removeEventListener('pointerdown',onGesture);
+    document.removeEventListener('keydown',onGesture);
+    document.removeEventListener('touchstart',onGesture);
+  }
+  document.addEventListener('pointerdown',onGesture,{passive:true});
+  document.addEventListener('keydown',onGesture);
+  document.addEventListener('touchstart',onGesture,{passive:true});
+
+  /* viewport-safe visibility: denominator min(element,viewport) so a video taller than the screen still triggers */
+  function visibleFrac(){
+    var H=window.innerHeight||document.documentElement.clientHeight||0;
+    if(H<=0) return 0;
+    var r=v.getBoundingClientRect();
+    var vis=Math.max(0, Math.min(r.bottom,H)-Math.max(r.top,0));
+    return vis/Math.min(r.height,H);
+  }
+  function gate(inView){
+    if(inView){
+      if(!started){ started=true; try{ v.currentTime=0; }catch(_){ } playSound(); }
+      else if(v.paused){ resume(); }
+    } else if(started && !v.paused){ v.pause(); }
+  }
+  function evaluate(){ gate(visibleFrac()>=0.5); }
+  function onScroll(){ if(raf) return; raf=(window.requestAnimationFrame||window.setTimeout)(function(){ raf=0; evaluate(); },80); }
+
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        var rootH=(e.rootBounds&&e.rootBounds.height)||window.innerHeight||0;
+        var frac= rootH>0 ? e.intersectionRect.height/Math.min(e.boundingClientRect.height,rootH) : 0;
+        gate(e.isIntersecting && frac>=0.5);
+      });
+    },{threshold:[0,0.1,0.25,0.5,0.75,1]});
+    io.observe(v);
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  window.addEventListener('resize',onScroll,{passive:true});
+  if(document.readyState==='complete') evaluate(); else window.addEventListener('load',evaluate);
 })();
 </script>
 </body>

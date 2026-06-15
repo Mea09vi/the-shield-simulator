@@ -25,6 +25,8 @@ _RTN_theme_preview.html
 *.docx
 # Research/source PDFs and ALL account/credential PDFs stay LOCAL only.
 *.pdf
+# Intermediate silent master for the pitch reel (build artifact — only film.mp4 ships)
+*.silent.mp4
 ภาคผนวก_Viewer.html
 ภาคผนวก_Viewer.html.before-embed.bak
 
