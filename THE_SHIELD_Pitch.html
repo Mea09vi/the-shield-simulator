@@ -334,6 +334,40 @@ body.menu-open #burger span:nth-child(3){top:19px;transform:rotate(-45deg)}
 .reel-figure .reel-unmute span:first-child{font-size:15px;line-height:1}
 @keyframes reelUnmutePulse{0%,100%{box-shadow:0 4px 18px rgba(0,0,0,.45)}50%{box-shadow:0 4px 22px rgba(100,255,218,.40)}}
 @media (max-width:660px){.reel-figure .reel-unmute{right:11px;bottom:11px;padding:7px 12px;font-size:12px}}
+
+/* ---------- reel theater / expand-to-fill (ขยายเต็มจอ + เบลอพื้นหลัง) · node-injected ---------- */
+.reel-expand{
+  position:absolute;right:16px;top:16px;z-index:7;
+  display:inline-flex;align-items:center;justify-content:center;
+  width:42px;height:42px;padding:0;cursor:pointer;color:#eaf2ef;
+  background:linear-gradient(135deg,rgba(1,13,26,.92),rgba(1,13,26,.72));
+  border:1px solid rgba(100,255,218,.45);border-radius:11px;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  box-shadow:0 4px 18px rgba(0,0,0,.45);
+  transition:transform .15s ease,border-color .2s ease,background .2s ease;
+}
+.reel-expand:hover{transform:translateY(-1px);border-color:var(--teal);background:linear-gradient(135deg,rgba(3,22,40,.96),rgba(3,22,40,.8))}
+.reel-expand:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.reel-expand svg{width:20px;height:20px;display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.reel-expand .rx-close{display:none}
+.reel-expand.on .rx-open{display:none}
+.reel-expand.on .rx-close{display:block}
+@media (max-width:660px){.reel-expand{right:11px;top:11px;width:38px;height:38px}.reel-expand svg{width:18px;height:18px}}
+
+.reel-backdrop{
+  position:fixed;inset:0;z-index:99990;
+  display:flex;align-items:center;justify-content:center;padding:2vh 2vw;
+  background:rgba(2,7,14,.62);
+  -webkit-backdrop-filter:blur(26px) saturate(.9) brightness(.72);
+  backdrop-filter:blur(26px) saturate(.9) brightness(.72);
+  opacity:0;pointer-events:none;transition:opacity .42s ease;
+}
+.reel-backdrop.on{opacity:1;pointer-events:auto}
+.reel-backdrop .reel-figure{margin:0 !important;width:auto;max-width:96vw;display:flex;flex-direction:column;align-items:center}
+.reel-backdrop .reel-figure video{width:auto;height:auto;max-width:96vw;max-height:84vh;object-fit:contain;border-radius:14px;box-shadow:0 30px 90px rgba(0,0,0,.6)}
+.reel-backdrop .reel-figure figcaption{margin-top:14px;text-align:center}
+.reel-backdrop .reel-expand{right:14px;top:14px}
+body.reel-theater{overflow:hidden}
 /* ---------- cards ---------- */
 .grid{display:grid;gap:22px}
 .g2{grid-template-columns:1fr 1fr}
@@ -1036,7 +1070,7 @@ footer .mono-line{
     </figure>
 
     <div class="model-canvas rv">
-      <svg viewBox="0 0 980 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ผังแนวคิด The Shield Model บนภาพถ่ายดาวเทียมจริงบริเวณสัตหีบ–เกาะคราม: เขต MEZ 2–5 nm และเขต Buffer 5–10 nm รอบ UDC, TSS ร่องน้ำ, สายเคเบิล DAS 3 เส้น, กำลัง 4 มิติ และการบังคับบัญชารวมศูนย์ — ตำแหน่งตรงกับ UDC Simulator v17">
+      <svg viewBox="0 0 980 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ผังแนวคิด The Shield Model บนภาพถ่ายดาวเทียมจริงบริเวณสัตหีบ–เกาะคราม: เขตหวงห้ามเด็ดขาด (MEZ) 2–5 nm และเขตจำกัดพฤติกรรม (Buffer) 5–10 nm รอบ UDC, TSS ร่องน้ำ, สายเคเบิล DAS 3 เส้น, กำลัง 4 มิติ และการบังคับบัญชารวมศูนย์ — ตำแหน่งตรงกับ UDC Simulator v17">
         <defs>
           <linearGradient id="swpG" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0" stop-color="#00d4ff" stop-opacity=".5"/>
@@ -1165,8 +1199,8 @@ footer .mono-line{
         <text x="639.9" y="326" text-anchor="middle" font-family="Share Tech Mono" font-size="9.5" fill="#aebadb" paint-order="stroke" stroke="#021019" stroke-width="2.4" stroke-linejoin="round">12°42.7'N 100°49.2'E · DEPTH 30–44 m</text>
 
         <!-- zone labels -->
-        <text x="639.9" y="123" text-anchor="middle" font-family="Share Tech Mono" font-size="11.5" fill="#ff7b73" letter-spacing="2" paint-order="stroke" stroke="#021019" stroke-width="3" stroke-linejoin="round">MEZ · เขตห้ามเข้าเด็ดขาด 2–5 nm</text>
-        <text x="450" y="64" text-anchor="middle" font-family="Share Tech Mono" font-size="11.5" fill="#5fc9e8" letter-spacing="2" paint-order="stroke" stroke="#021019" stroke-width="3" stroke-linejoin="round">RESTRICTED / BUFFER · 5–10 nm + TSS + MDA</text>
+        <text x="639.9" y="123" text-anchor="middle" font-family="Share Tech Mono" font-size="11.5" fill="#ff7b73" letter-spacing="2" paint-order="stroke" stroke="#021019" stroke-width="3" stroke-linejoin="round">MEZ · เขตหวงห้ามเด็ดขาด 2–5 nm</text>
+        <text x="450" y="64" text-anchor="middle" font-family="Share Tech Mono" font-size="11.5" fill="#5fc9e8" letter-spacing="2" paint-order="stroke" stroke="#021019" stroke-width="3" stroke-linejoin="round">BUFFER · เขตจำกัดพฤติกรรม 5–10 nm</text>
 
         <!-- forces (ตำแหน่งจริงตาม Simulator) -->
         <!-- สอ.รฝ. · เรดาร์เขาคลองถูป -->
@@ -1254,8 +1288,8 @@ footer .mono-line{
         <div class="dim">SPACE — มิติพื้นที่</div>
         <h4>Zoning Model · โซนนิ่ง 2 ชั้น</h4>
         <ul>
-          <li><b style="color:#ff7b73">MEZ 2–5 nm</b> — เขตห้ามเข้าเด็ดขาดรอบ UDC เพื่อสร้าง Reaction Time ที่ UNCLOS 500 ม. ให้ไม่ได้</li>
-          <li><b style="color:#5fc9e8">Restricted/Buffer 5–10 nm</b> — เขตจำกัด ใช้ TSS แยกการจราจร + MDA คัดกรอง Dark Vessels</li>
+          <li><b style="color:#ff7b73">MEZ · เขตหวงห้ามเด็ดขาด 2–5 nm</b> — ห้ามเรือทุกประเภทที่ไม่ได้รับอนุญาตรอบ UDC เพื่อสร้าง Reaction Time ที่ UNCLOS 500 ม. ให้ไม่ได้</li>
+          <li><b style="color:#5fc9e8">Restricted/Buffer · เขตจำกัดพฤติกรรม 5–10 nm</b> — ใช้ TSS แยกการจราจร + MDA คัดกรอง Dark Vessels</li>
           <li>รากฐานกฎหมายไทยที่มีอยู่จริง: พ.ร.บ.เขตปลอดภัยในราชการทหาร 2478 + บรรทัดฐาน พ.ร.ฎ. 2536</li>
         </ul>
       </div>
@@ -1985,6 +2019,52 @@ if(cv && cv.getContext){
   window.addEventListener('scroll',onScroll,{passive:true});
   window.addEventListener('resize',onScroll,{passive:true});
   if(document.readyState==='complete') evaluate(); else window.addEventListener('load',evaluate);
+})();
+</script>
+<script>
+/* reel theater / expand-to-fill — node-injected (button + blurred backdrop, toggle) */
+(function(){
+  var fig=document.querySelector('.reel-figure');
+  if(!fig) return;
+  var vid=document.getElementById('reelVid');
+  var bd=document.createElement('div');
+  bd.className='reel-backdrop'; bd.id='reelBackdrop';
+  document.body.appendChild(bd);
+  var btn=document.createElement('button');
+  btn.type='button'; btn.className='reel-expand';
+  btn.setAttribute('aria-label','ขยายวิดีโอเต็มจอ');
+  btn.setAttribute('aria-expanded','false');
+  btn.title='ขยายเต็มจอ / ย่อกลับ';
+  btn.innerHTML='<svg class="rx-open" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'
+    +'<svg class="rx-close" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  fig.appendChild(btn);
+  var origParent=null, origNext=null, open=false;
+  function enter(){
+    if(open) return;
+    origParent=fig.parentNode; origNext=fig.nextSibling;
+    bd.appendChild(fig);
+    document.body.classList.add('reel-theater');
+    bd.classList.add('on'); btn.classList.add('on');
+    btn.setAttribute('aria-expanded','true');
+    btn.setAttribute('aria-label','ย่อวิดีโอกลับ');
+    open=true;
+    try{ if(vid&&vid.play) vid.play(); }catch(e){}
+    document.addEventListener('keydown', onKey, true);
+  }
+  function exit(){
+    if(!open) return;
+    if(origParent){ origParent.insertBefore(fig, origNext); }
+    document.body.classList.remove('reel-theater');
+    bd.classList.remove('on'); btn.classList.remove('on');
+    btn.setAttribute('aria-expanded','false');
+    btn.setAttribute('aria-label','ขยายวิดีโอเต็มจอ');
+    open=false;
+    document.removeEventListener('keydown', onKey, true);
+    try{ window.dispatchEvent(new Event('scroll')); }catch(e){}
+  }
+  function onKey(e){ if(e.key==='Escape'||e.key==='Esc'||e.keyCode===27){ exit(); } }
+  btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); open?exit():enter(); });
+  bd.addEventListener('click', function(e){ if(e.target===bd) exit(); });
 })();
 </script>
 </body>
