@@ -10,10 +10,13 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 
 ## Current Version
 
-**v17.2.5 · 7-Domain + AI Staff**
+**v17.3.4 · 7-Domain + AI Staff**
 
 | Version | สิ่งสำคัญ |
 |---------|-----------|
+| v17.3.4 | อัปเดต comment ให้ตรงเอกสารวิจัย (บท ๓–๔) · bug audit ครบ ๙ ข้อสั่งการ · แก้ป้ายเวอร์ชันค้าง v16.0 → v17.3.4 |
+| v17.3.1–3 | UI ซีกขวา: ย้าย **LAYERS & TOOLS** ขึ้น header (ข้าง THEME) + ทำเป็น pop-up panel · เก็บกวาดป้าย/กรอบ DEPLOY ที่ค้าง |
+| v17.3.0 | **ชุดใหญ่ — ๙ ข้อสั่งการ + ขยาย Multi-Domain:** ROE Panel (ผ่าครึ่ง Threat-Vector Timeline · บันได EOF SHOUT→SHOW→SHOVE→SHOOT) · Plan Status Indicator · Jurisdiction & Legal-Authority · Underwater/Seabed COP + Sonar Grid · Shared-MDA (IFC-SG / ศรชล. Joint COP) · Strategic Analysis (PMESII/SWOT/TOWS · บทที่ ๓) · แก้ HERO/SONAR ปิดไม่ได้ · แก้ Copperhead 3D ค้าง · declutter ซีกขวา (default collapsed) |
 | v17.2.5 | ปุ่ม **PITCH** ใน header → ลิงก์กลับหน้านำเสนอ `THE_SHIELD_Pitch.html` |
 | v17.2.4 | ปรับยศผู้พัฒนาในส่วนหัวไฟล์ |
 | v17.0.0 | **ฝ่ายเสนาธิการ AI (AI Staff Planner)** — ผู้ช่วยวางแผนเชิงยุทธการ |
