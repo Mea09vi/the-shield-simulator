@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>บทที่ ๔ ผลการวิเคราะห์ · THE SHIELD — งานวิจัยศูนย์ข้อมูลใต้น้ำ (UDC)</title>
+<meta name="description" content="สรุปสาระสำคัญบทที่ ๔ ของงานวิจัย: ผลการวิเคราะห์แนวทางการกำหนดบทบาทและการจัดระเบียบพื้นที่ทางทะเลของกองทัพเรือ — สังเคราะห์ระบบบูรณาการ The Shield 3.0 (UDC Defense Simulator v17) อุดช่องว่าง ๓ ด้าน พร้อมตอบวัตถุประสงค์การวิจัย ๓ ข้อ ผ่านการจัดกำลังพหุมิติ ๖ มิติ ตามกรอบ 5W1H ภายใต้กลไก ศรชล.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Saira:wght@400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-dark:#010d1a; --bg-deep:#000810; --bg-panel:#081525;
+    --panel:rgba(8,21,37,.74); --panel2:rgba(13,30,51,.62);
+    --text-main:#ccd6f6; --text-muted:#8892b0; --text-dim:#697494;
+    --cyan:#00d4ff; --teal:#64ffda; --green:#39ff14; --red:#ff6b61; --purple:#bd93f9; --gold:#f5c451; --coral:#ff9f7a;
+    --line:rgba(0,212,255,.14); --line2:rgba(0,212,255,.28);
+    --f-disp:'Saira','Prompt',system-ui,sans-serif;
+    --f-body:'Prompt','Saira',system-ui,sans-serif;
+    --f-mono:'Share Tech Mono','Courier New',monospace;
+    --shadow:0 18px 50px rgba(0,0,0,.45);
+    --r:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:
+      radial-gradient(1200px 700px at 78% -8%, rgba(0,212,255,.10), transparent 60%),
+      radial-gradient(1000px 700px at 8% 6%, rgba(100,255,218,.06), transparent 55%),
+      linear-gradient(180deg,var(--bg-dark),var(--bg-panel) 60%,var(--bg-deep));
+    color:var(--text-main); font-family:var(--f-body); font-weight:300;
+    line-height:1.78; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  }
+  ::selection{background:rgba(0,212,255,.35);color:#fff}
+  img{display:block;max-width:100%}
+  a{color:var(--cyan);text-decoration:none}
+  a:hover{color:var(--teal)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  b,strong{font-weight:500;color:var(--text-main)}
+  .accent{color:var(--cyan)} .accent-teal{color:var(--teal)} .accent-purple{color:var(--purple)}
+
+  /* ---------- hero ---------- */
+  header.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero-grid{position:absolute;inset:0;background-image:
+      linear-gradient(rgba(0,212,255,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,212,255,.05) 1px,transparent 1px);
+    background-size:34px 34px;mask:radial-gradient(80% 80% at 50% 18%,#000,transparent 78%)}
+  .hero-inner{position:relative;padding:56px 0 44px}
+  .crest{display:inline-flex;align-items:center;gap:11px;font-family:var(--f-mono);
+    letter-spacing:.3em;font-size:12px;color:var(--cyan);text-transform:uppercase}
+  .crest .dot{width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 14px var(--cyan)}
+  .ch-num{margin-top:26px;font-family:var(--f-mono);font-size:13px;letter-spacing:.32em;color:var(--text-dim)}
+  .hero h1{font-family:var(--f-disp);font-size:clamp(30px,5vw,52px);font-weight:700;margin:10px 0 8px;
+    background:linear-gradient(120deg,#eaf3ff,#8fd9ff 55%,#64ffda);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero .sub{font-size:clamp(14.5px,1.9vw,17.5px);color:var(--text-muted);max-width:860px}
+  .hero .sub b{color:#dfe9ff}
+  .hero .meta{margin-top:24px;display:flex;flex-wrap:wrap;gap:10px}
+  .chip{font-size:12.5px;padding:7px 14px;border-radius:999px;border:1px solid var(--line2);
+    background:var(--panel2);color:var(--text-muted);display:inline-flex;gap:7px;align-items:center}
+  .chip b{color:var(--text-main);font-weight:500}
+  .chip.ok{border-color:rgba(100,255,218,.45);color:var(--teal)}
+
+  .cine{position:relative;border:1px solid var(--line2);border-radius:var(--r);overflow:hidden;
+    box-shadow:var(--shadow);margin:34px 0 6px}
+  .cine img{width:100%;height:auto}
+  .cine figcaption{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;
+    align-items:flex-end;gap:14px;padding:34px 18px 12px;
+    background:linear-gradient(180deg,transparent,rgba(0,8,16,.88))}
+  .cine-t{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.22em;color:#9fd8ff;text-transform:uppercase}
+  .cine-ai{font-family:var(--f-mono);font-size:10px;letter-spacing:.18em;color:var(--text-dim);
+    border:1px solid rgba(136,146,176,.35);padding:3px 9px;border-radius:999px;white-space:nowrap}
+
+  /* ---------- sticky toc ---------- */
+  nav.toc{position:sticky;top:0;z-index:40;backdrop-filter:blur(14px);
+    background:rgba(1,13,26,.88);border-bottom:1px solid var(--line)}
+  nav.toc .wrap{display:flex;gap:6px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px;align-items:center}
+  nav.toc a{font-size:13px;color:var(--text-muted);border:1px solid transparent;border-radius:10px;
+    padding:5px 11px;font-weight:400}
+  nav.toc a:hover{color:var(--text-main);background:var(--panel2);border-color:var(--line)}
+  nav.toc a.home-btn{display:inline-flex;align-items:center;gap:7px;margin-right:8px;padding:7px 13px;color:#64ffda;background:rgba(100,255,218,.06);border:1px solid rgba(100,255,218,.40);border-radius:9px;font-family:ui-monospace,'JetBrains Mono','Sarabun',Consolas,monospace;font-weight:600;font-size:13px;letter-spacing:.04em;line-height:1;white-space:nowrap;text-decoration:none;transition:background .18s,border-color .18s,box-shadow .18s,transform .18s}nav.toc a.home-btn .hb-ico{flex:none;transition:transform .18s}nav.toc a.home-btn:hover{background:rgba(100,255,218,.13);border-color:#64ffda;box-shadow:0 0 0 1px rgba(100,255,218,.22),0 4px 16px rgba(100,255,218,.16)}nav.toc a.home-btn:hover .hb-ico{transform:translateY(-1px)}nav.toc a.home-btn:active{transform:translateY(0)}nav.toc a.home-btn:focus-visible{outline:2px solid #64ffda;outline-offset:2px}
+  nav.toc .tag{margin-left:auto;font-family:var(--f-mono);font-size:10.5px;color:var(--text-dim);letter-spacing:.18em}
+
+  /* ---------- sections ---------- */
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:var(--f-mono);
+    letter-spacing:.26em;font-size:11.5px;text-transform:uppercase;color:var(--cyan);margin-bottom:14px}
+  .eyebrow .num{display:inline-grid;place-items:center;min-width:30px;height:30px;border-radius:9px;
+    background:linear-gradient(135deg,var(--cyan),#0077a8);color:#06121f;font-weight:700;font-size:13px;letter-spacing:0;padding:0 7px}
+  h2.title{font-family:var(--f-disp);font-size:clamp(23px,3.2vw,31px);font-weight:700;color:#fff;margin-bottom:10px}
+  .lead{color:var(--text-muted);font-size:16px;max-width:880px;margin-bottom:26px}
+  .lead b{color:#dfe9ff;font-weight:500}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+    padding:20px 22px;box-shadow:var(--shadow);backdrop-filter:blur(8px)}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:880px){.g4{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+  @media(max-width:560px){.g4{grid-template-columns:1fr}}
+
+  .kpi{padding:18px 20px;text-align:left}
+  .kpi .v{font-family:var(--f-disp);font-size:28px;font-weight:700;line-height:1.15;color:var(--cyan)}
+  .kpi .v small{font-size:15px;font-weight:600;color:var(--text-muted)}
+  .kpi .l{font-size:13px;color:var(--text-muted);margin-top:6px}
+
+  h3.sub-h{font-family:var(--f-disp);font-size:18.5px;font-weight:600;color:#fff;
+    margin:34px 0 14px;display:flex;align-items:center;gap:11px}
+  h3.sub-h .bar{width:4px;height:20px;border-radius:3px;background:var(--cyan);box-shadow:0 0 10px rgba(0,212,255,.6)}
+  p.body{font-size:15px;color:var(--text-muted);max-width:880px;margin-bottom:14px}
+  p.body b{color:#dfe9ff;font-weight:500}
+
+  ul.clean{list-style:none}
+  ul.clean li{position:relative;padding-left:22px;margin-bottom:9px;font-size:14.5px;color:var(--text-muted)}
+  ul.clean li::before{content:'▸';position:absolute;left:0;color:var(--cyan)}
+  ul.clean li b{color:var(--text-main);font-weight:500}
+
+  /* case study cards */
+  .case{display:flex;flex-direction:column;gap:8px}
+  .case .flag{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.2em;color:var(--text-dim);text-transform:uppercase}
+  .case h4{font-family:var(--f-disp);font-size:17px;font-weight:600;color:#fff}
+  .case p{font-size:13.5px;color:var(--text-muted)}
+  .case .hl{margin-top:auto;padding-top:10px;font-size:12.5px;color:var(--teal);
+    border-top:1px dashed rgba(100,255,218,.25)}
+
+  /* risk / pass-fail cards */
+  .risk{border-top:3px solid var(--red);position:relative}
+  .risk.r2{border-top-color:var(--gold)} .risk.r3{border-top-color:var(--purple)}
+  .risk.pass{border-top-color:var(--teal)}
+  .risk .tagline{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--red)}
+  .risk.r2 .tagline{color:var(--gold)} .risk.r3 .tagline{color:var(--purple)}
+  .risk.pass .tagline{color:var(--teal)}
+  .risk h4{font-family:var(--f-disp);font-size:16.5px;font-weight:600;color:#fff;margin:6px 0 8px;padding-right:44px}
+  .risk p{font-size:13.5px;color:var(--text-muted)}
+  .risk .verdict{position:absolute;top:14px;right:16px;width:36px;height:36px;border-radius:50%;
+    display:grid;place-items:center;font-size:19px;font-weight:700;line-height:1}
+  .risk.pass .verdict{background:rgba(100,255,218,.15);color:var(--teal);
+    border:1.6px solid rgba(100,255,218,.55);box-shadow:0 0 16px rgba(100,255,218,.32)}
+  .risk:not(.pass) .verdict{background:rgba(255,107,97,.13);color:var(--red);
+    border:1.6px solid rgba(255,107,97,.55);box-shadow:0 0 14px rgba(255,107,97,.22)}
+
+  /* objectives / process tiers */
+  .tier{border-left:3px solid var(--cyan);padding:6px 0 6px 20px;margin-bottom:20px}
+  .tier .h{font-family:var(--f-disp);font-weight:600;font-size:16.5px;color:#fff;margin-bottom:5px;display:flex;gap:12px;align-items:baseline}
+  .tier .h .no{font-family:var(--f-mono);color:var(--cyan);font-size:14px}
+  .tier p{font-size:14.5px;color:var(--text-muted);max-width:840px}
+  .prop{background:linear-gradient(180deg,rgba(100,255,218,.09),rgba(100,255,218,.02));
+    border:1px solid rgba(100,255,218,.3);border-radius:var(--r);padding:22px 24px;margin-top:28px}
+  .prop .h{font-family:var(--f-mono);font-size:11px;letter-spacing:.24em;color:var(--teal);
+    text-transform:uppercase;margin-bottom:10px;display:flex;gap:9px;align-items:center}
+  .prop p{font-size:15.5px;color:#dfe9ff;max-width:900px}
+  .prop p b{color:var(--teal);font-weight:500}
+
+  /* scope cards */
+  .scope-card h4{font-family:var(--f-disp);font-size:15px;font-weight:600;color:#fff;margin-bottom:6px;display:flex;gap:9px;align-items:center}
+  .scope-card h4 .ic{font-size:16px}
+  .scope-card p{font-size:13.5px;color:var(--text-muted)}
+  .scope-card p b{color:#dfe9ff;font-weight:500}
+
+  /* figure */
+  .fig{margin:30px 0 6px}
+  .fig .fig-box{background:#f4f7fb;border:1px solid var(--line2);border-radius:var(--r);
+    overflow:hidden;box-shadow:var(--shadow);padding:10px}
+  .fig .fig-box img{width:100%;height:auto;border-radius:8px}
+  .fig figcaption{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    padding:12px 6px 0;font-size:13px;color:var(--text-muted)}
+  .fig figcaption .t{color:#dfe9ff}
+  .fig figcaption .src{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;color:var(--text-dim)}
+
+  /* shield evolution */
+  .evo{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:10px;align-items:stretch;margin:26px 0 8px}
+  @media(max-width:760px){.evo{grid-template-columns:1fr}.evo .arr{transform:rotate(90deg);justify-self:center}}
+  .evo .stage{background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:16px 18px}
+  .evo .stage.s2{border-color:rgba(100,255,218,.4)}
+  .evo .stage.s3{border-color:rgba(189,147,249,.55);box-shadow:0 0 22px rgba(189,147,249,.18)}
+  .evo .stage .v{font-family:var(--f-disp);font-weight:700;font-size:20px;color:var(--cyan)}
+  .evo .stage.s2 .v{color:var(--teal)} .evo .stage.s3 .v{color:var(--purple)}
+  .evo .stage .w{font-size:12.5px;color:var(--text-muted);margin-top:5px}
+  .evo .stage .w b{color:#dfe9ff;font-weight:500}
+  .evo .stage .now{display:inline-block;margin-top:8px;font-family:var(--f-mono);font-size:9.5px;letter-spacing:.16em;
+    color:#06121f;background:var(--purple);border-radius:6px;padding:2px 8px;text-transform:uppercase}
+  .evo .arr{align-self:center;color:var(--text-dim);font-size:20px}
+
+  /* Detect → Classify → Decide → Respond chain */
+  .chain{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;gap:7px;align-items:stretch;margin:22px 0 8px}
+  @media(max-width:780px){.chain{grid-template-columns:1fr}.chain .ar{transform:rotate(90deg);justify-self:center}}
+  .chain .step{background:var(--panel);border:1px solid var(--line2);border-radius:13px;padding:14px 14px;text-align:center}
+  .chain .step .n{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.2em;color:var(--text-dim)}
+  .chain .step .t{font-family:var(--f-disp);font-weight:700;font-size:16px;color:var(--cyan);margin:5px 0 5px}
+  .chain .step.c2 .t{color:var(--teal)} .chain .step.c3 .t{color:var(--purple)} .chain .step.c4 .t{color:var(--gold)}
+  .chain .step .d{font-size:12px;color:var(--text-muted);line-height:1.5}
+  .chain .ar{align-self:center;color:var(--text-dim);font-size:17px}
+
+  /* 5W1H dimension cards */
+  .dim{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;
+    box-shadow:var(--shadow);border-top:3px solid var(--accent,var(--cyan));backdrop-filter:blur(8px)}
+  .dim .dh{display:flex;align-items:center;gap:11px;margin-bottom:13px;flex-wrap:wrap}
+  .dim .dh .ico{font-size:21px;line-height:1}
+  .dim .dh .dn{font-family:var(--f-mono);font-size:10px;color:var(--accent,var(--cyan));letter-spacing:.14em;text-transform:uppercase}
+  .dim .dh .dt{font-family:var(--f-disp);font-weight:700;font-size:16.5px;color:#fff}
+  .dim .org{margin-left:auto;font-family:var(--f-mono);font-size:9px;letter-spacing:.08em;padding:3px 8px;border-radius:6px;
+    border:1px solid rgba(100,255,218,.4);color:var(--teal);background:rgba(100,255,218,.06);white-space:nowrap}
+  .dim .org.ext{border-color:rgba(245,196,81,.45);color:var(--gold);background:rgba(245,196,81,.07)}
+  .dim dl{display:grid;grid-template-columns:auto 1fr;gap:7px 13px;margin:0}
+  .dim dt{font-family:var(--f-mono);font-size:10px;font-weight:700;color:var(--accent,var(--cyan));
+    letter-spacing:.04em;white-space:nowrap;padding-top:2px}
+  .dim dd{font-size:12.8px;color:var(--text-muted);line-height:1.55;margin:0}
+  .dim dd b{color:var(--text-main);font-weight:500}
+  .dim.d1{--accent:var(--cyan)} .dim.d2{--accent:var(--teal)} .dim.d3{--accent:var(--purple)}
+  .dim.d4{--accent:var(--gold)} .dim.d5{--accent:var(--coral)} .dim.d6{--accent:var(--red)}
+
+  /* quote */
+  .quote{border-left:3px solid var(--teal);padding:8px 0 8px 22px;margin:24px 0;max-width:860px}
+  .quote p{font-size:15.5px;color:#dfe9ff;font-weight:300;font-style:italic}
+  .quote .who{margin-top:8px;font-size:12.5px;color:var(--text-dim);font-style:normal;font-family:var(--f-mono);letter-spacing:.08em}
+
+  /* footer nav */
+  footer{padding:46px 0 64px}
+  .foot-nav{display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+  .btn{display:inline-flex;align-items:center;gap:10px;padding:13px 26px;border-radius:12px;
+    font-family:var(--f-disp);font-weight:600;font-size:14.5px;letter-spacing:.04em;
+    border:1px solid var(--line2);color:var(--text-main);transition:all .25s}
+  .btn:hover{border-color:var(--cyan);color:#fff;box-shadow:0 0 24px rgba(0,212,255,.25)}
+  .btn.primary{background:linear-gradient(135deg,rgba(0,212,255,.18),rgba(100,255,218,.1));
+    border-color:rgba(0,212,255,.5);color:#fff}
+  .disclaim{margin-top:30px;font-size:12px;color:var(--text-dim);text-align:center;font-family:var(--f-mono);letter-spacing:.06em}
+
+  /* ---------- data tables ---------- */
+  .t-cap{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin:26px 0 10px}
+  .t-cap .t{font-size:14px;color:#dfe9ff;font-weight:500}
+  .t-cap .src{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;color:var(--text-dim)}
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--panel);
+    box-shadow:var(--shadow);-webkit-overflow-scrolling:touch}
+  table.dtbl{width:100%;border-collapse:collapse;font-size:13.5px}
+  .dtbl th{background:rgba(0,212,255,.09);color:var(--cyan);font-family:var(--f-disp);font-weight:600;font-size:13px;
+    text-align:left;padding:11px 14px;border-bottom:1px solid var(--line2)}
+  .dtbl th.hi{background:rgba(189,147,249,.14);color:var(--purple)}
+  .dtbl td{padding:11px 14px;border-bottom:1px solid var(--line);color:var(--text-muted);vertical-align:top;line-height:1.6}
+  .dtbl tbody tr:last-child td{border-bottom:none}
+  .dtbl td b{color:var(--text-main);font-weight:500}
+  .dtbl td.dim-c{color:var(--teal);font-family:var(--f-disp);font-weight:600;font-size:13px;
+    border-right:1px solid var(--line);background:rgba(100,255,218,.04);min-width:150px}
+  .dtbl td.hi{background:rgba(189,147,249,.06);color:#e7dcff}
+  .dtbl td.old{color:var(--text-dim)}
+  .dtbl.w1100{min-width:1060px} .dtbl.w900{min-width:860px} .dtbl.w1200{min-width:1180px}
+
+  /* ===== simulator embed (ภาพที่ ๔-๑) ===== */
+  .sim{margin:30px 0 6px}
+  .sim .frame{position:relative;border:1px solid var(--line2);border-radius:var(--r);overflow:hidden;
+    box-shadow:var(--shadow);background:#04121f;height:min(90vh,1080px);min-height:680px}
+  .sim iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;overflow:auto}
+  .sim .poster{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:18px;text-align:center;padding:32px;cursor:pointer;
+    background:linear-gradient(180deg,rgba(2,12,25,.55),rgba(2,12,25,.86)),url('THE_SHIELD_Ch4_ui.webp') center/cover}
+  .sim .poster .kick{font-family:var(--f-mono);font-size:11px;letter-spacing:.24em;color:var(--cyan);text-transform:uppercase}
+  .sim .poster .ttl{font-family:var(--f-disp);font-size:clamp(18px,2.4vw,24px);font-weight:700;color:#fff;max-width:680px}
+  .sim .poster .desc{font-size:13.5px;color:var(--text-muted);max-width:580px}
+  .sim .launch{display:inline-flex;align-items:center;gap:10px;padding:13px 26px;border-radius:12px;
+    font-family:var(--f-disp);font-weight:600;font-size:14.5px;letter-spacing:.04em;
+    border:1px solid rgba(0,212,255,.5);background:linear-gradient(135deg,rgba(0,212,255,.22),rgba(100,255,218,.12));
+    color:#fff;transition:all .25s}
+  .sim .launch:hover{border-color:var(--cyan);box-shadow:0 0 28px rgba(0,212,255,.3)}
+  .sim .poster.hide{display:none}
+  .sim figcaption{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    padding:12px 6px 0;font-size:13px;color:var(--text-muted)}
+  .sim figcaption .t{color:#dfe9ff}
+  .sim figcaption .src{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;color:var(--text-dim)}
+
+  /* reveal */
+  .rv{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+  .rv.on{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- ================= HERO ================= -->
+<header class="hero">
+  <div class="hero-grid"></div>
+  <div class="wrap hero-inner">
+    <span class="crest"><span class="dot"></span>THE SHIELD · RESEARCH DOSSIER</span>
+    <div class="ch-num">CHAPTER — 04 · บทที่ ๔</div>
+    <h1>ผลการวิเคราะห์ และการสังเคราะห์ The Shield 3.0</h1>
+    <p class="sub">บทนี้สังเคราะห์รูปแบบฉบับสมบูรณ์ — <b>ระบบบูรณาการเฝ้าระวังและป้องกันโครงสร้างพื้นฐานใต้น้ำ (The Shield 3.0)</b> ที่ยกระดับ UDC Defense Simulator จาก v3 สู่ <b>v17</b> เพื่ออุดช่องว่าง ๓ ด้านที่ค้นพบในบทที่ ๓ — <b>กฎหมาย · การตระหนักรู้ใต้น้ำ · การบูรณาการ</b> — แล้วนำเสนอผลการวิเคราะห์ที่ตอบ<b>วัตถุประสงค์การวิจัยทั้ง ๓ ข้อ</b> ผ่านการจัดกำลังพหุมิติ ๖ มิติตามกรอบ 5W1H ภายใต้กลไก ศรชล.</p>
+    <div class="meta">
+      <span class="chip ok"><b>✓</b> เสร็จสมบูรณ์</span>
+      <span class="chip">ผลลัพธ์ · <b>The Shield 3.0</b></span>
+      <span class="chip">Simulator · <b>v17</b></span>
+      <span class="chip">ตอบวัตถุประสงค์ · <b>๓ ข้อ</b></span>
+      <span class="chip">มิติการป้องกัน · <b>๖ มิติ</b></span>
+      <span class="chip">หลักสูตร สธ.ทร. รุ่นที่ <b>๘๖</b></span>
+    </div>
+    <figure class="cine rv">
+      <img src="THE_SHIELD_Ch4_hero.webp" alt="ศูนย์อำนวยการรักษาผลประโยชน์ของชาติทางทะเลแบบบูรณาการ จำลองภาพการตระหนักรู้สถานการณ์ทางทะเลพหุมิติของ The Shield 3.0">
+      <figcaption>
+        <span class="cine-t">SYNTHESIS · CLOSE THE 3 GAPS → THE SHIELD 3.0</span>
+        <span class="cine-ai">ภาพจำลองบรรยากาศ · AI-GENERATED</span>
+      </figcaption>
+    </figure>
+  </div>
+</header>
+
+<!-- ================= TOC ================= -->
+<nav class="toc">
+  <div class="wrap">
+    <a class="home-btn" href="THE_SHIELD_Pitch.html" aria-label="กลับหน้านำเสนองานวิจัย"><svg class="hb-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.3h13V10"/><path d="M10 19.3v-5.5h4v5.5"/></svg><span>Home</span></a>
+    <a href="#intro">กล่าวนำ</a>
+    <a href="#shield3">The Shield 3.0</a>
+    <a href="#ops">5W1H · ๖ มิติ</a>
+    <a href="#environment">สภาพแวดล้อม &amp; ภัยคุกคาม</a>
+    <a href="#protection">การจัดระเบียบพื้นที่</a>
+    <a href="#role">บทบาท ทร. / ศรชล.</a>
+    <a href="#summary">สรุป</a>
+    <span class="tag">CH.04 / 05</span>
+  </div>
+</nav>
+
+<!-- ================= 01 · กล่าวนำ ================= -->
+<section id="intro">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">01</span> ๔.๑ · INTRODUCTION</div>
+    <h2 class="title rv">กล่าวนำ — จากช่องว่างสู่ระบบบูรณาการ</h2>
+    <p class="lead rv">บทที่ ๒ สังเคราะห์กรอบแนวคิดเชิงทฤษฎี <b>The Shield 1.0</b> · บทที่ ๓ พัฒนาเป็นโมเดลที่นำเสนอ <b>The Shield 2.0</b> ผูกกับพื้นที่ทิศตะวันออกของเกาะคราม พร้อมตรวจสอบจนพบ<b>ช่องว่างที่มีนัยสำคัญ ๓ ประการ</b> บทนี้จึงนำเสนอ<b>รูปแบบฉบับสมบูรณ์ The Shield 3.0</b> เป็นลำดับแรก แล้วนำเสนอผลการวิเคราะห์สภาพแวดล้อม ภัยคุกคาม รูปแบบการคุ้มครอง และบทบาทของกองทัพเรือที่สนับสนุนรูปแบบดังกล่าว</p>
+
+    <div class="evo rv">
+      <div class="stage s1">
+        <div class="v">1.0</div>
+        <div class="w"><b>กรอบแนวคิดเชิงทฤษฎี</b> — สังเคราะห์ในบทที่ ๒</div>
+      </div>
+      <div class="arr">→</div>
+      <div class="stage s2">
+        <div class="v">2.0</div>
+        <div class="w"><b>โมเดลที่นำเสนอ</b> — ผูกพื้นที่จริง + พบช่องว่าง ๓ ด้าน (บทที่ ๓)</div>
+      </div>
+      <div class="arr">→</div>
+      <div class="stage s3">
+        <div class="v">3.0</div>
+        <div class="w"><b>ระบบบูรณาการ</b> — อุดช่องว่างครบ พร้อมนำไปปฏิบัติ</div>
+        <span class="now">◆ บทนี้</span>
+      </div>
+    </div>
+
+    <h3 class="sub-h rv"><span class="bar"></span>โจทย์ตั้งต้น — ช่องว่าง ๓ ด้านจากบทที่ ๓</h3>
+    <div class="grid g3">
+      <div class="card scope-card rv">
+        <h4><span class="ic">⚖️</span> ๑ · ด้านกฎหมาย</h4>
+        <p>ยังไม่มีกฎหมายเฉพาะคุ้มครอง <b>โครงสร้างพื้นฐานใต้น้ำที่สำคัญ (CUI)</b> รองรับการจัดระเบียบพื้นที่และกฎการปฏิบัติรายเขต</p>
+      </div>
+      <div class="card scope-card rv">
+        <h4><span class="ic">🛰️</span> ๒ · การตระหนักรู้ใต้น้ำ</h4>
+        <p>ขาด<b>เซนเซอร์ใต้น้ำ</b>และ<b>การหลอมรวมข้อมูล</b> ที่จะมองเห็นภัยพื้นทะเลซึ่งตรวจจับได้ยากที่สุด</p>
+      </div>
+      <div class="card scope-card rv">
+        <h4><span class="ic">🔗</span> ๓ · การบูรณาการ</h4>
+        <p>ขาด<b>เจ้าภาพ</b>และ<b>กลไกบังคับเปิดข้อมูล</b>ระหว่างหน่วยงาน ที่จะหลอมภาพสถานการณ์ทางทะเลให้เป็นหนึ่งเดียว</p>
+      </div>
+    </div>
+
+    <h3 class="sub-h rv"><span class="bar"></span>โครงของบทนี้ → ตอบวัตถุประสงค์การวิจัย ๓ ข้อ</h3>
+    <div class="rv">
+      <div class="tier">
+        <div class="h"><span class="no">วัตถุประสงค์ ๑</span> สภาพแวดล้อมและภัยคุกคาม</div>
+        <p>วิเคราะห์ข้อจำกัดของโครงสร้างพื้นฐานดิจิทัลภาครัฐปัจจุบัน ความเหมาะสมเชิงภูมิศาสตร์ และภัยคุกคามต่อ UDC ในอ่าวไทย → <b>หัวข้อ ๔.๓</b></p>
+      </div>
+      <div class="tier">
+        <div class="h"><span class="no">วัตถุประสงค์ ๒</span> รูปแบบการคุ้มครองและการจัดระเบียบพื้นที่</div>
+        <p>วิเคราะห์การจัดระเบียบพื้นที่ทางทะเล (MSP) และขีดความสามารถปฏิบัติการใต้น้ำที่เหมาะสมของกองทัพเรือ → <b>หัวข้อ ๔.๔</b></p>
+      </div>
+      <div class="tier">
+        <div class="h"><span class="no">วัตถุประสงค์ ๓</span> บทบาทกองทัพเรือเชิงบูรณาการ</div>
+        <p>เสนอแนวทางกำหนดบทบาทและการบริหารจัดการพื้นที่ทางทะเลภายใต้กลไก ศรชล. → <b>หัวข้อ ๔.๕</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 02 · THE SHIELD 3.0 ================= -->
+<section id="shield3">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">02</span> ๔.๒ · SYNTHESIS — THE SHIELD 3.0</div>
+    <h2 class="title rv">การสังเคราะห์รูปแบบฉบับสมบูรณ์</h2>
+    <p class="lead rv">The Shield 3.0 พัฒนาต่อยอดจาก 2.0 โดย<b>ยกระดับจากการตรวจจับและตอบโต้การบุกรุกโดยลำพัง</b> ไปสู่<b>ระบบรับมือสงครามพื้นทะเลในลักษณะพื้นที่สีเทาและการประสานความร่วมมือระดับภูมิภาค</b> โปรแกรมจำลอง UDC Defense Simulator จึงเปลี่ยนคำถามหลักจากรุ่น v3 สู่ v17</p>
+
+    <div class="grid g2 rv">
+      <div class="card case">
+        <span class="flag">v3 · THE SHIELD 2.0</span>
+        <h4>“ตรวจพบอะไร”</h4>
+        <p>เน้นจำลองการทำงานของเซนเซอร์ตรวจจับ และการตอบโต้การบุกรุกศูนย์ข้อมูลใต้น้ำของไทย<b>โดยลำพัง</b></p>
+      </div>
+      <div class="card case" style="border-color:rgba(189,147,249,.4)">
+        <span class="flag" style="color:var(--purple)">v17 · THE SHIELD 3.0</span>
+        <h4>“ใคร ทำอะไร ทำไม ทำได้เพียงใดตามกฎหมาย และร่วมมือกับผู้ใด”</h4>
+        <p>ยกระดับสู่ระบบบูรณาการ — หลอมรวมข่าวกรองพื้นที่สีเทา จำแนกเจตนา ซ้อนชั้นเขตอำนาจตามกฎหมาย และประสานความร่วมมือหลายหน่วย</p>
+      </div>
+    </div>
+
+    <!-- ภาพที่ ๔-๑ : interactive simulator -->
+    <figure class="sim rv">
+      <div class="frame" id="simFrame">
+        <div class="poster" id="simPoster" onclick="loadSim()">
+          <div class="kick">ภาพที่ ๔-๑ · INTERACTIVE SIMULATOR</div>
+          <div class="ttl">The Shield 3.0 — UDC Defense Simulator v17 (Multi-Domain Awareness)</div>
+          <div class="desc">คลิกเพื่อเปิดเครื่องมือจำลองรุ่นสมบูรณ์แบบโต้ตอบ (โหลดในหน้านี้) · แผนที่ยุทธการเป็นศูนย์กลาง ล้อมรอบด้วยแผงควบคุม ๖ กลุ่มฟังก์ชัน หลอมรวมข้อมูลเรียลไทม์หลายมิติ พร้อมการวิเคราะห์พฤติกรรม–เจตนา และการซ้อนชั้นเขตอำนาจตามกฎหมาย</div>
+          <span class="launch">▶ เปิดเครื่องมือจำลอง v17</span>
+        </div>
+      </div>
+      <figcaption>
+        <span class="t">ภาพที่ ๔-๑ · User Interface ของ The Shield 3.0 — UDC Defense Simulator v17</span>
+        <span class="src">ที่มา : พัฒนาโดยผู้วิจัย</span>
+      </figcaption>
+    </figure>
+
+    <h3 class="sub-h rv"><span class="bar"></span>สถาปัตยกรรม ๖ กลุ่มฟังก์ชัน</h3>
+    <p class="body rv">โปรแกรมออกแบบเป็น<b>แผนที่ยุทธการแบบโต้ตอบ</b>เป็นศูนย์กลาง มีแผงควบคุมล้อมรอบสำหรับเปิด-ปิดชั้นข้อมูลและสั่งการจำลองแบบเรียลไทม์ โครงสร้างภายในแบ่งเป็น ๖ กลุ่มฟังก์ชันที่ทำงานประสานกัน</p>
+    <div class="grid g3">
+      <div class="card scope-card rv"><h4><span class="ic">🗺️</span> ๑ · แพลตฟอร์ม &amp; ภูมิศาสตร์</h4><p>ที่ตั้ง UDC แนววางสายเคเบิล ความลึกพื้นท้องทะเล (Bathymetry) และสัญลักษณ์การเดินเรือบนแผนที่จริง</p></div>
+      <div class="card scope-card rv"><h4><span class="ic">🔊</span> ๒ · สิ่งแวดล้อม &amp; ฟิสิกส์เสียง</h4><p>จำลองสมการโซนาร์ ความเร็วเสียงในน้ำ และเงื่อนไขการแพร่เสียง เพื่อประเมินระยะตรวจจับตามสภาพน้ำตื้นอ่าวไทย</p></div>
+      <div class="card scope-card rv"><h4><span class="ic">🛡️</span> ๓ · กำลังรบ &amp; สถาปัตยกรรมป้องกัน</h4><p>วางกำลังเรือผิวน้ำ เฮลิคอปเตอร์ปราบเรือดำน้ำ ข่ายเซนเซอร์พื้นทะเล (Seabed Sentry) ระบบตอบโต้ใต้น้ำ ทุ่นระเบิดควบคุม และ UNDEX</p></div>
+      <div class="card scope-card rv"><h4><span class="ic">🎯</span> ๔ · ภัยคุกคาม &amp; การจำแนก</h4><p>แสดงภาพสถานการณ์ทางทะเลที่จำแนกแล้ว (RMP) จัดประเภทเป้าหมาย เชื่อมกับการวิเคราะห์พฤติกรรมและเจตนา</p></div>
+      <div class="card scope-card rv"><h4><span class="ic">🖥️</span> ๕ · ส่วนแสดงผล &amp; วงรอบจำลอง</h4><p>ควบคุมการเดินเวลาสถานการณ์ การสลับธีม/การจัดวางแผง และลำดับการสาธิตอัตโนมัติสำหรับการนำเสนอ</p></div>
+      <div class="card scope-card rv" style="border-color:rgba(189,147,249,.4)"><h4><span class="ic">🌐</span> ๖ · การตระหนักรู้พหุมิติ <span style="color:var(--purple);font-size:11px;font-family:var(--f-mono)">(ใหม่ใน v17)</span></h4><p>บูรณาการข้อมูลเรียลไทม์ภายนอก — อากาศ ภัยพิบัติ อวกาศ ข้อมูลข่าวสาร — เข้าประกอบภาพสถานการณ์</p></div>
+    </div>
+
+    <h3 class="sub-h rv"><span class="bar"></span>กลไกการปฏิบัติงานร่วม</h3>
+    <p class="body rv">การปฏิบัติดำเนินไปตามห่วงโซ่ที่ไล่ระดับตามเขต (เขตหวงห้ามเด็ดขาด → เขตควบคุม/กันชน) และแบ่งมอบความรับผิดชอบตามมิติ ภายใต้การกำกับของ<b>ทัพเรือภาคที่ ๑ · ศปก.ทร. · ศรชล.</b></p>
+    <div class="chain rv">
+      <div class="step c1"><div class="n">STEP 01</div><div class="t">Detect</div><div class="d">ตรวจจับด้วยเซนเซอร์หลายแหล่งทั้งพลเรือนและทหาร</div></div>
+      <div class="ar">→</div>
+      <div class="step c2"><div class="n">STEP 02</div><div class="t">Classify</div><div class="d">จำแนกและพิสูจน์ทราบ + วิเคราะห์พฤติกรรม/เจตนา</div></div>
+      <div class="ar">→</div>
+      <div class="step c3"><div class="n">STEP 03</div><div class="t">Decide</div><div class="d">ตัดสินใจตามกฎการปฏิบัติรายเขตและฐานกฎหมาย</div></div>
+      <div class="ar">→</div>
+      <div class="step c4"><div class="n">STEP 04</div><div class="t">Respond</div><div class="d">ตอบสนองแบบไล่ระดับและรับผิดชอบ (Deconfliction/Abort)</div></div>
+    </div>
+
+    <h3 class="sub-h rv"><span class="bar"></span>องค์ประกอบที่ปิดช่องว่างทั้ง ๓ ด้าน</h3>
+    <div class="grid g3">
+      <div class="card risk pass rv">
+        <span class="verdict" aria-label="ปิดช่องว่าง">✓</span>
+        <span class="tagline">GAP 01 · ปิดแล้ว</span>
+        <h4>ฐานกฎหมาย ๒ ชั้น</h4>
+        <p><b>ชั้น ๑</b> เขตปลอดภัยในราชการทหาร · <b>ชั้น ๒</b> ผลักดันกฎหมายเฉพาะคุ้มครอง CUI พร้อมจัดทำการคุ้มครองเป็นลำดับชั้น (แผนป้องกัน/รักษาความปลอดภัยเป็นแผนแม่ + แผนเผชิญเหตุรายเขต)</p>
+      </div>
+      <div class="card risk pass rv">
+        <span class="verdict" aria-label="ปิดช่องว่าง">✓</span>
+        <span class="tagline">GAP 02 · ปิดแล้ว</span>
+        <h4>การตระหนักรู้ใต้น้ำ</h4>
+        <p>บูรณาการ <b>DAS · ข่ายโซนาร์รับเสียง · UUV</b> เข้ากับ<b>การหลอมรวมข่าวกรองพื้นที่สีเทา</b>และ<b>แฟ้มพิสูจน์ทราบ (Attribution Casefile)</b></p>
+      </div>
+      <div class="card risk pass rv">
+        <span class="verdict" aria-label="ปิดช่องว่าง">✓</span>
+        <span class="tagline">GAP 03 · ปิดแล้ว</span>
+        <h4>การบูรณาการระหว่างหน่วย</h4>
+        <p>จัดตั้ง<b>ศูนย์รวมข้อมูลร่วมภายใต้ ศรชล.</b> · <b>แผนคุ้มครอง CUI ระดับชาติ</b> · และการแบ่งปันภาพสถานการณ์ทางทะเลร่วมระดับภูมิภาค</p>
+      </div>
+    </div>
+
+    <!-- ตารางที่ ๔-๑ -->
+    <div class="t-cap rv">
+      <span class="t">ตารางที่ ๔-๑ · การพัฒนาจาก The Shield 2.0 (v3) สู่ The Shield 3.0 (v17)</span>
+      <span class="src">ที่มา : ผู้วิจัยสังเคราะห์จากเครื่องมือทางยุทธศาสตร์ (บทที่ ๓) และการสัมภาษณ์เชิงลึก</span>
+    </div>
+    <div class="tbl-wrap rv">
+      <table class="dtbl w1100">
+        <thead>
+          <tr>
+            <th>ด้านการพัฒนา</th>
+            <th>The Shield 2.0 · v3</th>
+            <th class="hi">The Shield 3.0 · v17</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="dim-c">มิติการป้องกัน (Domain)</td>
+            <td class="old">พหุมิติ ๔ ส่วนหลัก ภายใต้การควบคุมสั่งการรวมศูนย์ (อากาศ+ผิวน้ำ / ใต้น้ำ / พื้นท้องทะเล / ชายฝั่ง)</td>
+            <td class="hi">แยกเป็น <b>๖ มิติชัดเจน</b> (อากาศ · ผิวน้ำ · ใต้น้ำ · พื้นท้องทะเล · ชายฝั่ง · <b>ไซเบอร์</b>) เพิ่มชั้นวิเคราะห์<b>พฤติกรรมและเจตนา</b> และการควบคุมสั่งการรวมศูนย์ (C2)</td>
+          </tr>
+          <tr>
+            <td class="dim-c">การตรวจจับ : เซนเซอร์เรียลไทม์จากหน่วยงาน</td>
+            <td class="old">AIS และเรดาร์ตรวจการณ์ชายฝั่งเป็นหลัก</td>
+            <td class="hi">หลอมรวม <b>๗ แหล่ง</b> : AIS (กรมเจ้าท่า/SeaVision) · ADS-B (วิทยุการบินฯ) · อากาศ/คลื่นลม (กรมอุตุฯ) · แผ่นดินไหว · น้ำขึ้นน้ำลง (อศ.) · ภาพดาวเทียม SAR (GISTDA) · พยากรณ์ประสิทธิภาพโซนาร์ (Tier 2)</td>
+          </tr>
+          <tr>
+            <td class="dim-c">การตรวจจับ : เซนเซอร์ยุทโธปกรณ์ (ข้อเสนอ)</td>
+            <td class="old">DAS และโซนาร์พื้นฐาน</td>
+            <td class="hi">ชุดเซนเซอร์ทหาร <b>๗ รายการ</b> : DAS · Passive Sonar/Hydrophone · UUV ลาดตระเวน · ชุดต่อต้านอากาศยานไร้คนขับ (RF/EO-IR/อะคูสติก) · เรือสำรวจ Multi-beam/Side-scan + Magnetometer · ROV · เฮลิคอปเตอร์ปราบเรือดำน้ำพร้อมทุ่นโซนาร์</td>
+          </tr>
+          <tr>
+            <td class="dim-c">การหลอมรวมข่าวกรอง</td>
+            <td class="old">ตรวจจับและแจ้งเตือนการบุกรุก</td>
+            <td class="hi">ยกระดับสู่ <b>Intel Fusion</b> พื้นที่สีเทา · วิเคราะห์<b>พฤติกรรมและเจตนา</b> (ลากสมอ · วนเวียน · ปิดสัญญาณ AIS · ความผิดปกติ GNSS) · จัดทำ<b>แฟ้มพิสูจน์ทราบ</b></td>
+          </tr>
+          <tr>
+            <td class="dim-c">การจัดระเบียบพื้นที่ &amp; กฎหมาย</td>
+            <td class="old">MEZ + เขตกันชน ร่วมกับ TSS ในเชิงพื้นที่</td>
+            <td class="hi">เสริมฐานกฎหมาย : ชั้น ๑ เขตปลอดภัยในราชการทหาร · ชั้น ๒ กฎหมายเฉพาะคุ้มครอง CUI · กฎการปฏิบัติรายเขต · <b>แผนคุ้มครองเป็นลำดับชั้น</b></td>
+          </tr>
+          <tr>
+            <td class="dim-c">การบูรณาการ &amp; ความร่วมมือ</td>
+            <td class="old">บูรณาการกำลัง ทร. และ ศรชล. ภายในประเทศ</td>
+            <td class="hi">ศูนย์รวมข้อมูลร่วม · แผน CUI ระดับชาติ · Shared-MDA ระดับภูมิภาค (IFC สิงคโปร์ / SINGSIAM) · ยกเป็น<b>หลักนิยมร่วม</b> + ดึง สดช./สพร. · NCW + National TDL · One Marine Chart (MSDI/IHO) · ม.๒๗ → นปท. → ๑๗ กระทรวงเปิด API + PaaS</td>
+          </tr>
+          <tr>
+            <td class="dim-c">การใช้กำลัง &amp; การตอบสนอง</td>
+            <td class="old">สกัดกั้นและตอบโต้ภัยคุกคาม</td>
+            <td class="hi">จัดการห่วงโซ่การปฏิบัติอย่างรับผิดชอบ (<b>Deconfliction/Abort</b>) · การลาดตระเวนถาวร · การต่อต้านทุ่นระเบิด (MCM)</td>
+          </tr>
+          <tr>
+            <td class="dim-c">บริบทเปรียบเทียบ</td>
+            <td class="old">จำลองเฉพาะพื้นที่ทิศตะวันออกของเกาะคราม</td>
+            <td class="hi">เพิ่มบริบทเปรียบเทียบ <b>UDC ระดับสากล</b> (จีน Hainan / สิงคโปร์ Keppel)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 03 · 5W1H · ๖ มิติ ================= -->
+<section id="ops">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">03</span> ๔.๒ (ต่อ) · MULTI-DOMAIN 5W1H</div>
+    <h2 class="title rv">การจัดกำลังพหุมิติ — ใคร ทำอะไร ที่ไหน เมื่อใด ทำไม อย่างไร</h2>
+    <p class="lead rv">เพื่อให้ The Shield 3.0 <b>นำไปปฏิบัติได้จริง</b> ผู้วิจัยแจกแจงการปฏิบัติการ ๖ มิติด้วยกรอบ <b>5W1H</b> (ตารางที่ ๔-๒) โดยมิติในความรับผิดชอบโดยตรงของกองทัพเรือระบุหน่วยรับผิดชอบหลัก ส่วนหน่วยงานนอก ทร. จำแนกเป็น <span style="color:var(--teal)">ในกลไก ศรชล.</span> และ <span style="color:var(--gold)">นอกกลไก ศรชล. — ขอรับการสนับสนุน</span></p>
+
+    <div class="grid g2">
+      <!-- มิติ ๑ -->
+      <div class="dim d1 rv">
+        <div class="dh"><span class="ico">✈️</span><div><div class="dn">Domain 01 · Air</div><div class="dt">มิติทางอากาศ</div></div><span class="org">ทร. + ขอรับการสนับสนุน</span></div>
+        <dl>
+          <dt>ใคร</dt><dd><b>สอ.รฝ. + ทัพเรือภาคที่ ๑</b> · สนับสนุนข้อมูลการบินโดยวิทยุการบินฯ / ศูนย์ควบคุมการปฏิบัติทางอากาศ (นอกกลไก ศรชล.)</dd>
+          <dt>ทำอะไร</dt><dd>เฝ้าตรวจและป้องกันภัยทางอากาศ โดยเฉพาะอากาศยานไร้คนขับ (UAV/Drone) ที่ลาดตระเวน/สอดแนมเหนือพื้นที่ติดตั้ง</dd>
+          <dt>ที่ไหน</dt><dd>ห้วงอากาศเหนือ MEZ (๒–๕ นm.) และเขตกันชน ด้านทิศตะวันออกเกาะคราม รวมเขตฐานทัพเรือสัตหีบ</dd>
+          <dt>เมื่อใด</dt><dd>ต่อเนื่อง ๒๔ ชั่วโมง เพิ่มความเข้มข้นเมื่อมีการแจ้งเตือนภัย</dd>
+          <dt>ทำไม</dt><dd>ป้องกันการลาดตระเวนและการโจมตีทางอากาศจากอากาศยานไร้คนขับต่อโครงสร้างพื้นฐานและเรือคุ้มกัน</dd>
+          <dt>อย่างไร</dt><dd>เรดาร์ตรวจการณ์ + ชุดต่อต้านอากาศยานไร้คนขับ (RF/EO-IR/อะคูสติก) และระบบรบกวนสัญญาณ/อาวุธตามแผนเผชิญเหตุ</dd>
+        </dl>
+      </div>
+      <!-- มิติ ๒ -->
+      <div class="dim d2 rv">
+        <div class="dh"><span class="ico">🚤</span><div><div class="dn">Domain 02 · Surface</div><div class="dt">มิติผิวน้ำ</div></div><span class="org">ในกลไก ศรชล.</span></div>
+        <dl>
+          <dt>ใคร</dt><dd><b>ทัพเรือภาคที่ ๑</b> (เรือตรวจการณ์/ผิวน้ำ) · ร่วมกับกองบังคับการตำรวจน้ำและกรมเจ้าท่า</dd>
+          <dt>ทำอะไร</dt><dd>ตรวจการณ์ สกัดกั้น และพิสูจน์ทราบเรือผิวน้ำต้องสงสัย รวมถึงเรือปิดสัญญาณ (Dark Vessels)</dd>
+          <dt>ที่ไหน</dt><dd>ผิวน้ำในเขต MEZ และเขตกันชน และบริเวณร่องการจราจรตาม TSS</dd>
+          <dt>เมื่อใด</dt><dd>ลาดตระเวนตามวงรอบ และเข้าตรวจสอบทันทีเมื่อ AIS/เรดาร์พบความผิดปกติ</dd>
+          <dt>ทำไม</dt><dd>ป้องกันการลากสมอตัดสายเคเบิล การทิ้งวัตถุ และการลาดตระเวนของเรือต้องสงสัย</dd>
+          <dt>อย่างไร</dt><dd>เรือตรวจการณ์ + ข้อมูล AIS/VTS และการตรวจเยี่ยมและค้นเรือ (VBSS) ตามแผนเผชิญเหตุ</dd>
+        </dl>
+      </div>
+      <!-- มิติ ๓ -->
+      <div class="dim d3 rv">
+        <div class="dh"><span class="ico">🌊</span><div><div class="dn">Domain 03 · Underwater</div><div class="dt">มิติใต้น้ำ</div></div><span class="org">ในกลไก ศรชล.</span></div>
+        <dl>
+          <dt>ใคร</dt><dd><b>ศูนย์สงครามใต้น้ำ + ศปก.ทร.</b> · เฮลิคอปเตอร์ปราบเรือดำน้ำโดยกองการบินทหารเรือ · กรมอุทกศาสตร์สนับสนุน</dd>
+          <dt>ทำอะไร</dt><dd>ตรวจจับและตอบโต้ภัยใต้น้ำ — SDV · เรือดำน้ำขนาดเล็ก (Midget) · UUV</dd>
+          <dt>ที่ไหน</dt><dd>มวลน้ำใต้ผิวโดยรอบที่ตั้ง UDC ภายในเขต MEZ</dd>
+          <dt>เมื่อใด</dt><dd>ต่อเนื่อง และเพิ่มกำลังเมื่อข่ายเซนเซอร์ใต้น้ำพบสัญญาณอะคูสติกผิดปกติ</dd>
+          <dt>ทำไม</dt><dd>ภัยใต้น้ำเข้าถึงตัวศูนย์ข้อมูลได้โดยตรงและ<b>ตรวจจับได้ยากที่สุด</b></dd>
+          <dt>อย่างไร</dt><dd>Passive Sonar + DAS + UUV ลาดตระเวน + เฮลิคอปเตอร์ปราบเรือดำน้ำ · อศ. สนับสนุนข้อมูลสมุทรศาสตร์และพยากรณ์ประสิทธิภาพโซนาร์ (Pd) เพื่อวางจุดเซนเซอร์/เส้นทาง UUV</dd>
+        </dl>
+      </div>
+      <!-- มิติ ๔ -->
+      <div class="dim d4 rv">
+        <div class="dh"><span class="ico">⚓</span><div><div class="dn">Domain 04 · Seabed</div><div class="dt">มิติพื้นท้องทะเล</div></div><span class="org">ในกลไก ศรชล.</span></div>
+        <dl>
+          <dt>ใคร</dt><dd><b>กรมอุทกศาสตร์ (อศ.) + กองเรือทุ่นระเบิด</b> กองเรือยุทธการ</dd>
+          <dt>ทำอะไร</dt><dd>สำรวจและเฝ้าตรวจความเปลี่ยนแปลงพื้นท้องทะเลและสายเคเบิล และการต่อต้านทุ่นระเบิด (MCM)</dd>
+          <dt>ที่ไหน</dt><dd>พื้นท้องทะเลตามแนววางสายเคเบิลและโดยรอบฐานที่ตั้ง UDC</dd>
+          <dt>เมื่อใด</dt><dd>จัดทำฐานข้อมูลอ้างอิงเป็นระยะ และตรวจสอบทันทีเมื่อ DAS/โซนาร์แจ้งความผิดปกติ</dd>
+          <dt>ทำไม</dt><dd>ตรวจจับการวางทุ่นระเบิด การฝังอุปกรณ์ดักฟัง ความเสียหายของสายเคเบิล/ฐานราก ตลอดจนเฝ้าระวังการเกาะของเพรียง</dd>
+          <dt>อย่างไร</dt><dd>เรือสำรวจ (Multi-beam/Side-scan + Magnetometer) + เรือ/ยานล่าทำลายทุ่นระเบิด · Multibeam บอกได้แค่ตำแหน่ง จึงใช้ <b>ROV</b> ยืนยันสภาพแคปซูล/จุดเชื่อมต่อ/การชำรุด</dd>
+        </dl>
+      </div>
+      <!-- มิติ ๕ -->
+      <div class="dim d5 rv">
+        <div class="dh"><span class="ico">🏝️</span><div><div class="dn">Domain 05 · Coastal &amp; Landing</div><div class="dt">มิติชายฝั่งและจุดเชื่อมต่อ</div></div><span class="org">ในกลไก ศรชล.</span></div>
+        <dl>
+          <dt>ใคร</dt><dd><b>หน่วยบัญชาการนาวิกโยธิน (นย.)</b> คุ้มครองพื้นที่บนฝั่งและสถานีขึ้นบกของสายเคเบิล ร่วมกับ สอ.รฝ.</dd>
+          <dt>ทำอะไร</dt><dd>รักษาความปลอดภัยสถานีขึ้นบก (Landing Station) และจุดเชื่อมต่อบนฝั่ง ตลอดจนควบคุมการเข้าถึงพื้นที่</dd>
+          <dt>ที่ไหน</dt><dd>แนวชายฝั่งและพื้นที่ที่ตั้งหน่วยบัญชาการนาวิกโยธินด้านทิศตะวันออกเกาะคราม</dd>
+          <dt>เมื่อใด</dt><dd>รักษาการณ์ประจำตลอดเวลา และเสริมกำลังเมื่อมีการแจ้งเตือนภัย</dd>
+          <dt>ทำไม</dt><dd>จุดขึ้นบกและจุดเชื่อมต่อบนฝั่งเป็น<b>จุดเปราะบางทางกายภาพ</b>ที่ภัยคุกคามเข้าถึงได้จากฝั่ง</dd>
+          <dt>อย่างไร</dt><dd>กำลังรักษาความปลอดภัยภาคพื้นของ นย. + ระบบป้องกันฝั่ง/ต่อสู้อากาศยานของ สอ.รฝ. + มาตรการควบคุมการเข้าถึง + ลาดตระเวนทางอากาศด้วยอากาศยานไร้คนขับขนาดเล็ก</dd>
+        </dl>
+      </div>
+      <!-- มิติ ๖ -->
+      <div class="dim d6 rv">
+        <div class="dh"><span class="ico">🛡️</span><div><div class="dn">Domain 06 · Cyber</div><div class="dt">มิติไซเบอร์</div></div><span class="org ext">ทร. + ขอรับการสนับสนุน</span></div>
+        <dl>
+          <dt>ใคร</dt><dd><b>ศูนย์ไซเบอร์กองทัพเรือ</b> · สนับสนุนโดย สกมช. และ สดช./GDCC (นอกกลไก ศรชล.)</dd>
+          <dt>ทำอะไร</dt><dd>ป้องกันภัยคุกคามไซเบอร์-กายภาพต่อระบบควบคุมของ UDC และเครือข่ายข้อมูล</dd>
+          <dt>ที่ไหน</dt><dd>ระบบควบคุมและเครือข่ายสื่อสารของ UDC ทั้งส่วนใต้น้ำและสถานีบนฝั่ง</dd>
+          <dt>เมื่อใด</dt><dd>เฝ้าระวังต่อเนื่อง และตอบสนองทันทีเมื่อพบการบุกรุกทางไซเบอร์หรือการรบกวนสัญญาณ</dd>
+          <dt>ทำไม</dt><dd>UDC เป็นโครงสร้างพื้นฐานสารสนเทศที่เป็นเป้าหมายของการโจมตีทางไซเบอร์และการรบกวน GNSS</dd>
+          <dt>อย่างไร</dt><dd>การเฝ้าระวังเครือข่าย การป้องกันเชิงลึก และการประสานข่าวภัยคุกคามร่วมกับ สกมช. และ สดช.</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="t-cap rv" style="margin-top:18px">
+      <span class="t">ตารางที่ ๔-๒ · การแจกแจงการปฏิบัติการรายมิติของ The Shield 3.0 ตามกรอบ 5W1H</span>
+      <span class="src">ที่มา : ผู้วิจัยสังเคราะห์จากการจัดกำลังพหุมิติ (บทที่ ๒) และผลการวิเคราะห์ในบทที่ ๓</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 04 · สภาพแวดล้อม & ภัยคุกคาม (วัตถุประสงค์ ๑) ================= -->
+<section id="environment">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">04</span> ๔.๓ · OBJECTIVE 1 — ENVIRONMENT &amp; THREATS</div>
+    <h2 class="title rv">สภาพแวดล้อมทางกายภาพและภัยคุกคามในอ่าวไทย</h2>
+    <p class="lead rv">ตอบ<b>วัตถุประสงค์การวิจัยข้อที่ ๑</b> — นำผลการวิเคราะห์สภาพแวดล้อมเชิงยุทธศาสตร์ (PMESII) และข้อค้นพบจากการสัมภาษณ์ในบทที่ ๓ มาสังเคราะห์เป็น ๓ ประเด็นหลัก</p>
+
+    <div class="grid g3">
+      <div class="card scope-card rv">
+        <h4><span class="ic">🏢</span> ๑ · ข้อจำกัดของ GDCC บนบก</h4>
+        <p>ระบบคลาวด์กลางภาครัฐ (GDCC) ปัจจุบันตั้งบนบก เผชิญข้อจำกัด<b>พลังงานและทรัพยากรน้ำสูง</b> เปราะบางต่อภัยพิบัติและภัยกายภาพ และเสี่ยงด้าน<b>อธิปไตยทางข้อมูล</b> → จึงต้องพัฒนา UDC เป็น <b>GDCC Secure Edge</b> สำหรับข้อมูลชั้นความลับสูง</p>
+      </div>
+      <div class="card scope-card rv">
+        <h4><span class="ic">📍</span> ๒ · ความเหมาะสมเชิงภูมิศาสตร์</h4>
+        <p>ทิศตะวันออกเกาะครามเหมาะสมสูงสุด — ลึก <b>๓๐–๔๔ ม.</b> ในเกณฑ์สากล · พื้นทรายปนโคลนเสถียร · สัณฐานเกาะเป็น<b>เกราะกำบังธรรมชาติ</b> · มี นย. คุ้มครองทันท่วงที · อยู่ในเขตปลอดภัยทหารและนอกร่อง TSS</p>
+      </div>
+      <div class="card scope-card rv" style="border-color:rgba(255,107,97,.34)">
+        <h4><span class="ic">⚠️</span> ๓ · ภัยคุกคามรูปแบบใหม่</h4>
+        <p><b>สงครามพื้นทะเล</b> โดย SDV · Midget · UUV · การลากสมอตัดสายเคเบิล · <b>เรือปิดสัญญาณ (Dark Vessels)</b> และภัยไซเบอร์-กายภาพ</p>
+      </div>
+    </div>
+
+    <div class="prop rv">
+      <div class="h">◆ ข้อค้นพบสำคัญ — บริบทน้ำตื้น</div>
+      <p>สภาพน้ำตื้นของอ่าวไทยเป็น<b>อุปสรรคทางอะคูสติกต่อเรือดำน้ำขนาดใหญ่</b> ภัยหลักที่แท้จริงต่อ UDC จึงเป็น<b>ยานขนาดเล็ก การลากสมอเรือ และการปฏิบัติการพื้นที่สีเทา</b> — ไม่ใช่เรือดำน้ำขนาดใหญ่ การออกแบบระบบป้องกันจึงต้องเน้นการตรวจจับเป้าหมายเล็กและการพิสูจน์เจตนา มากกว่าการรับมือภัยเรือดำน้ำตามแบบ</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 05 · การจัดระเบียบพื้นที่ (วัตถุประสงค์ ๒) ================= -->
+<section id="protection">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">05</span> ๔.๔ · OBJECTIVE 2 — PROTECTION &amp; MSP</div>
+    <h2 class="title rv">รูปแบบการคุ้มครองและการจัดระเบียบพื้นที่ทางทะเล</h2>
+    <p class="lead rv">ตอบ<b>วัตถุประสงค์การวิจัยข้อที่ ๒</b> — ประยุกต์การจัดระเบียบพื้นที่ทางทะเล (MSP) และบูรณาการขีดความสามารถปฏิบัติการของกองทัพเรือเป็น ๒ ประเด็นหลัก</p>
+
+    <h3 class="sub-h rv"><span class="bar"></span>๑ · โครงสร้างการป้องกันเป็นชั้น (MSP + TSS)</h3>
+    <div class="grid g3">
+      <div class="card kpi rv">
+        <div class="v">๒–๕ <small>นm.</small></div>
+        <div class="l"><b>เขตหวงห้ามเด็ดขาด (MEZ)</b> — Maritime Exclusion Zone รอบที่ตั้ง UDC</div>
+      </div>
+      <div class="card kpi rv">
+        <div class="v">๕–๑๐ <small>นm.</small></div>
+        <div class="l"><b>เขตควบคุม / พื้นที่กันชน</b> — Restricted / Buffer Zone ชั้นถัดออกไป</div>
+      </div>
+      <div class="card kpi rv">
+        <div class="v" style="color:var(--teal)">TSS</div>
+        <div class="l"><b>ระบบแยกการจราจรทางเรือ</b> แยกเส้นทางเรือพาณิชย์ออกจากพื้นที่ติดตั้ง ภายใต้ฐานอำนาจเขตปลอดภัยในราชการทหาร</div>
+      </div>
+    </div>
+
+    <h3 class="sub-h rv"><span class="bar"></span>๒ · การบูรณาการขีดความสามารถ ๖ มิติ ผ่าน NCW</h3>
+    <p class="body rv">ดำเนินการคุ้มครองพหุมิติครอบคลุม ๖ มิติ (รายละเอียดหน่วยรับผิดชอบและการปฏิบัติตามกรอบ 5W1H อยู่ใน <a href="#ops">ตารางที่ ๔-๒</a>) แบ่งมอบความรับผิดชอบตามขีดความสามารถเฉพาะ และ<b>เชื่อมโยงทุกมิติแบบเวลาจริง</b>ผ่านระบบสงครามที่ใช้เครือข่ายเป็นศูนย์กลาง (NCW) และระบบเชื่อมโยงข้อมูลทางยุทธวิธี (Data Link) ภายใต้การควบคุมสั่งการรวมศูนย์ เสริมด้วย DAS และเฮลิคอปเตอร์ปราบเรือดำน้ำจากสนามบินอู่ตะเภา</p>
+    <ul class="clean rv">
+      <li><b>อากาศ + ผิวน้ำ</b> — สอ.รฝ. ร่วม ทัพเรือภาคที่ ๑ เฝ้าตรวจ/สกัดกั้นอากาศยานไร้คนขับและเรือต้องสงสัย</li>
+      <li><b>ใต้น้ำ</b> — ศูนย์สงครามใต้น้ำ + ศปก.ทร. โดยมี อศ. สนับสนุนพยากรณ์ประสิทธิภาพโซนาร์เพื่อวางจุดเซนเซอร์/เส้นทาง UUV</li>
+      <li><b>พื้นท้องทะเล</b> — อศ. + กองเรือทุ่นระเบิด ใช้เรือสำรวจร่วม ROV ยืนยันความสมบูรณ์ทางกายภาพของแคปซูล/สายเคเบิล</li>
+      <li><b>ชายฝั่ง</b> — นย. + สอ.รฝ. คุ้มครองสถานีขึ้นบกของสายเคเบิล · <b>ไซเบอร์</b> — ศูนย์ไซเบอร์ ทร. ร่วมหน่วยที่เกี่ยวข้อง</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 06 · บทบาท ทร. ภายใต้ ศรชล. (วัตถุประสงค์ ๓) ================= -->
+<section id="role">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">06</span> ๔.๕ · OBJECTIVE 3 — ROLE UNDER ศรชล.</div>
+    <h2 class="title rv">บทบาทกองทัพเรือเชิงบูรณาการภายใต้กลไก ศรชล.</h2>
+    <p class="lead rv">ตอบ<b>วัตถุประสงค์การวิจัยข้อที่ ๓</b> — กองทัพเรือทำหน้าที่เป็น<b>แกนปฏิบัติการ</b>ในการคุ้มครอง CUI ภายใต้กลไก ศรชล. ตาม <b>พ.ร.บ.การรักษาผลประโยชน์ของชาติทางทะเล พ.ศ.๒๕๖๒</b></p>
+
+    <h3 class="sub-h rv"><span class="bar"></span>โครงสร้างอำนาจตาม พ.ร.บ. ๒๕๖๒</h3>
+    <div class="grid g3">
+      <div class="card kpi rv">
+        <div class="v" style="font-size:21px">นายกรัฐมนตรี</div>
+        <div class="l"><b>ผู้อำนวยการ ศรชล.</b></div>
+      </div>
+      <div class="card kpi rv">
+        <div class="v" style="font-size:21px">ผบ.ทร.</div>
+        <div class="l"><b>รองผู้อำนวยการ ศรชล.</b></div>
+      </div>
+      <div class="card kpi rv">
+        <div class="v" style="font-size:21px">เสธ.ทร.</div>
+        <div class="l"><b>เลขาธิการ ศรชล.</b> — บูรณาการหน่วยงานผ่าน MDA และ One Marine Chart</div>
+      </div>
+    </div>
+
+    <h3 class="sub-h rv"><span class="bar"></span>แนวทางทำให้การบูรณาการเป็นรูปธรรม</h3>
+    <ul class="clean rv">
+      <li>ยกระดับ <b>The Shield 3.0 ขึ้นเป็นหลักนิยมร่วม</b>ภายใต้ ศรชล.</li>
+      <li>ดึงหน่วยงานคลาวด์ภาครัฐ — <b>สดช. และ สพร.</b> — เข้าร่วมรับผิดชอบ</li>
+      <li>อาศัยอำนาจตาม <b>มาตรา ๒๗</b> เสนอ<b>คณะกรรมการนโยบายฯ (นปท.)</b> ที่มีนายกฯ เป็นประธาน ให้หน่วยงานที่เกี่ยวข้องเชื่อมโยงข้อมูลเข้าสู่ระบบร่วม</li>
+      <li>ประสาน สดช. บรรจุ UDC เป็น <b>GDCC Secure Edge</b> · แบ่งมอบความรับผิดชอบตามมิติให้หน่วยกำลังตามขีดความสามารถเฉพาะ</li>
+    </ul>
+
+    <div class="prop rv">
+      <div class="h">◆ บทบาทที่ควรจะเป็นของกองทัพเรือ</div>
+      <p>กองทัพเรือคือ<b>แกนปฏิบัติการ</b>ที่นำขีดความสามารถพหุมิติมาคุ้มครอง CUI โดยใช้กลไก ศรชล. เป็น<b>เจ้าภาพบูรณาการ</b> และใช้อำนาจตาม ม.๒๗ เป็น<b>กลไกบังคับเปิดข้อมูล</b> — ครบทั้งกำลัง กฎหมาย และการประสานหน่วยงาน อันเป็นการอุดช่องว่างด้านการบูรณาการให้สมบูรณ์</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 07 · สรุป ================= -->
+<section id="summary">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">07</span> ๔.๖ · CONCLUSION</div>
+    <h2 class="title rv">สรุป</h2>
+    <p class="lead rv">โมเดล The Shield ได้รับการพัฒนาอย่างเป็นลำดับจากกรอบแนวคิดขั้นต้น <b>(1.0)</b> ในบทที่ ๒ สู่โมเดลที่นำเสนอผูกพื้นที่จริง <b>(2.0)</b> ในบทที่ ๓ และสังเคราะห์เป็น<b>ระบบบูรณาการเฝ้าระวังและป้องกันโครงสร้างพื้นฐานใต้น้ำ (The Shield 3.0)</b> ในบทนี้</p>
+    <div class="prop rv">
+      <div class="h">◆ ผลลัพธ์ของบทที่ ๔</div>
+      <p>The Shield 3.0 <b>ปิดช่องว่างครบทั้ง ๓ ด้าน</b> — กฎหมาย · การตระหนักรู้สถานการณ์ใต้น้ำ · การบูรณาการระหว่างหน่วยงาน — เป็น<b>รูปแบบที่สามารถนำไปปฏิบัติได้จริง</b> ผ่านการจัดกำลังพหุมิติ ๖ มิติตามกรอบ 5W1H ภายใต้กลไก ศรชล. ส่วน<b>สรุปผลการวิจัยและข้อเสนอแนะเชิงนโยบาย</b>จะนำเสนอในบทที่ ๕ ต่อไป</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap">
+    <div class="foot-nav rv">
+      <a class="btn" href="THE_SHIELD_Ch3.html">← บทที่ ๓ · วิธีดำเนินการวิจัย</a>
+      <a class="btn primary" href="THE_SHIELD_Pitch.html#research">⌂ กลับหน้านำเสนองานวิจัย</a>
+      <span class="btn" style="opacity:.45;cursor:default">บทที่ ๕ · สรุปผลและข้อเสนอแนะ (อยู่ระหว่างจัดทำ)</span>
+    </div>
+    <p class="disclaim">THE SHIELD · RESEARCH DOSSIER — CHAPTER 04 · หลักสูตรเสนาธิการทหารเรือ รุ่นที่ ๘๖ · เนื้อหาคัดย่อจากเอกสารวิจัยเพื่อการนำเสนอ มิใช่เอกสารราชการฉบับสมบูรณ์</p>
+  </div>
+</footer>
+
+<script>
+  /* reveal-on-scroll */
+  (function(){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}});
+    },{threshold:.12});
+    document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
+  })();
+
+  /* click-to-load simulator (ภาพที่ ๔-๑) */
+  function loadSim(){
+    var frame=document.getElementById('simFrame');
+    var poster=document.getElementById('simPoster');
+    if(frame.querySelector('iframe'))return;
+    var f=document.createElement('iframe');
+    f.src='UDC_Simulator_17.html';
+    f.title='The Shield 3.0 — UDC Defense Simulator v17';
+    f.loading='lazy';
+    f.setAttribute('allowfullscreen','');
+    frame.appendChild(f);
+    poster.classList.add('hide');
+  }
+  window.loadSim=loadSim;
+</script>
+</body>
+</html>
