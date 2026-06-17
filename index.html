@@ -5686,6 +5686,10 @@
                 <option value="gemini-2.5-pro">🔮 Gemini 2.5 Pro (best · limited)</option>
                 <option value="gemini-2.0-flash">💎 Gemini 2.0 Flash (⚠ ต้องผูก billing)</option>
             </optgroup>
+            <optgroup label="── Z.AI (Zhipu GLM) ──">
+                <option value="glm-5.2">🐉 GLM-5.2 (flagship · 1M context)</option>
+                <option value="glm-4.6">🐲 GLM-4.6 (stable)</option>
+            </optgroup>
             <optgroup label="── Cloudflare Workers AI ──">
                 <option value="@cf/meta/llama-3.3-70b-instruct-fp8-fast">⚡ Llama 3.3 70B (fast+smart)</option>
                 <option value="@cf/deepseek-ai/deepseek-r1-distill-qwen-32b">🧠 DeepSeek R1 32B (reasoning)</option>
@@ -29317,6 +29321,8 @@ window.toggleSat3D = toggleSat3D;
             const provider = _providerOf(selectedModel);
             const providerLabel = provider === 'google-gemini'
                 ? 'Google Gemini'
+                : provider === 'zhipu-zai'
+                ? 'Z.AI (GLM)'
                 : (provider === 'cloudflare-workers-ai' ? 'Workers AI' : 'LLM');
 
             // Loading state (honest message based on path)
@@ -29838,6 +29844,9 @@ window.toggleSat3D = toggleSat3D;
             'gemini-2.0-flash',
             'gemini-2.5-flash',
             'gemini-2.5-pro',
+            // Z.AI (Zhipu GLM)
+            'glm-5.2',
+            'glm-4.6',
             // Cloudflare Workers AI
             '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
             '@cf/deepseek-ai/deepseek-r1-distill-qwen-32b',
@@ -29904,6 +29913,7 @@ window.toggleSat3D = toggleSat3D;
             if (!modelId) return 'unknown';
             if (modelId.indexOf('gemini') === 0) return 'google-gemini';
             if (modelId.indexOf('@cf/') === 0)   return 'cloudflare-workers-ai';
+            if (modelId.indexOf('glm') === 0)    return 'zhipu-zai';
             return 'unknown';
         }
 
@@ -30048,7 +30058,7 @@ window.toggleSat3D = toggleSat3D;
             renderTaxonomy();
             renderRuleSynthesis();
             renderForceRecommendations();
-            console.log('[MDA.AI] v17.3.5 initialized · classifier active · multi-domain context→LLM · Confirm&Deploy · multi-provider (Workers AI + Gemini) · default=2.5-flash · model=' + MDA.cfg.aiModel + ' · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
+            console.log('[MDA.AI] v17.4.0 initialized · classifier active · multi-domain context→LLM · Confirm&Deploy · multi-provider (Workers AI + Gemini + Z.AI GLM) · default=2.5-flash · model=' + MDA.cfg.aiModel + ' · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
         }
 
         // expose

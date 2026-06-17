@@ -1,18 +1,20 @@
 # THE SHIELD 2.0 · AI Proxy — Deploy Guide
 
-Multi-provider AI relay · v14.0.7
+Multi-provider AI relay · v15.4.3
 
-ตัวกลาง (relay) ระหว่าง UDC Simulator (client) → LLM provider 2 ราย:
+ตัวกลาง (relay) ระหว่าง UDC Simulator (client) → LLM provider 3 ราย:
 
 | Provider              | Models                                                    | Cost                                |
 |-----------------------|-----------------------------------------------------------|-------------------------------------|
 | Cloudflare Workers AI | `@cf/meta/llama-3.3-70b-fp8`, DeepSeek R1, Qwen 2.5 ฯลฯ   | ฟรี · 10,000 neurons/วัน            |
 | Google Gemini         | `gemini-2.5-flash` (default), `gemini-2.5-pro`            | ฟรี ~10 RPM (2.5-flash)             |
 | Google Gemini (paid)  | `gemini-2.0-flash`                                        | ⚠ ต้องผูก billing (free=0 ปี 2025) |
+| Z.AI / Zhipu GLM      | `glm-5.2` (flagship · 1M ctx), `glm-4.6` (stable)        | ⚠ ต้องตั้ง `ZAI_API_KEY` · ตาม plan |
 
 Worker จะเลือก provider อัตโนมัติจาก model id ที่ client ส่งมา:
 - prefix `@cf/`     → Workers AI (ใช้ binding · ไม่ต้องมี API key)
 - prefix `gemini-`  → Gemini REST (ต้องตั้ง `GEMINI_API_KEY` เป็น secret)
+- prefix `glm-`     → Z.AI REST OpenAI-compatible (ต้องตั้ง `ZAI_API_KEY` เป็น secret)
 
 ---
 
@@ -70,6 +72,32 @@ wrangler secret delete GEMINI_API_KEY
 
 ---
 
+## 2b) (ทางเลือก) ตั้ง Z.AI (Zhipu GLM) API key
+
+ถ้าจะใช้ GLM (`glm-5.2` / `glm-4.6`) ต้องเอา API key จาก Z.AI มาก่อน:
+
+1. ไปที่ <https://z.ai/manage-apikey/apikey-list>
+2. ล็อกอิน → **Add New Key** → คัดลอกค่า (รูปแบบ `id.secret`)
+
+ตั้งเป็น Cloudflare secret (ไม่อยู่ในไฟล์ใดๆ ของ repo):
+
+```bash
+cd workers
+wrangler secret put ZAI_API_KEY
+# กด Enter หลังพิมพ์คำสั่ง → รอ prompt "Enter a secret value:" → ค่อยวาง key
+```
+
+> ⚠ **GLM-5.2 อาจถูกจำกัดตาม plan** — ถ้าคีย์เป็น tier ที่ยังไม่เปิด glm-5.x
+> ผ่าน standard chat completions จะได้ error → ใช้ `glm-4.6` (known-good) แทน
+
+> 💡 **ถ้าไม่ตั้ง ZAI_API_KEY** → model `glm-*` จะคืน error 500
+> provider อื่น (Workers AI / Gemini) ยังใช้ได้ปกติ
+
+> ⚠ **OPSEC**: Z.AI = Zhipu (ผู้ให้บริการจีน) — prompt + ผลวิเคราะห์ส่งออกนอกประเทศ
+> ใช้กับ **ข้อมูลสาธิต/ไม่ลับ** เท่านั้น สำหรับเครื่องมือ ทร.
+
+---
+
 ## 3) Deploy
 
 ```bash
@@ -123,7 +151,7 @@ curl https://shield-ai-proxy.<your-subdomain>.workers.dev/health
 {
   "ok": true,
   "service": "shield-ai-proxy",
-  "version": "14.0.7",
+  "version": "15.4.3",
   "providers": {
     "cloudflare-workers-ai": {
       "configured": true,
@@ -132,6 +160,10 @@ curl https://shield-ai-proxy.<your-subdomain>.workers.dev/health
     "google-gemini": {
       "configured": true,
       "models": ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash"]
+    },
+    "zhipu-zai": {
+      "configured": true,
+      "models": ["glm-5.2", "glm-4.6"]
     }
   },
   "model_default": "gemini-2.5-flash",
@@ -140,6 +172,7 @@ curl https://shield-ai-proxy.<your-subdomain>.workers.dev/health
 ```
 
 > `providers.google-gemini.configured: false` หมายถึงยังไม่ได้ตั้ง `GEMINI_API_KEY`
+> (เช่นเดียวกับ `zhipu-zai.configured: false` = ยังไม่ได้ตั้ง `ZAI_API_KEY`)
 
 ### Smoke test (POST · Gemini default)
 
@@ -167,19 +200,35 @@ curl -X POST https://shield-ai-proxy.<your-subdomain>.workers.dev \
   }'
 ```
 
-ทั้งสอง endpoint ตอบ JSON `{ text, model, provider, usage, latency_ms, version }`
+### Smoke test (POST · Z.AI GLM)
+
+```bash
+curl -X POST https://shield-ai-proxy.<your-subdomain>.workers.dev \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "glm-4.6",
+    "taxonomy": {"kinetic":1,"asymmetric":1,"cyber":0,"environmental":0,"hybrid":0},
+    "alerts": []
+  }'
+```
+
+> ลอง `glm-4.6` ก่อน (เสถียร) — ถ้าผ่านค่อยลอง `glm-5.2`
+> ถ้า `glm-5.2` คืน error เรื่อง model/permission = คีย์ยังไม่เปิด plan ที่รองรับ glm-5.x
+
+ทุก endpoint ตอบ JSON `{ text, model, provider, usage, latency_ms, version }`
 
 **Latency ปกติ:**
 - Gemini 2.5 Flash: ~6-9 วินาที (รวม thinking tokens)
 - Workers AI Llama 3.3: ~2-10 วินาที
 - Gemini 2.5 Pro: ~3-6 วินาที
 - Gemini 2.0 Flash: ~1-2 วินาที (ต้องผูก billing)
+- GLM-5.2: ~5-15 วินาที (reasoning tokens) · GLM-4.6: ~3-6 วินาที
 
 ---
 
 ## 6) ตั้งค่าใน UDC Simulator
 
-1. เปิด `UDC_Simulator_14.html`
+1. เปิด `UDC_Simulator_17.html`
 2. คลิกปุ่ม 🧠 AI ใน header → modal เปิด
 3. ใน toolbar:
    - คลิก ⚙ **Settings** → วาง URL ของ Worker (จากขั้น 3)
@@ -221,6 +270,10 @@ Rate limit: 30 req/min ต่อ IP (in-memory, per-isolate)
 - `@cf/meta/llama-3.3-70b-instruct-fp8-fast` — ดีสุดสำหรับ Thai
 - `@cf/deepseek-ai/deepseek-r1-distill-qwen-32b` — chain-of-thought reasoning
 - `@cf/meta/llama-3.1-8b-instruct` — เร็วสุด (สำหรับ live demo)
+
+**Z.AI / Zhipu GLM** (ต้องตั้ง `ZAI_API_KEY`)
+- `glm-5.2` 🐉 flagship — context 1M · reasoning ดี · ⚠ อาจถูก gate ตาม plan
+- `glm-4.6` 🐲 stable — fallback ที่เสถียร (แนะนำถ้า glm-5.2 ใช้ไม่ได้)
 
 ---
 
@@ -271,6 +324,11 @@ wrangler tail
   - **อย่า** commit key ลง git
   - **อย่า** ใส่ key ใน HTML/JS ใดๆ ของ client
   - ถ้า key รั่ว: revoke ที่ <https://aistudio.google.com/apikey> → สร้างใหม่ → `wrangler secret put GEMINI_API_KEY` อีกรอบ
+- **Z.AI / GLM**: `ZAI_API_KEY` เก็บเป็น Cloudflare secret (ไม่อยู่ใน repo / client)
+  - **อย่า** commit key ลง git · **อย่า** ใส่ key ใน HTML/JS ใดๆ ของ client
+  - ถ้า key รั่ว: revoke ที่ <https://z.ai/manage-apikey/apikey-list> → สร้างใหม่ → `wrangler secret put ZAI_API_KEY` อีกรอบ
+  - ⚠ **OPSEC / อธิปไตยข้อมูล**: Z.AI = Zhipu (จีน) · prompt + ผลวิเคราะห์ออกนอกประเทศ
+    → ใช้กับ **ข้อมูลสาธิต/ไม่ลับ** เท่านั้น · งานจริงชั้นความลับให้ใช้ provider ในประเทศ/on-prem
 - ตอนนี้ `Access-Control-Allow-Origin: *` — ใครเรียก endpoint ก็ได้
   ถ้าต้องการ harden ให้แก้ใน `ai-proxy.js`:
   ```js
@@ -286,5 +344,6 @@ wrangler tail
 
 ```bash
 wrangler secret delete GEMINI_API_KEY   # (ถ้าตั้งไว้)
+wrangler secret delete ZAI_API_KEY      # (ถ้าตั้งไว้)
 wrangler delete
 ```

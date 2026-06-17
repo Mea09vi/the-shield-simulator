@@ -1,11 +1,12 @@
 /* ════════════════════════════════════════════════════════════════════
    THE SHIELD 2.0 — UDC Simulator v15.0.0
-   AI Proxy Worker · Multi-provider (Cloudflare Workers AI + Google Gemini)
+   AI Proxy Worker · Multi-provider (Cloudflare Workers AI + Google Gemini + Z.AI GLM)
    ──────────────────────────────────────────────────────────────────────
    Purpose : ตัวกลาง (relay) ระหว่าง client (UDC Simulator) กับ LLM provider
              หลายเจ้า — เลือก provider โดยอัตโนมัติจาก model id ที่ส่งมา:
                • prefix `@cf/`        → Cloudflare Workers AI (binding)
                • prefix `gemini-`     → Google Gemini REST API (Generative Language)
+               • prefix `glm-`        → Z.AI (Zhipu GLM) · OpenAI-compatible REST
 
    Why     : รองรับทั้ง Workers AI (ฟรีทั้งหมด, neuron quota) และ Gemini
              (free tier 10 RPM สำหรับ gemini-2.5-flash · Google ย้าย 2.0
@@ -51,7 +52,7 @@
      5. คัดลอก URL (xxx.workers.dev) → UDC Simulator ผ่านปุ่ม ⚙
    ════════════════════════════════════════════════════════════════════ */
 
-const VERSION = '15.3.1';   // v15.3 — [JP 3-04] prompt upgrade: A1 ข้อเท็จจริง/ตีความ+สมมติฐานสุจริต+หลักฐานหักล้าง · A2 feed-trust+confidence รายโดเมน · A5 ผล/กลไก/อำนาจ/เสี่ยง/ผลลำดับสอง · A6 บทสรุปเรื่องเล่า 4 ส่วน+6 informational aspects · v15.3.1 — แก้ Gemini 2.5 โดนตัดที่ MAX_TOKENS (thinking กิน budget ร่วมกับคำตอบ)
+const VERSION = '15.4.3';   // v15.4.3 — แก้ ZAI_ENDPOINT: /api/openai/v1/ คืน 404 NOT_FOUND → เปลี่ยนเป็น path ทางการ /api/paas/v4/chat/completions (docs.z.ai · curl ตัวอย่างใช้ paas/v4 + glm-5.2) · v15.4.2 — callZai: ดักซอง Zhipu native {code,msg,success} (แม้ HTTP 200) + ดัมพ์ raw body ใน detail · v15.4.1 — surface error จริงจาก Z.AI (Zhipu คืน HTTP 200+body error) + อ่าน raw body · v15.4 — เพิ่ม provider Z.AI (Zhipu GLM): glm-5.2/glm-4.6 ผ่าน OpenAI-compatible endpoint (callZai) · v15.3 — [JP 3-04] prompt upgrade: A1 ข้อเท็จจริง/ตีความ+สมมติฐานสุจริต+หลักฐานหักล้าง · A2 feed-trust+confidence รายโดเมน · A5 ผล/กลไก/อำนาจ/เสี่ยง/ผลลำดับสอง · A6 บทสรุปเรื่องเล่า 4 ส่วน+6 informational aspects · v15.3.1 — แก้ Gemini 2.5 โดนตัดที่ MAX_TOKENS (thinking กิน budget ร่วมกับคำตอบ)
 const DEFAULT_MODEL = 'gemini-2.5-flash';  // v14.0.7 — Google ย้าย 2.0-flash ไป paid tier · 2.5-flash ยังฟรี
 const MAX_TOKENS = 4096;                    // v15.3.1 — Workers AI cap (3000→4096) เผื่อ template v15.3 ที่ยาวขึ้น
 const MAX_TOKENS_GEMINI = 8192;             // v15.3.1 — Gemini 2.5 เป็น thinking model: การคิดภายใน (~2-3k tok ที่วัดจริง) นับรวมใน maxOutputTokens → ค่า 3000 เดิมเหลือที่ให้คำตอบ ~100 tok แล้วโดนตัดกลางประโยค
@@ -75,12 +76,25 @@ const GEMINI_MODELS = new Set([
     // 'gemini-1.5-*' deprecated จาก v1beta · ถอดออกตั้งแต่ v14.0.7
 ]);
 
-const ALLOWED_MODELS = new Set([...WORKERS_AI_MODELS, ...GEMINI_MODELS]);
+const ZAI_MODELS = new Set([
+    'glm-5.2',   // v15.4 — flagship · 1M context (อาจต้องใช้แพ็กเกจที่รองรับ glm-5.x)
+    'glm-4.6',   // v15.4 — เสถียร · fallback
+]);
+
+// v15.4 — Z.AI (Zhipu) OpenAI-compatible config
+// v15.4.3 — แก้ endpoint: path เดิม /api/openai/v1/ คืน 404 NOT_FOUND
+//           path ทางการคือ /api/paas/v4/ (docs.z.ai · curl ตัวอย่างใช้ paas/v4 + model glm-5.2)
+const ZAI_ENDPOINT = 'https://api.z.ai/api/paas/v4/chat/completions';
+const ZAI_TIMEOUT_MS = 60_000;   // GLM-5.2 reasoning อาจช้ากว่า → เผื่อเวลา
+const MAX_TOKENS_ZAI = 8192;     // เพดาน output (เท่า Gemini)
+
+const ALLOWED_MODELS = new Set([...WORKERS_AI_MODELS, ...GEMINI_MODELS, ...ZAI_MODELS]);
 
 function providerOf(modelId) {
     if (!modelId) return null;
     if (WORKERS_AI_MODELS.has(modelId)) return 'cloudflare-workers-ai';
     if (GEMINI_MODELS.has(modelId))     return 'google-gemini';
+    if (ZAI_MODELS.has(modelId))        return 'zhipu-zai';
     return null;
 }
 
@@ -473,6 +487,111 @@ async function callGemini(env, model, system, userMsg) {
     };
 }
 
+// ── provider: Z.AI (Zhipu GLM) ───────────────────────────────────────
+// OpenAI-compatible Chat Completions
+// https://docs.z.ai/api-reference/llm/chat-completion
+async function callZai(env, model, system, userMsg) {
+    const key = env.ZAI_API_KEY;
+    if (!key) {
+        return {
+            error: 'ZAI_API_KEY ไม่ได้ตั้ง — เพิ่ม secret: wrangler secret put ZAI_API_KEY',
+            status: 500
+        };
+    }
+
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), ZAI_TIMEOUT_MS);
+
+    let resp, data, rawBody = '';
+    try {
+        resp = await fetch(ZAI_ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${key}`
+            },
+            body: JSON.stringify({
+                model,
+                messages: [
+                    { role: 'system', content: system },
+                    { role: 'user',   content: userMsg }
+                ],
+                max_tokens: MAX_TOKENS_ZAI,
+                temperature: 0.7,
+                stream: false
+            }),
+            signal: ctrl.signal
+        });
+        // อ่าน body เป็น text ก่อน แล้วค่อย parse — เผื่อ body ไม่ใช่ JSON จะได้เก็บ raw ไว้ debug
+        rawBody = await resp.text().catch(() => '');
+        try { data = JSON.parse(rawBody); } catch (_) { data = null; }
+    } catch (e) {
+        clearTimeout(tid);
+        const isAbort = e && (e.name === 'AbortError' || /abort/i.test(String(e.message || '')));
+        return {
+            error: isAbort ? 'Z.AI timeout' : 'Z.AI call failed',
+            detail: String(e && e.message || e),
+            status: isAbort ? 504 : 502
+        };
+    }
+    clearTimeout(tid);
+
+    // Zhipu/Z.AI คืน error ได้ 2 รูปแบบ แม้ HTTP = 200:
+    //   (ก) {error:{message,code}}        — OpenAI-style
+    //   (ข) {code, msg, success:false}    — Zhipu native envelope (ไม่มี choices)
+    const apiErr = data && data.error;
+    const zEnv   = data && !data.choices && (data.msg != null || data.code != null || data.success === false);
+    if (!resp.ok || apiErr || zEnv || data == null) {
+        let detail;
+        if (apiErr) {
+            const code = apiErr.code != null ? ' (code ' + apiErr.code + ')' : '';
+            detail = String(apiErr.message || apiErr.code || JSON.stringify(apiErr)) + code;
+        } else if (zEnv) {
+            // ดัมพ์ raw ทั้งซองด้วย เผื่อ msg ว่าง/อยู่ฟิลด์อื่น
+            detail = 'msg="' + String(data.msg || data.message || '') + '" code=' + data.code
+                   + ' · raw=' + JSON.stringify(data).slice(0, 300);
+        } else if (data == null) {
+            detail = 'non-JSON body (HTTP ' + resp.status + '): ' + String(rawBody || '').slice(0, 300);
+        } else {
+            detail = 'HTTP ' + resp.status;
+        }
+        return { error: 'Z.AI API error', detail, raw: data, status: resp.ok ? 502 : resp.status };
+    }
+
+    const choice = data && data.choices && data.choices[0];
+    const m = choice && choice.message;
+    // GLM reasoning models อาจห่อ chain-of-thought ด้วย <think>…</think> หรือคืน reasoning_content แยก
+    let text = ((m && m.content) || '').replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+    if (!text && m && m.reasoning_content) text = String(m.reasoning_content).trim();
+
+    if (!text) {
+        // surface ว่า Z.AI ตอบหน้าตาแบบไหนกลับมา (raw ถูก strip ออกจาก response ฝั่ง client)
+        const shape = 'keys=[' + Object.keys(data).join(',') + ']'
+                    + ' · finish=' + ((choice && choice.finish_reason) || 'none')
+                    + ' · msgKeys=[' + (m ? Object.keys(m).join(',') : '-') + ']';
+        return {
+            error: 'Empty response from Z.AI',
+            detail: shape,
+            raw: data,
+            status: 502
+        };
+    }
+
+    // Normalize usage → input/output_tokens (Anthropic-compatible)
+    const um = data.usage || {};
+    const usage = {
+        input_tokens:  um.prompt_tokens     ?? null,
+        output_tokens: um.completion_tokens ?? null,
+        total_tokens:  um.total_tokens      ?? null
+    };
+
+    return {
+        text,
+        usage,
+        stop_reason: (choice && choice.finish_reason) || null
+    };
+}
+
 // ── main router ──────────────────────────────────────────────────────
 async function handleAnalysis(request, env) {
     let payload;
@@ -501,6 +620,8 @@ async function handleAnalysis(request, env) {
         result = await callWorkersAi(env, model, system, userMsg);
     } else if (provider === 'google-gemini') {
         result = await callGemini(env, model, system, userMsg);
+    } else if (provider === 'zhipu-zai') {
+        result = await callZai(env, model, system, userMsg);
     } else {
         return jsonResponse({ error: 'No handler for provider: ' + provider }, 500);
     }
@@ -553,6 +674,10 @@ export default {
                     'google-gemini': {
                         configured: !!env.GEMINI_API_KEY,
                         models: Array.from(GEMINI_MODELS)
+                    },
+                    'zhipu-zai': {
+                        configured: !!env.ZAI_API_KEY,
+                        models: Array.from(ZAI_MODELS)
                     }
                 },
                 model_default: DEFAULT_MODEL,

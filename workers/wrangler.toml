@@ -1,16 +1,19 @@
 # ════════════════════════════════════════════════════════════════════
-# THE SHIELD 2.0 — UDC Simulator v14.0.7
+# THE SHIELD 2.0 — UDC Simulator · ai-proxy v15.4.0
 # Cloudflare Workers config (ai-proxy) — Multi-provider:
 #   • Workers AI binding (Llama 3.3, DeepSeek, etc. · ฟรี neuron quota)
 #   • Google Gemini (REST · ต้องตั้ง GEMINI_API_KEY เป็น secret)
+#   • Z.AI / Zhipu GLM (OpenAI-compatible · ต้องตั้ง ZAI_API_KEY เป็น secret)
 # ──────────────────────────────────────────────────────────────────────
 # Setup:
 #   1. wrangler login
 #   2. (optional · ถ้าจะใช้ Gemini)  wrangler secret put GEMINI_API_KEY
+#   2b.(optional · ถ้าจะใช้ GLM)     wrangler secret put ZAI_API_KEY
 #   3. wrangler deploy
 #
-# v14.0.7 note: default model = gemini-2.5-flash (Google ย้าย 2.0-flash
-#   ไป paid tier ปี 2025 · 1.5-* ถูก deprecate จาก v1beta)
+# v15.4 note: เพิ่ม provider Z.AI (Zhipu GLM): glm-5.2 / glm-4.6
+#   default model = gemini-2.5-flash (Google ย้าย 2.0-flash ไป paid tier
+#   ปี 2025 · 1.5-* ถูก deprecate จาก v1beta)
 # ════════════════════════════════════════════════════════════════════
 
 name = "shield-ai-proxy"
@@ -37,6 +40,10 @@ DEFAULT_MODEL = "gemini-2.5-flash"
 # GEMINI_API_KEY  → จาก https://aistudio.google.com/apikey
 #                   ตั้งค่า: wrangler secret put GEMINI_API_KEY
 #                   ลบ:      wrangler secret delete GEMINI_API_KEY
+# ZAI_API_KEY     → จาก https://z.ai/manage-apikey/apikey-list
+#                   ตั้งค่า: wrangler secret put ZAI_API_KEY
+#                   ลบ:      wrangler secret delete ZAI_API_KEY
 #
 # ถ้าไม่ตั้ง GEMINI_API_KEY: model `gemini-*` จะคืน error 500
+# ถ้าไม่ตั้ง ZAI_API_KEY: model `glm-*` จะคืน error 500
 # (Workers AI models `@cf/...` ยังใช้ได้ปกติ — ใช้ binding ไม่ต้องมี key)
