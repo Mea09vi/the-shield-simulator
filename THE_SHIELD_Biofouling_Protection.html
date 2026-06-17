@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE SHIELD · เกราะกันเพรียงทะเล — การปกป้องแคปซูลศูนย์ข้อมูลใต้ทะเลจาก Biofouling</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#010d1a; --bg2:#081525; --panel:rgba(8,21,37,.74); --panel2:rgba(13,30,51,.62);
+    --line:rgba(0,212,255,.14); --line2:rgba(0,212,255,.28);
+    --ink:#ccd6f6; --ink-dim:#8892b0; --ink-mute:#697494;
+    --cyan:#00d4ff; --cyan-d:#00a8cc; --teal:#64ffda; --gold:#f5c451; --red:#fb6f6f; --green:#5ee0a0; --violet:#a78bfa;
+    --baltic:#5aa9ff; --singapore:#ff7e6b;
+    /* biofouling defense accents (reuse base palette) */
+    --coat:#00d4ff; --vibe:#f5c451; --flow:#64ffda; --rov:#a78bfa; --danger:#fb6f6f;
+    --shadow:0 18px 50px rgba(0,0,0,.45);
+    --r:16px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:
+      radial-gradient(1200px 700px at 78% -8%, rgba(0,212,255,.10), transparent 60%),
+      radial-gradient(1000px 700px at 8% 6%, rgba(100,255,218,.07), transparent 55%),
+      linear-gradient(180deg,var(--bg),var(--bg2) 60%,#000810);
+    color:var(--ink);
+    font-family:'Sarabun','Leelawadee UI','Noto Sans Thai',Tahoma,system-ui,sans-serif;
+    line-height:1.7; letter-spacing:.1px; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:0 22px}
+  h1,h2,h3,h4{font-family:'Chakra Petch','Sarabun',sans-serif; line-height:1.25; margin:0}
+  a{color:var(--cyan); text-decoration:none; border-bottom:1px solid rgba(0,212,255,.3)}
+  a:hover{color:var(--teal); border-color:var(--teal)}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace; background:rgba(120,170,230,.12); padding:1px 6px; border-radius:6px; font-size:.86em; color:#c9defb}
+
+  /* ---------- HERO ---------- */
+  header.hero{position:relative; overflow:hidden; border-bottom:1px solid var(--line)}
+  .hero-grid{position:absolute; inset:0; background-image:
+      linear-gradient(rgba(0,212,255,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,212,255,.05) 1px,transparent 1px);
+    background-size:34px 34px; mask:radial-gradient(80% 80% at 50% 18%,#000,transparent 78%)}
+  .hero-inner{position:relative; padding:54px 0 40px}
+  .crest{display:inline-flex; align-items:center; gap:11px; font-family:'Chakra Petch'; font-weight:700;
+    letter-spacing:3px; font-size:13px; color:var(--cyan); text-transform:uppercase}
+  .crest .dot{width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 14px var(--cyan)}
+  .hero h1{font-size:clamp(28px,4.6vw,46px); margin:16px 0 6px; font-weight:700;
+    background:linear-gradient(120deg,#eaf3ff,#8fd9ff 55%,#64ffda); -webkit-background-clip:text; background-clip:text; color:transparent}
+  .hero .sub{font-size:clamp(15px,2vw,19px); color:var(--ink-dim); max-width:780px}
+  .hero .meta{margin-top:22px; display:flex; flex-wrap:wrap; gap:10px}
+  .chip{font-size:12.5px; padding:7px 13px; border-radius:999px; border:1px solid var(--line2);
+    background:var(--panel2); color:var(--ink-dim); display:inline-flex; gap:7px; align-items:center}
+  .chip b{color:var(--ink); font-weight:600}
+
+  /* ---------- NAV ---------- */
+  nav.toc{position:sticky; top:0; z-index:40; backdrop-filter:blur(14px);
+    background:rgba(1,13,26,.86); border-bottom:1px solid var(--line)}
+  nav.toc .wrap{display:flex; gap:6px; flex-wrap:wrap; padding-top:11px; padding-bottom:11px; align-items:center}
+  nav.toc a{font-size:13.5px; color:var(--ink-dim); border:1px solid transparent; border-radius:10px;
+    padding:6px 12px; font-weight:500}
+  nav.toc a:hover{color:var(--ink); background:var(--panel2); border-color:var(--line)}
+  nav.toc .tag{margin-left:auto; font-size:11.5px; color:var(--ink-mute); letter-spacing:1px}
+  nav.toc a.home-btn{display:inline-flex;align-items:center;gap:7px;margin-right:8px;padding:7px 13px;color:#64ffda;background:rgba(100,255,218,.06);border:1px solid rgba(100,255,218,.40);border-radius:9px;font-family:ui-monospace,'JetBrains Mono','Sarabun',Consolas,monospace;font-weight:600;font-size:13px;letter-spacing:.04em;line-height:1;white-space:nowrap;text-decoration:none;transition:background .18s,border-color .18s,box-shadow .18s,transform .18s}nav.toc a.home-btn .hb-ico{flex:none;transition:transform .18s}nav.toc a.home-btn:hover{background:rgba(100,255,218,.13);border-color:#64ffda;box-shadow:0 0 0 1px rgba(100,255,218,.22),0 4px 16px rgba(100,255,218,.16)}nav.toc a.home-btn:hover .hb-ico{transform:translateY(-1px)}nav.toc a.home-btn:active{transform:translateY(0)}nav.toc a.home-btn:focus-visible{outline:2px solid #64ffda;outline-offset:2px}
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:46px 0; border-bottom:1px solid var(--line)}
+  .eyebrow{display:inline-flex; align-items:center; gap:9px; font-family:'Chakra Petch'; font-weight:600;
+    letter-spacing:2px; font-size:12px; text-transform:uppercase; color:var(--ink-mute); margin-bottom:12px}
+  .eyebrow .num{display:inline-grid; place-items:center; width:26px;height:26px;border-radius:8px;
+    font-size:13px; color:#06121f; font-weight:700}
+  h2.title{font-size:clamp(23px,3.2vw,32px); margin-bottom:8px}
+  .lead{color:var(--ink-dim); font-size:16.5px; max-width:860px; margin-bottom:26px}
+
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:var(--r);
+    padding:20px 22px; box-shadow:var(--shadow); backdrop-filter:blur(8px)}
+  .grid{display:grid; gap:16px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+
+  .kpi{padding:18px 20px}
+  .kpi .v{font-family:'Chakra Petch'; font-size:30px; font-weight:700; line-height:1.1; color:var(--ink)}
+  .kpi .v.cyan{color:var(--cyan)} .kpi .v.gold{color:var(--gold)} .kpi .v.red{color:var(--red)} .kpi .v.teal{color:var(--teal)} .kpi .v.violet{color:var(--violet)}
+  .kpi .l{font-size:13.5px; color:var(--ink-dim); margin-top:6px}
+
+  h3.sub-h{font-size:18.5px; margin:30px 0 14px; display:flex; align-items:center; gap:11px}
+  h3.sub-h .bar{width:4px; height:20px; border-radius:3px; background:var(--cyan)}
+
+  ul.clean{list-style:none; margin:0; padding:0}
+  ul.clean li{position:relative; padding-left:22px; margin-bottom:9px; font-size:15px; color:var(--ink-dim)}
+  ul.clean li::before{content:'▸'; position:absolute; left:0; color:var(--cyan)}
+  ul.clean li b{color:var(--ink); font-weight:600}
+
+  .pill{display:inline-block; font-size:11.5px; padding:3px 9px; border-radius:999px; font-weight:600; letter-spacing:.4px}
+  .pill.hi{background:rgba(94,224,160,.15); color:var(--green); border:1px solid rgba(94,224,160,.3)}
+  .pill.warn{background:rgba(245,196,81,.14); color:var(--gold); border:1px solid rgba(245,196,81,.3)}
+  .pill.info{background:rgba(0,212,255,.12); color:var(--cyan); border:1px solid rgba(0,212,255,.3)}
+  .pill.gap{background:rgba(167,139,250,.14); color:var(--violet); border:1px solid rgba(167,139,250,.34)}
+  .pill.ban{background:rgba(251,111,111,.14); color:var(--red); border:1px solid rgba(251,111,111,.34)}
+
+  /* table */
+  .tbl{width:100%; border-collapse:collapse; font-size:14px; overflow:hidden; border-radius:12px}
+  .tbl th,.tbl td{padding:11px 13px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top}
+  .tbl thead th{background:rgba(0,212,255,.10); font-family:'Chakra Petch'; font-weight:600; font-size:12.5px; letter-spacing:.5px; color:var(--ink)}
+  .tbl tbody tr:hover{background:rgba(120,170,230,.05)}
+  .tbl td:first-child{font-weight:600; color:var(--ink)}
+  .tbl .c{color:var(--cyan)} .tbl .g{color:var(--gold)} .tbl .t{color:var(--teal)} .tbl .r{color:var(--red)}
+
+  /* interview quote */
+  .quote{position:relative; background:linear-gradient(180deg,rgba(245,196,81,.08),rgba(245,196,81,.02));
+    border:1px solid rgba(245,196,81,.30); border-left:4px solid var(--gold); border-radius:var(--r);
+    padding:20px 24px 18px; margin-top:24px}
+  .quote .q{font-size:17px; color:var(--ink); line-height:1.7; font-weight:500}
+  .quote .q::before{content:'“'; font-family:'Chakra Petch'; color:var(--gold); font-size:30px; line-height:0; margin-right:4px; vertical-align:-6px}
+  .quote .by{margin-top:12px; font-size:13.5px; color:var(--gold); font-weight:600; letter-spacing:.4px}
+
+  /* defense layers */
+  .layer{background:var(--panel); border:1px solid var(--line); border-radius:var(--r); padding:0; overflow:hidden; box-shadow:var(--shadow); margin-bottom:18px}
+  .layer-head{display:flex; align-items:center; gap:14px; padding:16px 20px; border-bottom:1px solid var(--line);
+    background:linear-gradient(90deg,rgba(0,212,255,.07),transparent)}
+  .layer.b .layer-head{background:linear-gradient(90deg,rgba(245,196,81,.08),transparent)}
+  .layer.c .layer-head{background:linear-gradient(90deg,rgba(100,255,218,.08),transparent)}
+  .layer-badge{flex:none; width:42px; height:42px; border-radius:11px; display:grid; place-items:center;
+    font-family:'Chakra Petch'; font-weight:700; font-size:19px; color:#06121f; background:var(--coat)}
+  .layer.b .layer-badge{background:var(--vibe)} .layer.c .layer-badge{background:var(--flow)}
+  .layer-head h3{font-size:18.5px; color:var(--ink)} .layer-head .sx{font-size:13px; color:var(--ink-mute); font-family:'Chakra Petch'; letter-spacing:1px; text-transform:uppercase}
+  .layer-body{padding:18px 22px 22px}
+  .layer-body p{font-size:14.5px; color:var(--ink-dim); margin:0 0 12px}
+  .layer-body p b{color:var(--ink)}
+
+  /* validation-gap note */
+  .gapnote{display:flex; gap:12px; align-items:flex-start; background:rgba(167,139,250,.07);
+    border:1px dashed rgba(167,139,250,.40); border-radius:12px; padding:13px 16px; margin-top:14px}
+  .gapnote .ic{font-size:17px; line-height:1.2}
+  .gapnote p{margin:0; font-size:13.5px; color:var(--ink-dim)}
+  .gapnote b{color:var(--violet)}
+
+  /* SVG diagram wrapper */
+  .diagram{background:var(--panel); border:1px solid var(--line); border-radius:var(--r); padding:18px 20px 14px; box-shadow:var(--shadow); margin:22px 0}
+  .diagram svg{display:block; width:100%; height:auto}
+  .diagram .cap{margin-top:10px; font-size:13px; color:var(--ink-mute); text-align:center; line-height:1.5}
+
+  /* ---------- DIAGRAM MOTION (animated schematics) ---------- */
+  @keyframes dgSpin{ to{ transform:rotate(360deg) } }
+  @keyframes dgFlow{ to{ stroke-dashoffset:-24 } }
+  @keyframes dgPulse{ 0%,100%{ opacity:.5 } 50%{ opacity:1 } }
+  @keyframes dgUv{ 0%,100%{ opacity:.16 } 50%{ opacity:.5 } }
+  @keyframes dgWv{ 0%,100%{ transform:rotate(-13deg) } 50%{ transform:rotate(13deg) } }
+  @keyframes dgPing{ 0%{ transform:scale(.5); opacity:.85 } 75%,100%{ transform:scale(2.5); opacity:0 } }
+  @keyframes dgHaze{ 0%,100%{ opacity:.55 } 50%{ opacity:1 } }
+  .dg-rings .ring-spin{ transform-box:view-box; transform-origin:250px 270px }
+  .dg-flow .eddy, .dg-air .eddy{ transform-box:fill-box; transform-origin:center }
+  .dg-air .wv{ transform-box:fill-box; transform-origin:center }
+  .dg-air .ping{ transform-box:fill-box; transform-origin:center }
+  @media (prefers-reduced-motion: no-preference){
+    .dg-flow .stream, .dg-air .stream{ stroke-dasharray:14 10; animation:dgFlow 1.15s linear infinite }
+    .dg-flow .stream.s2, .dg-air .stream.s2{ animation-duration:1.55s }
+    .dg-rings .sweep{ animation:dgSpin 36s linear infinite }
+    .dg-rings .rovr{ animation:dgSpin 26s linear infinite }
+    .dg-rings .goldr{ animation:dgSpin 50s linear infinite reverse }
+    .dg-rings .coat-pulse{ animation:dgPulse 3.4s ease-in-out infinite }
+    .dg-flow .eddy{ animation:dgSpin 3s linear infinite }
+    .dg-air .eddy{ animation:dgSpin 2.6s linear infinite }
+    .dg-flow .uvc{ animation:dgUv 2.2s ease-in-out infinite }
+    .dg-air .wv{ animation:dgWv 4.2s ease-in-out infinite }
+    .dg-flow .eddy.ccw, .dg-air .eddy.ccw{ animation-direction:reverse }
+    .dg-flow .eddy.e2, .dg-air .eddy.e2{ animation-duration:3.6s }
+    .dg-flow .eddy.e3, .dg-air .eddy.e3{ animation-duration:2.5s }
+    .dg-flow .ping, .dg-air .ping{ animation:dgPing 2.7s ease-out infinite }
+    .dg-flow .ping.p2, .dg-air .ping.p2{ animation-delay:1.35s }
+    .dg-flow .haze, .dg-air .haze{ animation:dgHaze 5s ease-in-out infinite }
+    .dg-air .stream.bl{ animation-duration:.95s }
+    .dg-air .stream.bl.s2{ animation-duration:1.3s }
+  }
+
+  /* recommendation tiers */
+  .tier{border-left:3px solid var(--cyan); padding:4px 0 4px 18px; margin-bottom:18px}
+  .tier.t2{border-color:var(--gold)} .tier.t3{border-color:var(--violet)}
+  .tier .h{font-family:'Chakra Petch'; font-weight:600; font-size:16px; color:var(--ink); margin-bottom:4px}
+  .tier .h small{color:var(--ink-mute); font-weight:500; font-family:'Sarabun'; letter-spacing:0; font-size:13px}
+  .tier p{margin:0 0 6px; font-size:15px; color:var(--ink-dim)}
+  .tier ul.clean li{font-size:14.5px; margin-bottom:6px}
+
+  /* references */
+  .ref-group{margin-bottom:22px}
+  .ref-group h4{font-size:14.5px; color:var(--ink); margin-bottom:10px; letter-spacing:.5px}
+  ol.refs{margin:0; padding-left:22px}
+  ol.refs li{margin-bottom:8px; font-size:13.5px; color:var(--ink-dim)}
+
+  .callout{display:flex; gap:14px; align-items:flex-start; background:var(--panel2); border:1px solid var(--line);
+    border-radius:12px; padding:15px 18px; margin-top:18px}
+  .callout.warn{background:rgba(245,196,81,.06); border-color:rgba(245,196,81,.28)}
+  .callout .ic{font-size:20px; line-height:1}
+  .callout p{margin:0; font-size:14px; color:var(--ink-dim)}
+  .callout b{color:var(--ink)}
+
+  /* ---------- FIGURES / IMAGERY ---------- */
+  figure.fig{margin:0; background:var(--panel); border:1px solid var(--line); border-radius:var(--r); overflow:hidden; box-shadow:var(--shadow)}
+  figure.fig.single{margin:24px 0 2px}
+  .figrow{display:grid; gap:16px; grid-template-columns:repeat(2,1fr); margin:24px 0 2px}
+  @media(max-width:760px){.figrow{grid-template-columns:1fr}}
+  figure.fig img{display:block; width:100%; height:240px; object-fit:cover; background:#020c17; border-bottom:1px solid var(--line)}
+  figure.fig.contain img{object-fit:contain}
+  figure.fig.tall img{height:360px}
+  figure.fig figcaption{padding:12px 16px 14px; font-size:13.5px; color:var(--ink-dim); line-height:1.55}
+  figure.fig figcaption b{color:var(--ink); font-weight:600}
+  figure.fig .cred{display:block; margin-top:6px; font-size:11px; color:var(--ink-mute); letter-spacing:.2px}
+  figure.fig .cred a{color:var(--ink-mute); border-bottom:1px dotted rgba(120,160,210,.45)}
+  figure.fig .cred a:hover{color:var(--teal); border-color:var(--teal)}
+
+  footer{padding:40px 0 60px; color:var(--ink-mute); font-size:13px}
+  footer .wrap{display:flex; flex-wrap:wrap; gap:18px; justify-content:space-between; align-items:center}
+
+  /* ---------- PRINT / PDF — clean light handout for advisor ---------- */
+  @media print{
+    @page{ margin:14mm 14mm 16mm; }
+    :root{
+      --bg:#ffffff; --bg2:#ffffff;
+      --panel:#ffffff; --panel2:#f3f6fb;
+      --line:#cdd6e4; --line2:#aab8cc;
+      --ink:#0e1622; --ink-dim:#33425a; --ink-mute:#5b6b85;
+      --cyan:#0e7490; --cyan-d:#0e7490; --coat:#0e7490;
+      --gold:#8a5d00; --vibe:#8a5d00; --red:#c0392b; --danger:#c0392b; --green:#1d7a4c;
+      --violet:#6741d9; --rov:#6741d9; --teal:#0f766e; --flow:#0f766e;
+      --shadow:none;
+    }
+    *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+    html,body{ background:#fff !important; color:var(--ink) !important; }
+    body{ font-size:11.5pt; line-height:1.55; letter-spacing:0; }
+    .wrap{ max-width:none; padding:0 4mm; }
+    h1,h2,h3,h4{ color:var(--ink); }
+    nav.toc{ display:none !important; }
+    .hero-grid{ display:none !important; }
+    a{ color:#0b4aa2 !important; border-bottom:none !important; }
+    header.hero{ border-bottom:1px solid var(--line); }
+    .hero-inner{ padding:6mm 0 5mm; }
+    .hero h1{ background:none !important; -webkit-background-clip:border-box !important; background-clip:border-box !important;
+      -webkit-text-fill-color:#0e1622 !important; color:#0e1622 !important; }
+    .hero .sub{ color:var(--ink-dim) !important; }
+    .crest{ color:var(--cyan) !important; }
+    .chip{ background:#f3f6fb !important; border:1px solid var(--line) !important; color:var(--ink-dim) !important; }
+    .chip b{ color:var(--ink) !important; }
+    .eyebrow .num{ background:#e8f0fb !important; color:#1f5fb0 !important; }
+    section{ padding:7mm 0; border-bottom:1px solid var(--line); break-inside:auto; }
+    section:first-of-type{ padding-top:5mm; }
+    h2.title, h3.sub-h, .eyebrow, .layer-head{ break-after:avoid; }
+    .card,.callout,.kpi,.tier,.quote,.layer,.gapnote,.diagram{ break-inside:avoid; }
+    .card,.callout,.quote,.layer,.gapnote{
+      box-shadow:none !important; backdrop-filter:none !important;
+      background:#fff !important; border:1px solid var(--line) !important;
+    }
+    .quote{ background:#fffdf5 !important; border:1px solid #e8cf8a !important; border-left:4px solid #8a5d00 !important; }
+    .layer-head{ background:#f3f6fb !important; }
+    .gapnote{ background:#f7f5fd !important; border:1px dashed #b9a8ef !important; }
+    .diagram{ background:#fff !important; border:1px solid var(--line) !important; }
+    .lead,.kpi .l,ul.clean li,.tier p,.callout p,ol.refs li,.ref-group h4,.layer-body p,.gapnote p,.diagram .cap{ color:var(--ink-dim) !important; }
+    ul.clean li b,.tier p b,.callout b,.layer-body p b{ color:var(--ink) !important; }
+    .tbl thead{ display:table-header-group; }
+    .tbl tr{ break-inside:avoid; }
+    .tbl thead th{ background:#e8f0fb !important; color:var(--ink) !important; }
+    .tbl th,.tbl td{ border-bottom:1px solid var(--line) !important; }
+    .pill.hi{ background:#e6f7ee !important; color:#15663d !important; border:1px solid #9bd9b8 !important; }
+    .pill.warn{ background:#fdf3d8 !important; color:#7a5600 !important; border:1px solid #e8cf8a !important; }
+    .pill.info{ background:#e3f3fb !important; color:#0e6a82 !important; border:1px solid #a8d6e8 !important; }
+    .pill.gap{ background:#f0ebfb !important; color:#52349e !important; border:1px solid #c3b2f0 !important; }
+    .pill.ban{ background:#fbe9e7 !important; color:#a3271a !important; border:1px solid #efb6ad !important; }
+    .layer-badge{ color:#fff !important; }
+    figure.fig{ break-inside:avoid; box-shadow:none !important; background:#fff !important; border:1px solid var(--line) !important; }
+    figure.fig img{ height:auto !important; max-height:72mm; object-fit:contain !important; background:#fff !important; border-bottom:1px solid var(--line) !important; }
+    .figrow{ gap:6mm; }
+    figure.fig figcaption{ color:var(--ink-dim) !important; }
+    figure.fig figcaption b{ color:var(--ink) !important; }
+    figure.fig .cred{ color:var(--ink-mute) !important; }
+    code{ background:#eef2f8 !important; color:#1f3a5f !important; }
+    footer{ color:var(--ink-mute) !important; padding:8mm 0 0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-grid"></div>
+  <div class="wrap hero-inner">
+    <div class="crest"><span class="dot"></span> THE&nbsp;SHIELD&nbsp;3.0 · การป้องกันการเกาะของเพรียงทะเล</div>
+    <h1>เกราะกันเพรียง: ปกป้องแคปซูล UDC จากการเกาะของสิ่งมีชีวิตใต้ทะเล</h1>
+    <p class="sub">แนวทาง <b>Defense-in-Depth</b> สำหรับ Marine Biofouling — กลั่นจากงานวิจัยปฐมภูมิและสัมภาษณ์กรมอุทกศาสตร์ เพื่อแคปซูลศูนย์ข้อมูลใต้ทะเล (Underwater Data Center) บริเวณด้านตะวันออกของเกาะคราม อ.สัตหีบ อ่าวไทยตอนบน</p>
+    <div class="meta">
+      <span class="chip">🦪 <b>3 ชั้นเกราะ</b> เคลือบผิว · สั่น/UV-C · พลศาสตร์การไหล</span>
+      <span class="chip">🔎 ตรวจสอบรายข้อ <b>20 ข้อค้นพบ</b> ความเชื่อมั่นสูง</span>
+      <span class="chip">🌊 อุณหภูมิ <b>20–25°C</b> · ตะกอนสูง · ลึก ~30 ม.</span>
+      <span class="chip">📅 ข้อมูล ณ <b>มิ.ย. 2026</b></span>
+      <span class="chip">🎓 หลักสูตรเสนาธิการทหารเรือ</span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="wrap">
+    <a class="home-btn" href="THE_SHIELD_Pitch.html" aria-label="กลับหน้านำเสนอ THE SHIELD"><svg class="hb-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.3h13V10"/><path d="M10 19.3v-5.5h4v5.5"/></svg><span>Home</span></a>
+    <a href="#summary">บทสรุป</a>
+    <a href="#threat">① ภัยเงียบ</a>
+    <a href="#defense">② เกราะ ๓ ชั้น</a>
+    <a href="#natick">③ บทเรียน Natick</a>
+    <a href="#proposal">④ ข้อเสนอ</a>
+    <a href="#caveats">ข้อจำกัด</a>
+    <a href="#refs">อ้างอิง</a>
+    <span class="tag">FOR BRIEFING</span>
+  </div>
+</nav>
+
+<!-- ===================== EXECUTIVE SUMMARY ===================== -->
+<section id="summary">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num" style="background:var(--cyan)">≡</span> บทสรุปผู้บริหาร</div>
+    <h2 class="title">เพรียงทะเล คือศัตรูหมายเลข ๑ ของ UDC ในอ่าวไทย</h2>
+    <p class="lead">จากการสัมภาษณ์ <b>กรมอุทกศาสตร์ (อศ.)</b> ความกังวลอันดับแรกของโครงการ UDC ไม่ใช่การถูกโจมตี แต่คือ <b>การเกาะตัวของเพรียง (Marine Biofouling)</b> — ในน้ำไทยที่อุ่นและตะกอนสูง เพรียงเกาะรุนแรงจน “เซนเซอร์ทุ่นลอยใช้การไม่ได้ภายในราว ๑ เดือน” ไม่มีสีหรือเทคโนโลยีใดแก้ได้ด้วยตัวเดียว เอกสารนี้จึงเสนอ <b>เกราะ ๓ ชั้นแบบ Defense-in-Depth</b> ที่ออกแบบเฉพาะเงื่อนไขเกาะคราม</p>
+
+    <div class="grid g3">
+      <div class="card kpi"><div class="v gold">~๑ เดือน</div><div class="l">เวลาที่เพรียงเกาะจนกระทบการทำงานของเซนเซอร์ในน้ำไทย — ข้อเท็จจริงจากการสัมภาษณ์ อศ.</div></div>
+      <div class="card kpi"><div class="v red">2.4–3.4×</div><div class="l">แรงต้านผิว (skin-friction drag) ที่เพิ่มขึ้นจาก <b>ไบโอฟิล์ม/สาหร่ายเพียงชั้นบางๆ</b> ก่อนเพรียงตัวโตจะเกาะด้วยซ้ำ (Murphy et al. 2022, USNA)</div></div>
+      <div class="card kpi"><div class="v cyan">20–25°C</div><div class="l">น้ำอุ่นกว่าเกาหลีใต้มาก → เพรียงเกาะ <b>เร็วและหนักกว่า</b> ตามหลัก IMO: น้ำเย็นชะลอได้แต่ไม่หยุด ส่วนน้ำอุ่น+สารอาหารสูงเร่งการเกาะ</div></div>
+    </div>
+
+    <div class="quote">
+      <p class="q">ในน้ำไทยเพรียงเกาะรุนแรงมาก เซนเซอร์ทุ่นลอยเกาะจนกระทบการทำงานภายในราว ๑ เดือน และเพรียงแทรกซึมเข้าทุกจุดเชื่อมต่อ — ต่างจากเกาหลีใต้ที่น้ำเย็นและเพรียงน้อยกว่ามาก</p>
+      <div class="by">— สรุปสาระจากการสัมภาษณ์ กรมอุทกศาสตร์ กองทัพเรือ (อศ.)</div>
+    </div>
+
+    <div class="callout">
+      <div class="ic">🧭</div>
+      <p><b>กรอบการนำเสนอ:</b> ทุกตัวเลขและข้อเทคนิคในเอกสารนี้ผ่านการค้นหลายมุม (multi-angle deep research) + ตรวจสอบยืนยันรายข้อจากแหล่งปฐมภูมิ (IMO, peer-reviewed, ผู้ผลิตสีกันเพรียง, Microsoft Project Natick) — และ <b>เปิดเผยข้อจำกัดตรงๆ</b> ในหัวข้อ “ข้อจำกัดและสิ่งที่ต้องวิจัยต่อ” ก่อนนำไปใช้ตัดสินใจ</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ① THREAT ===================== -->
+<section id="threat">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num" style="background:var(--gold)">①</span> ทำความเข้าใจภัย</div>
+    <h2 class="title">ทำไมเพรียงคือ “ภัยเงียบ” ที่หยุดยาก</h2>
+    <p class="lead">Biofouling ไม่ได้เกิดทันที แต่เป็น <b>กระบวนการเป็นลำดับขั้น</b> ตามนิยามของ IMO — เริ่มจากฟิล์มอินทรีย์บางๆ ภายในไม่กี่ชั่วโมง พัฒนาเป็นไบโอฟิล์มจุลินทรีย์ และจบที่ macrofouling (เพรียง/หอย/สาหร่าย) ยิ่งโครงสร้างอยู่นิ่งกับที่บนพื้นทะเล (เช่นแคปซูล UDC) ยิ่งสะสมหนัก</p>
+
+    <!-- DIAGRAM 1: staged process timeline -->
+    <div class="diagram" role="img" aria-label="แผนภาพลำดับขั้นการเกิด biofouling 4 ระยะ จากฟิล์มปรับสภาพถึงเพรียงเกาะเต็มขั้น">
+      <svg viewBox="0 0 1000 330" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="sev" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="var(--cyan)" stop-opacity=".10"/>
+            <stop offset=".5" stop-color="var(--gold)" stop-opacity=".16"/>
+            <stop offset="1" stop-color="var(--danger)" stop-opacity=".22"/>
+          </linearGradient>
+        </defs>
+        <!-- severity wedge -->
+        <polygon points="70,258 940,258 940,70 70,238" fill="url(#sev)"/>
+        <text x="78" y="60" font-family="Chakra Petch" font-size="13" fill="var(--ink-mute)" letter-spacing="1">ความรุนแรงของการเกาะ →</text>
+        <!-- baseline -->
+        <line x1="70" y1="258" x2="952" y2="258" stroke="var(--line2)" stroke-width="2"/>
+        <polygon points="952,258 942,253 942,263" fill="var(--line2)"/>
+        <!-- stage guides -->
+        <g stroke="var(--line)" stroke-width="1" stroke-dasharray="3 4">
+          <line x1="280" y1="78" x2="280" y2="258"/><line x1="500" y1="78" x2="500" y2="258"/><line x1="720" y1="78" x2="720" y2="258"/>
+        </g>
+        <!-- STAGE 1 -->
+        <g>
+          <circle cx="170" cy="258" r="9" fill="var(--bg)" stroke="var(--cyan)" stroke-width="3"/>
+          <line x1="120" y1="232" x2="220" y2="232" stroke="var(--cyan)" stroke-width="2" opacity=".6"/>
+          <text x="170" y="118" text-anchor="middle" font-family="Chakra Petch" font-size="16" font-weight="700" fill="var(--cyan)">ฟิล์มปรับสภาพ</text>
+          <text x="170" y="140" text-anchor="middle" font-size="12.5" fill="var(--ink-mute)">Conditioning film</text>
+          <text x="170" y="288" text-anchor="middle" font-family="Chakra Petch" font-size="14" font-weight="600" fill="var(--ink)">ชั่วโมงแรก</text>
+          <text x="170" y="308" text-anchor="middle" font-size="12" fill="var(--ink-dim)">โมเลกุลอินทรีย์เคลือบผิว</text>
+        </g>
+        <!-- STAGE 2 -->
+        <g>
+          <circle cx="390" cy="258" r="9" fill="var(--bg)" stroke="var(--teal)" stroke-width="3"/>
+          <g fill="var(--teal)" opacity=".85"><circle cx="372" cy="228" r="4"/><circle cx="392" cy="220" r="4"/><circle cx="408" cy="230" r="4"/></g>
+          <text x="390" y="118" text-anchor="middle" font-family="Chakra Petch" font-size="16" font-weight="700" fill="var(--teal)">ไบโอฟิล์ม</text>
+          <text x="390" y="140" text-anchor="middle" font-size="12.5" fill="var(--ink-mute)">Microfouling</text>
+          <text x="390" y="288" text-anchor="middle" font-family="Chakra Petch" font-size="14" font-weight="600" fill="var(--ink)">เป็นวัน</text>
+          <text x="390" y="308" text-anchor="middle" font-size="12" fill="var(--ink-dim)">แบคทีเรีย + ไดอะตอม (เพิ่ม drag แล้ว)</text>
+        </g>
+        <!-- STAGE 3 -->
+        <g>
+          <circle cx="610" cy="258" r="9" fill="var(--bg)" stroke="var(--gold)" stroke-width="3"/>
+          <g fill="var(--gold)" opacity=".9"><circle cx="585" cy="226" r="5"/><circle cx="605" cy="214" r="6"/><circle cx="625" cy="226" r="5"/><circle cx="598" cy="240" r="4"/><circle cx="620" cy="242" r="4"/></g>
+          <text x="610" y="118" text-anchor="middle" font-family="Chakra Petch" font-size="16" font-weight="700" fill="var(--gold)">เพรียงเริ่มเกาะ</text>
+          <text x="610" y="140" text-anchor="middle" font-size="12.5" fill="var(--ink-mute)">Macrofouling เริ่มต้น</text>
+          <text x="610" y="288" text-anchor="middle" font-family="Chakra Petch" font-size="14" font-weight="600" fill="var(--ink)">~๑ สัปดาห์</text>
+          <text x="610" y="308" text-anchor="middle" font-size="12" fill="var(--ink-dim)">ตัวอ่อนเพรียงลงเกาะถาวร</text>
+        </g>
+        <!-- STAGE 4 -->
+        <g>
+          <circle cx="830" cy="258" r="9" fill="var(--bg)" stroke="var(--danger)" stroke-width="3"/>
+          <g fill="var(--danger)"><circle cx="800" cy="222" r="6"/><circle cx="822" cy="208" r="7"/><circle cx="846" cy="220" r="6"/><circle cx="810" cy="238" r="5"/><circle cx="836" cy="240" r="6"/><circle cx="858" cy="234" r="5"/><circle cx="824" cy="226" r="5"/></g>
+          <text x="830" y="118" text-anchor="middle" font-family="Chakra Petch" font-size="16" font-weight="700" fill="var(--danger)">เกาะเต็มขั้น</text>
+          <text x="830" y="140" text-anchor="middle" font-size="12.5" fill="var(--ink-mute)">เพรียง · หอย · สาหร่าย</text>
+          <text x="830" y="288" text-anchor="middle" font-family="Chakra Petch" font-size="14" font-weight="600" fill="var(--ink)">เป็นเดือน</text>
+          <text x="830" y="308" text-anchor="middle" font-size="12" fill="var(--ink-dim)">มวลเพิ่ม + แรงต้าน + กัดกร่อน</text>
+        </g>
+        <!-- อศ. marker -->
+        <g>
+          <rect x="734" y="150" width="196" height="40" rx="9" fill="var(--danger)" opacity=".14" stroke="var(--danger)" stroke-width="1.4"/>
+          <text x="832" y="167" text-anchor="middle" font-family="Chakra Petch" font-size="12.5" font-weight="700" fill="var(--danger)">⚠ จุดวิกฤตจากสัมภาษณ์ อศ.</text>
+          <text x="832" y="183" text-anchor="middle" font-size="12" fill="var(--ink)">เซนเซอร์ใช้การไม่ได้ ~๑ เดือน</text>
+          <line x1="832" y1="190" x2="832" y2="206" stroke="var(--danger)" stroke-width="1.4" stroke-dasharray="2 3"/>
+        </g>
+      </svg>
+      <div class="cap">ลำดับขั้นการเกิด biofouling ตามนิยาม IMO — “เริ่มภายในไม่กี่ชั่วโมงแรก” และไล่ระดับจนเพรียงเกาะเต็มขั้นในหลักเดือน ตรงกับที่ อศ. พบในภาคสนาม</div>
+    </div>
+
+    <div class="callout warn">
+      <div class="ic">📖</div>
+      <p><b>IMO ระบุชัด (MEPC.378(80), §6.3.4):</b> “การเกาะของสิ่งมีชีวิตเติบโต <b>ช้าลงแต่ไม่ได้ถูกป้องกัน</b> ในน้ำอุณหภูมิต่ำ… ส่วนน้ำที่มีสารอาหารสูงอาจเพิ่มการสะพรั่งของสาหร่ายและความเสี่ยงต่อการเกาะ” — แปลว่าน้ำอุ่นและตะกอน/สารอาหารสูงแบบอ่าวไทย <b>เร่ง</b> การเกาะ และโครงสร้างที่อยู่นิ่ง (ไม่เคลื่อนที่) บนพื้นทะเลคือสภาพที่เลวร้ายที่สุด</p>
+    </div>
+
+    <h3 class="sub-h"><span class="bar" style="background:var(--danger)"></span> ผลกระทบ ๓ ด้านต่อแคปซูล UDC</h3>
+    <div class="grid g3">
+      <div class="card">
+        <h4 style="font-size:16px;margin-bottom:8px;color:var(--ink)">⚖️ มวลส่วนเกิน &amp; พลวัต</h4>
+        <p style="color:var(--ink-dim);font-size:14px;margin:0">คราบเพรียงเพิ่ม “added mass” เปลี่ยนคุณสมบัติเชิงพลวัตของโครงสร้าง (การสั่น/การตอบสนองต่อกระแสน้ำ) — สำคัญต่อแคปซูลและทุ่น/เซนเซอร์ลอย</p>
+      </div>
+      <div class="card">
+        <h4 style="font-size:16px;margin-bottom:8px;color:var(--ink)">🌊 แรงต้านน้ำพุ่งสูง</h4>
+        <p style="color:var(--ink-dim);font-size:14px;margin:0">แค่ไบโอฟิล์ม/สาหร่ายชั้นบางก็เพิ่มแรงต้านผิว <b>2.4–3.4 เท่า</b> (Cf 2.3×10⁻³ → 5.5–7.9×10⁻³ ที่ปกคลุม 85–88%) — % พื้นที่ปกคลุมทำนายได้ดีกว่าความสูงของผิว</p>
+      </div>
+      <div class="card">
+        <h4 style="font-size:16px;margin-bottom:8px;color:var(--ink)">🔌 กัดกร่อนที่จุดเชื่อมต่อ</h4>
+        <p style="color:var(--ink-dim);font-size:14px;margin:0">เพรียงแทรกทุกคอนเนกเตอร์/รอยต่อ ก่อ <b>การกัดกร่อนจากจุลินทรีย์ (MIC)</b> — ตรงกับที่ อศ. ย้ำว่า “เพรียงแทรกซึมเข้าทุกจุดเชื่อมต่อ” จุดที่อันตรายที่สุดของระบบ</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="ic">🧬</div>
+      <p><b>ทำไมแค่ “กระแสน้ำเชี่ยว” ไม่พอ:</b> แม้แรงเฉือนจากกระแสน้ำช่วยกวาดตัวอ่อนออกได้บ้าง แต่ตัวอ่อนเพรียง (cyprid) <b>ว่ายทวนกระแสโดยตั้งใจ</b> (negative rheotaxis ~93%, ความเร็วว่าย ~1.8 ซม./วินาที — Larsson et al. 2016) และมุ่งหา “ซอกอับการไหล” (niche areas) เช่นรอยต่อ/ร่อง/คอนเนกเตอร์ ซึ่งเป็นจุดเกาะที่หนักที่สุดแม้กระแสน้ำโดยรวมจะแรง — รายละเอียดในเกราะชั้น C</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ② DEFENSE-IN-DEPTH ===================== -->
+<section id="defense">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num" style="background:var(--teal)">②</span> แนวทางป้องกัน</div>
+    <h2 class="title">เกราะ ๓ ชั้น — Defense-in-Depth</h2>
+    <p class="lead">งานวิจัยทุกชิ้นชี้ตรงกันว่า <b>ไม่มีมาตรการเดียวที่เอาอยู่</b> (Maan et al. 2020) — สีทองแดงหมดฤทธิ์ใน ~๒ ปี, foul-release ลดการยึดแต่ไม่ฆ่า, และการรักษาผิวกันเพรียงให้คงสภาพระยะยาว “แทบเป็นไปไม่ได้” เพราะผิวเสื่อม/เป็นรอย วิธีเดียวที่สมเหตุผลคือ <b>ซ้อนหลายชั้น</b> ให้แต่ละชั้นชดเชยจุดอ่อนของกันและกัน (เคลือบผิว + ระบบสั่น + พลศาสตร์การไหล)</p>
+
+    <!-- DIAGRAM 2: concentric defense rings -->
+    <div class="diagram" role="img" aria-label="แผนภาพหน้าตัดแคปซูลแสดงเกราะ 3 ชั้นเป็นวงซ้อน: เคลือบผิว สั่น/UV-C และพลศาสตร์การไหล พร้อมวงรอบบำรุงรักษาด้วย ROV">
+      <svg class="dg-rings" viewBox="0 0 760 540" xmlns="http://www.w3.org/2000/svg">
+        <!-- flow ring (C) : sweeping arrows around -->
+        <g class="ring-spin sweep" stroke="var(--flow)" stroke-width="2.4" fill="none" opacity=".75">
+          <path d="M250 80 A190 190 0 0 1 425 196"/><polygon points="425,196 412,190 420,180" fill="var(--flow)" stroke="none"/>
+          <path d="M440 270 A190 190 0 0 1 320 446"/><polygon points="320,446 326,433 333,442" fill="var(--flow)" stroke="none"/>
+          <path d="M250 460 A190 190 0 0 1 70 330"/><polygon points="70,330 83,335 76,344" fill="var(--flow)" stroke="none"/>
+          <path d="M60 250 A190 190 0 0 1 180 78"/><polygon points="180,78 174,91 167,82" fill="var(--flow)" stroke="none"/>
+        </g>
+        <!-- ROV ring (D) -->
+        <circle class="ring-spin rovr" cx="250" cy="270" r="158" fill="none" stroke="var(--rov)" stroke-width="2.2" stroke-dasharray="2 7" opacity=".8"/>
+        <!-- Layer B ring -->
+        <circle class="ring-spin goldr" cx="250" cy="270" r="118" fill="rgba(245,196,81,.05)" stroke="var(--vibe)" stroke-width="9" stroke-dasharray="13 9"/>
+        <!-- Layer A ring -->
+        <circle class="coat-pulse" cx="250" cy="270" r="86" fill="rgba(0,212,255,.06)" stroke="var(--coat)" stroke-width="11"/>
+        <!-- core capsule -->
+        <circle cx="250" cy="270" r="58" fill="var(--panel2)" stroke="var(--ink-dim)" stroke-width="1.6"/>
+        <g stroke="var(--ink-mute)" stroke-width="1" opacity=".5"><line x1="216" y1="270" x2="284" y2="270"/><line x1="250" y1="236" x2="250" y2="304"/><circle cx="250" cy="270" r="22" fill="none"/></g>
+        <text x="250" y="266" text-anchor="middle" font-family="Chakra Petch" font-size="13" font-weight="700" fill="var(--ink)">แคปซูล</text>
+        <text x="250" y="284" text-anchor="middle" font-size="11" fill="var(--ink-dim)">UDC core</text>
+        <!-- ROV icon on D ring -->
+        <g class="ring-spin rovr"><g transform="translate(250,112)"><rect x="-16" y="-9" width="32" height="18" rx="4" fill="var(--rov)" opacity=".22" stroke="var(--rov)" stroke-width="1.4"/><circle cx="-7" cy="0" r="2.4" fill="var(--rov)"/><circle cx="7" cy="0" r="2.4" fill="var(--rov)"/></g></g>
+        <!-- legend -->
+        <g font-family="Sarabun" font-size="13.5">
+          <g transform="translate(470,120)">
+            <rect x="0" y="-13" width="18" height="18" rx="4" fill="var(--coat)"/>
+            <text x="28" y="-2" font-family="Chakra Petch" font-weight="700" fill="var(--coat)">ชั้น A · เคลือบผิว</text>
+            <text x="28" y="18" fill="var(--ink-dim)">Coating — ด่านแรกติดผิวแคปซูล</text>
+          </g>
+          <g transform="translate(470,190)">
+            <rect x="0" y="-13" width="18" height="18" rx="4" fill="var(--vibe)"/>
+            <text x="28" y="-2" font-family="Chakra Petch" font-weight="700" fill="var(--vibe)">ชั้น B · สั่น / UV-C</text>
+            <text x="28" y="18" fill="var(--ink-dim)">รบกวนการลงเกาะแบบไม่สัมผัส</text>
+          </g>
+          <g transform="translate(470,260)">
+            <rect x="0" y="-13" width="18" height="18" rx="4" fill="var(--flow)"/>
+            <text x="28" y="-2" font-family="Chakra Petch" font-weight="700" fill="var(--flow)">ชั้น C · พลศาสตร์การไหล</text>
+            <text x="28" y="18" fill="var(--ink-dim)">รูปทรง + กำจัดซอกอับการไหล</text>
+          </g>
+          <g transform="translate(470,330)">
+            <rect x="0" y="-13" width="18" height="18" rx="4" fill="none" stroke="var(--rov)" stroke-width="2" stroke-dasharray="2 3"/>
+            <text x="28" y="-2" font-family="Chakra Petch" font-weight="700" fill="var(--rov)">วงรอบ · บำรุงรักษา ROV</text>
+            <text x="28" y="18" fill="var(--ink-dim)">ตรวจ/ทำความสะอาดเป็นรอบ</text>
+          </g>
+          <g transform="translate(470,398)">
+            <text x="0" y="0" font-size="12.5" fill="var(--ink-mute)">หมายเหตุ: ลูกศรเขียว = กระแสน้ำกวาดผ่าน</text>
+            <text x="0" y="20" font-size="12.5" fill="var(--ink-mute)">ผิว — ช่วยได้บางส่วน (ดูชั้น C)</text>
+          </g>
+        </g>
+      </svg>
+      <div class="cap">หน้าตัดแคปซูล (มองจากปลาย) — เกราะซ้อนกันจากผิวออกไป: A เคลือบผิว → B ระบบสั่น/UV-C → C รูปทรงพลศาสตร์การไหล → วงรอบบำรุงรักษาด้วย ROV ครอบทั้งหมด</div>
+    </div>
+
+    <!-- LAYER A -->
+    <div class="layer a">
+      <div class="layer-head">
+        <div class="layer-badge">A</div>
+        <div><h3>เคลือบผิวกันเพรียง (Antifouling / Foul-release Coating)</h3><div class="sx">ด่านแรก · ติดผิวแคปซูล</div></div>
+      </div>
+      <div class="layer-body">
+        <p>ด่านแรกคือสีเคลือบ แต่ <b>ไม่มีสีใดอยู่ได้ตลอด</b> — ต้องเลือกให้เหมาะกับโครงสร้างที่ “อยู่นิ่ง” และเงื่อนไขอ่าวไทย ตารางเปรียบเทียบ ๔ กลุ่มหลัก:</p>
+        <div style="overflow-x:auto">
+        <table class="tbl">
+          <thead>
+            <tr><th>ชนิดสีเคลือบ</th><th>กลไก</th><th>อายุ / ประสิทธิภาพ</th><th>ข้อจำกัดสำคัญ</th><th>กับเกาะคราม</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="c">Copper biocide (Cu₂O) / SPC</td>
+              <td>ปล่อยไอออนทองแดงยับยั้งสิ่งมีชีวิต; SPC ขัดผิวตัวเองให้คงฤทธิ์</td>
+              <td>~๒ ปี</td>
+              <td>หมดฤทธิ์ตามเวลา ปล่อยสารชีวฆาตสู่สิ่งแวดล้อม</td>
+              <td><span class="pill warn">ใช้ได้ มีรอบเปลี่ยน</span></td>
+            </tr>
+            <tr>
+              <td class="t">Foul-release ซิลิโคน/ฟลูออโรพอลิเมอร์ <br><small style="color:var(--ink-mute)">(Intersleek, Hempaguard)</small></td>
+              <td>ผิวลื่นพลังงานต่ำ ลด “แรงยึดเกาะ” ให้หลุดง่าย</td>
+              <td>ลดการยึด ไม่ใช้สารฆ่า เป็นมิตรต่อสิ่งแวดล้อมกว่า</td>
+              <td>พึ่ง “การไหล/แรงเฉือน” ให้ชะล้าง — บนโครงสร้าง<b>นิ่ง</b>ได้ผลจำกัด</td>
+              <td><span class="pill info">น่าสนใจ + มีข้อแม้</span></td>
+            </tr>
+            <tr>
+              <td class="c">Biomimetic texture <br><small style="color:var(--ink-mute)">(Sharklet ผิวหนังฉลาม)</small></td>
+              <td>ลายผิวจุลภาคกีดขวางการลงเกาะของสปอร์/ตัวอ่อน</td>
+              <td>ลดการเกาะของสาหร่าย Ulva ได้ถึง ~77% (ในแล็บ)</td>
+              <td>ภาคสนามด้อยกว่าแล็บ; cyprid เพรียงตัวใหญ่กว่าร่องลาย</td>
+              <td><span class="pill info">เสริม ไม่ใช่ตัวหลัก</span></td>
+            </tr>
+            <tr>
+              <td class="r">TBT (organotin)</td>
+              <td>สารชีวฆาตแรง ครอบคลุมกว้าง</td>
+              <td>เคยอยู่ได้ &gt;๕ ปี</td>
+              <td><b>ถูก IMO AFS Convention สั่งห้าม</b> (ห้ามทา 2003 / ห้ามมีบนเรือ 2008)</td>
+              <td><span class="pill ban">❌ ห้ามใช้</span></td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="gapnote">
+          <div class="ic">🧪</div>
+          <p><b>ทางเลือกที่ควรศึกษาต่อ:</b> การหุ้มด้วย <b>โลหะผสมทองแดง–นิกเกิล (cupronickel cladding)</b> ปล่อยไอออนทองแดงต้านการเกาะและทนทาน แต่มีประเด็นต้นทุน/น้ำหนัก และต้องวิจัยความเข้ากันได้ทางไฟฟ้าเคมีกับตัวถังแคปซูล — ยังไม่อยู่ในชุดหลักฐานหลักของรายงานนี้</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAYER B -->
+    <div class="layer b">
+      <div class="layer-head">
+        <div class="layer-badge">B</div>
+        <div><h3>ระบบสั่นสะเทือน / อัลตราโซนิก &amp; แสง UV-C</h3><div class="sx">รบกวนการลงเกาะ · แบบไม่สัมผัส</div></div>
+      </div>
+      <div class="layer-body">
+        <p><b>① อัลตราโซนิก/การสั่น (Ultrasonic antifouling):</b> สร้างสนามสั่นสะเทือนความถี่ ~<b>17–30 kHz</b> (ราว 20 kHz ได้ผลดีกับเพรียง) ในเนื้อโลหะของโครงสร้าง รบกวนไม่ให้ไบโอฟิล์ม/ตัวอ่อนตั้งตัว — ในแล็บลดการเกาะของจุลินทรีย์ได้ถึง ~87% <b>ข้อจำกัด:</b> ประสิทธิภาพตกในโซนที่แอมพลิจูดการสั่นต่ำ (ผนัง/ซอก/ร่อง) ซึ่งเป็น “ซอก niche” จุดเดียวกับที่เพรียงชอบเกาะ และหลักฐานส่วนใหญ่เป็นระดับตัวเรือ</p>
+        <p><b>② แสง UV-C:</b> ฉายแสง UV-C ทำลายสารพันธุกรรมของจุลินทรีย์ก่อนตั้งตัว — <b>ไม่ใช้สารเคมี ไม่สัมผัสผิว ใช้พลังงานต่ำ</b> สถาบัน AIMS ของออสเตรเลียทดสอบใน <b>น้ำเขตร้อน</b> พบว่าเซนเซอร์ที่ฉาย UV-C ต่อเนื่อง “ปลอดการเกาะนานถึง 237 วัน” <b>ข้อจำกัด:</b> ป้องได้เฉพาะผิวที่แสงส่องถึง (line-of-sight) จึง <b>เหมาะกับหน้าต่างเซนเซอร์/เลนส์</b> — ตรงจุดที่ อศ. กังวลที่สุดพอดี — แต่ไม่ครอบคลุมทั้งแคปซูล</p>
+        <div class="gapnote">
+          <div class="ic">⚠️</div>
+          <p><b>สถานะหลักฐาน (เปิดเผยตรงๆ):</b> ทั้งอัลตราโซนิกและ UV-C <b>ยังไม่อยู่ในชุดงานวิจัยปฐมภูมิหลัก</b>ที่ตรวจสอบเข้มข้นในรายงานนี้ — ตัวเลขข้างต้นมาจากการค้นเสริมระดับแล็บ/ตัวเรือ <b>ต้องทดสอบนำร่องในสภาพจริงของอ่าวไทย</b> ก่อนสรุปประสิทธิผล โดยเฉพาะการจ่ายพลังงานใต้น้ำต่อเนื่องและผลต่อสิ่งแวดล้อมรอบข้าง</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAYER C -->
+    <div class="layer c">
+      <div class="layer-head">
+        <div class="layer-badge">C</div>
+        <div><h3>พลศาสตร์การไหล &amp; การออกแบบรูปทรง (Hydrodynamics)</h3><div class="sx">ดาบสองคม · ต้องออกแบบให้ถูก</div></div>
+      </div>
+      <div class="layer-body">
+        <p>การใช้หลักพลศาสตร์ของไหลเพื่อลดแรงต้านกระแสน้ำรอบแคปซูลเป็นแนวคิดที่น่าสนใจ — แต่หลักฐานชี้ว่ากระแสน้ำเป็น <b>“ดาบสองคม”</b>: แรงเฉือนผิวช่วยกวาดตัวอ่อนออกได้บางส่วน (Koehl 2010; Larsson 2016) <b>แต่</b>ตัวอ่อนเพรียงว่ายทวนกระแสโดยตั้งใจ และไป “หลบ” ในซอกอับการไหลที่กระแสน้ำเข้าไม่ถึง</p>
+
+        <!-- DIAGRAM 3: side-view flow / niche -->
+        <div class="diagram" style="margin:6px 0 14px" role="img" aria-label="ภาพด้านข้างแคปซูลแสดงการไหลของน้ำ: ผิวด้านบนแรงเฉือนสูง ส่วนฐาน/รอยต่อเกิดกระแสวนเป็นซอกอับที่ตัวอ่อนเพรียงลงเกาะ">
+          <svg class="dg-flow" viewBox="0 0 1000 420" xmlns="http://www.w3.org/2000/svg">
+            <!-- seabed -->
+            <line x1="40" y1="360" x2="960" y2="360" stroke="var(--ink-mute)" stroke-width="2"/>
+            <g stroke="var(--ink-mute)" stroke-width="1" opacity=".5">
+              <line x1="70" y1="360" x2="55" y2="378"/><line x1="150" y1="360" x2="135" y2="378"/><line x1="230" y1="360" x2="215" y2="378"/><line x1="820" y1="360" x2="805" y2="378"/><line x1="900" y1="360" x2="885" y2="378"/>
+            </g>
+            <text x="48" y="394" font-size="12" fill="var(--ink-mute)">พื้นทะเล (ตะกอนสูง ~30 ม.)</text>
+            <!-- cradle / support (niche) -->
+            <rect x="360" y="320" width="280" height="40" rx="6" fill="var(--panel2)" stroke="var(--ink-dim)" stroke-width="1.4"/>
+            <line x1="410" y1="320" x2="410" y2="360" stroke="var(--ink-dim)" stroke-width="1.4"/>
+            <line x1="590" y1="320" x2="590" y2="360" stroke="var(--ink-dim)" stroke-width="1.4"/>
+            <!-- capsule body (side cylinder) -->
+            <rect x="330" y="232" width="340" height="92" rx="46" fill="var(--panel)" stroke="var(--coat)" stroke-width="2.5"/>
+            <ellipse cx="330" cy="278" rx="20" ry="46" fill="var(--panel2)" stroke="var(--coat)" stroke-width="2.5"/>
+            <text x="500" y="284" text-anchor="middle" font-family="Chakra Petch" font-size="15" font-weight="700" fill="var(--ink)">แคปซูล UDC</text>
+            <!-- sensor housing on top (niche / UV-C target) -->
+            <rect class="uvc" x="470" y="198" width="60" height="34" rx="5" fill="var(--vibe)" opacity=".18" stroke="var(--vibe)" stroke-width="1.6"/>
+            <circle cx="500" cy="215" r="7" fill="none" stroke="var(--vibe)" stroke-width="1.6"/>
+            <!-- connector box on side (niche / MIC) -->
+            <rect x="650" y="280" width="34" height="30" rx="4" fill="var(--danger)" opacity=".16" stroke="var(--danger)" stroke-width="1.5"/>
+            <!-- high-shear crown flow (teal, fast laminar) -->
+            <g stroke="var(--flow)" stroke-width="2.6" fill="none">
+              <path class="stream" d="M120 150 H440 q40 0 70 -10 q60 -18 130 -8 H900"/><polygon points="900,132 884,127 884,137" fill="var(--flow)" stroke="none"/>
+              <path class="stream" d="M120 178 H430 q50 4 95 -4 q55 -8 120 0 H900"/><polygon points="900,174 884,169 884,179" fill="var(--flow)" stroke="none"/>
+            </g>
+            <text x="700" y="120" font-family="Chakra Petch" font-size="14" font-weight="700" fill="var(--flow)">ยอดแคปซูล: แรงเฉือนสูง</text>
+            <text x="700" y="140" font-size="12.5" fill="var(--ink-dim)">น้ำไหลเร็ว กวาดตัวอ่อนออกบางส่วน ✓</text>
+            <!-- incoming flow left -->
+            <g stroke="var(--flow)" stroke-width="2.2" fill="none" opacity=".7">
+              <path class="stream s2" d="M70 230 H300"/><polygon points="300,230 286,225 286,235" fill="var(--flow)" stroke="none"/>
+              <path class="stream s2" d="M70 300 H300"/><polygon points="300,300 286,295 286,305" fill="var(--flow)" stroke="none"/>
+            </g>
+            <text x="70" y="214" font-size="12.5" fill="var(--ink-mute)">กระแสน้ำเชี่ยว →</text>
+            <!-- recirculation eddies at base (red) -->
+            <g stroke="var(--danger)" stroke-width="2.4" fill="none">
+              <g class="eddy"><path d="M360 348 q-22 -18 -4 -34 q20 -16 36 4" /><polygon points="392,318 380,316 388,328" fill="var(--danger)" stroke="none"/></g>
+              <g class="eddy"><path d="M612 348 q24 -16 6 -34 q-18 -16 -36 2"/><polygon points="582,316 590,328 594,316" fill="var(--danger)" stroke="none"/></g>
+            </g>
+            <!-- eddy behind connector -->
+            <g class="eddy"><path d="M690 300 q26 -6 18 16 q-8 18 -26 8" stroke="var(--danger)" stroke-width="2.2" fill="none"/><polygon points="682,324 696,322 690,332" fill="var(--danger)" stroke="none"/></g>
+            <!-- niche labels -->
+            <g font-size="12.5">
+              <text x="500" y="190" text-anchor="middle" font-weight="700" fill="var(--vibe)" font-family="Chakra Petch">หน้าต่างเซนเซอร์</text>
+              <text x="500" y="172" text-anchor="middle" fill="var(--ink-dim)">เป้าหมาย UV-C (ชั้น B)</text>
+              <text x="500" y="404" text-anchor="middle" font-weight="700" fill="var(--danger)" font-family="Chakra Petch">ฐาน/แท่นรอง = ซอกอับการไหล (niche) — ตัวอ่อนลงเกาะหนัก ✗</text>
+              <text x="725" y="276" font-weight="700" fill="var(--danger)" font-family="Chakra Petch" font-size="12.5">รอยต่อ/คอนเนกเตอร์</text>
+              <text x="725" y="294" fill="var(--ink-dim)" font-size="12">กระแสวน + เสี่ยง MIC</text>
+            </g>
+          </svg>
+          <div class="cap">ภาพด้านข้าง: กระแสน้ำกวาดยอดแคปซูล (แรงเฉือนสูง) ได้ผลดี แต่เกิด “กระแสวน” อับการไหลที่ฐาน/แท่นรอง/รอยต่อ — จุดที่ตัวอ่อนเพรียงหลบเข้าไปเกาะ</div>
+        </div>
+
+        <p><b>ข้อสรุปเชิงออกแบบ:</b> เป้าหมายไม่ใช่ “เร่งความเร็วน้ำให้สูงพอจะหยุดการเกาะ” (หลักฐานไม่สนับสนุนว่าทำได้จริง) แต่คือ <b>กำจัดซอกอับการไหลให้เหลือน้อยที่สุด</b> ตามคำแนะนำ niche-area ของ IMO:</p>
+        <ul class="clean">
+          <li><b>ฝังเรียบ (flush-mount)</b> เซนเซอร์/อุปกรณ์ให้เสมอผิว ไม่ยื่นเป็นซอก</li>
+          <li><b>ลบเหลี่ยม–มนมุม</b> ทุกมุมและขอบ ลดจุดที่กระแสวนนิ่ง</li>
+          <li><b>อุดยาแนวร่อง/รอยต่อ</b> (caulk gaps) ไม่ให้เป็นโพรงหลบของตัวอ่อน</li>
+          <li><b>เคลือบจุดเสี่ยงพิเศษ</b> — ปลอกหุ้มเซนเซอร์ ท่อ ช่องเปิด คอนเนกเตอร์ (จุดที่ อศ. ระบุว่าเพรียงแทรกหนักสุด)</li>
+          <li>ออกแบบรูปทรงแคปซูลให้ <b>ลดแรงต้านกระแสน้ำ</b> เพื่อลดภาระโครงสร้าง — โดยถือเป็นผลพลอยได้ ไม่ใช่มาตรการกันเพรียงหลัก</li>
+        </ul>
+
+        <!-- ===== AIRFOIL FAIRING CONCEPT (แนวคิดต่อยอด) ===== -->
+        <h4 style="font-family:'Chakra Petch'; font-size:16px; color:var(--flow); margin:22px 0 6px">แนวคิดต่อยอด: หุ้มแคปซูลไว้ใน “รูปทรงแอร์ฟอยล์” (Streamlined Fairing)</h4>
+        <p>แทนที่จะปล่อยแคปซูลทรงกระบอกเปลือยปะทะกระแสน้ำตรง ๆ — ซึ่งทำให้เกิด <b>การแยกตัวของการไหล (flow separation)</b> และ <b>กระแสวนท้ายตัว (wake)</b> กว้าง — ประกอบด้วย <b>กระแสวนคู่ท้ายตัว (recirculation)</b> ตามด้วย <b>กระแสวนสลับข้าง (von Kármán vortex street)</b> — อันเป็น “ซอกอับ” ที่ตัวอ่อนเพรียงชอบลงเกาะ — แนวคิดนี้คือ <b>ครอบแคปซูลไว้ในเปลือกรูปหยดน้ำ/แอร์ฟอยล์ที่เพรียวลม</b> ให้กระแสน้ำ “ไหลแนบผิว” (attached flow) ไปจนเกือบสุดหาง ได้ผลพร้อมกันหลายด้าน: <b>(๑)</b> เขตกระแสวนท้ายตัวหดแคบลงมาก → ซอก niche ที่เพรียงหลบไปเกาะลดลง — ทั้งยังเกิด <b>แรงเฉือนผิวสูง (wall shear)</b> ไล่ไปตามผิวโค้งของเปลือก ทำให้ตัวอ่อนเพรียงเกาะยึดได้ยากขึ้น — และ <b>(๒)</b> แรงต้านน้ำ (drag) ลดลงตามหลักเดียวกับปีกเครื่องบิน/ตัวเรือดำน้ำ — ตอบโจทย์ “ลดแรงต้าน” ที่ตั้งไว้พอดี ทั้งยัง <b>หันตามกระแสน้ำได้เอง (weathervane)</b> เมื่อยึดบนแกนหมุน จึงรับกระแสน้ำขึ้น–ลงสองทิศของอ่าวไทยได้</p>
+
+        <!-- DIAGRAM 4: airfoil fairing comparison (top view) -->
+        <div class="diagram dg-air" style="margin:6px 0 14px" role="img" aria-label="แผนภาพมุมบนเปรียบเทียบ ซ้าย: แคปซูลทรงกระบอกเปลือยเกิดกระแสวนท้ายตัวกว้างเป็นซอกให้เพรียงเกาะ ขวา: แคปซูลที่หุ้มในเปลือกรูปแอร์ฟอยล์ ทำให้น้ำไหลแนบผิวและกระแสวนท้ายตัวแคบลง">
+          <svg viewBox="0 0 1000 478" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="bfWake" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="var(--danger)" stop-opacity=".24"/>
+                <stop offset="1" stop-color="var(--danger)" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="bfShell" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="var(--flow)" stop-opacity=".15"/>
+                <stop offset="1" stop-color="var(--flow)" stop-opacity=".03"/>
+              </linearGradient>
+              <marker id="ahF" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--flow)"/></marker>
+              <marker id="ahR" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--rov)"/></marker>
+              <filter id="bfGlow" x="-45%" y="-45%" width="190%" height="190%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+
+            <!-- divider -->
+            <line x1="500" y1="70" x2="500" y2="428" stroke="var(--ink-mute)" stroke-width="1" stroke-dasharray="3 6" opacity=".35"/>
+            <!-- panel titles -->
+            <text x="252" y="40" text-anchor="middle" font-family="Chakra Petch" font-size="15" font-weight="700" fill="var(--danger)">แบบเดิม — ทรงกระบอกเปลือย (Bluff Body)</text>
+            <text x="750" y="40" text-anchor="middle" font-family="Chakra Petch" font-size="15" font-weight="700" fill="var(--flow)">แบบ Airfoil — หุ้มแคปซูลใน Fairing</text>
+
+            <!-- =================== LEFT: bare cylinder (bluff body) =================== -->
+            <text x="30" y="98" font-size="12" fill="var(--ink-mute)">กระแสน้ำเชี่ยว →</text>
+            <!-- broad low-pressure turbulent wake (breathing) -->
+            <path class="haze" d="M244 214 C 320 196 420 168 492 156 L 492 344 C 420 332 320 304 244 286 Z" fill="url(#bfWake)" stroke="none"/>
+            <!-- incoming + deflected streamlines -->
+            <g stroke="var(--flow)" stroke-width="2.3" fill="none">
+              <path class="stream" d="M30 180 Q 140 176 196 166 Q 250 158 286 184 Q 330 214 372 192 Q 420 168 492 196" marker-end="url(#ahF)"/>
+              <path class="stream s2" d="M30 320 Q 140 324 196 334 Q 250 342 286 316 Q 330 286 372 308 Q 420 332 492 304" marker-end="url(#ahF)"/>
+              <path class="stream" d="M30 250 H150" marker-end="url(#ahF)"/>
+            </g>
+            <!-- front stagnation point (high pressure) -->
+            <circle class="ping" cx="164" cy="250" r="9" fill="none" stroke="var(--vibe)" stroke-width="2"/>
+            <circle class="ping p2" cx="164" cy="250" r="9" fill="none" stroke="var(--vibe)" stroke-width="2"/>
+            <circle cx="164" cy="250" r="3.5" fill="var(--vibe)"/>
+            <text x="150" y="231" text-anchor="end" font-size="10.5" fill="var(--vibe)">จุดปะทะ</text>
+            <text x="150" y="244" text-anchor="end" font-size="9" fill="var(--ink-mute)">stagnation · แรงดันสูง</text>
+            <!-- cylinder body -->
+            <circle cx="210" cy="250" r="46" fill="var(--panel)" stroke="var(--coat)" stroke-width="2.6"/>
+            <text x="210" y="246" text-anchor="middle" font-family="Chakra Petch" font-size="12.5" font-weight="700" fill="var(--ink)">แคปซูล</text>
+            <text x="210" y="263" text-anchor="middle" font-size="10.5" fill="var(--ink-dim)">UDC</text>
+            <!-- flow separation points at the shoulders -->
+            <circle cx="236" cy="208" r="3.4" fill="var(--danger)"/>
+            <circle cx="236" cy="292" r="3.4" fill="var(--danger)"/>
+            <line x1="237" y1="207" x2="248" y2="174" stroke="var(--danger)" stroke-width="1" opacity=".55"/>
+            <text x="252" y="168" font-size="10.5" fill="var(--danger)">จุดแยกตัว (separation)</text>
+            <!-- recirculation pair right behind the body -->
+            <g filter="url(#bfGlow)">
+              <g class="eddy"><path d="M285,228 A14 14 0 1 1 271,242" stroke="var(--danger)" stroke-width="2.2" fill="none"/><polygon points="271,242 280,238 281,247" fill="var(--danger)"/></g>
+              <g class="eddy ccw"><path d="M285,272 A14 14 0 1 1 271,286" stroke="var(--danger)" stroke-width="2.2" fill="none"/><polygon points="271,286 280,282 281,291" fill="var(--danger)"/></g>
+            </g>
+            <text x="300" y="336" text-anchor="middle" font-size="10" fill="var(--danger)">กระแสวนคู่ท้ายตัว (recirculation)</text>
+            <!-- von Kármán vortex street (alternating shed vortices) -->
+            <g filter="url(#bfGlow)">
+              <g class="eddy ccw e2"><path d="M351,204 A15 15 0 1 1 336,219" stroke="var(--danger)" stroke-width="2.2" fill="none"/><polygon points="336,219 345,215 346,224" fill="var(--danger)"/></g>
+              <g class="eddy e3"><path d="M395,296 A15 15 0 1 1 380,311" stroke="var(--danger)" stroke-width="2.2" fill="none"/><polygon points="380,311 389,307 390,316" fill="var(--danger)"/></g>
+              <g class="eddy ccw"><path d="M439,206 A15 15 0 1 1 424,221" stroke="var(--danger)" stroke-width="2.2" fill="none"/><polygon points="424,221 433,217 434,226" fill="var(--danger)"/></g>
+              <g class="eddy e2"><path d="M483,294 A15 15 0 1 1 468,309" stroke="var(--danger)" stroke-width="2.2" fill="none"/><polygon points="468,309 477,305 478,314" fill="var(--danger)"/></g>
+            </g>
+            <text x="412" y="150" text-anchor="middle" font-family="Chakra Petch" font-size="11" fill="var(--danger)">von Kármán vortex street</text>
+            <text x="252" y="454" text-anchor="middle" font-family="Chakra Petch" font-size="13" font-weight="700" fill="var(--danger)">เวกกว้าง = แรงต้านสูง · ซอก niche มาก ✗</text>
+
+            <!-- =================== RIGHT: airfoil fairing =================== -->
+            <text x="540" y="120" font-size="12" fill="var(--ink-mute)">กระแสน้ำเชี่ยว →</text>
+            <!-- thin attached-flow wake hint (breathing) -->
+            <path class="haze" d="M946 250 C 962 245 974 247 990 250 C 974 253 962 255 946 250 Z" fill="url(#bfShell)" stroke="none"/>
+            <!-- airfoil shell (fairing) -->
+            <path d="M946 250 Q 800 168 690 196 Q 624 213 596 250 Q 624 287 690 304 Q 800 332 946 250 Z" fill="url(#bfShell)" stroke="var(--flow)" stroke-width="2.5" filter="url(#bfGlow)"/>
+            <!-- attached boundary-layer skins (fast flow = high wall shear) -->
+            <g stroke="var(--flow)" stroke-width="1.6" fill="none" opacity=".85">
+              <path class="stream bl" d="M612 236 Q 690 206 800 224 Q 880 238 936 250"/>
+              <path class="stream bl s2" d="M612 264 Q 690 294 800 276 Q 880 262 936 250"/>
+            </g>
+            <!-- outer streamlines converging to a thin wake -->
+            <g stroke="var(--flow)" stroke-width="2.3" fill="none">
+              <path class="stream" d="M540 168 Q 660 168 760 200 Q 860 232 984 246" marker-end="url(#ahF)"/>
+              <path class="stream s2" d="M540 332 Q 660 332 760 300 Q 860 268 984 254" marker-end="url(#ahF)"/>
+            </g>
+            <!-- nose stagnation point -->
+            <circle class="ping" cx="596" cy="250" r="8" fill="none" stroke="var(--vibe)" stroke-width="2"/>
+            <circle class="ping p2" cx="596" cy="250" r="8" fill="none" stroke="var(--vibe)" stroke-width="2"/>
+            <circle cx="596" cy="250" r="3.3" fill="var(--vibe)"/>
+            <text x="586" y="231" text-anchor="end" font-size="10" fill="var(--vibe)">จุดปะทะหัว</text>
+            <!-- capsule nested inside -->
+            <circle cx="690" cy="250" r="44" fill="var(--panel)" stroke="var(--coat)" stroke-width="2.6"/>
+            <text x="690" y="246" text-anchor="middle" font-family="Chakra Petch" font-size="12.5" font-weight="700" fill="var(--ink)">แคปซูล</text>
+            <text x="690" y="263" text-anchor="middle" font-size="10.5" fill="var(--ink-dim)">UDC</text>
+            <!-- attached-BL / wall-shear label -->
+            <text x="726" y="150" text-anchor="middle" font-family="Chakra Petch" font-size="11" fill="var(--flow)">การไหลแนบผิว — แรงเฉือนผิวสูง</text>
+            <text x="726" y="165" text-anchor="middle" font-size="9" fill="var(--ink-mute)">attached BL · high wall shear</text>
+            <!-- thin wake label -->
+            <line x1="958" y1="243" x2="958" y2="220" stroke="var(--flow)" stroke-width="1" opacity=".55"/>
+            <text x="958" y="213" text-anchor="middle" font-size="10" fill="var(--flow)">เวกแคบ (thin wake)</text>
+            <!-- weathervane pivot -->
+            <line x1="690" y1="296" x2="690" y2="330" stroke="var(--ink-dim)" stroke-width="1.5" stroke-dasharray="3 3"/>
+            <circle cx="690" cy="334" r="4" fill="var(--rov)"/>
+            <g class="wv">
+              <path d="M660 362 A32 32 0 0 1 720 362" stroke="var(--rov)" stroke-width="2" fill="none" marker-start="url(#ahR)" marker-end="url(#ahR)"/>
+            </g>
+            <text x="690" y="398" text-anchor="middle" font-size="11" fill="var(--rov)">หันตามกระแสน้ำเอง (weathervane)</text>
+            <text x="750" y="454" text-anchor="middle" font-family="Chakra Petch" font-size="13" font-weight="700" fill="var(--flow)">การไหลแนบผิว · เวกแคบ = niche น้อย ✓</text>
+          </svg>
+          <div class="cap">มุมบน (ตามทฤษฎีการไหล) — <b>ซ้าย:</b> ทรงกระบอกเปลือยเป็น “bluff body” การไหลแยกตัวที่ไหล่ทรง เกิดกระแสวนคู่ท้ายตัว (recirculation) ตามด้วยกระแสวนสลับข้าง (von Kármán vortex street) เวกกว้าง–แรงดันต่ำ = แรงต้านสูงและซอก niche มาก · <b>ขวา:</b> เปลือกแอร์ฟอยล์ทำให้การไหลแนบผิว (attached BL) แรงเฉือนผิวสูงตลอดลำตัว เวกท้ายตัวแคบ ลดทั้งแรงต้านและซอกที่ตัวอ่อนเพรียงลงเกาะ — ทั้งยังหันตามกระแสน้ำสองทิศได้เอง</div>
+        </div>
+
+        <div class="gapnote"><div class="ic">🌀</div><p><b>ต้องชั่งน้ำหนักตามจริง (ยังเป็นสมมุติฐานเชิงออกแบบ — ต้องพิสูจน์ด้วย CFD/บ่อทดสอบก่อน):</b> เปลือกแอร์ฟอยล์ <b>เพิ่มพื้นที่ผิวรวม</b>ที่เพรียงเกาะได้เช่นกัน และสร้าง <b>ช่องว่างระหว่างเปลือกกับแคปซูล</b> ที่อาจกลายเป็นซอกใหม่หากไม่ออกแบบให้น้ำไหลผ่านหรือปิดผนึก; ในช่วงน้ำนิ่ง <b>ตะกอนอาจตกค้างสะสม</b>ในเปลือกได้ (อ่าวไทยตะกอนสูง); และหลักฐานเรื่อง fairing ส่วนใหญ่มาจากอุปกรณ์ที่ “ลากจูง/ทุ่นลอย” ไม่ใช่โครงสร้างนิ่งบนพื้นทะเล จึง <b>ต้องจำลอง CFD และทดสอบนำร่อง</b>ในเงื่อนไขกระแสสองทิศ + ตะกอนสูงของเกาะครามก่อนสรุป — ถือเป็น “ตัวคูณ” ที่ช่วยให้เกราะชั้น A–C ทำงานง่ายขึ้น ไม่ใช่มาตรการกันเพรียงเดี่ยว</p></div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="ic">🤖</div>
+      <p><b>วงรอบที่ครอบทุกชั้น — บำรุงรักษาด้วย ROV:</b> เพราะการรักษาผิวกันเพรียงให้คงสภาพระยะยาว “แทบเป็นไปไม่ได้” (ผิวเสื่อม/เป็นรอยขีดข่วน) ทุกชั้นเกราะจึงต้องมาพร้อม <b>วงรอบตรวจสอบและทำความสะอาดด้วย ROV</b> ตามกำหนด — เปลี่ยนจาก “ติดตั้งแล้วจบ” เป็น “เฝ้าและดูแลต่อเนื่อง” เหมือนระบบเฝ้าตรวจอื่นของ THE SHIELD</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ③ NATICK ===================== -->
+<section id="natick">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num" style="background:var(--violet)">③</span> บทเรียนจากของจริง</div>
+    <h2 class="title">Microsoft Project Natick — และเหตุผลที่ “ห้ามลอกมาทั้งดุ้น”</h2>
+    <p class="lead">Project Natick (เฟส ๒, หมู่เกาะออร์กนีย์ สกอตแลนด์ ปี 2018–2020) คือ UDC ที่ใกล้เคียง THE SHIELD ที่สุดที่มีข้อมูลการกู้ขึ้นมาจริง Microsoft รายงานว่าแคปซูล “อยู่ในสภาพดี” แต่ <b>ภาพถ่ายตอนกู้ขึ้นมากลับเล่าอีกเรื่อง</b> — และเงื่อนไขของออร์กนีย์ “ตรงข้าม” กับอ่าวไทยเกือบทุกด้าน</p>
+
+    <figure class="fig single tall">
+      <img loading="lazy" src="img/natick_retrieval.jpg" alt="ปฏิบัติการกู้แคปซูล Project Natick ขึ้นจากทะเลออร์กนีย์ด้วยเรือบาร์จและโครงยก">
+      <figcaption><b>ปฏิบัติการกู้แคปซูล Natick</b> ขึ้นจากพื้นทะเลออร์กนีย์ หลังจมอยู่ราว ๒ ปี (มิ.ย.–ก.ค. 2020) ด้วยเรือบาร์จและโครงยกของ Green Marine
+        <span class="cred">ภาพ: Jonathan Banks / Microsoft (Project Natick) · ใช้เพื่อการศึกษา</span>
+      </figcaption>
+    </figure>
+
+    <div class="figrow">
+      <figure class="fig">
+        <img loading="lazy" src="img/natick_tow.jpg" alt="แคปซูล Natick ลอยในอ่าวสตรอมเนสส์ เห็นวงคราบเพรียงเป็นแถบรอบตัวถัง">
+        <figcaption><b>แถบคราบเพรียงรอบตัวถัง</b> — แม้ในน้ำเย็นและกระแสเชี่ยวของออร์กนีย์ ก็ยังเห็นการเกาะเป็นวงชัดเจนตลอดความยาวแคปซูล
+          <span class="cred">ภาพ: Jonathan Banks / Microsoft (Project Natick)</span>
+        </figcaption>
+      </figure>
+      <figure class="fig">
+        <img loading="lazy" src="img/natick_algae.jpg" alt="ภาพระยะใกล้ผิวแคปซูล Natick ที่ปกคลุมด้วยเพรียงและสิ่งมีชีวิตเกาะหนา เห็นสีฟ้าเดิมโผล่เป็นหย่อม">
+        <figcaption><b>ระยะใกล้: macrofouling จริง</b> — ผิวปกคลุมด้วยเพรียง/หนอนหลอดหินปูนหนาแน่น เห็นสีเดิม (ฟ้า) โผล่เป็นหย่อมเล็กๆ เท่านั้น
+          <span class="cred">ภาพ: Jonathan Banks / Microsoft (Project Natick)</span>
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="grid g2" style="margin-top:24px">
+      <div class="card">
+        <h3 class="sub-h" style="margin-top:4px"><span class="bar" style="background:var(--green)"></span> สิ่งที่ Natick ทำถูก</h3>
+        <ul class="clean">
+          <li>กู้ขึ้นมาในสภาพ <b>ใช้งานได้</b> อัตราเซิร์ฟเวอร์เสียต่ำกว่าบนบก — พิสูจน์ว่าแนวคิด UDC เป็นจริง</li>
+          <li>Microsoft ระบุว่ากระแสน้ำ <b>เย็นและเชี่ยว “ช่วยจำกัดการเกาะ”</b> — สอดคล้องหลักการชั้น C ว่าการไหลช่วยได้บางส่วน</li>
+          <li>ออกแบบผิวเรียบ ลดจุดเกาะ และวางแผนกู้เพื่อตรวจสภาพ — แนวคิดวงรอบบำรุงรักษาที่ถูกทาง</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:rgba(251,111,111,.34)">
+        <h3 class="sub-h" style="margin-top:4px"><span class="bar" style="background:var(--danger)"></span> ทำไมลอกมาตรงๆ ไม่ได้</h3>
+        <ul class="clean">
+          <li><b>น้ำเย็น ≠ อ่าวไทย:</b> ออร์กนีย์น้ำเย็นตลอดปี ส่วนอ่าวไทย 20–25°C + สารอาหาร/ตะกอนสูง = เพรียงเกาะ<b>หนักและเร็วกว่ามาก</b></li>
+          <li><b>“สะอาด” เป็นคำเทียบ ไม่ใช่สะอาดจริง:</b> ภาพระยะใกล้แสดง macrofouling ชัดเจน และ Microsoft เองระบุว่ามี <b>ดอกไม้ทะเลโตเท่าผลแคนตาลูป</b>ในซอกฐานที่อับการไหล — ตอกย้ำปัญหา “ซอก niche”</li>
+          <li><b>โหลดตัวอ่อนต่างกัน:</b> ความหลากหลายและปริมาณตัวอ่อนเพรียงในเขตร้อนสูงกว่าเขตหนาวมาก — บทเรียน Natick จึงเป็น “พื้นล่าง” ของปัญหา ไม่ใช่ “เพดาน”</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="ic">🎯</div>
+      <p><b>บทเรียนแกนกลาง:</b> ถ้าน้ำเย็น–เชี่ยวของออร์กนีย์ยังเกาะได้ขนาดนี้ อ่าวไทยที่อุ่นและขุ่นย่อมหนักกว่า — Natick พิสูจน์ว่า UDC ทำได้จริง แต่ <b>ไม่ได้แก้ปัญหา biofouling ให้เรา</b> เราต้องออกแบบเกราะของเราเองสำหรับเงื่อนไขเขตร้อน</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ④ PROPOSAL ===================== -->
+<section id="proposal">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num" style="background:var(--cyan)">④</span> ข้อเสนอเชิงปฏิบัติ</div>
+    <h2 class="title">ข้อเสนอ ๓ ระดับ สำหรับเงื่อนไขเกาะคราม</h2>
+    <p class="lead">แปลงงานวิจัยเป็นแผนปฏิบัติได้จริง โดยยึดหลัก “ซ้อนชั้น + เก็บข้อมูลพื้นที่จริงไปด้วย” เพราะหลักฐานเกือบทั้งหมดมาจากน้ำเขตหนาว/เขตอบอุ่น — เราต้อง <b>ตรวจสอบกับอ่าวไทยเอง</b> ควบคู่กับการลงมือ</p>
+
+    <div class="card">
+      <div class="tier">
+        <div class="h">ระยะสั้น — วางรากฐานเกราะ <small>(0–6 เดือน)</small></div>
+        <p>เริ่มจากชั้นที่หลักฐานหนักแน่นที่สุด และเก็บข้อมูลตั้งต้น:</p>
+        <ul class="clean">
+          <li><b>เลือกสี foul-release + ออกแบบ “ไร้ซอก”</b> ตั้งแต่ต้น (flush-mount/ลบมุม/อุดร่อง) ตามชั้น A + C</li>
+          <li><b>สำรวจพื้นที่จริง</b> ฝั่งตะวันออกเกาะคราม: ชนิดเพรียงเด่น อัตราการเกาะตามฤดู ความเร็วกระแสน้ำที่ ~30 ม. ความขุ่น</li>
+          <li><b>วางแผนวงรอบ ROV</b> และเกณฑ์ “เมื่อไรต้องทำความสะอาด” เป็น baseline</li>
+        </ul>
+      </div>
+      <div class="tier t2">
+        <div class="h">ระยะกลาง — ทดสอบชั้นเสริม <small>(6–18 เดือน)</small></div>
+        <p>เพิ่มชั้น B เฉพาะจุด และพิสูจน์ด้วยข้อมูลจริง:</p>
+        <ul class="clean">
+          <li><b>ติด UV-C ที่หน้าต่างเซนเซอร์/เลนส์</b> — จุดที่ อศ. กังวลสุดและ UV-C เหมาะที่สุด (ป้องผิวที่แสงส่องถึง)</li>
+          <li><b>ทดสอบนำร่องอัลตราโซนิก</b> บนชิ้นทดสอบ (coupon) ในอ่าวไทย วัดประสิทธิผลจริง + พลังงานที่ใช้</li>
+          <li><b>แผ่นทดสอบสีเปรียบเทียบ</b> (copper vs foul-release vs biomimetic) จุ่มจริงเทียบอัตราการเกาะรายเดือน</li>
+        </ul>
+      </div>
+      <div class="tier t3">
+        <div class="h">ระยะยาว — ระบบเกราะครบและองค์ความรู้ <small>(18 เดือน+)</small></div>
+        <p>บูรณาการเป็น Defense-in-Depth เต็มรูปแบบ + ต่อยอดเป็นความรู้ของกองทัพเรือ:</p>
+        <ul class="clean">
+          <li><b>รวมเกราะ A+B+C + วงรอบ ROV</b> เข้ากับการออกแบบแคปซูลจริง</li>
+          <li><b>ตั้งชุดข้อมูล biofouling อ่าวไทย</b> ของกองทัพเรือ (ร่วมกับ อศ.) เป็นฐานอ้างอิงระยะยาว</li>
+          <li>พิจารณา <b>cupronickel cladding</b>/วัสดุใหม่หลังมีผลทดสอบพื้นที่รองรับ</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CAVEATS ===================== -->
+<section id="caveats">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num" style="background:var(--gold)">!</span> ความซื่อตรงทางวิชาการ</div>
+    <h2 class="title">ข้อจำกัดและสิ่งที่ต้องวิจัยต่อ</h2>
+    <p class="lead">เพื่อให้นำไปตัดสินใจได้อย่างมีความรับผิดชอบ ขอระบุช่องว่างของหลักฐานอย่างตรงไปตรงมา — ตัวเลขในเอกสารนี้ “บอกทิศทาง” ได้ แต่ <b>ยังไม่ใช่ค่าที่วัดจากเกาะครามโดยตรง</b></p>
+
+    <div class="grid g2">
+      <div class="card">
+        <h4 style="font-size:15.5px;margin-bottom:8px;color:var(--gold)">🌡️ ช่องว่างเชิงพื้นที่/อุณหภูมิ</h4>
+        <p style="color:var(--ink-dim);font-size:14px;margin:0">หลักฐานเกือบทั้งหมดมาจากน้ำเขตหนาว/อบอุ่น (ลิสบอน 16–18°C, ออร์กนีย์, อ่างทดสอบ USNA) <b>ไม่มีชิ้นใดมาจากอ่าวไทยโดยตรง</b> ตัวเลข “~๑ สัปดาห์” และ “2.4–3.4×” จึงเป็นค่าบ่งทิศทาง อ่าวไทยที่อุ่นกว่าน่าจะ<b>เกาะเร็วและหนักกว่า</b></p>
+      </div>
+      <div class="card">
+        <h4 style="font-size:15.5px;margin-bottom:8px;color:var(--gold)">📍 ข้อมูลพื้นที่ยังขาด</h4>
+        <p style="color:var(--ink-dim);font-size:14px;margin:0">ยังไม่มีข้อมูลเฉพาะจุด: ชนิดเพรียงเด่นฝั่งตะวันออกเกาะคราม, อัตรา settlement รายฤดู, ความเร็วกระแสน้ำที่ความลึก ~30 ม., ระดับความขุ่น — ต้องสำรวจจริง (อยู่ในข้อเสนอระยะสั้น)</p>
+      </div>
+      <div class="card">
+        <h4 style="font-size:15.5px;margin-bottom:8px;color:var(--violet)">🔬 ชั้น B ยังต้องพิสูจน์</h4>
+        <p style="color:var(--ink-dim);font-size:14px;margin:0"><b>อัลตราโซนิก, UV-C, electrochlorination, cupronickel</b> ไม่อยู่ในชุดงานวิจัยปฐมภูมิหลักที่ตรวจเข้ม — นำเสนอในฐานะ “ตัวเลือกที่มีเหตุผลและต้องทดสอบนำร่อง” ไม่ใช่ข้อสรุปที่ยืนยันแล้ว</p>
+      </div>
+      <div class="card">
+        <h4 style="font-size:15.5px;margin-bottom:8px;color:var(--violet)">❄️ ผลต่อการระบายความร้อนยังไม่ถูกวัด</h4>
+        <p style="color:var(--ink-dim);font-size:14px;margin:0">ผลของไบโอฟิล์มต่อ <b>การถ่ายเทความร้อน/การระบายความร้อน</b>ของแคปซูล (ประเด็นสำคัญของ data center) ยังไม่มีตัวเลขเชิงปริมาณในชุดหลักฐานนี้ — เป็นช่องว่างที่ต้องวิจัยเฉพาะ</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="ic">⚖️</div>
+      <p><b>สิ่งที่จงใจ “ไม่” อ้าง:</b> รายงานนี้ตัดข้อสรุปที่หลักฐานขัดแย้ง/อ่อนออกไปแล้ว เช่น การอ้างว่า “ออกแบบความเร็วน้ำใกล้ผิวให้สูงกว่าเกณฑ์เพื่อหยุดการลงเกาะ” (หลักฐานไม่สนับสนุนว่าทำได้จริง) และตัวเลขลดแรงต้านจากร่องผิว (riblet) บางชิ้น — เพื่อให้ทุกข้อที่นำเสนอ <b>ยืนบนหลักฐานที่ตรวจสอบแล้วเท่านั้น</b></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== REFERENCES ===================== -->
+<section id="refs">
+  <div class="wrap">
+    <div class="eyebrow"><span class="num" style="background:var(--ink-mute)">§</span> แหล่งอ้างอิง</div>
+    <h2 class="title">แหล่งอ้างอิง (ปฐมภูมิ · peer-reviewed · มาตรฐาน)</h2>
+
+    <div class="grid g2" style="margin-top:22px">
+      <div class="ref-group">
+        <h4 style="color:var(--gold)">กลไก biofouling &amp; มาตรฐาน</h4>
+        <ol class="refs">
+          <li>IMO — <a href="https://wwwcdn.imo.org/localresources/en/OurWork/Environment/Documents/annex/MEPC.378(80).pdf" target="_blank" rel="noopener">2023 Guidelines for the control and management of ships' biofouling (Resolution MEPC.378(80))</a> — §6.3.4 อุณหภูมิ/สารอาหาร</li>
+          <li>Vinagre, Fonseca &amp; Vieira (2024) — <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11329864/" target="_blank" rel="noopener">Biofouling settlement dynamics on cylindrical structures</a> (PMC11329864) — เพรียงเกาะภายใน ~๑ สัปดาห์</li>
+          <li>IMO AFS Convention — การห้ามใช้สารกันเพรียง organotin (TBT): ห้ามทา 1 ม.ค. 2003 / ห้ามมีบนเรือ 1 ม.ค. 2008</li>
+        </ol>
+      </div>
+      <div class="ref-group">
+        <h4 style="color:var(--red)">แรงต้าน &amp; พลศาสตร์การไหล</h4>
+        <ol class="refs">
+          <li>Murphy, Walker, et al. (2022), <i>Biofouling</i> — <a href="https://www.usna.edu/NAOE/_files/documents/Faculty/Murphy/Murphy_et_al_Biofouling_2022.pdf" target="_blank" rel="noopener">Effects of algal biofilm on skin-friction drag</a> (USNA) — drag เพิ่ม 2.4–3.4×</li>
+          <li>Larsson, Granhag &amp; Jonsson (2016), <i>PLOS ONE</i> — <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0158957" target="_blank" rel="noopener">Instantaneous flow structures and opportunities for larval settlement</a> — cyprid ว่ายทวนกระแส (negative rheotaxis)</li>
+          <li>Koehl &amp; Hadfield (2010) — <a href="https://ib.berkeley.edu/labs/koehl/pdfs/Hydrodynamics_LarvalSettle_2010.pdf" target="_blank" rel="noopener">Hydrodynamics of larval settlement</a> (UC Berkeley) — แรงเฉือนกับการกวาดตัวอ่อน</li>
+        </ol>
+      </div>
+      <div class="ref-group">
+        <h4 style="color:var(--cyan)">สีเคลือบ &amp; ผิวเลียนแบบชีวภาพ</h4>
+        <ol class="refs">
+          <li>Maan, Verho, et al. (2020), <i>Adv. Funct. Mater.</i> — <a href="https://advanced.onlinelibrary.wiley.com/doi/10.1002/adfm.202000936" target="_blank" rel="noopener">Recent developments in antifouling/foul-release coatings</a> — ไม่มีสีใดแก้ได้ตัวเดียว</li>
+          <li>Schumacher, et al. (2007), <i>Biofouling</i> — <a href="https://pubmed.ncbi.nlm.nih.gov/17453729/" target="_blank" rel="noopener">Engineered Sharklet topography reduces <i>Ulva</i> settlement</a> (PMID 17453729) — ลดได้ ~77%</li>
+          <li>ผู้ผลิต Foul-release: AkzoNobel <i>Intersleek 1100SR</i> &amp; Hempel <i>Hempaguard</i> — เอกสารทางเทคนิค (พึ่งการไหล/แรงเฉือน)</li>
+        </ol>
+      </div>
+      <div class="ref-group">
+        <h4 style="color:var(--violet)">มาตรการเสริม (สั่น/UV-C) &amp; Natick</h4>
+        <ol class="refs">
+          <li>UV-C antifouling (เขตร้อน) — <a href="https://pubmed.ncbi.nlm.nih.gov/31177838/" target="_blank" rel="noopener">UV-C keeps sensors biofouling-free for 237 days</a> (PMID 31177838); งานทดสอบของ AIMS (Australian Institute of Marine Science)</li>
+          <li>Ultrasonic antifouling — <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11477963/" target="_blank" rel="noopener">ทบทวนประสิทธิผลคลื่นเสียงต่อ biofouling</a> (PMC11477963) — 17–30 kHz</li>
+          <li>Microsoft — <a href="https://news.microsoft.com/source/features/sustainability/project-natick-underwater-datacenter/" target="_blank" rel="noopener">Project Natick: under-the-sea datacenter</a> (กู้แคปซูล 2020, “swift cold current limited growth”)</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="ic">📌</div>
+      <p>รายงานนี้ได้จากกระบวนการค้นหลายมุม (multi-angle deep research) + การตรวจสอบยืนยันเชิงปฏิปักษ์ (adversarial verification) รายข้อเท็จจริง โดยคัดเฉพาะข้อที่ความเชื่อมั่นสูง ลิงก์/ตัวระบุ (PMC/PMID/DOI) เปิดสืบค้นได้จริง ณ วันจัดทำ (มิ.ย. 2026) ส่วนข้อที่หลักฐานอ่อน/ขัดแย้ง ได้ถูกตัดออกและระบุไว้ในหัวข้อ “ข้อจำกัด”</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>THE SHIELD 3.0 · เกราะกันเพรียงทะเล (Marine Biofouling Protection) · หลักสูตรเสนาธิการทหารเรือ</div>
+    <div>เอกสารประกอบโครงการ UDC — จัดทำ มิ.ย. 2026</div>
+  </div>
+</footer>
+
+</body>
+</html>
