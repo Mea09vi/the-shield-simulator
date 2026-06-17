@@ -720,6 +720,58 @@ body.reel-theater{overflow:hidden}
   font-family:var(--f-mono);letter-spacing:.04em;text-align:center;
 }
 
+/* ---------- expert validation panel ---------- */
+.exp-panel{margin-top:64px;padding-top:46px;border-top:1px dashed rgba(136,146,176,.22)}
+.exp-panel .ep-kicker{
+  font-family:var(--f-mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:12px;
+}
+.exp-panel .ep-title{font-family:var(--f-disp);font-weight:700;font-size:clamp(20px,2.4vw,28px);color:var(--text-main);line-height:1.2}
+.exp-panel .ep-lead{margin-top:14px;max-width:none;font-size:14.5px;line-height:1.85;color:var(--text-muted)}
+.exp-panel .ep-lead b{color:var(--text-main);font-weight:600}
+/* headline endorsement (Chief of Naval Staff) */
+.endorse{
+  border-left:3px solid var(--teal);
+  background:linear-gradient(90deg,rgba(100,255,218,.09),transparent 72%);
+  padding:22px 28px;margin:30px 0 8px;border-radius:0 12px 12px 0;max-width:900px;
+}
+.endorse .q{font-size:clamp(15px,1.8vw,19px);line-height:1.65;color:var(--text-main)}
+.endorse .by{margin-top:12px;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.14em;color:var(--teal)}
+/* expert grid */
+.exp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px}
+@media (max-width:880px){.exp-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.exp-grid{grid-template-columns:1fr}}
+.exp-card{
+  position:relative;overflow:hidden;border:1px solid var(--line);border-radius:14px;
+  padding:18px 18px 17px 22px;background:rgba(8,21,37,.55);
+  transition:transform .25s,border-color .25s,box-shadow .25s;
+}
+.exp-card:hover{transform:translateY(-3px);border-color:var(--ac,var(--cyan));box-shadow:0 10px 30px rgba(0,0,0,.4),0 0 22px color-mix(in srgb,var(--ac,var(--cyan)) 28%,transparent)}
+.exp-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--ac,var(--cyan))}
+.exp-card.c1{--ac:#00d4ff} .exp-card.c2{--ac:#bd93f9} .exp-card.c3{--ac:#64ffda} .exp-card.c4{--ac:#f5c451}
+.exp-card .grp{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ac,var(--cyan));opacity:.85}
+.exp-card .ehead{display:flex;gap:13px;align-items:center;margin-top:11px}
+.exp-card .eph{
+  flex:none;width:60px;height:60px;border-radius:50%;overflow:hidden;position:relative;
+  border:2px solid var(--ac,var(--cyan));background:#0a1a2c;
+  box-shadow:0 5px 16px rgba(0,0,0,.5),0 0 14px color-mix(in srgb,var(--ac,var(--cyan)) 34%,transparent);
+}
+.exp-card .eph img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(var(--zoom,1.08));transform-origin:var(--origin,center)}
+.exp-card .meta{min-width:0}
+.exp-card .en{font-family:var(--f-disp);font-weight:700;font-size:14.5px;color:var(--text-main);margin:0 0 3px;line-height:1.25}
+.exp-card .er{font-size:11px;color:var(--text-muted);font-family:var(--f-mono);letter-spacing:.03em;line-height:1.4}
+.exp-card .ec{
+  margin-top:12px;padding-top:11px;border-top:1px dashed rgba(136,146,176,.18);
+  font-size:13px;line-height:1.7;color:var(--text-muted);
+}
+.exp-card .ec b{color:var(--text-main);font-weight:600}
+.exp-src{
+  margin-top:22px;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;
+  color:var(--text-muted);text-align:center;
+}
+.exp-src a{color:var(--teal);text-decoration:none;border-bottom:1px dotted rgba(100,255,218,.5)}
+.exp-src a:hover{color:#aeffe9}
+
 /* ---------- footer ---------- */
 footer{
   border-top:1px solid var(--line);
@@ -1530,6 +1582,7 @@ footer .mono-line{
           <span class="tl-ch">CHAPTER — 03</span>
           <span class="tl-title">วิธีดำเนินการวิจัย</span>
           <span class="badge done">✓ เสร็จสมบูรณ์</span>
+          <a class="tl-more" href="THE_SHIELD_Ch3.html">ศึกษาเพิ่มเติม ↗</a>
         </div>
         <p>คัดเลือกพื้นที่ 3 โซนด้วยเกณฑ์ อทร.8302 → <b class="accent-teal">โซนตะวันออกเกาะครามชนะเพียงโซนเดียว</b> ·
         เทียบเคียงกรณีศึกษาต่างประเทศ · ออกแบบการสัมภาษณ์เชิงลึกผู้เชี่ยวชาญ 4 กลุ่ม
@@ -1682,6 +1735,15 @@ footer .mono-line{
         </div>
         <div class="dc-open">เปิดสรุปแหล่งข้อมูล</div>
       </a>
+      <a class="doc-card rv" href="THE_SHIELD_Biofouling_Protection.html">
+        <div class="dc-kick">Marine Biofouling · Defense-in-Depth</div>
+        <h3>เกราะกันเพรียงทะเลสำหรับแคปซูล UDC</h3>
+        <p>จากการสัมภาษณ์กรมอุทกศาสตร์ — ในน้ำอ่าวไทยเพรียงเกาะจนเซ็นเซอร์ทำงานผิดเพี้ยนภายใน ~๑ เดือน และแทรกซึมทุกจุดเชื่อมต่อ เอกสารนี้สังเคราะห์ ๒๐ ข้อค้นพบที่ตรวจสอบแล้ว เป็นเกราะ ๓ ชั้น (เคลือบผิว · ระบบสั่น/UV-C · พลศาสตร์การไหล) พร้อมบทเรียนจาก Microsoft Project Natick และข้อเสนอ ๓ ระดับสำหรับเงื่อนไขเฉพาะด้านตะวันออกของเกาะคราม</p>
+        <div class="dc-stats">
+          <span>เกราะ ๓ ชั้น</span><span>Copper-SPC · Foul-release</span><span>Ultrasonic · UV-C</span><span>Project Natick</span><span>ข้อเสนอ ๓ ระดับ</span>
+        </div>
+        <div class="dc-open">เปิดเอกสารกันเพรียง</div>
+      </a>
     </div>
   </div>
 </section>
@@ -1732,6 +1794,92 @@ footer .mono-line{
         </div>
       </div>
     </div>
+    <div class="exp-panel rv">
+      <div class="ep-kicker">EXPERT VALIDATION · ตรวจสอบสามเส้า</div>
+      <h3 class="ep-title">ตรวจสอบและรับรองแนวคิดโดยผู้ทรงคุณวุฒิ ๔ กลุ่ม ๖ ท่าน</h3>
+      <p class="ep-lead">
+        แนวคิด <b>The Shield</b> มิได้เกิดจากมุมมองผู้วิจัยเพียงลำพัง แต่ผ่าน <b>การสัมภาษณ์เชิงลึกและการตรวจสอบความสมเหตุสมผล</b>
+        โดยผู้ทรงคุณวุฒิระดับสูงของกองทัพเรือและกระทรวงกลาโหม ครอบคลุม ๔ มิติ — ยุทธศาสตร์–การบูรณาการ · กฎหมายทะเล · นโยบายดิจิทัล–ไซเบอร์ · อุทกศาสตร์–สมุทรศาสตร์
+        <b>ทุกความคิดเห็นถูกอ้างอิง สรุปผล เพื่อนำไปปรับปรุงเป็น Model 3.0</b>
+      </p>
+
+      <blockquote class="endorse">
+        <p class="q">“โมเดล The Shield สมบูรณ์ในเชิงยุทธวิธี แต่ควรยกระดับเป็น<b>หลักนิยมร่วม</b>ภายใต้ ศรชล. … หัวใจของการตรวจการณ์ใต้น้ำอยู่ที่<b>วิธีการ</b> มิใช่การทุ่มงบประมาณจัดหา”</p>
+        <div class="by">— พล.ร.อ. ธาดาวุธ ทัดพิทักษ์กุล · เสนาธิการทหารเรือ</div>
+      </blockquote>
+
+      <div class="exp-grid">
+        <div class="exp-card c1 rv">
+          <div class="grp">Group 1 · ยุทธศาสตร์</div>
+          <div class="ehead">
+            <span class="eph"><img src="img/experts/thadawut.png" alt="พล.ร.อ. ธาดาวุธ ทัดพิทักษ์กุล" style="object-position:50% 18%;--zoom:1.12"></span>
+            <div class="meta">
+              <div class="en">พล.ร.อ. ธาดาวุธ ทัดพิทักษ์กุล</div>
+              <div class="er">เสนาธิการทหารเรือ</div>
+            </div>
+          </div>
+          <div class="ec">รับรองว่าโมเดล<b>สมบูรณ์เชิงยุทธวิธี</b> และเสนอยกระดับเป็น<b>หลักนิยมร่วมภายใต้ ศรชล.</b> โดยเร่ง NCW/Data Link ให้สมบูรณ์ก่อน</div>
+        </div>
+        <div class="exp-card c2 rv">
+          <div class="grp">Group 2 · กฎหมายทะเล</div>
+          <div class="ehead">
+            <span class="eph"><img src="img/experts/mathuson.jpg" alt="นาวาเอกหญิง มธุศร เลิศพานิช" style="object-position:50% 3%;--zoom:1.0"></span>
+            <div class="meta">
+              <div class="en">นาวาเอกหญิง มธุศร เลิศพานิช</div>
+              <div class="er">หน.นายทหารพระธรรมนูญ ทรภ.๑</div>
+            </div>
+          </div>
+          <div class="ec">ยืนยันข้อจำกัด <b>UNCLOS</b> เขต ๕๐๐ ม. และชี้ทางออกด้วยการ<b>ตรากฎหมายภายใน</b>คุ้มครองสายเคเบิล/สิ่งติดตั้งใต้ทะเลเป็นการเฉพาะ</div>
+        </div>
+        <div class="exp-card c2 rv">
+          <div class="grp">Group 2 · กฎหมายทะเล</div>
+          <div class="ehead">
+            <span class="eph"><img src="img/experts/naruphon.png" alt="นาวาเอก นฤพนธ์ จ้อยทองมูล" style="object-position:50% 42%;--zoom:1.1"></span>
+            <div class="meta">
+              <div class="en">นาวาเอก นฤพนธ์ จ้อยทองมูล</div>
+              <div class="er">รอง ผอ.กองกฤษฎีกา สนง.พระธรรมนูญทหารเรือ</div>
+            </div>
+          </div>
+          <div class="ec">ยืนยันฐานกฎหมายที่<b>เกาะคราม “เหมาะสมที่สุด”</b> — พ.ร.ฎ.เขตปลอดภัยทหารสัตหีบเป็นชั้น ๑ เสริมด้วยกฎหมายเฉพาะเป็นชั้น ๒</div>
+        </div>
+        <div class="exp-card c3 rv">
+          <div class="grp">Group 3 · นโยบายดิจิทัล</div>
+          <div class="ehead">
+            <span class="eph"><img src="img/experts/prasert.jpg" alt="นาวาโท ประเสริฐ ฉินสวัสดิ์พันธุ์" style="object-position:50% 22%;--zoom:1.12"></span>
+            <div class="meta">
+              <div class="en">นาวาโท ประเสริฐ ฉินสวัสดิ์พันธุ์</div>
+              <div class="er">กรมเทคโนโลยีสารสนเทศและอวกาศกลาโหม</div>
+            </div>
+          </div>
+          <div class="ec">เสนอวาง UDC เป็น <b>GDCC Secure Edge</b> และแก้ พ.ร.บ.ไซเบอร์ เพิ่มนิยาม <b>CII ใต้น้ำ</b> ให้เกิดการคุ้มครองสองชั้น (กายภาพ + ไซเบอร์)</div>
+        </div>
+        <div class="exp-card c4 rv">
+          <div class="grp">Group 4 · อุทกศาสตร์</div>
+          <div class="ehead">
+            <span class="eph"><img src="img/experts/yodrak.jpg" alt="พล.ร.ท. ยอดรัก ศิลปดุริยางค์" style="object-position:50% 11%;--zoom:1.0"></span>
+            <div class="meta">
+              <div class="en">พล.ร.ท. ยอดรัก ศิลปดุริยางค์</div>
+              <div class="er">เจ้ากรมอุทกศาสตร์</div>
+            </div>
+          </div>
+          <div class="ec">ชี้ปัจจัยกายภาพวิกฤต <b>Biofouling (เพรียงทะเล)</b> และความจำเป็นของ <b>MSDI</b> ก่อนจัดทำ One Marine Chart</div>
+        </div>
+        <div class="exp-card c4 rv">
+          <div class="grp">Group 4 · สมุทรศาสตร์</div>
+          <div class="ehead">
+            <span class="eph"><img src="img/experts/chatchai.jpg" alt="นาวาเอก ฉัตรชัย เหลืองทองคำ" style="--zoom:2.9;--origin:48.5% 40%"></span>
+            <div class="meta">
+              <div class="en">นาวาเอก ฉัตรชัย เหลืองทองคำ</div>
+              <div class="er">รอง ผอ.ศภอ.อศ.</div>
+            </div>
+          </div>
+          <div class="ec">เสนอกรอบข้อมูล <b>Tier 0–2</b> และการใช้ <b>ROV</b> ยืนยันสภาพ Seabed Domain ที่ Multibeam ตรวจไม่ถึง</div>
+        </div>
+      </div>
+
+      <p class="exp-src">ที่มา : การสัมภาษณ์เชิงลึก ๓.๔.๔ · สรุปในตารางที่ ๓-๘ — <a href="THE_SHIELD_Ch3.html#experts">อ่านบทสัมภาษณ์ฉบับเต็มในบทที่ ๓ ↗</a></p>
+    </div>
+
     <p class="team-note rv">ยศและตำแหน่งอ้างอิงตามเอกสารงานวิจัย ณ ปีการศึกษา ๒๕๖๙</p>
   </div>
 </section>
