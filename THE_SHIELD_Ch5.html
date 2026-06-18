@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>บทที่ ๕ บทสรุปและข้อเสนอแนะ · THE SHIELD — งานวิจัยศูนย์ข้อมูลใต้น้ำ (UDC)</title>
+<meta name="description" content="สรุปสาระสำคัญบทที่ ๕ ของงานวิจัย: บทสรุปและข้อเสนอแนะ — สรุปผลการวิจัยตามวัตถุประสงค์ ๓ ประการ (UDC เป็นทางออกเชิงยุทธศาสตร์ · การจัดระเบียบพื้นที่ทางทะเลแบบพหุมิติ · บทบาทกองทัพเรือภายใต้ ศรชล.) พร้อมข้อเสนอแนะ ๓ ด้าน — เชิงนโยบาย เชิงปฏิบัติ และการวิจัยครั้งต่อไป ภายใต้รูปแบบ The Shield 3.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Saira:wght@400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-dark:#010d1a; --bg-deep:#000810; --bg-panel:#081525;
+    --panel:rgba(8,21,37,.74); --panel2:rgba(13,30,51,.62);
+    --text-main:#ccd6f6; --text-muted:#8892b0; --text-dim:#697494;
+    --cyan:#00d4ff; --teal:#64ffda; --green:#39ff14; --red:#ff6b61; --purple:#bd93f9; --gold:#f5c451; --coral:#ff9f7a;
+    --line:rgba(0,212,255,.14); --line2:rgba(0,212,255,.28);
+    --f-disp:'Saira','Prompt',system-ui,sans-serif;
+    --f-body:'Prompt','Saira',system-ui,sans-serif;
+    --f-mono:'Share Tech Mono','Courier New',monospace;
+    --shadow:0 18px 50px rgba(0,0,0,.45);
+    --r:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:
+      radial-gradient(1200px 700px at 78% -8%, rgba(0,212,255,.10), transparent 60%),
+      radial-gradient(1000px 700px at 8% 6%, rgba(100,255,218,.06), transparent 55%),
+      linear-gradient(180deg,var(--bg-dark),var(--bg-panel) 60%,var(--bg-deep));
+    color:var(--text-main); font-family:var(--f-body); font-weight:300;
+    line-height:1.78; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  }
+  ::selection{background:rgba(0,212,255,.35);color:#fff}
+  img{display:block;max-width:100%}
+  a{color:var(--cyan);text-decoration:none}
+  a:hover{color:var(--teal)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  b,strong{font-weight:500;color:var(--text-main)}
+  .accent{color:var(--cyan)} .accent-teal{color:var(--teal)} .accent-purple{color:var(--purple)}
+
+  /* ---------- hero ---------- */
+  header.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero-grid{position:absolute;inset:0;background-image:
+      linear-gradient(rgba(0,212,255,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,212,255,.05) 1px,transparent 1px);
+    background-size:34px 34px;mask:radial-gradient(80% 80% at 50% 18%,#000,transparent 78%)}
+  .hero-inner{position:relative;padding:56px 0 44px}
+  .crest{display:inline-flex;align-items:center;gap:11px;font-family:var(--f-mono);
+    letter-spacing:.3em;font-size:12px;color:var(--cyan);text-transform:uppercase}
+  .crest .dot{width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 14px var(--cyan)}
+  .ch-num{margin-top:26px;font-family:var(--f-mono);font-size:13px;letter-spacing:.32em;color:var(--text-dim)}
+  .hero h1{font-family:var(--f-disp);font-size:clamp(30px,5vw,52px);font-weight:700;margin:10px 0 8px;
+    background:linear-gradient(120deg,#eaf3ff,#8fd9ff 55%,#64ffda);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero .sub{font-size:clamp(14.5px,1.9vw,17.5px);color:var(--text-muted);max-width:860px}
+  .hero .sub b{color:#dfe9ff}
+  .hero .meta{margin-top:24px;display:flex;flex-wrap:wrap;gap:10px}
+  .chip{font-size:12.5px;padding:7px 14px;border-radius:999px;border:1px solid var(--line2);
+    background:var(--panel2);color:var(--text-muted);display:inline-flex;gap:7px;align-items:center}
+  .chip b{color:var(--text-main);font-weight:500}
+  .chip.ok{border-color:rgba(100,255,218,.45);color:var(--teal)}
+
+  .cine{position:relative;border:1px solid var(--line2);border-radius:var(--r);overflow:hidden;
+    box-shadow:var(--shadow);margin:34px 0 6px}
+  .cine img{width:100%;height:auto}
+  .cine figcaption{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;
+    align-items:flex-end;gap:14px;padding:34px 18px 12px;
+    background:linear-gradient(180deg,transparent,rgba(0,8,16,.88))}
+  .cine-t{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.22em;color:#9fd8ff;text-transform:uppercase}
+  .cine-ai{font-family:var(--f-mono);font-size:10px;letter-spacing:.18em;color:var(--text-dim);
+    border:1px solid rgba(136,146,176,.35);padding:3px 9px;border-radius:999px;white-space:nowrap}
+
+  /* ---------- sticky toc ---------- */
+  nav.toc{position:sticky;top:0;z-index:40;backdrop-filter:blur(14px);
+    background:rgba(1,13,26,.88);border-bottom:1px solid var(--line)}
+  nav.toc .wrap{display:flex;gap:6px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px;align-items:center}
+  nav.toc a{font-size:13px;color:var(--text-muted);border:1px solid transparent;border-radius:10px;
+    padding:5px 11px;font-weight:400}
+  nav.toc a:hover{color:var(--text-main);background:var(--panel2);border-color:var(--line)}
+  nav.toc a.home-btn{display:inline-flex;align-items:center;gap:7px;margin-right:8px;padding:7px 13px;color:#64ffda;background:rgba(100,255,218,.06);border:1px solid rgba(100,255,218,.40);border-radius:9px;font-family:ui-monospace,'JetBrains Mono','Sarabun',Consolas,monospace;font-weight:600;font-size:13px;letter-spacing:.04em;line-height:1;white-space:nowrap;text-decoration:none;transition:background .18s,border-color .18s,box-shadow .18s,transform .18s}nav.toc a.home-btn .hb-ico{flex:none;transition:transform .18s}nav.toc a.home-btn:hover{background:rgba(100,255,218,.13);border-color:#64ffda;box-shadow:0 0 0 1px rgba(100,255,218,.22),0 4px 16px rgba(100,255,218,.16)}nav.toc a.home-btn:hover .hb-ico{transform:translateY(-1px)}nav.toc a.home-btn:active{transform:translateY(0)}nav.toc a.home-btn:focus-visible{outline:2px solid #64ffda;outline-offset:2px}
+  nav.toc .tag{margin-left:auto;font-family:var(--f-mono);font-size:10.5px;color:var(--text-dim);letter-spacing:.18em}
+
+  /* ---------- sections ---------- */
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:var(--f-mono);
+    letter-spacing:.26em;font-size:11.5px;text-transform:uppercase;color:var(--cyan);margin-bottom:14px}
+  .eyebrow .num{display:inline-grid;place-items:center;min-width:30px;height:30px;border-radius:9px;
+    background:linear-gradient(135deg,var(--cyan),#0077a8);color:#06121f;font-weight:700;font-size:13px;letter-spacing:0;padding:0 7px}
+  h2.title{font-family:var(--f-disp);font-size:clamp(23px,3.2vw,31px);font-weight:700;color:#fff;margin-bottom:10px}
+  .lead{color:var(--text-muted);font-size:16px;max-width:880px;margin-bottom:26px}
+  .lead b{color:#dfe9ff;font-weight:500}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+    padding:20px 22px;box-shadow:var(--shadow);backdrop-filter:blur(8px)}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:880px){.g4{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+  @media(max-width:560px){.g4{grid-template-columns:1fr}}
+
+  .kpi{padding:18px 20px;text-align:left}
+  .kpi .v{font-family:var(--f-disp);font-size:28px;font-weight:700;line-height:1.15;color:var(--cyan)}
+  .kpi .v small{font-size:15px;font-weight:600;color:var(--text-muted)}
+  .kpi .l{font-size:13px;color:var(--text-muted);margin-top:6px}
+
+  h3.sub-h{font-family:var(--f-disp);font-size:18.5px;font-weight:600;color:#fff;
+    margin:34px 0 14px;display:flex;align-items:center;gap:11px}
+  h3.sub-h .bar{width:4px;height:20px;border-radius:3px;background:var(--cyan);box-shadow:0 0 10px rgba(0,212,255,.6)}
+  p.body{font-size:15px;color:var(--text-muted);max-width:880px;margin-bottom:14px}
+  p.body b{color:#dfe9ff;font-weight:500}
+
+  ul.clean{list-style:none}
+  ul.clean li{position:relative;padding-left:22px;margin-bottom:9px;font-size:14.5px;color:var(--text-muted)}
+  ul.clean li::before{content:'▸';position:absolute;left:0;color:var(--cyan)}
+  ul.clean li b{color:var(--text-main);font-weight:500}
+
+  /* objectives / process tiers */
+  .tier{border-left:3px solid var(--cyan);padding:6px 0 6px 20px;margin-bottom:20px}
+  .tier .h{font-family:var(--f-disp);font-weight:600;font-size:16.5px;color:#fff;margin-bottom:5px;display:flex;gap:12px;align-items:baseline}
+  .tier .h .no{font-family:var(--f-mono);color:var(--cyan);font-size:14px}
+  .tier p{font-size:14.5px;color:var(--text-muted);max-width:840px}
+  .tier.t2{border-left-color:var(--teal)} .tier.t2 .h .no{color:var(--teal)}
+  .tier.t3{border-left-color:var(--purple)} .tier.t3 .h .no{color:var(--purple)}
+  .prop{background:linear-gradient(180deg,rgba(100,255,218,.09),rgba(100,255,218,.02));
+    border:1px solid rgba(100,255,218,.3);border-radius:var(--r);padding:22px 24px;margin-top:28px}
+  .prop .h{font-family:var(--f-mono);font-size:11px;letter-spacing:.24em;color:var(--teal);
+    text-transform:uppercase;margin-bottom:10px;display:flex;gap:9px;align-items:center}
+  .prop p{font-size:15.5px;color:#dfe9ff;max-width:900px}
+  .prop p b{color:var(--teal);font-weight:500}
+
+  /* objective tag */
+  .obj-tag{display:inline-block;margin-left:auto;font-family:var(--f-mono);font-size:9.5px;letter-spacing:.12em;
+    padding:3px 9px;border-radius:6px;border:1px solid var(--line2);color:var(--cyan);
+    background:rgba(0,212,255,.06);white-space:nowrap;text-transform:uppercase}
+
+  /* recommendation cards */
+  .rec{position:relative;padding-top:22px}
+  .rec .no{position:absolute;top:16px;right:18px;font-family:var(--f-disp);font-weight:800;font-size:30px;
+    line-height:1;color:rgba(0,212,255,.18)}
+  .rec.t2 .no{color:rgba(100,255,218,.2)} .rec.t3 .no{color:rgba(189,147,249,.22)}
+  .rec h4{font-family:var(--f-disp);font-size:15.5px;font-weight:600;color:#fff;margin-bottom:7px;padding-right:40px;
+    display:flex;gap:9px;align-items:center}
+  .rec h4 .ic{font-size:17px}
+  .rec p{font-size:13.5px;color:var(--text-muted)}
+  .rec p b{color:#dfe9ff;font-weight:500}
+
+  /* scope cards */
+  .scope-card h4{font-family:var(--f-disp);font-size:15px;font-weight:600;color:#fff;margin-bottom:6px;display:flex;gap:9px;align-items:center}
+  .scope-card h4 .ic{font-size:16px}
+  .scope-card p{font-size:13.5px;color:var(--text-muted)}
+  .scope-card p b{color:#dfe9ff;font-weight:500}
+
+  /* quote */
+  .quote{border-left:3px solid var(--teal);padding:8px 0 8px 22px;margin:24px 0;max-width:860px}
+  .quote p{font-size:15.5px;color:#dfe9ff;font-weight:300;font-style:italic}
+  .quote .who{margin-top:8px;font-size:12.5px;color:var(--text-dim);font-style:normal;font-family:var(--f-mono);letter-spacing:.08em}
+
+  /* footer nav */
+  footer{padding:46px 0 64px}
+  .foot-nav{display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+  .btn{display:inline-flex;align-items:center;gap:10px;padding:13px 26px;border-radius:12px;
+    font-family:var(--f-disp);font-weight:600;font-size:14.5px;letter-spacing:.04em;
+    border:1px solid var(--line2);color:var(--text-main);transition:all .25s}
+  .btn:hover{border-color:var(--cyan);color:#fff;box-shadow:0 0 24px rgba(0,212,255,.25)}
+  .btn.primary{background:linear-gradient(135deg,rgba(0,212,255,.18),rgba(100,255,218,.1));
+    border-color:rgba(0,212,255,.5);color:#fff}
+  .disclaim{margin-top:30px;font-size:12px;color:var(--text-dim);text-align:center;font-family:var(--f-mono);letter-spacing:.06em}
+
+  /* reveal */
+  .rv{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+  .rv.on{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- ================= HERO ================= -->
+<header class="hero">
+  <div class="hero-grid"></div>
+  <div class="wrap hero-inner">
+    <span class="crest"><span class="dot"></span>THE SHIELD · RESEARCH DOSSIER</span>
+    <div class="ch-num">CHAPTER — 05 · บทที่ ๕</div>
+    <h1>บทสรุปและข้อเสนอแนะ</h1>
+    <p class="sub">บทปิดของงานวิจัย — สรุป<b>ผลที่ได้จากการวิจัยตามวัตถุประสงค์ทั้ง ๓ ประการ</b> ว่า <b>ศูนย์ข้อมูลใต้น้ำ (UDC)</b> คือทางออกเชิงยุทธศาสตร์ การจัดระเบียบพื้นที่ทางทะเลแบบพหุมิติคือรูปแบบคุ้มครองที่เหมาะสม และกองทัพเรือคือแกนปฏิบัติการภายใต้กลไก <b>ศรชล.</b> — พร้อม<b>ข้อเสนอแนะ ๓ ด้าน</b>: เชิงนโยบาย เชิงปฏิบัติ และการวิจัยครั้งต่อไป</p>
+    <div class="meta">
+      <span class="chip ok"><b>✓</b> บทสรุปงานวิจัย</span>
+      <span class="chip">สรุปผล · <b>๓ ประการ</b></span>
+      <span class="chip">ข้อเสนอแนะ · <b>๓ ด้าน</b></span>
+      <span class="chip">ระเบียบวิธี · <b>เชิงคุณภาพ พรรณนาวิเคราะห์</b></span>
+      <span class="chip">ผลลัพธ์ · <b>The Shield 3.0</b></span>
+      <span class="chip">หลักสูตร สธ.ทร. รุ่นที่ <b>๘๖</b></span>
+    </div>
+  </div>
+</header>
+
+<!-- ================= TOC ================= -->
+<nav class="toc">
+  <div class="wrap">
+    <a class="home-btn" href="THE_SHIELD_Pitch.html" aria-label="กลับหน้านำเสนองานวิจัย"><svg class="hb-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.3h13V10"/><path d="M10 19.3v-5.5h4v5.5"/></svg><span>Home</span></a>
+    <a href="#findings">สรุปผลการวิจัย</a>
+    <a href="#policy">ข้อเสนอเชิงนโยบาย</a>
+    <a href="#practice">ข้อเสนอเชิงปฏิบัติ</a>
+    <a href="#future">การวิจัยต่อไป</a>
+    <a href="#closing">บทส่งท้าย</a>
+    <span class="tag">CH.05 / 05</span>
+  </div>
+</nav>
+
+<!-- ================= 01 · สรุปผลที่ได้จากการวิจัย ================= -->
+<section id="findings">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">01</span> ๕.๑ · RESEARCH FINDINGS</div>
+    <h2 class="title rv">สรุปผลที่ได้จากการวิจัย</h2>
+    <p class="lead rv">การวิจัยเรื่อง<b>แนวทางการกำหนดบทบาทและการจัดระเบียบพื้นที่ทางทะเลของกองทัพเรือภายใต้กรอบแนวคิดศูนย์ข้อมูลใต้น้ำ (UDC)</b> เพื่อความมั่นคงของโครงสร้างพื้นฐานดิจิทัลภาครัฐตามกลไก ศรชล. เป็น<b>การวิจัยเชิงคุณภาพแบบพรรณนาวิเคราะห์</b> ตามวัตถุประสงค์ ๓ ประการ สรุปผลได้ดังนี้</p>
+
+    <div class="tier rv">
+      <div class="h"><span class="no">ประการที่ ๑</span> UDC คือทางออกเชิงยุทธศาสตร์ <span class="obj-tag">Objective 1</span></div>
+      <p>ศูนย์ข้อมูลใต้น้ำ (UDC) เป็นทางออกเชิงยุทธศาสตร์ต่อข้อจำกัดของศูนย์ข้อมูลบนบก ทั้งด้าน<b>พลังงาน ภัยพิบัติ และอธิปไตยทางข้อมูล</b> โดย<b>พื้นที่ทิศตะวันออกของเกาะคราม</b>มีความเหมาะสมสูงสุด ทั้งด้านความลึก สัณฐานกำบังตามธรรมชาติ การอยู่ภายในเขตปลอดภัยในราชการทหาร และอยู่นอกร่องน้ำเดินเรือพาณิชย์ ขณะที่ภัยคุกคามที่แท้จริงในสภาพน้ำตื้นของอ่าวไทย คือ <b>สงครามพื้นทะเลจากยานขนาดเล็กและการปฏิบัติการในลักษณะพื้นที่สีเทา</b> มิใช่เรือดำน้ำขนาดใหญ่</p>
+    </div>
+
+    <div class="tier t2 rv">
+      <div class="h"><span class="no">ประการที่ ๒</span> การจัดระเบียบพื้นที่ทางทะเลแบบพหุมิติ <span class="obj-tag">Objective 2</span></div>
+      <p>รูปแบบการคุ้มครองที่เหมาะสม คือ การประยุกต์<b>การจัดระเบียบพื้นที่ทางทะเล (MSP)</b> กำหนด<b>เขตหวงห้ามเด็ดขาด</b>และ<b>เขตควบคุมหรือพื้นที่กันชน</b> ร่วมกับระบบแยกการจราจรทางเรือ ภายใต้การคุ้มครองแบบพหุมิติและ<b>ฐานทางกฎหมาย ๒ ชั้น</b> คือ เขตปลอดภัยในราชการทหาร และกฎหมายเฉพาะคุ้มครองโครงสร้างพื้นฐานใต้น้ำที่สำคัญ</p>
+    </div>
+
+    <div class="tier t3 rv">
+      <div class="h"><span class="no">ประการที่ ๓</span> กองทัพเรือเป็นแกนปฏิบัติการภายใต้ ศรชล. <span class="obj-tag">Objective 3</span></div>
+      <p>กองทัพเรือควรทำหน้าที่เป็น<b>แกนปฏิบัติการ</b>ภายใต้กลไกศูนย์อำนวยการรักษาผลประโยชน์ของชาติทางทะเล (ศรชล.) โดยพัฒนารูปแบบการป้องกัน (The Shield) อย่างเป็นลำดับจนเป็นระบบบูรณาการเฝ้าระวังและป้องกันฯ ฉบับสมบูรณ์ <b>(The Shield 3.0)</b> ซึ่งปิดช่องว่างที่มีนัยสำคัญ ๓ ประการ ได้แก่ <b>ด้านกฎหมาย · ด้านการตระหนักรู้สถานการณ์ใต้น้ำ · ด้านการบูรณาการระหว่างหน่วยงาน</b> ทั้งนี้ ผลการวิจัยได้รับการยืนยันและเสริมความสมบูรณ์จากการสัมภาษณ์<b>ผู้ทรงคุณวุฒิทั้ง ๔ กลุ่ม</b></p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 02 · ข้อเสนอแนะเชิงนโยบาย ================= -->
+<section id="policy">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">02</span> ๕.๒.๑ · POLICY RECOMMENDATIONS</div>
+    <h2 class="title rv">ข้อเสนอแนะเชิงนโยบาย</h2>
+    <p class="lead rv">สถาปนา<b>ฐานอำนาจทางกฎหมายและการยกระดับเชิงนโยบาย</b>เพื่อให้กองทัพเรือคุ้มครอง UDC ได้โดยชอบด้วยกฎหมาย และผูก UDC เข้ากับโครงสร้างความมั่นคงดิจิทัลของชาติ</p>
+    <div class="grid g2">
+      <div class="card rec rv">
+        <span class="no">1</span>
+        <h4><span class="ic">⚖️</span> ยกร่าง พ.ร.ฎ. เขตปลอดภัยในราชการทหาร</h4>
+        <p>ยกร่างพระราชกฤษฎีกาตาม <b>พ.ร.บ.ว่าด้วยเขตปลอดภัยในราชการทหาร พ.ศ.๒๔๗๘</b> ประกาศพิกัดที่ตั้ง UDC เป็นเขตปลอดภัยในราชการทหาร เพื่อเป็นฐานอำนาจรองรับการกำหนด<b>เขตหวงห้ามเด็ดขาด (MEZ)</b> และเขตควบคุมหรือพื้นที่กันชน ให้กองทัพเรือมีอำนาจคุ้มครองและบังคับใช้ได้โดยชอบด้วยกฎหมาย</p>
+      </div>
+      <div class="card rec rv">
+        <span class="no">2</span>
+        <h4><span class="ic">🛡️</span> เพิ่ม UDC เป็น CII ใน พ.ร.บ.ไซเบอร์</h4>
+        <p>แก้ไข <b>พ.ร.บ.การรักษาความมั่นคงปลอดภัยไซเบอร์ พ.ศ.๒๕๖๒</b> เพิ่ม UDC เป็น<b>โครงสร้างพื้นฐานสารสนเทศสำคัญยิ่งยวด (CII)</b> เพื่อให้เกิดการคุ้มครองสองชั้น — ทั้งทางกายภาพและทางไซเบอร์</p>
+      </div>
+      <div class="card rec rv">
+        <span class="no">3</span>
+        <h4><span class="ic">🏛️</span> ยกระดับเป็นวาระความมั่นคงแห่งชาติ</h4>
+        <p>ยกระดับการคุ้มครอง UDC เป็น<b>วาระความมั่นคงแห่งชาติผ่านสภาความมั่นคงแห่งชาติ</b> และบรรจุ UDC เป็นส่วนต่อขยายที่มั่นคงปลอดภัยของระบบคลาวด์กลางภาครัฐ <b>(GDCC Secure Edge)</b></p>
+      </div>
+      <div class="card rec rv">
+        <span class="no">4</span>
+        <h4><span class="ic">🤝</span> ยกระดับ The Shield 3.0 เป็นหลักนิยมร่วม</h4>
+        <p>ยกระดับรูปแบบ <b>The Shield 3.0 เป็นหลักนิยมร่วม</b>ภายใต้ ศรชล. โดยดึงหน่วยงานที่ดูแลคลาวด์ภาครัฐเข้าร่วมบูรณาการ</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 03 · ข้อเสนอแนะเชิงปฏิบัติ ================= -->
+<section id="practice">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">03</span> ๕.๒.๒ · OPERATIONAL RECOMMENDATIONS</div>
+    <h2 class="title rv">ข้อเสนอแนะเชิงปฏิบัติสำหรับกองทัพเรือและ ศรชล.</h2>
+    <p class="lead rv">พัฒนา<b>ขีดความสามารถด้านการตระหนักรู้สถานการณ์ใต้น้ำและการบูรณาการข้อมูล</b>ให้เป็นรูปธรรม รองรับการป้องกัน UDC แบบพหุมิติ</p>
+    <div class="grid g2">
+      <div class="card rec t2 rv">
+        <span class="no">1</span>
+        <h4><span class="ic">📡</span> ระบบสงครามที่ใช้เครือข่ายเป็นศูนย์กลาง</h4>
+        <p>เร่งพัฒนาระบบ <b>สงครามที่ใช้เครือข่ายเป็นศูนย์กลาง (NCW)</b> และระบบเชื่อมโยงข้อมูลทางการยุทธแห่งชาติ ให้แลกเปลี่ยน<b>ภาพสถานการณ์ได้แบบเวลาจริง</b></p>
+      </div>
+      <div class="card rec t2 rv">
+        <span class="no">2</span>
+        <h4><span class="ic">🔊</span> จัดหาและพัฒนาเซนเซอร์ที่จำเป็น</h4>
+        <p>จัดหาและพัฒนา<b>ระบบตรวจจับเสียงแบบกระจาย (DAS)</b> ข่ายโซนาร์แบบรับเสียง ยานใต้น้ำไร้คนขับ (UUV) ยานใต้น้ำควบคุมระยะไกล (ROV) และเทคโนโลยีเซนเซอร์ติดตั้ง ณ พื้นทะเล <b>(Seabed Sentry)</b> โดยมุ่งพึ่งพาตนเองและส่งเสริมอุตสาหกรรมป้องกันประเทศ</p>
+      </div>
+      <div class="card rec t2 rv">
+        <span class="no">3</span>
+        <h4><span class="ic">🗺️</span> โครงสร้างพื้นฐานข้อมูลเชิงพื้นที่ทางทะเล</h4>
+        <p>ผลักดันให้<b>กรมอุทกศาสตร์</b>จัดทำ<b>โครงสร้างพื้นฐานข้อมูลเชิงพื้นที่ทางทะเล (MSDI)</b> เพื่อนำไปสู่ผังทะเลรวม และสนับสนุนการพยากรณ์ประสิทธิภาพโซนาร์ในการกำหนดจุดวางเซนเซอร์</p>
+      </div>
+      <div class="card rec t2 rv">
+        <span class="no">4</span>
+        <h4><span class="ic">🔗</span> ใช้อำนาจ ม.๒๗ เชื่อมโยงข้อมูลร่วม</h4>
+        <p>อาศัยอำนาจตาม<b>มาตรา ๒๗ แห่ง พ.ร.บ. ศรชล.</b> เสนอคณะกรรมการนโยบายฯ ให้หน่วยงานที่เกี่ยวข้องเชื่อมโยงข้อมูลเข้าสู่ระบบร่วม</p>
+      </div>
+      <div class="card rec t2 rv">
+        <span class="no">5</span>
+        <h4><span class="ic">🔧</span> วงรอบบำรุงรักษาตามสภาพอ่าวไทย</h4>
+        <p>กำหนด<b>วงรอบการบำรุงรักษา</b>เพื่อรับมือ<b>การเกาะของเพรียงและการกัดกร่อน</b>ตามสภาพน้ำของอ่าวไทย</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 04 · ข้อเสนอแนะสำหรับการวิจัยครั้งต่อไป ================= -->
+<section id="future">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">04</span> ๕.๒.๓ · FUTURE RESEARCH</div>
+    <h2 class="title rv">ข้อเสนอแนะสำหรับการวิจัยครั้งต่อไป</h2>
+    <p class="lead rv">ต่อยอดองค์ความรู้ไปสู่<b>การทดสอบภาคสนาม การขยายพื้นที่ และมิติด้านความร่วมมือและสิ่งแวดล้อม</b></p>
+    <div class="grid g2">
+      <div class="card rec t3 rv">
+        <span class="no">1</span>
+        <h4><span class="ic">🌊</span> ขยายพื้นที่ศึกษาความเหมาะสม</h4>
+        <p>ขยายการศึกษาความเหมาะสมของพื้นที่ติดตั้ง UDC ไปยัง<b>พื้นที่อื่นของอ่าวไทยและทะเลอันดามัน</b></p>
+      </div>
+      <div class="card rec t3 rv">
+        <span class="no">2</span>
+        <h4><span class="ic">🧪</span> ทดสอบภาคสนามด้านวิศวกรรม</h4>
+        <p>ศึกษาและทดสอบภาคสนามแนวทาง<b>การป้องกันการเกาะของเพรียง (Biofouling) แบบหลายชั้น (Defense-in-Depth)</b> ระบบระบายความร้อน และความมั่นคงของแคปซูลในสภาพแวดล้อมของอ่าวไทย โดยมีรายละเอียดแนวทางตาม<b>ผนวก ง</b> ประกอบ</p>
+      </div>
+      <div class="card rec t3 rv">
+        <span class="no">3</span>
+        <h4><span class="ic">🎯</span> ทดสอบ The Shield ในการฝึกภาคสนาม</h4>
+        <p>ทดสอบรูปแบบ <b>The Shield ในการฝึกภาคสนาม</b>เพื่อปรับปรุงกระบวนการปฏิบัติ (SOP) ก่อนพัฒนาเป็นหลักนิยม</p>
+      </div>
+      <div class="card rec t3 rv">
+        <span class="no">4</span>
+        <h4><span class="ic">🌏</span> กรอบความร่วมมือระดับภูมิภาค</h4>
+        <p>ศึกษา<b>กรอบความร่วมมือระดับภูมิภาค</b>ในการแบ่งปันภาพสถานการณ์ทางทะเลร่วม</p>
+      </div>
+      <div class="card rec t3 rv">
+        <span class="no">5</span>
+        <h4><span class="ic">🌱</span> ผลกระทบสิ่งแวดล้อมและการมีส่วนร่วม</h4>
+        <p>ศึกษา<b>ผลกระทบด้านสิ่งแวดล้อมและการมีส่วนร่วมของผู้มีส่วนได้ส่วนเสีย</b>ในการประกาศเขตทางทะเล</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 05 · บทส่งท้าย ================= -->
+<section id="closing">
+  <div class="wrap">
+    <div class="eyebrow rv"><span class="num">05</span> CLOSING</div>
+    <h2 class="title rv">บทส่งท้าย</h2>
+    <p class="lead rv">งานวิจัยนี้ตอบวัตถุประสงค์ทั้ง ๓ ประการครบถ้วน — ยืนยันว่า <b>UDC</b> คือทางออกเชิงยุทธศาสตร์ <b>การจัดระเบียบพื้นที่ทางทะเลแบบพหุมิติ</b>คือรูปแบบคุ้มครองที่เหมาะสม และ<b>กองทัพเรือ</b>คือแกนปฏิบัติการภายใต้กลไก ศรชล.</p>
+    <div class="prop rv">
+      <div class="h">◆ ข้อสรุปสุดท้าย</div>
+      <p>รูปแบบ <b>The Shield 3.0</b> เป็นระบบบูรณาการที่ปิดช่องว่างครบทั้ง ๓ ด้าน — กฎหมาย · การตระหนักรู้สถานการณ์ใต้น้ำ · การบูรณาการระหว่างหน่วยงาน — และ<b>สามารถนำไปปฏิบัติได้จริง</b> เมื่อขับเคลื่อนผ่านข้อเสนอแนะเชิงนโยบาย เชิงปฏิบัติ และการวิจัยต่อยอดข้างต้น ภายใต้การนำของกองทัพเรือในกลไก ศรชล. เพื่อ<b>ความมั่นคงของโครงสร้างพื้นฐานดิจิทัลภาครัฐและผลประโยชน์ของชาติทางทะเล</b></p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap">
+    <div class="foot-nav rv">
+      <a class="btn" href="THE_SHIELD_Ch4.html">← บทที่ ๔ · ผลการวิเคราะห์</a>
+      <a class="btn primary" href="THE_SHIELD_Pitch.html#research">⌂ กลับหน้านำเสนองานวิจัย</a>
+      <span class="btn" style="opacity:.45;cursor:default">บทสุดท้าย · จบเอกสาร</span>
+    </div>
+    <p class="disclaim">THE SHIELD · RESEARCH DOSSIER — CHAPTER 05 · หลักสูตรเสนาธิการทหารเรือ รุ่นที่ ๘๖ · เนื้อหาคัดย่อจากเอกสารวิจัยเพื่อการนำเสนอ มิใช่เอกสารราชการฉบับสมบูรณ์</p>
+  </div>
+</footer>
+
+<script>
+  /* reveal-on-scroll */
+  (function(){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}});
+    },{threshold:.12});
+    document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
+  })();
+</script>
+</body>
+</html>

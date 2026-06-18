@@ -471,7 +471,7 @@
           <tr><td class="dim">Time-to-Engage</td><td class="hi">เหมาะสม ใกล้ฐานกำลัง</td><td>ใกล้แต่ไร้ห้วงเตือนภัย</td><td>ไกลและซับซ้อน</td></tr>
           <tr><td class="dim">ระยะทอดเคเบิล</td><td class="hi">~๑.๒ ไมล์ทะเล</td><td>สั้นแต่เสี่ยง</td><td>ยาวและข้ามแนวปะการัง</td></tr>
           <tr><td class="dim">ความคุ้มค่า / ความสูญเสีย</td><td class="hi">คุ้มค่า เลี่ยงปะการัง ๔๐๐ ไร่ด้วย HDD</td><td>กระทบการปฏิบัติฐานทัพ</td><td>เสี่ยงทำลายระบบนิเวศ</td></tr>
-          <tr><td class="dim">ผลทดสอบ อทร.๘๓๐๒</td><td class="hi">ผ่านทั้ง Suitability / Feasibility / Acceptability</td><td>ไม่ผ่าน Feasibility</td><td>ไม่ผ่าน Acceptability</td></tr>
+          <tr><td class="dim">ผลทดสอบ อทร.๘๓๐๒</td><td class="hi">ผ่านทั้ง Suitability / Feasibility / Acceptability</td><td>ไม่ผ่าน Suitability + Acceptability</td><td>ไม่ผ่าน Acceptability</td></tr>
           <tr class="flag"><td class="dim">ผลสรุป</td><td class="hi"><span class="ok-tag">✓ ผ่านเกณฑ์</span></td><td><span class="no-tag">✗ ไม่ผ่านเกณฑ์</span></td><td><span class="no-tag">✗ ไม่ผ่านเกณฑ์</span></td></tr>
         </tbody>
       </table>
@@ -509,10 +509,10 @@
     </figure>
 
     <h3 class="sub-h rv"><span class="bar"></span>ผลการพัฒนา : โครงสร้างเชิงพื้นที่ของ The Shield 2.0</h3>
-    <p class="body rv">โมเดลกำหนดโครงสร้างการป้องกันเชิงพื้นที่ภายใต้ฐานอำนาจ พ.ร.ฎ. เขตปลอดภัยในราชการทหาร ปี ๒๕๓๖ ประกอบด้วยเขตห้ามเข้าเด็ดขาด (MEZ) ๒–๕ ไมล์ทะเล และเขตจำกัด/กันชน (Restricted &amp; Buffer Zone) ๕–๑๐ ไมล์ทะเล พร้อมจัดวางกำลังหลายมิติ — เหนือน้ำ ใต้น้ำ พื้นทะเล และชายฝั่ง — บูรณาการ <b>ทัพเรือภาคที่ ๑</b> เข้ากับ <b>ศรชล.</b></p>
+    <p class="body rv">โมเดลกำหนดโครงสร้างการป้องกันเชิงพื้นที่ภายใต้ฐานอำนาจ พ.ร.ฎ. เขตปลอดภัยในราชการทหาร ปี ๒๕๓๖ ประกอบด้วยเขตหวงห้ามเด็ดขาด (MEZ) ๒–๕ ไมล์ทะเล และเขตควบคุม/พื้นที่กันชน (Restricted &amp; Buffer Zone) ๕–๑๐ ไมล์ทะเล พร้อมจัดวางกำลังหลายมิติ — เหนือน้ำ ใต้น้ำ พื้นทะเล และชายฝั่ง — บูรณาการ <b>ทัพเรือภาคที่ ๑</b> เข้ากับ <b>ศรชล.</b></p>
     <div class="grid g4">
-      <div class="card kpi rv"><div class="v">๒–๕ <small>nm</small></div><div class="l">เขตห้ามเข้าเด็ดขาด (MEZ)</div></div>
-      <div class="card kpi rv"><div class="v">๕–๑๐ <small>nm</small></div><div class="l">เขตจำกัด/กันชน (Buffer Zone)</div></div>
+      <div class="card kpi rv"><div class="v">๒–๕ <small>nm</small></div><div class="l">เขตหวงห้ามเด็ดขาด (MEZ)</div></div>
+      <div class="card kpi rv"><div class="v">๕–๑๐ <small>nm</small></div><div class="l">เขตควบคุม/พื้นที่กันชน (Buffer Zone)</div></div>
       <div class="card kpi rv"><div class="v">๔ <small>มิติ</small></div><div class="l">เหนือน้ำ · ใต้น้ำ · พื้นทะเล · ชายฝั่ง</div></div>
       <div class="card kpi rv"><div class="v">๒๕๓๖</div><div class="l">ฐานอำนาจ พ.ร.ฎ. เขตปลอดภัยทหาร</div></div>
     </div>
@@ -543,7 +543,7 @@
         </thead>
         <tbody>
           <tr><td class="dim">วัตถุประสงค์</td><td>ทดลองวิจัย</td><td>เชิงพาณิชย์</td><td>เชิงพาณิชย์ + พลังงานสะอาด</td><td class="hi">ความมั่นคงแห่งชาติ / อธิปไตยข้อมูล</td></tr>
-          <tr><td class="dim">ระดับการพัฒนา</td><td>เลิกโครงการ (พิสูจน์แนวคิด)</td><td>ใช้งานจริง</td><td>กำลังขยายผล</td><td class="hi">โมเดลที่นำเสนอ + Simulator</td></tr>
+          <tr><td class="dim">ระดับการพัฒนา</td><td>เสร็จสิ้นโครงการต้นแบบวิจัย (พิสูจน์แนวคิด)</td><td>ใช้งานจริง</td><td>กำลังขยายผล</td><td class="hi">โมเดลที่นำเสนอ + Simulator</td></tr>
           <tr><td class="dim">โครงสร้างแคปซูล</td><td>ทรงกระบอกเหล็กปิดผนึก</td><td>แคปซูลใต้น้ำเชิงพาณิชย์</td><td>แคปซูลผนวกกังหันลม</td><td class="hi">แคปซูล + ฐาน Gravity-base พื้นทราย-โคลน</td></tr>
           <tr><td class="dim">ความลึกติดตั้ง</td><td>~๓๖ ม.</td><td>ตื้น–ปานกลาง</td><td>ตื้น–ปานกลาง</td><td class="hi">๓๐–๔๔ ม. (กรอบ ๒๐–๔๐ ม.)</td></tr>
           <tr><td class="dim">สภาพแวดล้อมภายใน</td><td>ไนโตรเจน ความชื้นต่ำ</td><td>ปิดผนึกควบคุม</td><td>ปิดผนึกควบคุม</td><td class="hi">ปิดผนึก + มาตรฐาน TIA-942</td></tr>
