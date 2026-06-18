@@ -71,6 +71,17 @@
   .cine-ai{font-family:var(--f-mono);font-size:10px;letter-spacing:.18em;color:var(--text-dim);
     border:1px solid rgba(136,146,176,.35);padding:3px 9px;border-radius:999px;white-space:nowrap}
 
+  /* การจัดกำลังพหุมิติ — แผนภาพตัดขวาง ๖ มิติ (ภาพที่ ๔-๒)
+     วิดีโอ AI (image-to-video): ลำแสงข้อมูลเรืองแสงวิ่งเข้า C2 + คลื่นผิวน้ำ · ตัวอักษร/วัตถุคงที่ */
+  .opsfig{position:relative;border:1px solid var(--line2);border-radius:var(--r);overflow:hidden;
+    box-shadow:var(--shadow);margin:28px 0 6px;background:#020b16}
+  .opsfig .stage{position:relative;overflow:hidden;line-height:0}
+  .opsfig img,.opsfig video{display:block;width:100%;height:auto}
+  .opsfig figcaption{position:absolute;left:0;right:0;bottom:0;z-index:4;display:flex;
+    justify-content:space-between;align-items:flex-end;gap:14px;padding:42px 18px 13px;pointer-events:none;
+    background:linear-gradient(180deg,transparent,rgba(0,8,16,.9))}
+  .opsfig .cine-t{color:#9fd8ff}
+
   /* ---------- sticky toc ---------- */
   nav.toc{position:sticky;top:0;z-index:40;backdrop-filter:blur(14px);
     background:rgba(1,13,26,.88);border-bottom:1px solid var(--line)}
@@ -524,6 +535,22 @@
     <h2 class="title rv">การจัดกำลังพหุมิติ — ใคร ทำอะไร ที่ไหน เมื่อใด ทำไม อย่างไร</h2>
     <p class="lead rv">เพื่อให้ The Shield 3.0 <b>นำไปปฏิบัติได้จริง</b> ผู้วิจัยแจกแจงการปฏิบัติการ ๖ มิติด้วยกรอบ <b>5W1H</b> (ตารางที่ ๔-๒) โดยมิติในความรับผิดชอบโดยตรงของกองทัพเรือระบุหน่วยรับผิดชอบหลัก ส่วนหน่วยงานนอก ทร. จำแนกเป็น <span style="color:var(--teal)">ในกลไก ศรชล.</span> และ <span style="color:var(--gold)">นอกกลไก ศรชล. — ขอรับการสนับสนุน</span></p>
 
+    <figure class="opsfig rv">
+      <div class="stage">
+        <video class="opsvid" width="1760" height="983" autoplay loop muted playsinline
+               preload="metadata" poster="THE_SHIELD_Ch4_ops_poster.webp"
+               aria-label="แผนภาพตัดขวางการจัดกำลังพหุมิติ ๖ มิติของ The Shield 3.0 — มิติทางอากาศ (โดรน) ผิวน้ำ (เรือฟริเกตและเรือเล็ก) ใต้น้ำ (UUV) พื้นท้องทะเล (แคปซูลศูนย์ข้อมูล ทุ่นระเบิด ROV) ชายฝั่ง (ฐานทัพเรือ) และไซเบอร์ โดยข้อมูลเซนเซอร์ทุกมิติเชื่อมเข้าศูนย์บัญชาการและควบคุม C2 พร้อมลำแสงข้อมูลเรืองแสงเคลื่อนเข้าศูนย์ C2">
+          <source src="THE_SHIELD_Ch4_ops.webm" type="video/webm">
+          <source src="THE_SHIELD_Ch4_ops.mp4" type="video/mp4">
+          <img src="THE_SHIELD_Ch4_ops_poster.webp" width="1760" height="983" alt="แผนภาพตัดขวางการจัดกำลังพหุมิติ ๖ มิติของ The Shield 3.0 เชื่อมเข้าศูนย์บัญชาการและควบคุม C2">
+        </video>
+      </div>
+      <figcaption>
+        <span class="cine-t">MULTI-DOMAIN DEFENCE · AIR · SURFACE · UNDERWATER · SEABED · COASTAL · CYBER → C2</span>
+        <span class="cine-ai">แผนภาพประกอบ · AI-GENERATED</span>
+      </figcaption>
+    </figure>
+
     <div class="grid g2">
       <!-- มิติ ๑ -->
       <div class="dim d1 rv">
@@ -754,6 +781,17 @@
     poster.classList.add('hide');
   }
   window.loadSim=loadSim;
+
+  /* เคารพ prefers-reduced-motion: หยุดวิดีโอแผนภาพ แสดงเฉพาะภาพนิ่ง (poster) */
+  (function(){
+    var mq=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)');
+    if(!mq)return;
+    function apply(){var v=document.querySelector('.opsfig .opsvid');if(!v)return;
+      if(mq.matches){try{v.pause();v.removeAttribute('autoplay');v.currentTime=0;}catch(e){}}
+      else{try{v.play();}catch(e){}}}
+    apply();
+    (mq.addEventListener?mq.addEventListener('change',apply):mq.addListener(apply));
+  })();
 </script>
 </body>
 </html>
