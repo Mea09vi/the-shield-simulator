@@ -1884,11 +1884,9 @@ footer .mono-line{
   .bathy .by-udc{opacity:1;transform:none}
 }
 
-/* ===== SHADER WALLPAPER + TITLE PARTICLE ===== */
+/* ===== TITLE PARTICLE ===== */
 html{background:var(--bg-dark)}
-#bgShader{position:fixed;inset:0;pointer-events:none;z-index:0}
 #titleParticle{position:absolute;inset:0;pointer-events:none;z-index:3}
-@media(prefers-reduced-motion:reduce){#bgShader{display:none}}
 
 /* ============ PRESENTER MODE ============ */
 #presenterToggle{position:fixed;right:16px;bottom:16px;z-index:120;
@@ -2593,72 +2591,6 @@ if(cv && cv.getContext){
 })();
 </script>
 
-<!-- ===== SHADER WALLPAPER ===== -->
-<script>
-(function(){ "use strict";
-  var RM = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
-  if(RM) return;
-  var cv = document.createElement('canvas');
-  cv.id = 'bgShader';
-  document.body.insertBefore(cv, document.body.firstChild);
-  var gl = cv.getContext('webgl') || cv.getContext('experimental-webgl');
-  if(!gl){ cv.parentNode && cv.parentNode.removeChild(cv); return; }
-
-  // transparent body so shader canvas (first child, z-index:0) is visible background
-  document.body.style.background = 'transparent';
-
-  var VERT = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
-  var FRAG = [
-    'precision mediump float;',
-    'uniform float t;uniform vec2 res;',
-    'void main(){',
-    '  vec2 p=(gl_FragCoord.xy-res*.5)/min(res.x,res.y);',
-    '  float d=length(p);float a=atan(p.y,p.x);',
-    // base dark navy = #010d1a
-    '  vec3 base=vec3(0.004,0.051,0.102);',
-    // concentric range rings (very faint)
-    '  float rings=pow(max(0.,.5+.5*sin(d*22.-t*.12)),12.)*.03;',
-    // slow radar sweep (full rotation ~25s)
-    '  float sw=fract(a/6.2832+t*.04);',
-    '  float sweep=(1.-smoothstep(0.,.2,sw))*.055/(d+.55);',
-    // trailing glow behind sweep
-    '  float trail=smoothstep(.35,.0,sw)*sw*.018/(d+.4);',
-    // centre glow
-    '  float glow=.05*exp(-d*d*3.8);',
-    // horizontal scan lines
-    '  float scan=step(.996,fract(gl_FragCoord.y*.5))*.009;',
-    '  float br=rings+sweep+trail+glow+scan;',
-    '  vec3 c=base+vec3(0.,.83,1.)*br+vec3(.25,1.,.85)*glow*.45;',
-    '  gl_FragColor=vec4(c,1.);',
-    '}'
-  ].join('');
-
-  function mkS(type,src){ var s=gl.createShader(type); gl.shaderSource(s,src); gl.compileShader(s); return s; }
-  var prog=gl.createProgram();
-  gl.attachShader(prog,mkS(gl.VERTEX_SHADER,VERT));
-  gl.attachShader(prog,mkS(gl.FRAGMENT_SHADER,FRAG));
-  gl.linkProgram(prog);
-  if(!gl.getProgramParameter(prog,gl.LINK_STATUS)){ cv.parentNode&&cv.parentNode.removeChild(cv); document.body.style.background=''; return; }
-  gl.useProgram(prog);
-
-  var buf=gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER,buf);
-  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
-  var aPos=gl.getAttribLocation(prog,'a');
-  gl.enableVertexAttribArray(aPos);
-  gl.vertexAttribPointer(aPos,2,gl.FLOAT,false,0,0);
-  var uT=gl.getUniformLocation(prog,'t');
-  var uR=gl.getUniformLocation(prog,'res');
-
-  function resize(){ cv.width=innerWidth; cv.height=innerHeight; gl.viewport(0,0,cv.width,cv.height); gl.uniform2f(uR,cv.width,cv.height); }
-  var t0=performance.now();
-  function frame(now){ requestAnimationFrame(frame); gl.uniform1f(uT,(now-t0)*.001); gl.drawArrays(gl.TRIANGLE_STRIP,0,4); }
-  addEventListener('resize',resize);
-  resize();
-  requestAnimationFrame(frame);
-})();
-</script>
-
 <!-- ===== TITLE PARTICLE ASSEMBLER ===== -->
 <script>
 (function(){ "use strict";
@@ -2672,7 +2604,7 @@ if(cv && cv.getContext){
   hero.appendChild(pv);
   var ctx=pv.getContext('2d');
   var DPR=Math.min(window.devicePixelRatio||1,2);
-  var W=0,H=0,particles=[],raf=0;
+  var W=0,H=0,particles=[],raf=0,frameCount=0;
   var phase='assemble',phaseStart=0;
   var ADUR=1.85, MDLY=0.65, HDUR=0.28, FDUR=0.8;
 
@@ -2702,14 +2634,14 @@ if(cv && cv.getContext){
     oc.textBaseline='top';
     oc.fillText(h1.textContent.trim(),tw/2,0);
     var id=oc.getImageData(0,0,off.width,off.height).data;
-    var pts=[]; var spx=Math.round(4*DPR);
+    var pts=[]; var spx=Math.round(2*DPR);
     for(var oy=0;oy<off.height;oy+=spx){
       for(var ox=0;ox<off.width;ox+=spx){
-        if(id[(oy*off.width+ox)*4+3]>100) pts.push({tx:dx+ox/DPR, ty:dy+oy/DPR});
+        if(id[(oy*off.width+ox)*4+3]>80) pts.push({tx:dx+ox/DPR, ty:dy+oy/DPR});
       }
     }
-    if(pts.length>900){
-      var skip=Math.ceil(pts.length/900),sub=[];
+    if(pts.length>1800){
+      var skip=Math.ceil(pts.length/1800),sub=[];
       for(var i=0;i<pts.length;i+=skip) sub.push(pts[i]);
       pts=sub;
     }
@@ -2720,6 +2652,7 @@ if(cv && cv.getContext){
 
   function frame(now){
     raf=requestAnimationFrame(frame);
+    frameCount++;
     var el=(now-phaseStart)*.001;
     ctx.clearRect(0,0,W,H);
 
@@ -2733,17 +2666,18 @@ if(cv && cv.getContext){
         var cx=p.sx+(p.tx-p.sx)*et, cy=p.sy+(p.ty-p.sy)*et;
         ctx.globalAlpha=0.12+0.88*et;
         ctx.fillStyle=pt>.9?'#fff':(pt>.55?'rgba(127,239,255,.95)':'rgba(0,212,255,.9)');
-        ctx.beginPath(); ctx.arc(cx,cy,p.r,0,6.2832); ctx.fill();
+        ctx.fillRect(cx-p.r,cy-p.r,p.r*2,p.r*2);
       }
       ctx.globalAlpha=1;
       if(done){ phase='hold'; phaseStart=now; }
 
     } else if(phase==='hold'){
+      ctx.fillStyle='#fff';
+      var pulse=0.82+0.18*Math.sin(now*.0028);
+      ctx.globalAlpha=pulse;
       for(var i=0;i<particles.length;i++){
         var p=particles[i];
-        ctx.globalAlpha=0.82+0.18*Math.sin(now*.0028+i*.09);
-        ctx.fillStyle='#fff';
-        ctx.beginPath(); ctx.arc(p.tx,p.ty,p.r,0,6.2832); ctx.fill();
+        ctx.fillRect(p.tx-p.r,p.ty-p.r,p.r*2,p.r*2);
       }
       ctx.globalAlpha=1;
       if(el>=HDUR){
@@ -2754,11 +2688,11 @@ if(cv && cv.getContext){
 
     } else if(phase==='fadeout'){
       var ft=Math.min(1,el/FDUR);
+      ctx.globalAlpha=(1-ft)*0.9;
+      ctx.fillStyle='#fff';
       for(var i=0;i<particles.length;i++){
         var p=particles[i];
-        ctx.globalAlpha=(1-ft)*0.9;
-        ctx.fillStyle='#fff';
-        ctx.beginPath(); ctx.arc(p.tx,p.ty,p.r,0,6.2832); ctx.fill();
+        ctx.fillRect(p.tx-p.r,p.ty-p.r,p.r*2,p.r*2);
       }
       ctx.globalAlpha=1;
       if(ft>=1){
@@ -2773,21 +2707,32 @@ if(cv && cv.getContext){
     resize();
     var pts=sampleTitle();
     if(!pts.length){ h1.style.opacity='1'; return; }
-    h1.style.opacity='0';
     particles=pts.map(function(p){
       return { sx:Math.random()*W, sy:Math.random()*(H*.6)-H*.05,
-               tx:p.tx, ty:p.ty, r:.55+Math.random()*.95, dl:Math.random()*MDLY };
+               tx:p.tx, ty:p.ty, r:.3+Math.random()*.65, dl:Math.random()*MDLY };
     });
     phaseStart=performance.now();
     raf=requestAnimationFrame(frame);
     addEventListener('resize',resize);
   }
 
-  if(document.fonts && document.fonts.ready){
-    document.fonts.ready.then(init);
-  } else {
-    setTimeout(init,500);
-  }
+  // hide h1 immediately so it's invisible before init() samples it
+  h1.style.opacity='0';
+
+  var _done=false;
+  function _once(){ if(!_done){_done=true; init();} }
+  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(_once); }
+  setTimeout(_once, 300);
+
+  // if tab was backgrounded at load, restart rAF when it becomes visible
+  document.addEventListener('visibilitychange', function onVis(){
+    if(document.visibilityState==='visible' && frameCount===0 && particles.length){
+      phaseStart=performance.now();
+      cancelAnimationFrame(raf);
+      raf=requestAnimationFrame(frame);
+      document.removeEventListener('visibilitychange',onVis);
+    }
+  });
 })();
 </script>
 
