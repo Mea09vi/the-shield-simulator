@@ -1696,7 +1696,7 @@ footer .mono-line{
             </div>
             <div class="asm-item data">
               <span class="asm-tag">INPUT · สัมภาษณ์</span>
-              <div class="asm-h">ผู้เชี่ยวชาญ ๕ ด้าน</div>
+              <div class="asm-h">ผู้เชี่ยวชาญ ๔ กลุ่ม (๖ ท่าน)</div>
               <div class="asm-d">ยืนยันและเติมเต็มโมเดลจากมุมมองผู้ปฏิบัติจริง</div>
               <div class="asm-mini"><span>ผู้บริหาร ทร.</span><span>ผู้บริหาร ศรชล.</span><span>นักกฎหมายทางทะเล</span><span>กำกับข้อมูลภาครัฐ · สป.กห.</span><span>ผู้บริหาร อศ.</span></div>
             </div>
@@ -1933,9 +1933,9 @@ body.presenter #presenterHud{display:flex}
     <div class="sim-stats">
       <div class="sim-stat rv"><div class="n" data-to="7" data-tpl="{n}">7</div><div class="l">โดเมนปฏิบัติการ</div></div>
       <div class="sim-stat rv rv-d1"><div class="n" data-to="16" data-tpl="{n}">16</div><div class="l">แหล่งข้อมูลจริงเรียลไทม์</div></div>
-      <div class="sim-stat rv rv-d2"><div class="n" data-to="6" data-tpl="{n}">6</div><div class="l">โมเดล AI (LLM)</div></div>
+      <div class="sim-stat rv rv-d2"><div class="n" data-to="8" data-tpl="{n}">8</div><div class="l">โมเดล AI (LLM)</div></div>
       <div class="sim-stat rv rv-d3"><div class="n" data-to="17" data-tpl="{n}">17</div><div class="l">รุ่นการพัฒนา</div></div>
-      <div class="sim-stat rv rv-d4"><div class="n" data-to="34786" data-sep="1" data-tpl="{n}">34,786</div><div class="l">บรรทัดโค้ด</div></div>
+      <div class="sim-stat rv rv-d4"><div class="n" data-to="39370" data-sep="1" data-tpl="{n}">39,370</div><div class="l">บรรทัดโค้ด</div></div>
       <div class="sim-stat rv"><div class="n" data-to="1" data-tpl="{n}">1</div><div class="l">ไฟล์เดียว · Zero Install</div></div>
     </div>
 
@@ -1962,7 +1962,7 @@ body.presenter #presenterHud{display:flex}
       <div class="card rv">
         <div class="tagline">Two-Tier AI</div>
         <h4>🧠 AI วิเคราะห์ 2 ชั้น</h4>
-        <p>กติกาอัตโนมัติ 10 ข้อทำงานออฟไลน์ + LLM 6 โมเดลผ่านโครงสร้างพื้นฐานของตนเอง
+        <p>กติกาอัตโนมัติ 10 ข้อทำงานออฟไลน์ + LLM 8 โมเดลผ่านโครงสร้างพื้นฐานของตนเอง
         วิเคราะห์เจตนา-พฤติกรรมเป้าหมาย โดยมนุษย์เป็นผู้ตัดสินใจสุดท้ายเสมอ (Human-in-the-Loop)</p>
       </div>
       <div class="card rv rv-d1">
@@ -2591,142 +2591,145 @@ if(cv && cv.getContext){
 })();
 </script>
 
-<!-- ===== TITLE PARTICLE ASSEMBLER ===== -->
+<!-- ===== TITLE PLASMA FORGE ===== -->
 <script>
 (function(){ "use strict";
-  var RM = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
   if(RM) return;
-  var hero = document.getElementById('hero');
-  var h1 = hero && hero.querySelector('.hero-title');
-  if(!h1 || !hero) return;
+  var hero=document.getElementById('hero');
+  var h1=hero&&hero.querySelector('.hero-title');
+  if(!h1||!hero) return;
 
   var pv=document.createElement('canvas'); pv.id='titleParticle';
   hero.appendChild(pv);
   var ctx=pv.getContext('2d');
   var DPR=Math.min(window.devicePixelRatio||1,2);
-  var W=0,H=0,particles=[],raf=0,frameCount=0;
-  var phase='assemble',phaseStart=0;
-  var ADUR=1.85, MDLY=0.65, HDUR=0.28, FDUR=0.8;
+  var W=0,H=0,textCX=0,textCY=0,font='',ls='0px';
+  var raf=0,frameCount=0;
+  var phase='forge',phaseStart=0;
+  var sparks=[];
+
+  var FORGE_DUR=2.5, HOLD_DUR=2.5;
 
   function resize(){
-    var r=hero.getBoundingClientRect();
-    W=r.width; H=r.height;
+    var hr=hero.getBoundingClientRect();
+    var tr=h1.getBoundingClientRect();
+    W=hr.width; H=hr.height;
     pv.width=Math.round(W*DPR); pv.height=Math.round(H*DPR);
     pv.style.width=W+'px'; pv.style.height=H+'px';
     ctx.setTransform(DPR,0,0,DPR,0,0);
+    textCX=tr.left-hr.left+tr.width/2;
+    textCY=tr.top-hr.top+tr.height/2;
   }
-
-  function sampleTitle(){
-    var hr=hero.getBoundingClientRect();
-    var tr=h1.getBoundingClientRect();
-    var dx=tr.left-hr.left, dy=tr.top-hr.top;
-    var tw=tr.width, th=tr.height;
-    var off=document.createElement('canvas');
-    off.width=Math.ceil(tw*DPR); off.height=Math.ceil(th*DPR);
-    var oc=off.getContext('2d');
-    oc.setTransform(DPR,0,0,DPR,0,0);
-    var fs=parseFloat(getComputedStyle(h1).fontSize)||80;
-    var ls=getComputedStyle(h1).letterSpacing;
-    oc.font='800 '+fs+'px Saira,Prompt,sans-serif';
-    if('letterSpacing' in oc) oc.letterSpacing=ls;
-    oc.fillStyle='#fff';
-    oc.textAlign='center';
-    oc.textBaseline='top';
-    oc.fillText(h1.textContent.trim(),tw/2,0);
-    var id=oc.getImageData(0,0,off.width,off.height).data;
-    var pts=[]; var spx=Math.round(2*DPR);
-    for(var oy=0;oy<off.height;oy+=spx){
-      for(var ox=0;ox<off.width;ox+=spx){
-        if(id[(oy*off.width+ox)*4+3]>80) pts.push({tx:dx+ox/DPR, ty:dy+oy/DPR});
-      }
-    }
-    if(pts.length>1800){
-      var skip=Math.ceil(pts.length/1800),sub=[];
-      for(var i=0;i<pts.length;i+=skip) sub.push(pts[i]);
-      pts=sub;
-    }
-    return pts;
-  }
-
-  function ease(t){ return 1-Math.pow(1-t,3); }
 
   function frame(now){
     raf=requestAnimationFrame(frame);
     frameCount++;
     var el=(now-phaseStart)*.001;
+    var TX=h1.textContent.trim();
     ctx.clearRect(0,0,W,H);
+    ctx.font=font; ctx.textAlign='center'; ctx.textBaseline='middle';
+    if('letterSpacing' in ctx) ctx.letterSpacing=ls;
 
-    if(phase==='assemble'){
-      var done=true;
-      for(var i=0;i<particles.length;i++){
-        var p=particles[i];
-        var pt=Math.min(1,Math.max(0,(el-p.dl)/ADUR));
-        if(pt<1) done=false;
-        var et=ease(pt);
-        var cx=p.sx+(p.tx-p.sx)*et, cy=p.sy+(p.ty-p.sy)*et;
-        ctx.globalAlpha=0.12+0.88*et;
-        ctx.fillStyle=pt>.9?'#fff':(pt>.55?'rgba(127,239,255,.95)':'rgba(0,212,255,.9)');
-        ctx.fillRect(cx-p.r,cy-p.r,p.r*2,p.r*2);
+    if(phase==='forge'){
+      var p=Math.min(1,el/FORGE_DUR);
+      var es=1-Math.pow(1-p,2.8);
+      var fx=W*es, lead=95, sx=Math.max(0,fx-lead);
+
+      /* spawn sparks at cutting edge */
+      if(Math.random()<.5&&fx<W-4&&p<0.99){
+        for(var s=0;s<2;s++){
+          var a=-Math.PI*.5+(Math.random()-.5)*Math.PI*1.4;
+          var sp=1.2+Math.random()*3.8;
+          sparks.push({x:fx+(Math.random()-.5)*6,y:textCY+(Math.random()-.5)*32,
+            vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,
+            c:Math.random()>.5?'#00d4ff':'#ffffff'});
+        }
       }
+
+      /* update + draw sparks */
+      for(var i=sparks.length-1;i>=0;i--){
+        var s=sparks[i];
+        s.vy+=0.2; s.x+=s.vx; s.y+=s.vy; s.life-=.048;
+        if(s.life<=0){sparks.splice(i,1);continue;}
+        ctx.save(); ctx.globalAlpha=s.life*s.life;
+        ctx.shadowColor=s.c; ctx.shadowBlur=4;
+        ctx.fillStyle=s.c; ctx.fillRect(s.x-.8,s.y-.8,1.6,1.6);
+        ctx.shadowBlur=0; ctx.restore();
+      }
+
+      /* cold zone — ghosted uncut text */
+      if(fx<W){
+        ctx.save(); ctx.beginPath(); ctx.rect(fx,0,W,H); ctx.clip();
+        ctx.globalAlpha=.08; ctx.fillStyle='rgba(60,150,230,1)';
+        ctx.fillText(TX,textCX,textCY); ctx.restore();
+      }
+
+      /* settled zone — hot white with teal glow */
+      if(sx>0){
+        ctx.save(); ctx.beginPath(); ctx.rect(0,0,sx,H); ctx.clip();
+        ctx.shadowColor='#64ffda'; ctx.shadowBlur=9;
+        ctx.fillStyle='#eafaff'; ctx.fillText(TX,textCX,textCY);
+        ctx.shadowBlur=0; ctx.restore();
+      }
+
+      /* plasma cutting gradient zone */
+      var hx=Math.min(W,fx+30);
+      if(hx>sx){
+        ctx.save(); ctx.beginPath(); ctx.rect(sx,0,hx-sx,H); ctx.clip();
+        var hg=ctx.createLinearGradient(sx,0,hx,0);
+        hg.addColorStop(0,'#eafaff');
+        hg.addColorStop(.15,'#64ffda');
+        hg.addColorStop(.42,'#00d4ff');
+        hg.addColorStop(.72,'rgba(180,238,255,1)');
+        hg.addColorStop(.9,'#fff');
+        hg.addColorStop(1,'rgba(230,250,255,.95)');
+        ctx.shadowColor='#00d4ff'; ctx.shadowBlur=36;
+        ctx.fillStyle=hg; ctx.fillText(TX,textCX,textCY);
+        ctx.shadowBlur=0; ctx.restore();
+      }
+
+      /* intense cutting-point glow orb */
+      var pg=ctx.createRadialGradient(fx,textCY,0,fx,textCY,28);
+      pg.addColorStop(0,'rgba(255,255,255,.85)');
+      pg.addColorStop(.36,'rgba(0,212,255,.44)');
+      pg.addColorStop(1,'rgba(0,212,255,0)');
+      ctx.fillStyle=pg; ctx.fillRect(fx-28,textCY-28,56,56);
       ctx.globalAlpha=1;
-      if(done){ phase='hold'; phaseStart=now; }
+
+      if(el>=FORGE_DUR){ phase='hold'; phaseStart=now; }
 
     } else if(phase==='hold'){
-      ctx.fillStyle='#fff';
-      var pulse=0.82+0.18*Math.sin(now*.0028);
-      ctx.globalAlpha=pulse;
-      for(var i=0;i<particles.length;i++){
-        var p=particles[i];
-        ctx.fillRect(p.tx-p.r,p.ty-p.r,p.r*2,p.r*2);
-      }
-      ctx.globalAlpha=1;
-      if(el>=HDUR){
-        phase='fadeout'; phaseStart=now;
-        h1.style.transition='opacity '+FDUR+'s ease';
-        h1.style.opacity='1';
-      }
+      var br=6+3*Math.sin(now*0.006);
+      ctx.shadowColor='#64ffda'; ctx.shadowBlur=br;
+      ctx.fillStyle='#fff'; ctx.fillText(h1.textContent.trim(),textCX,textCY);
+      ctx.shadowBlur=0; ctx.globalAlpha=1;
 
-    } else if(phase==='fadeout'){
-      var ft=Math.min(1,el/FDUR);
-      ctx.globalAlpha=(1-ft)*0.9;
-      ctx.fillStyle='#fff';
-      for(var i=0;i<particles.length;i++){
-        var p=particles[i];
-        ctx.fillRect(p.tx-p.r,p.ty-p.r,p.r*2,p.r*2);
-      }
-      ctx.globalAlpha=1;
-      if(ft>=1){
-        cancelAnimationFrame(raf);
-        if(pv.parentNode) pv.parentNode.removeChild(pv);
-        h1.style.transition='';
+      if(el>=HOLD_DUR){
+        phase='forge'; phaseStart=now;
+        sparks=[];
       }
     }
   }
 
   function init(){
     resize();
-    var pts=sampleTitle();
-    if(!pts.length){ h1.style.opacity='1'; return; }
-    particles=pts.map(function(p){
-      return { sx:Math.random()*W, sy:Math.random()*(H*.6)-H*.05,
-               tx:p.tx, ty:p.ty, r:.3+Math.random()*.65, dl:Math.random()*MDLY };
-    });
+    var fs=parseFloat(getComputedStyle(h1).fontSize)||80;
+    ls=getComputedStyle(h1).letterSpacing||'0px';
+    font='800 '+fs+'px Saira,Prompt,sans-serif';
     phaseStart=performance.now();
     raf=requestAnimationFrame(frame);
     addEventListener('resize',resize);
   }
 
-  // hide h1 immediately so it's invisible before init() samples it
   h1.style.opacity='0';
-
   var _done=false;
-  function _once(){ if(!_done){_done=true; init();} }
-  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(_once); }
-  setTimeout(_once, 300);
+  function _once(){ if(!_done){_done=true;init();} }
+  if(document.fonts&&document.fonts.ready){ document.fonts.ready.then(_once); }
+  setTimeout(_once,300);
 
-  // if tab was backgrounded at load, restart rAF when it becomes visible
-  document.addEventListener('visibilitychange', function onVis(){
-    if(document.visibilityState==='visible' && frameCount===0 && particles.length){
+  document.addEventListener('visibilitychange',function onVis(){
+    if(document.visibilityState==='visible'&&frameCount===0){
       phaseStart=performance.now();
       cancelAnimationFrame(raf);
       raf=requestAnimationFrame(frame);
