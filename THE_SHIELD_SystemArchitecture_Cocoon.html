@@ -96,6 +96,7 @@
   .sn .src{ font-size:10px; color:#7d93b2; line-height:1.25; margin-top:2px; font-family:var(--mono);
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .sn .src b{ color:#94a3b8; font-weight:600;}
+  .sn-num{ font-family:var(--mono); font-size:9.5px; font-weight:800; color:var(--teal); opacity:.8; margin-right:3px; letter-spacing:.01em; }
 
   /* ===== PROCESSING MODULES (middle) ===== */
   .pc{ position:absolute; z-index:3; --pc:#22d3ee; border:1.5px solid rgba(148,163,184,.22); border-left:6px solid var(--pc);
@@ -343,8 +344,8 @@
       </div>
       <div class="tbgrid">
         <div class="cell"><div class="k">Document</div><div class="v">เอกสารวิจัย <b>หลักสูตรเสนาธิการทหารเรือ</b></div></div>
-        <div class="cell"><div class="k">Scope</div><div class="v">เซนเซอร์ ๑๗ · โมดูล ๘ · Shooter ๑๕ หน่วย</div></div>
-        <div class="cell"><div class="k">Source</div><div class="v"><b>UDC_Simulator_17.html</b> (v17.3.5)</div></div>
+        <div class="cell"><div class="k">Scope</div><div class="v">เซนเซอร์ ๑๘ · โมดูล ๘ · Shooter ๑๕ หน่วย</div></div>
+        <div class="cell"><div class="k">Source</div><div class="v"><b>UDC_Simulator_17.html</b> (v17.5.6)</div></div>
         <div class="cell"><div class="k">Sheet / Size</div><div class="v">2 / 2 · A2 Landscape</div></div>
         <div class="cell"><div class="k">Date</div><div class="v">๑๕ มิ.ย. ๒๕๖๙ (2026-06-15)</div></div>
         <div class="cell"><div class="k">Drawn for</div><div class="v">การบรรยายสรุป <b>เสธ.ทร.</b></div></div>
@@ -355,6 +356,7 @@
             <tr><td>2.0</td><td>2026-06-12</td><td>ปรับผังใหม่: SENSOR → PROCESSING → FORCES · เน้นอธิบายแหล่งข้อมูล-โมดูลประมวลผล-กำลังรบ (มี/จัดหา) · interactive hover ตามแบบผัง DP↔IO</td></tr>
             <tr><td>2.1</td><td>2026-06-13</td><td>ปรับปรุงตาม v17.2.5: +โดเมนไซเบอร์-EM / ชายฝั่ง · +โมดูลฝ่ายเสนาธิการ AI (IPOE→ECOA→COA) · +ป้องกันภัยทางอากาศ ESSM/C-UAS/ISR · ขยาย taxonomy ภัยคุกคาม · ใช้ทัพศัพท์ Flow Chart</td></tr>
             <tr><td>2.2</td><td>2026-06-15</td><td>Stage ③ <b>FORCES → SHOOTER</b> (หน่วยใช้กำลัง ทร.) · sync เนื้อหากับ v17.3.5: DAS ๓ สาย (#1–#3) · เรือสำรวจ อศ. = ร.ล.พฤหัสบดี/จันทร/สุริยะ · ADS-B = adsb.lol (สำรอง OpenSky) · SWAN = สสน./HII</td></tr>
+            <tr><td>2.4</td><td>2026-06-23</td><td>Sync v17.5.6: +Space Globe ISR (เซนเซอร์ ⑲) ดาวเทียม ๒๑ ดวง · GISTDA THEOS-2/1 NAPA-1/2 + พันธมิตร · ISR Window / DARK CONTACTS / COLLECTION PLAN 24h</td></tr>
             <tr><td>2.3</td><td>2026-06-15</td><td>Sync ขีดความสามารถ v17.3.5: ขยาย Processing ⑥→⑧ โมดูล (+⑦ เขตอำนาจ/กรอบกฎหมาย + เครื่องยนต์ศัพท์ Legal⇄Ops · +⑧ ประสานหน่วย ศรชล./Attribution/Fisher-MSP) · กรอบ 7-Domain MDA (๖ sensing + AI) · บันได ROE/EOF SHOUT→SHOW→SHOVE→SHOOT · ศัพท์แผน CONPLAN/OPLAN/CAP · กฎ R4 Cyber-Phys (GNSS spoofing ≥0.5 → 4σ/8 nm)</td></tr>
           </table>
         </div>
@@ -416,6 +418,28 @@ window.BLOCK_DETAILS = {"p1":{"id":"p1","titleTH":"การจำลองภ�
     ],
     illustration:`ซ้าย = แหล่งหลักฐานป้อนเส้นเวลา (เรดาร์ · AIS/MMSI · AIS-gap · ลากสมอ · GNSS spoof); กลาง = สำนวน Chain of Custody → SITREP (ใช้เชิงปฏิบัติการ ยังไม่ผูกพันชั้นศาล); ขวา = ศรชล. ส่งต่ออำนาจ พนง.จนท. สู่ เจ้าท่า/ประมง/ตร.น้ำ + Fisher-MSP ค่าชดเชย ฿`
   };
+  window.BLOCK_DETAILS.sn_sat = {
+    id:'sn_sat',
+    titleTH:`ดาวเทียมลาดตระเวน ISR — Space Globe (Satellite ISR · Space Domain Awareness)`,
+    conceptTH:`โมดูลนี้คือชั้นข่าวกรองจากห้วงอวกาศ (Space Domain ISR) ที่ซ้อนทับบน 2D COP ทันทีที่กดปุ่ม 🛰 SPACE ISR ประกอบด้วย: (๑) วงโคจรดาวเทียมจริง — ระบบโหลดข้อมูล TLE ของดาวเทียม ๒๑ ดวง แล้วแพร่กระจายตำแหน่งแบบเรียลไทม์ด้วยอัลกอริทึม SGP4 ผ่านไลบรารี satellite.js ทำให้มองเห็นวงโคจร เส้นทางภาคพื้น (ground track) และกรวยครอบคลุมพื้นที่ (coverage cone) บนลูกโลก 3 มิติ. (๒) พื้นที่ปฏิบัติการอ่าวไทย — จุดสนใจหลัก (AO) กำหนดที่ 10°N 102°E รัศมี 500 กิโลเมตร ครอบอ่าวไทยทั้งหมดรวมถึงพิกัดเกาะคราม-สัตหีบ. (๓) สถานะ ISR Window — ระบบจำแนกดาวเทียมทุกดวงเป็น ๓ ชั้น: 🟢 IN WINDOW (มุมเงย el ≥5° เหนือขอบฟ้า ถ่ายภาพ AO ได้ขณะนี้) / 🟡 APPROACHING (อีก ±45 นาทีจะเข้าหน้าต่าง) / ⬜ BEYOND HORIZON. (๔) สินทรัพย์อธิปไตยไทย — GISTDA ๔ ดวง: THEOS-2 (0.5 ม. OPT-HR · NORAD 58016), THEOS-1 (2 ม. OPT-MR · NORAD 33396), NAPA-1 (14 ม. AIS+OPT · NORAD 46320), NAPA-2 (14 ม. AIS+OPT · NORAD 48963); พันธมิตร/พาณิชย์อีก 17 ดวง — Maxar WorldView-3 (0.31 ม.), Pleiades Neo (0.3 ม.), SAR ๕ ดวง (TerraSAR-X · COSMO-SkyMed · RADARSAT-2 · Sentinel-1A · ALOS-2), Sentinel-2A/2B, SPOT-6/7, Landsat-9. (๕) 🚨 DARK CONTACTS — ดาวเทียม SAR ต่างชาติผ่านเหนือ AO = สัญญาณ counter-ISR/OPSEC ให้ฝ่ายอำนวยการทราบว่ากำลังถูกถ่ายภาพ. (๖) 📅 COLLECTION PLAN 24h — วางแผนการรวบรวมข่าวสารล่วงหน้าจากการคาดการณ์ passage ทุกดวง.`,
+    theoryTH:`SGP4 (Simplified General Perturbations 4) คืออัลกอริทึมมาตรฐาน NORAD/NASA สำหรับแพร่กระจายวงโคจรดาวเทียม LEO/MEO จากข้อมูล TLE — คำนวณแรงดึงดูดโลกอสมมาตร (J2–J4 zonal harmonics) + แรงต้านบรรยากาศ + แรงเบี่ยงดวงอาทิตย์/ดวงจันทร์. ไลบรารี satellite.js (Brandon Rhodes, MIT) ห่อ SGP4 ให้ JavaScript เรียกใช้ผ่าน lazy-load ครั้งแรกที่เปิด Space Globe. TLE ทุกชุดปรับปรุง epoch ปี ค.ศ.2026. การจำแนก ISR Window: (1) แปลงตำแหน่ง ECI → Geodetic → คำนวณ elevation angle จากจุด AO; (2) el ≥ SG_MIN_EL_DEG (5°) = IN WINDOW; (3) เข้า window ภายใน SG_APPROACH_MIN (45 นาที) = APPROACHING. Ground track คำนวณ forward-propagate ทุก 60 เฟรมเพื่อลดภาระ GPU. แคตาล็อก ๒๑ ดวง: OPT-HR × 7, OPT-MR × 9, SAR × 5.`,
+    references:[
+      {label:'GISTDA — THEOS-2 (58016) · THEOS-1 (33396) · NAPA-1 (46320) · NAPA-2 (48963)',note:'ดาวเทียมอธิปไตยไทย ๔ ดวงในแคตาล็อก — THEOS-2 ความละเอียด 0.5 ม. สูงสุดในกลุ่ม'},
+      {label:'satellite.js — Brandon Rhodes (MIT License)',note:'ไลบรารี JS ห่อ SGP4/SDP4 สำหรับแพร่กระจายวงโคจร · lazy-load ครั้งแรกที่เปิด Space Globe'},
+      {label:'NORAD TLE — Space-Track.org / CelesTrak',note:'แหล่ง TLE ล่าสุดต่อ NORAD ID ทุกดวงใน SG_CATALOG 21 ดวง'},
+      {label:'SGP4 — Vallado (2006) · AIAA 2006-6753',note:'J2–J4 zonal harmonics + drag + solar/lunar perturbations · ความแม่นยำ LEO ±1 km'},
+      {label:'AO: 10°N 102°E · r=500 km · el≥5° · approach ±45 min',note:'พารามิเตอร์ SG_AO_LAT/LNG/RADIUS_KM/MIN_EL_DEG/APPROACH_MIN ในโมดูล SG-1'},
+      {label:'Counter-ISR / OPSEC — DARK CONTACTS (SAR ต่างชาติเหนือ AO)',note:'สัญญาณ EMCON — ควรพิจารณา Emission Control ขณะดาวเทียม SAR ต่างชาติผ่าน AO'}
+    ],
+    simComments:[
+      {text:`var SG_AO_LAT=10.0, SG_AO_LNG=102.0, SG_AO_RADIUS_KM=500;\nvar SG_MIN_EL_DEG=5.0, SG_APPROACH_MIN=45;`,where:`[v17.5.4 SG-1] SPACE GLOBE ISR MODULE · บรรทัด 39565–39569`},
+      {text:`{ name:'THEOS-2', norad:58016, type:'OPT-HR', res:'0.5m', owner:'GISTDA (TH)', color:'#00ff88',\n  tle1:'1 58016U 23155A   26171.48934509 ...', tle2:'2 58016  97.8876 242.4225 ...' }`,where:`SG_CATALOG[0] · บรรทัด 39572–39574`},
+      {text:`// 21-satellite catalog: OPT-HR×7, OPT-MR×9, SAR×5\n// Thai(GISTDA)×4 · Maxar/WorldView-3(0.31m) · Pleiades Neo(0.3m)\n// SAR: TerraSAR-X · COSMO-SkyMed · RADARSAT-2 · Sentinel-1A · ALOS-2`,where:`SG_CATALOG · บรรทัด 39571–39601`},
+      {text:`// DARK CONTACTS (SAR) = adversary/foreign SAR passes over AO (counter-ISR/OPSEC)\n// COLLECTION PLAN (24H) = predicted passes all sats next 24h\n// el >= SG_MIN_EL_DEG → IN WINDOW · ±SG_APPROACH_MIN min → APPROACHING`,where:`sgPanel #sg-dark-list / #sg-collection-plan · บรรทัด ~7208–7240`},
+      {text:`el.classList.add('active');\n_sgEnsureLibs().then(function(){ _sgOpen(); }); // lazy-load satellite.js on first open`,where:`window.toggleSpaceGlobe() · บรรทัด 39612–39622`}
+    ],
+    illustration:`ลูกโลก 3 มิติ: วงโคจร TLE/SGP4 + ground track + coverage cone · AO อ่าวไทย 10°N 102°E รัศมี 500km · ISR WINDOW: 🟢 IN / 🟡 APPROACH / ⬜ BEYOND · 🚨 DARK CONTACTS (SAR ต่างชาติ = counter-ISR) · 📅 COLLECTION PLAN 24h`
+  };
 })();
 </script>
 <script>
@@ -469,6 +493,7 @@ window.BLOCK_DETAILS = {"p1":{"id":"p1","titleTH":"การจำลองภ�
    {id:'sn_cam',g:1,th:'กล้องตรวจการณ์ชายฝั่ง (EO/IR)',src:'แหล่งข้อมูล: กรวย FOV ฉายบนแผนที่ three-geo',to:['p1','p3']},
    {id:'sn_adsb',g:2,th:'ADS-B โดเมนอากาศ',src:'แหล่งข้อมูล: adsb.lol API (สำรอง OpenSky) · 250 nm · poll 60 s',to:['p4','p5']},
    {id:'sn_kp',g:2,th:'สภาพอวกาศ — ดัชนี Kp',src:'แหล่งข้อมูล: NOAA SWPC · เตือน G-storm Kp ≥ 5',to:['p4']},
+   {id:'sn_sat',g:2,th:'ดาวเทียมลาดตระเวน ISR — Space Globe',src:'แหล่งข้อมูล: TLE/SGP4 · ๒๑ ดวง · GISTDA THEOS-2/1, NAPA-1/2 + พันธมิตร/พาณิชย์',to:['p4','p_staff']},
    {id:'sn_gdelt',g:3,th:'ข่าวสารเปิด OSINT',src:'แหล่งข้อมูล: GDELT 2.0 · คำค้น navy / maritime',to:['p4','p_staff']},
    {id:'sn_gnss',g:3,th:'GNSS รบกวน/ลวง (Spoof · Jam)',src:'แหล่งข้อมูล: R4 cyber-physical · jitter ≥0.5 → spoof 4σ ใน 8 nm',to:['p1','p4','p8']},
    {id:'sn_woa',g:4,th:'อุณหภูมิ–ความเค็ม → SVP',src:'แหล่งข้อมูล: World Ocean Atlas 2023 (WOA23 / NOAA)',to:['p2']},
@@ -528,14 +553,15 @@ window.BLOCK_DETAILS = {"p1":{"id":"p1","titleTH":"การจำลองภ�
   var cap2=div('chancap','◀─ FEED · TASKING ─▶'); place(cap2,CH2[0],HEAD_Y+18,CH2[1]-CH2[0],16); cap2.style.textAlign='center';
 
   /* ===== BUILD : left sensors ===== */
-  var SN_H=43, SN_GAP=3, GRP_H=24, GRP_PAD=7;
-  var y=NT;
+  var SN_H=40, SN_GAP=3, GRP_H=24, GRP_PAD=7;
+  var y=NT, snNum=0;
   SGROUPS.forEach(function(g,gi){
     if(gi>0) y+=GRP_PAD;
     var gh=div('grp',g[0]+'<small>'+g[1]+'</small>'); place(gh,LX+6,y,LW-12,GRP_H);
     y+=GRP_H+6;
     SENSORS.filter(function(s){return s.g===gi;}).forEach(function(s){
-      var d=div('sn','<div class="th">'+s.th+'</div><div class="src">'+s.src+'</div>');
+      snNum++;
+      var d=div('sn','<div class="th"><span class="sn-num">'+snNum+'.</span> '+s.th+'</div><div class="src">'+s.src+'</div>');
       d.id=s.id; d.setAttribute('data-kind','sn');
       d.style.borderLeftColor=procColor[s.to[0]];
       place(d,LX+6,y,LW-12,SN_H);
@@ -944,6 +970,36 @@ window.BLOCK_DETAILS = {"p1":{"id":"p1","titleTH":"การจำลองภ�
      +'<text x="381" y="110" fill="#39ff14" text-anchor="middle" font-size="9">🎣 Fisher-MSP</text>'
      +'<text x="381" y="124" fill="#9be8a0" text-anchor="middle" font-size="7">ค่าชดเชย ฿ · ร่องเดินเรือ</text>'
      +'<text x="230" y="158" fill="#7d93b2" text-anchor="middle" font-size="7.5">พ.ร.บ.ผลประโยชน์ของชาติทางทะเล ๒๕๖๒ · grey-zone inter-agency</text>'
+     +'</g></svg>',
+   sn_sat:'<svg viewBox="0 0 460 196"><g font-family="JetBrains Mono,monospace" font-size="8.5">'
+     +'<circle cx="230" cy="138" r="38" fill="rgba(14,165,233,.13)" stroke="#0ea5e9" stroke-width="1.6"/>'
+     +'<text x="230" y="143" fill="#7dd3fc" text-anchor="middle" font-size="8">EARTH · อ่าวไทย</text>'
+     +'<ellipse cx="230" cy="80" rx="175" ry="48" fill="none" stroke="#a78bfa" stroke-width="1.4" stroke-dasharray="5 4"/>'
+     +'<ellipse cx="230" cy="126" rx="88" ry="18" fill="none" stroke="#7c3aed" stroke-width="1" stroke-dasharray="3 3"/>'
+     +'<text x="324" y="122" fill="#a78bfa" font-size="7.5">AO r=500km</text>'
+     +'<rect x="46" y="62" width="16" height="10" rx="2" fill="rgba(0,255,136,.15)" stroke="#00ff88" stroke-width="1.4"/>'
+     +'<text x="54" y="54" fill="#00ff88" text-anchor="middle" font-size="7.5">THEOS-2</text>'
+     +'<text x="54" y="46" fill="#6fcf97" text-anchor="middle" font-size="7">0.5m · TH</text>'
+     +'<line x1="54" y1="72" x2="192" y2="134" stroke="#00ff88" stroke-width="1" stroke-dasharray="3 3" opacity=".6"/>'
+     +'<line x1="62" y1="72" x2="208" y2="138" stroke="#00ff88" stroke-width="1" stroke-dasharray="3 3" opacity=".6"/>'
+     +'<rect x="372" y="50" width="16" height="10" rx="2" fill="rgba(255,153,0,.15)" stroke="#ff9900" stroke-width="1.4"/>'
+     +'<text x="380" y="42" fill="#ff9900" text-anchor="middle" font-size="7.5">SAR</text>'
+     +'<text x="380" y="34" fill="#e8a04a" text-anchor="middle" font-size="7">0.25m</text>'
+     +'<path d="M82,100 C140,122 190,130 230,132" fill="none" stroke="#a78bfa" stroke-width="1" stroke-dasharray="2 3" opacity=".7"/>'
+     +'<text x="160" y="114" fill="#7d93b2" font-size="7">ground track</text>'
+     +'<rect x="6" y="8" width="118" height="52" rx="6" fill="rgba(0,212,255,.07)" stroke="#0ea5e9" stroke-width="1"/>'
+     +'<text x="65" y="22" fill="#7dd3fc" text-anchor="middle" font-weight="700" font-size="8.5">ISR WINDOW</text>'
+     +'<text x="65" y="34" fill="#9db1cc" text-anchor="middle" font-size="7.5">🟢 el≥5° IN WINDOW</text>'
+     +'<text x="65" y="45" fill="#9db1cc" text-anchor="middle" font-size="7.5">🟡 ±45min APPROACHING</text>'
+     +'<text x="65" y="56" fill="#9db1cc" text-anchor="middle" font-size="7.5">⬜ BEYOND HORIZON</text>'
+     +'<text x="452" y="16" fill="#00ff88" text-anchor="end" font-size="8">🇹🇭 Thai × 4</text>'
+     +'<text x="452" y="28" fill="#a78bfa" text-anchor="end" font-size="8">OPT-HR × 7</text>'
+     +'<text x="452" y="40" fill="#7dd3fc" text-anchor="end" font-size="8">OPT-MR × 9</text>'
+     +'<text x="452" y="52" fill="#ff9900" text-anchor="end" font-size="8">SAR × 5</text>'
+     +'<rect x="6" y="164" width="134" height="20" rx="5" fill="rgba(124,58,237,.10)" stroke="#7c3aed" stroke-width="1"/>'
+     +'<text x="73" y="177" fill="#c4b5fd" text-anchor="middle" font-size="7.5">📅 COLLECTION PLAN 24h</text>'
+     +'<rect x="318" y="164" width="136" height="20" rx="5" fill="rgba(220,38,38,.10)" stroke="#dc2626" stroke-width="1"/>'
+     +'<text x="386" y="177" fill="#fca5a5" text-anchor="middle" font-size="7.5">🚨 DARK CONTACTS (SAR)</text>'
      +'</g></svg>'
   };
 
