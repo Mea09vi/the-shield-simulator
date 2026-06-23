@@ -340,7 +340,7 @@
     <!-- [v15.1 Stage 4] ขยาย font set — body 5 + HUD 5 (Google Fonts) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Prompt:wght@300;400;600;700&family=Kanit:wght@300;400;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;600;700&family=Noto+Sans+Thai:wght@300;400;600;700&family=Chakra+Petch:wght@300;400;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&family=Rajdhani:wght@400;500;600;700&family=Audiowide&family=Saira:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Prompt:wght@300;400;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
     <!--
       ── CSS Stylesheet ────────────────────────────────────────────
       ส่วนนี้กำหนด "รูปลักษณ์" ของ Simulator ทั้งหมด
@@ -622,11 +622,12 @@
                         0 8px 32px 0 rgba(0, 0, 0, 0.45) !important;
         }
         .panel:hover {
+            border-color: rgb(var(--cyan-rgb) / 0.50) !important;
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
                         inset 0 -1px 0 rgba(0, 0, 0, 0.42),
                         inset 1px 0 0 rgba(255, 255, 255, 0.045),
                         inset -1px 0 0 rgba(0, 0, 0, 0.22),
-                        0 12px 38px 0 rgb(var(--cyan-rgb) / 0.10) !important;
+                        0 12px 38px 0 rgb(var(--cyan-rgb) / 0.20) !important;
         }
         .panel-title {
             border-left: 2px solid currentColor;
@@ -721,10 +722,14 @@
         }
         #uiZoomCtl .uz-btn:hover { background:rgb(var(--teal-rgb) / .22); }
         .panel {
-            background:var(--bg-panel); border-radius:8px; border:1px solid #1a3a5c;
-            padding:8px 10px; display:flex; flex-direction:column; gap:5px; overflow:hidden;
+            background: var(--bg-panel); border-radius: 8px; border: 1px solid rgb(var(--cyan-rgb) / 0.25);
+            padding: 8px 10px; display: flex; flex-direction: column; gap: 5px; overflow: hidden;
             /* [v16.0.5 W5-Q11] entrance นุ่มๆ ตอน mount/แสดงผล */
             animation: udc-panel-in var(--dur-med) var(--ease-out);
+            /* glassmorphism enhancement */
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
         }
         .panel-title { font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }
         .panel-sub   { font-size:10px; letter-spacing:1px; opacity:.65; margin-top:-4px; }
@@ -4521,10 +4526,22 @@
         #mda-ai-modal .mda-ai-alert.crit {
             border-left-color: var(--red);
             background: rgb(var(--red-rgb) / 0.10);
+            box-shadow: 0 0 8px rgb(var(--red-rgb) / 0.15);
+            animation: alert-crit-pulse 2s infinite ease-in-out;
         }
         #mda-ai-modal .mda-ai-alert.warn {
             border-left-color: var(--amber);
             background: rgb(var(--amber-rgb) / 0.08);
+            box-shadow: 0 0 8px rgb(var(--amber-rgb) / 0.10);
+            animation: alert-warn-pulse 2s infinite ease-in-out;
+        }
+        @keyframes alert-crit-pulse {
+            0%, 100% { box-shadow: 0 0 4px rgb(var(--red-rgb) / 0.12); border-left-color: rgb(var(--red-rgb) / 0.7); }
+            50% { box-shadow: 0 0 12px rgb(var(--red-rgb) / 0.32); border-left-color: rgb(var(--red-rgb) / 1.0); }
+        }
+        @keyframes alert-warn-pulse {
+            0%, 100% { box-shadow: 0 0 4px rgb(var(--amber-rgb) / 0.08); border-left-color: rgb(var(--amber-rgb) / 0.7); }
+            50% { box-shadow: 0 0 10px rgb(var(--amber-rgb) / 0.25); border-left-color: rgb(var(--amber-rgb) / 1.0); }
         }
         #mda-ai-modal .mda-ai-alert.info {
             border-left-color: var(--cyan);
@@ -32188,17 +32205,10 @@ window.MDA.StaffPlan = { runPlan, approvePlan, toggleView, state };
     const FONTS_BODY = [
         { value: "'Sarabun', sans-serif",            label: 'Sarabun (Default)' },
         { value: "'Prompt', sans-serif",             label: 'Prompt' },
-        { value: "'Kanit', sans-serif",              label: 'Kanit' },
-        { value: "'IBM Plex Sans Thai', sans-serif", label: 'IBM Plex Sans Thai' },
-        { value: "'Noto Sans Thai', sans-serif",     label: 'Noto Sans Thai' },
     ];
     const FONTS_MONO = [
         { value: "'Share Tech Mono', monospace",     label: 'Share Tech Mono (Default)' },
         { value: "'Orbitron', sans-serif",           label: 'Orbitron · sci-fi' },
-        { value: "'JetBrains Mono', monospace",      label: 'JetBrains Mono' },
-        { value: "'Rajdhani', sans-serif",           label: 'Rajdhani · military' },
-        { value: "'Saira', sans-serif",              label: 'Saira · clean tech' },
-        { value: "'Audiowide', sans-serif",          label: 'Audiowide · retro-fut' },
     ];
 
     // [Stage 5 / v15.1 5b] Panel style options
@@ -37917,7 +37927,7 @@ window.MDA.FisherMSP = (function(){
      Strategic-analysis data from RTN thesis Chapter 3 (PMESII/SWOT/TOWS/Gap)
      + Chapter 4 Table 4-1 (As-Is / To-Be), mapped to live simulator KPIs.
 
-     PASTE this single <script> anywhere before the Strategic-Analysis panel
+     PASTE this single script block anywhere before the Strategic-Analysis panel
      code runs. It only populates window.MDA.STRAT_DATA — no DOM, no side
      effects. All Thai text is verbatim/faithful to the Word docs (ch3/ch4).
 
@@ -38225,7 +38235,7 @@ window.MDA.STRAT_DATA = {
      Status contract returned by status():
        { key:'strategic', label, state:'embodied', score:100, detail }
 
-     PASTE this <script> before </body>, AFTER phase4_data.html has run.
+     PASTE this script block before </body>, AFTER phase4_data.html has run.
      ============================================================================ -->
 <script>
 window.MDA = window.MDA || {};
