@@ -5,6 +5,7 @@
 Single-file HTML5 tactical simulator — เปิดในเบราว์เซอร์ได้ทันที ไม่ต้องติดตั้ง/ไม่มี build step
 
 **Live Simulator (GitHub Pages):** <https://mea09vi.github.io/the-shield-simulator/>
+
 **Main Landing Site (GitHub Pages):** <https://mea09vi.github.io/the-shield-simulator/THE_SHIELD_Pitch.html>
 
 ---
