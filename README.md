@@ -173,4 +173,4 @@ HUD/mono: Share Tech Mono / Saira / Orbitron / JetBrains Mono / Rajdhani / Audio
 
 ## License
 
-For academic research only. © 2026 Royal Thai Naval Academy
+For academic research only. © 2026 Naval Command and Staff College
