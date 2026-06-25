@@ -4683,6 +4683,225 @@
             position: relative;
             border-color: rgba(245,158,11,.35);
         }
+        #mda-staff-bd .bsrc { font-size: 9px; color: var(--text-muted); margin-top: 5px; line-height: 1.5; }
+
+        /* ─── [v17.5.6-Wargame] Wargaming Sandbox Panel Styles ─── */
+        #mda-ai-modal .mda-wargame-panel {
+            position: absolute;
+            top: 50px;
+            left: -460px; /* Slide-out position */
+            width: 450px;
+            height: calc(100% - 100px);
+            z-index: 8500;
+            background: linear-gradient(180deg, rgba(6, 17, 32, 0.98) 0%, rgba(3, 8, 20, 0.99) 100%);
+            border: 1.5px solid rgba(56, 189, 248, 0.45);
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.25), 0 10px 25px rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Chakra Petch', sans-serif;
+        }
+        #mda-ai-modal .mda-wargame-panel.show {
+            left: 14px; /* Slide into view on the left side of the modal */
+        }
+        
+        /* Adjust layout of staff view when wargame panel is open to make room */
+        #mda-ai-modal .mda-staff-view {
+            transition: padding-left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #mda-ai-modal .mda-staff-view.wargame-active {
+            padding-left: 480px; /* Shift content right to prevent overlap */
+        }
+
+        #mda-ai-modal .mda-wargame-panel .wg-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+            background: rgba(8, 26, 48, 0.5);
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 11px;
+            color: #38bdf8;
+            letter-spacing: 0.04em;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #38bdf8;
+            box-shadow: 0 0 8px #38bdf8;
+            animation: staffPulse 1.2s infinite;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-close {
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-close:hover {
+            color: #ef4444;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-sub {
+            padding: 5px 14px;
+            font-size: 9px;
+            color: #64748b;
+            letter-spacing: 0.05em;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px dashed rgba(148, 163, 184, 0.1);
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 12px;
+            gap: 12px;
+            overflow-y: auto;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-log-col {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            min-height: 180px;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-log-head {
+            font-size: 9.5px;
+            font-weight: 700;
+            color: #94a3b8;
+            margin-bottom: 5px;
+            letter-spacing: 0.05em;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-log-screen {
+            flex: 1;
+            background: #020617;
+            border: 1px solid rgba(56, 189, 248, 0.15);
+            border-radius: 4px;
+            padding: 8px;
+            font-family: var(--font-mono), 'Consolas', monospace;
+            font-size: 10px;
+            line-height: 1.45;
+            color: #38bdf8;
+            overflow-y: auto;
+            max-height: 240px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-log-screen div {
+            margin-bottom: 6px;
+            border-bottom: 1px dashed rgba(56, 189, 248, 0.04);
+            padding-bottom: 4px;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-stats-col {
+            flex: 0.8;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-gauge-group {
+            margin-bottom: 4px;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-gauge-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9.5px;
+            color: #cbd5e1;
+            margin-bottom: 3px;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-gauge-bar {
+            width: 100%;
+            height: 5px;
+            background: rgba(148, 163, 184, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-gauge-bar i {
+            display: block;
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.35s ease;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-stat-card {
+            background: rgba(15, 23, 42, 0.45);
+            border: 1px solid rgba(148, 163, 184, 0.08);
+            border-radius: 4px;
+            padding: 6px;
+            text-align: center;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-stat-card .stat-lbl {
+            font-size: 8.5px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-stat-card .stat-val {
+            font-size: 11px;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-top: 2px;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-actions {
+            display: flex;
+            gap: 8px;
+            padding: 10px 12px;
+            background: rgba(4, 12, 22, 0.8);
+            border-top: 1px solid rgba(56, 189, 248, 0.20);
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-btn {
+            flex: 1;
+            padding: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            background: rgba(14, 165, 233, 0.12);
+            color: #38bdf8;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-btn:hover:not(:disabled) {
+            background: rgba(14, 165, 233, 0.25);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-btn.secondary {
+            background: rgba(100, 116, 139, 0.1);
+            border-color: rgba(148, 163, 184, 0.2);
+            color: #94a3b8;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-btn.secondary:hover {
+            background: rgba(100, 116, 139, 0.2);
+            color: #fff;
+        }
+        #mda-ai-modal .mda-wargame-panel .wg-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 980px) {
+            #mda-ai-modal .mda-wargame-panel { width: calc(100% - 28px); left: -100%; }
+            #mda-ai-modal .mda-wargame-panel.show { left: 14px; }
+            #mda-ai-modal .mda-staff-view.wargame-active { padding-left: 18px; }
+        }
+
+        @media (max-width: 980px) {
+            #mda-ai-modal .mda-staff-view { grid-template-columns: 1fr; }
+        }
         #mda-ai-modal .mda-ai-opus-narr.offline-narr::after {
             content: 'OFFLINE NARRATIVE · RULE-GENERATED';
             position: absolute; inset: 0;
@@ -5393,6 +5612,13 @@
                 <span class="count">UNCLOS</span>
                 <span class="mda-sw"></span>
             </div>
+            <!-- [v17.5.5-ShipDensity] ArcGIS Global Ship Density - All Vessels -->
+            <div class="mda-lp-row" data-mda-layer="ship-density" title="Global Ship Density (ArcGIS) — แผนที่ความหนาแน่นทางเรือโลกจากภาพถ่ายและ AIS ตรึงโดย IMF / World Bank ย้อนหลัง (๒๐๑๕–๒๐๒๑) — Hosted Image Service">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#06b6d4"></span>🛰️ ความหนาแน่นเรือโลก</span>
+                <span class="count" id="mda-cnt-ship-density">--</span>
+                <span class="mda-sw"></span>
+            </div>
         </div>
     </div>
 
@@ -5954,6 +6180,11 @@
                 <option value="@cf/deepseek-ai/deepseek-r1-distill-qwen-32b">🧠 DeepSeek R1 32B (reasoning)</option>
                 <option value="@cf/meta/llama-3.1-8b-instruct">🚀 Llama 3.1 8B (fastest)</option>
             </optgroup>
+            <optgroup label="── Alibaba Qwen (via Workers AI) ──">
+                <option value="@cf/qwen/qwen2.5-coder-32b-instruct">🐼 Qwen 2.5 Coder 32B (high-performance)</option>
+                <option value="@cf/qwen/qwen1.5-14b-chat-awq">🐼 Qwen 1.5 14B Chat (balanced · requires deploy)</option>
+                <option value="@cf/qwen/qwen1.5-7b-chat-awq">🐼 Qwen 1.5 7B Chat (lightweight · requires deploy)</option>
+            </optgroup>
         </select>
         <span class="mda-ai-toolbar-spacer"></span>
         <span class="mda-ai-toolbar-info">PROXY: <span id="mda-ai-proxy-info" style="color:#fbbf24;">not set</span></span>
@@ -6126,6 +6357,80 @@
 
     </div>
 
+    <!-- ═══ [v17.5.6-Wargame] Floating Wargame Sandbox Panel ═══ -->
+    <div id="mda-wargame-panel" class="mda-wargame-panel">
+        <div class="wg-head">
+            <div class="wg-title">
+                <span class="wg-dot"></span>
+                <span>⚔️ TACTICAL WARGAME SIMULATOR (อทร.๘๓๐๗)</span>
+            </div>
+            <button class="wg-close" id="mda-wg-close" title="ปิดหน้าต่างยุทธกีฬา">✕</button>
+        </div>
+        <div class="wg-sub">RED COMMAND (ECOA) ↔ BLUE DEFENDER (UDC COA)</div>
+        
+        <div class="wg-body">
+            <!-- Left Column: Terminal combat logs -->
+            <div class="wg-log-col">
+                <div class="wg-log-head">📟 COMBAT TERMINAL LOGS</div>
+                <div id="mda-wg-log" class="wg-log-screen">
+                    <div style="color:#0ea5e9;">[SYSTEM] Wargame console initialized. Ready for simulation...</div>
+                </div>
+            </div>
+            <!-- Right Column: Gauges and statistics -->
+            <div class="wg-stats-col">
+                <div class="wg-log-head">📊 TACTICAL STATUS MONITOR</div>
+                <div class="wg-gauge-group">
+                    <div class="wg-gauge-label">
+                        <span>🛡️ Blue Defense Readiness</span>
+                        <span id="mda-wg-g-blue-val" style="color:#10b981;">100%</span>
+                    </div>
+                    <div class="wg-gauge-bar"><i id="mda-wg-g-blue" style="width:100%; background:#10b981;"></i></div>
+                </div>
+                
+                <div class="wg-gauge-group">
+                    <div class="wg-gauge-label">
+                        <span>🛰️ Red Stealth Signature</span>
+                        <span id="mda-wg-g-red-val" style="color:#fbbf24;">40%</span>
+                    </div>
+                    <div class="wg-gauge-bar"><i id="mda-wg-g-red" style="width:40%; background:#fbbf24;"></i></div>
+                </div>
+
+                <div class="wg-gauge-group">
+                    <div class="wg-gauge-label">
+                        <span>⚖️ ROE Gate Alert Level</span>
+                        <span id="mda-wg-g-roe-val" style="color:#38bdf8;">GATE 0 (HOLD)</span>
+                    </div>
+                    <div class="wg-gauge-bar"><i id="mda-wg-g-roe" style="width:10%; background:#38bdf8;"></i></div>
+                </div>
+
+                <div class="wg-stats-grid">
+                    <div class="wg-stat-card">
+                        <div class="stat-lbl">Detection Prob</div>
+                        <div class="stat-val" id="mda-wg-s-det">--%</div>
+                    </div>
+                    <div class="wg-stat-card">
+                        <div class="stat-lbl">Intercept Time</div>
+                        <div class="stat-val" id="mda-wg-s-time">-- min</div>
+                    </div>
+                    <div class="wg-stat-card">
+                        <div class="stat-lbl">Weather Impact</div>
+                        <div class="stat-val" id="mda-wg-s-wx">NOMINAL</div>
+                    </div>
+                    <div class="wg-stat-card">
+                        <div class="stat-lbl">Cyber Jamming</div>
+                        <div class="stat-val" id="mda-wg-s-cyber">NONE</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="wg-actions">
+            <button class="wg-btn" id="mda-wg-play-btn">▶ Play Turn 1</button>
+            <button class="wg-btn" id="mda-wg-autoplay-btn">⏭ Auto Play</button>
+            <button class="wg-btn secondary" id="mda-wg-reset-btn">🔄 Reset</button>
+        </div>
+    </div>
+
     <!-- ═══ [v17.0.0 STAFF-3] AI STAFF PLANNER VIEW — ฝ่ายเสนาธิการ AI (IPOE → ECOA → COA → แผนวางกำลัง) ═══ -->
     <div class="mda-staff-view" id="mda-staff-view">
 
@@ -6151,7 +6456,13 @@
                 </div>
             </div>
             <div class="mda-ai-section">
-                <div class="mda-ai-sec-head"><span>หนทางปฏิบัติของข้าศึก (ECOA)</span><span id="mda-staff-ecoa-count">—</span></div>
+                <div class="mda-ai-sec-head" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>หนทางปฏิบัติของข้าศึก (ECOA)</span>
+                    <span style="display:flex; gap:6px; align-items:center;">
+                        <span id="mda-staff-ecoa-count">—</span>
+                        <button class="mda-ai-btn secondary" id="mda-staff-wargame-btn" style="padding:2px 8px; font-size:9.5px; height:20px; line-height:1; display:none;" title="เปิดระบบยุทธกีฬาจำลอง">⚔️ ยุทธกีฬา</button>
+                    </span>
+                </div>
                 <div id="mda-staff-ecoas"><div style="color:var(--text-muted);font-size:10.5px;">กด «🧭 วิเคราะห์ &amp; วางแผน» เพื่อเริ่มกระบวนการ</div></div>
             </div>
         </div>
@@ -26946,7 +27257,7 @@ window.toggleSat3D = toggleSat3D;
         },
         layers: {},       // L.layerGroup() ต่อโดเมน
         data:   { aviation: [], seismic: [], space: null, gdelt: [], fusion: [], marineWx: null, seamarks: null, weather: null, storm: [], radar: null, metoc: null },   // [v16.1.0 METOC-2]
-        state:  { on: { aviation: true, 'ais-heat': true, 'ais-anomaly': true, seismic: true, space: true, gdelt: true, seamark: false, 'marine-wx': false, weather: false, storm: false, 'rain-radar': false, metoc: false, 'gistda-flood': false } },   // [v16.1.0 METOC-2] metoc ปิด default (ข้อมูลยัง fetch ตอน boot เพื่อป้อน AI context) · [METOC-4] gistda-flood ปิด default
+        state:  { on: { aviation: true, 'ais-heat': true, 'ais-anomaly': true, seismic: true, space: true, gdelt: true, seamark: false, 'marine-wx': false, weather: false, storm: false, 'rain-radar': false, metoc: false, 'gistda-flood': false, 'ship-density': false } },   // [v16.1.0 METOC-2] metoc ปิด default · [METOC-4] gistda-flood ปิด default
         timers: {}
     };
 
@@ -28270,6 +28581,154 @@ window.toggleSat3D = toggleSat3D;
             // WMS ไม่มี data fetch — refresh เป็น no-op ตาม contract ของ module MDA
             function refresh() {}
             return { layer, refresh, name: 'GISTDA' };
+        })();
+
+        /* ══════════════════════════════════════════════════════════════════
+           [v17.5.5-ShipDensity] Global Vessel Density layer (Hosted Image Service)
+           ────────────────────────────────────────────────────────────────
+           วัตถุประสงค์ : แผนที่ความหนาแน่นทางเรือโลกจากภาพถ่ายและ AIS ตรึงโดย IMF / World Bank
+                          ย้อนหลัง (๒๐๑๕–๒๐๒๑) — โหลดและปรับสัดส่วนภาพแผนที่ตรงจาก Living Atlas (DensityMap1)
+           ════════════════════════════════════════════════════════════════ */
+        MDA.ShipDensity = (function () {
+            let overlay = null;
+            let calWidget = null;
+            
+            // พิกัดเริ่มต้นสำหรับ DensityMap1 (เข้าสู่สัตหีบ/อ่าวไทยตอนบน)
+            const state = {
+                north: 13.510,
+                south: 12.010,
+                west: 99.980,
+                east: 101.280,
+                opacity: 0.70
+            };
+
+            function getBounds() {
+                return [[state.south, state.west], [state.north, state.east]];
+            }
+
+            function updateOverlay() {
+                if (overlay) {
+                    overlay.setBounds(getBounds());
+                    overlay.setOpacity(state.opacity);
+                }
+            }
+
+            function createCalibratorWidget() {
+                if (calWidget) return;
+                
+                calWidget = document.createElement('div');
+                calWidget.id = 'mda-density-calibrator';
+                calWidget.style.cssText = `
+                    position: absolute;
+                    top: 100px;
+                    right: 20px;
+                    z-index: 1100;
+                    background: rgba(10, 25, 47, 0.95);
+                    border: 1px solid #06b6d4;
+                    border-radius: 6px;
+                    padding: 12px;
+                    width: 250px;
+                    color: #e2e8f0;
+                    font-family: monospace;
+                    font-size: 11px;
+                    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7);
+                    pointer-events: auto;
+                `;
+                
+                calWidget.innerHTML = `
+                    <div style="font-weight:bold; color:#06b6d4; border-bottom:1px solid #1e293b; padding-bottom:6px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                        <span>🔧 Calibrate Ship Density Map 1</span>
+                        <span style="cursor:pointer; color:#ef4444;" onclick="document.getElementById('mda-density-calibrator').style.display='none'">✕</span>
+                    </div>
+                    <div style="margin-bottom:6px;">
+                        <label style="display:block; margin-bottom:2px;">North Lat: <span id="cal-lbl-n">${state.north}</span></label>
+                        <input type="range" id="cal-rng-n" min="13.300" max="13.700" step="0.001" value="${state.north}" style="width:100%">
+                    </div>
+                    <div style="margin-bottom:6px;">
+                        <label style="display:block; margin-bottom:2px;">South Lat: <span id="cal-lbl-s">${state.south}</span></label>
+                        <input type="range" id="cal-rng-s" min="11.800" max="12.200" step="0.001" value="${state.south}" style="width:100%">
+                    </div>
+                    <div style="margin-bottom:6px;">
+                        <label style="display:block; margin-bottom:2px;">West Lon: <span id="cal-lbl-w">${state.west}</span></label>
+                        <input type="range" id="cal-rng-w" min="99.700" max="100.200" step="0.001" value="${state.west}" style="width:100%">
+                    </div>
+                    <div style="margin-bottom:6px;">
+                        <label style="display:block; margin-bottom:2px;">East Lon: <span id="cal-lbl-e">${state.east}</span></label>
+                        <input type="range" id="cal-rng-e" min="101.000" max="101.500" step="0.001" value="${state.east}" style="width:100%">
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label style="display:block; margin-bottom:2px;">Opacity: <span id="cal-lbl-o">${state.opacity}</span></label>
+                        <input type="range" id="cal-rng-o" min="0.1" max="1.0" step="0.05" value="${state.opacity}" style="width:100%">
+                    </div>
+                    <button id="cal-btn-copy" style="width:100%; padding:6px; background:#0ea5e9; color:#fff; border:none; border-radius:3px; cursor:pointer; font-weight:bold;">Copy Bounds Code</button>
+                `;
+                
+                document.body.appendChild(calWidget);
+
+                // ตั้งค่า event listeners
+                const bindSlider = (id, prop, lblId) => {
+                    const el = document.getElementById(id);
+                    el.addEventListener('input', (e) => {
+                        const val = parseFloat(e.target.value);
+                        state[prop] = val;
+                        document.getElementById(lblId).innerText = val.toFixed(3);
+                        updateOverlay();
+                    });
+                };
+                
+                bindSlider('cal-rng-n', 'north', 'cal-lbl-n');
+                bindSlider('cal-rng-s', 'south', 'cal-lbl-s');
+                bindSlider('cal-rng-w', 'west', 'cal-lbl-w');
+                bindSlider('cal-rng-e', 'east', 'cal-lbl-e');
+                bindSlider('cal-rng-o', 'opacity', 'cal-lbl-o');
+
+                document.getElementById('cal-btn-copy').addEventListener('click', () => {
+                    const boundsStr = `[[${state.south.toFixed(4)}, ${state.west.toFixed(4)}], [${state.north.toFixed(4)}, ${state.east.toFixed(4)}]]`;
+                    navigator.clipboard.writeText(boundsStr);
+                    const btn = document.getElementById('cal-btn-copy');
+                    btn.innerText = 'Copied!';
+                    btn.style.background = '#10b981';
+                    setTimeout(() => {
+                        btn.innerText = 'Copy Bounds Code';
+                        btn.style.background = '#0ea5e9';
+                    }, 1500);
+                });
+            }
+
+            function initLayer() {
+                if (overlay) return overlay;
+                // โหลด DensityMap1_transparent.png ที่ทำพื้นหลังโปร่งใสแล้ว
+                const imgUrl = encodeURI('../08_Pictures-ภาพประกอบ/DensityMap1_transparent.png');
+                overlay = L.imageOverlay(imgUrl, getBounds(), {
+                    opacity: state.opacity,
+                    interactive: false,
+                    zIndex: 345
+                });
+                return overlay;
+            }
+
+            const layerGroup = L.layerGroup();
+            
+            const _onAdd = layerGroup.onAdd.bind(layerGroup);
+            layerGroup.onAdd = function (m) {
+                const l = initLayer();
+                layerGroup.addLayer(l);
+                createCalibratorWidget();
+                if (calWidget) calWidget.style.display = 'block';
+                setBadge('ship-density', 'ArcGIS', null);
+                return _onAdd(m);
+            };
+
+            const _onRemove = layerGroup.onRemove.bind(layerGroup);
+            layerGroup.onRemove = function (m) {
+                if (calWidget) calWidget.style.display = 'none';
+                setBadge('ship-density', '--', null);
+                return _onRemove(m);
+            };
+
+            MDA.layers.shipDensity = layerGroup;
+            function refresh() {}
+            return { layer: layerGroup, refresh, name: 'ShipDensity' };
         })();
 
         /* ══════════════════════════════════════════════════════════════════
@@ -29939,7 +30398,7 @@ window.toggleSat3D = toggleSat3D;
 
             if (wantReal) {
                 const _aiCtl = new AbortController();
-                const _aiTO  = setTimeout(() => _aiCtl.abort(), 45000);   // LLM ช้าได้ → timeout 45s กัน UI ค้างที่ 'pending'
+                const _aiTO  = setTimeout(() => _aiCtl.abort(), 90000);   // LLM ช้าได้ → เพิ่ม timeout เป็น 90s ให้โมเดลใหญ่รันเสร็จ
                 try {
                     const r = await fetch(proxy, {
                         method: 'POST',
@@ -29967,7 +30426,7 @@ window.toggleSat3D = toggleSat3D;
                         errMsg = 'empty response from Worker';
                     }
                 } catch (e) {
-                    errMsg = (e && e.name === 'AbortError') ? 'timeout (45s)' : String(e && e.message || e);
+                    errMsg = (e && e.name === 'AbortError') ? 'timeout (90s)' : String(e && e.message || e);
                     console.warn('[MDA.AI] LLM proxy call failed, falling back to mock', e);
                 } finally {
                     clearTimeout(_aiTO);
@@ -30430,7 +30889,11 @@ window.toggleSat3D = toggleSat3D;
             // Cloudflare Workers AI
             '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
             '@cf/deepseek-ai/deepseek-r1-distill-qwen-32b',
-            '@cf/meta/llama-3.1-8b-instruct'
+            '@cf/meta/llama-3.1-8b-instruct',
+            // Alibaba Qwen (via Cloudflare Workers AI)
+            '@cf/qwen/qwen2.5-coder-32b-instruct',
+            '@cf/qwen/qwen1.5-7b-chat-awq',
+            '@cf/qwen/qwen1.5-14b-chat-awq'
         ];
 
         function _shortProxy(u) {
@@ -30766,7 +31229,8 @@ window.toggleSat3D = toggleSat3D;
             'rain-radar': MDA.RainRadar.layer,      // RainViewer radar tile overlay
             // [v16.1.0 METOC-2] Sovereign MDA — แหล่งไทย
             'metoc':        MDA.METOC.layer,        // HII tide + storm surge + SWAN wave markers
-            'gistda-flood': MDA.GISTDA.layer        // [v16.1.0 METOC-4] GISTDA SAR flood WMS overlay
+            'gistda-flood': MDA.GISTDA.layer,       // [v16.1.0 METOC-4] GISTDA SAR flood WMS overlay
+            'ship-density': MDA.ShipDensity.layer   // [v17.5.5-ShipDensity] ArcGIS Global Ship Density
         };
         const labelMap = {
             'aviation':  'OpenSky Flights',
@@ -30782,7 +31246,8 @@ window.toggleSat3D = toggleSat3D;
             'storm':      'Storm Tracker (GDACS)',
             'rain-radar': 'Rain Radar (RainViewer)',
             'metoc':        'METOC ไทย (HII·SWAN)',     // [v16.1.0 METOC-2]
-            'gistda-flood': 'GISTDA Flood SAR (7d)'     // [v16.1.0 METOC-4]
+            'gistda-flood': 'GISTDA Flood SAR (7d)',    // [v16.1.0 METOC-4]
+            'ship-density': 'Global Ship Density (ArcGIS)' // [v17.5.5-ShipDensity]
         };
 
         // ── chevron expand/collapse per group
@@ -32496,6 +32961,7 @@ function _renderAll(plan) {
                '<div style="margin-top:3px;color:#94a3b8;font-size:10px;">' + geo + '</div></div>';
     }).join('');
     const ec = $id('mda-staff-ecoa-count'); if (ec) ec.textContent = plan.ecoas.length + ' ECOA';
+    const wgBtn = $id('mda-staff-wargame-btn'); if (wgBtn) wgBtn.style.display = 'inline-block';
     const cb = $id('mda-staff-coas');
     if (cb) cb.innerHTML = plan.coas.map(c => {
         const sel = c.id === plan.coa.id, tot = c.s + c.f + c.a;
@@ -32648,6 +33114,218 @@ function toggleView(force) {
     }
 }
 
+/* ── [v17.5.6-Wargame] Wargaming Sandbox Engine ──────────────── */
+let wgState = {
+    active: false,
+    turn: 1,
+    maxTurns: 3,
+    intervalId: null,
+    blueHealth: 100,
+    redStealth: 40,
+    roeGate: 0,
+    logLines: [],
+    markers: []
+};
+
+function toggleWargame(show) {
+    const p = $id('mda-wargame-panel');
+    if (!p) return;
+    if (show) {
+        p.classList.add('show');
+        resetWargame();
+    } else {
+        p.classList.remove('show');
+        cleanupWargame();
+    }
+}
+
+function cleanupWargame() {
+    if (wgState.intervalId) {
+        clearInterval(wgState.intervalId);
+        wgState.intervalId = null;
+    }
+    const playBtn = $id('mda-wg-play-btn');
+    const autoBtn = $id('mda-wg-autoplay-btn');
+    if (playBtn) playBtn.textContent = '▶ Play Turn 1';
+    if (autoBtn) autoBtn.textContent = '⏭ Auto Play';
+    
+    if (state.map) {
+        wgState.markers.forEach(m => state.map.removeLayer(m));
+    }
+    wgState.markers = [];
+}
+
+function resetWargame() {
+    cleanupWargame();
+    wgState.turn = 1;
+    wgState.blueHealth = 100;
+    wgState.redStealth = 40;
+    wgState.roeGate = 0;
+    
+    updateWargameUI();
+    
+    const log = $id('mda-wg-log');
+    if (log) {
+        log.innerHTML = `
+            <div style="color:#0ea5e9;">[SYSTEM] Tactical Wargame Panel opened. Ready.</div>
+            <div style="color:#94a3b8;font-size:10px;">ข้าศึกกำหนดกำลังโจมตี 3 ลำ คาดการณ์ระดับภัยคุกคามปานกลาง</div>
+            <div style="color:#94a3b8;font-size:10px;">กด Play Turn หรือ Auto Play เพื่อเริ่มยุทธกีฬาจำลอง</div>
+        `;
+        log.scrollTop = log.scrollHeight;
+    }
+}
+
+function updateWargameUI() {
+    const gBlue = $id('mda-wg-g-blue'), gBlueVal = $id('mda-wg-g-blue-val');
+    const gRed = $id('mda-wg-g-red'), gRedVal = $id('mda-wg-g-red-val');
+    const gRoe = $id('mda-wg-g-roe'), gRoeVal = $id('mda-wg-g-roe-val');
+    
+    if (gBlue) { gBlue.style.width = wgState.blueHealth + '%'; gBlue.style.backgroundColor = wgState.blueHealth > 60 ? '#10b981' : wgState.blueHealth > 30 ? '#fbbf24' : '#ef4444'; }
+    if (gBlueVal) gBlueVal.textContent = wgState.blueHealth + '%';
+    
+    if (gRed) { gRed.style.width = wgState.redStealth + '%'; gRed.style.backgroundColor = wgState.redStealth > 70 ? '#ef4444' : wgState.redStealth > 30 ? '#fbbf24' : '#10b981'; }
+    if (gRedVal) gRedVal.textContent = wgState.redStealth + '%';
+    
+    const gates = ['GATE 0 (HOLD)', 'GATE 1 (IDENTIFY)', 'GATE 2 (TRACK)', 'GATE 3 (ENGAGE)'];
+    if (gRoe) { gRoe.style.width = ((wgState.roeGate / 3) * 100) + '%'; gRoe.style.backgroundColor = wgState.roeGate === 3 ? '#ef4444' : '#38bdf8'; }
+    if (gRoeVal) gRoeVal.textContent = gates[wgState.roeGate] || 'GATE 0 (HOLD)';
+    
+    const sDet = $id('mda-wg-s-det');
+    const sTime = $id('mda-wg-s-time');
+    const sWx = $id('mda-wg-s-wx');
+    const sCyber = $id('mda-wg-s-cyber');
+    
+    if (sDet) sDet.textContent = (90 - wgState.redStealth) + '%';
+    if (sTime) sTime.textContent = Math.max(5, Math.floor(45 - (wgState.roeGate * 12))) + ' min';
+    if (sWx) sWx.textContent = 'NOMINAL';
+    if (sCyber) sCyber.textContent = wgState.redStealth < 20 ? 'ACTIVE' : 'NONE';
+    
+    const playBtn = $id('mda-wg-play-btn');
+    if (playBtn) {
+        if (wgState.turn > wgState.maxTurns) {
+            playBtn.textContent = '🏁 Finished';
+            playBtn.disabled = true;
+        } else {
+            playBtn.textContent = '▶ Play Turn ' + wgState.turn;
+            playBtn.disabled = false;
+        }
+    }
+}
+
+function runWargameTurn() {
+    if (wgState.turn > wgState.maxTurns) return;
+    
+    const log = $id('mda-wg-log');
+    if (!log) return;
+    
+    let logsHtml = '';
+    const map = state.map;
+    
+    if (wgState.turn === 1) {
+        wgState.roeGate = 1;
+        wgState.redStealth = 25;
+        logsHtml += `<div style="color:#fbbf24;margin-top:5px;"><b>[TURN 1] RED ACTION: Infiltration</b></div>`;
+        logsHtml += `<div>• ข้าศึกส่งหน่วยก่อวินาศกรรมใต้น้ำ (SDV) ออกเดินทางจากเรือแม่</div>`;
+        logsHtml += `<div>• 🛰️ ดาวเทียม GISTDA SAR ตรวจพบสิ่งผิดปกติบริเวณพิกัด 12.4° N, 101.2° E</div>`;
+        logsHtml += `<div style="color:#38bdf8;">• ⚖️ ยกระดับกฎการปะทะเป็น <b>GATE 1 (IDENTIFY)</b></div>`;
+        
+        if (map) {
+            const m = L.circleMarker([12.4, 101.2], {
+                color: '#ef4444',
+                fillColor: '#ef4444',
+                fillOpacity: 0.6,
+                radius: 12
+            }).addTo(map)
+              .bindTooltip('<b>Red SDV Infiltration</b> (Turn 1)', { permanent: true, direction: 'right' });
+            wgState.markers.push(m);
+            map.panTo([12.4, 101.2]);
+        }
+        
+    } else if (wgState.turn === 2) {
+        wgState.roeGate = 2;
+        wgState.blueHealth = 85;
+        logsHtml += `<div style="color:#fbbf24;margin-top:5px;"><b>[TURN 2] RED ACTION: Approach UDC</b></div>`;
+        logsHtml += `<div>• ข้าศึกก้าวเข้าสู่แนวรับป้องกันชั้นนอกของ UDC</div>`;
+        logsHtml += `<div>• 🌊 สายเคเบิลใต้น้ำ DAS ตรวจพบเสียงสั่นสะเทือนถี่ผิดปกติ</div>`;
+        logsHtml += `<div>• ⚓ ทุ่นเซนเซอร์ก้นทะเล Seabed Sentry ยืนยันตำแหน่งเป้าหมาย 2 เป้า</div>`;
+        logsHtml += `<div style="color:#34d399;">• 🛡️ ระบบตอบโต้ Cyber Jamming ทำงานลดการกวาดสัญญาณข้าศึก</div>`;
+        logsHtml += `<div style="color:#38bdf8;">• ⚖️ ยกระดับกฎการปะทะเป็น <b>GATE 2 (TRACK)</b></div>`;
+        
+        if (map) {
+            const m = L.circleMarker([12.55, 101.15], {
+                color: '#ef4444',
+                fillColor: '#ef4444',
+                fillOpacity: 0.7,
+                radius: 14
+            }).addTo(map)
+              .bindTooltip('<b>Acoustic Contact (DAS/Seabed)</b> (Turn 2)', { permanent: true, direction: 'right' });
+            wgState.markers.push(m);
+            map.panTo([12.55, 101.15]);
+        }
+        
+    } else if (wgState.turn === 3) {
+        wgState.roeGate = 3;
+        const hasAcoustic = true;
+        if (hasAcoustic) {
+            wgState.blueHealth = 95;
+            logsHtml += `<div style="color:#fbbf24;margin-top:5px;"><b>[TURN 3] RED ACTION: Attack Attempt</b></div>`;
+            logsHtml += `<div style="color:#34d399;"><b>[BLUE DEFENSE] Counter-Tactics Deployed</b></div>`;
+            logsHtml += `<div>• แจ้งเตือนภัยคุกคามใต้น้ำผ่านระบบ LLM อัตโนมัติไปยังกำลังพล</div>`;
+            logsHtml += `<div>• หน่วยเคลื่อนที่เร็วทางเรือออกปฏิบัติการสกัดกั้นสำเร็จ</div>`;
+            logsHtml += `<div style="color:#34d399;">• ผลลัพธ์: ป้องกันความเสียหายแก่ UDC ได้ 95% (ข้าศึกถูกสกัดกั้น)</div>`;
+        } else {
+            wgState.blueHealth = 50;
+            logsHtml += `<div style="color:#ef4444;margin-top:5px;"><b>[TURN 3] RED ACTION: Attack Attempt</b></div>`;
+            logsHtml += `<div style="color:#ef4444;">• ระบบตรวจจับใต้น้ำไม่เพียงพอ - ข้าศึกเข้าประชิดตัวโครงสร้างหลัก UDC</div>`;
+            logsHtml += `<div>• ผลลัพธ์: เกิดความเสียหายแก่ระบบเคเบิลพลังงานใต้น้ำ (Blue Health 50%)</div>`;
+        }
+        logsHtml += `<div style="color:#38bdf8;">• ⚖️ ยกระดับกฎการปะทะเป็น <b>GATE 3 (ENGAGE)</b></div>`;
+        logsHtml += `<div style="color:#10b981;margin-top:5px;font-weight:bold;">[FINISH] ยุทธกีฬาจำลองเสร็จสิ้น ข้อมูลถูกนำส่งไปวิเคราะห์เปรียบเทียบในขั้น ปมส.</div>`;
+        
+        if (map) {
+            const m = L.circleMarker([12.62, 101.12], {
+                color: '#34d399',
+                fillColor: '#34d399',
+                fillOpacity: 0.8,
+                radius: 16
+            }).addTo(map)
+              .bindTooltip('<b>Blue Interception Point</b> (Turn 3)', { permanent: true, direction: 'right' });
+            wgState.markers.push(m);
+            map.panTo([12.62, 101.12]);
+        }
+    }
+    
+    log.innerHTML += logsHtml;
+    log.scrollTop = log.scrollHeight;
+    
+    wgState.turn++;
+    updateWargameUI();
+}
+
+function runWargameAutoplay() {
+    const autoBtn = $id('mda-wg-autoplay-btn');
+    if (!autoBtn) return;
+    
+    if (wgState.intervalId) {
+        clearInterval(wgState.intervalId);
+        wgState.intervalId = null;
+        autoBtn.textContent = '⏭ Auto Play';
+    } else {
+        autoBtn.textContent = '⏸ Pause';
+        runWargameTurn();
+        wgState.intervalId = setInterval(() => {
+            if (wgState.turn > wgState.maxTurns) {
+                clearInterval(wgState.intervalId);
+                wgState.intervalId = null;
+                autoBtn.textContent = '⏭ Auto Play';
+                autoBtn.disabled = true;
+            } else {
+                runWargameTurn();
+            }
+        }, 2200);
+    }
+}
+
 /* ── wiring ──────────────────────────────────────────────────── */
 function setPlanType(t) {
     state.planType = t;
@@ -32672,6 +33350,14 @@ function wire() {
     const pc  = $id('mda-staff-pt-con');  if (pc)  pc.addEventListener('click', () => setPlanType('con'));
     const pd  = $id('mda-staff-pt-det');  if (pd)  pd.addEventListener('click', () => setPlanType('det'));
     const pp  = $id('mda-staff-pt-cap');  if (pp)  pp.addEventListener('click', () => setPlanType('cap'));
+    
+    // Wargame controls
+    const wgBtn = $id('mda-staff-wargame-btn'); if (wgBtn) wgBtn.addEventListener('click', () => toggleWargame(true));
+    const wgClose = $id('mda-wg-close'); if (wgClose) wgClose.addEventListener('click', () => toggleWargame(false));
+    const wgPlay = $id('mda-wg-play-btn'); if (wgPlay) wgPlay.addEventListener('click', runWargameTurn);
+    const wgAuto = $id('mda-wg-autoplay-btn'); if (wgAuto) wgAuto.addEventListener('click', runWargameAutoplay);
+    const wgReset = $id('mda-wg-reset-btn'); if (wgReset) wgReset.addEventListener('click', resetWargame);
+    
     state.wired = true;
     return true;
 }

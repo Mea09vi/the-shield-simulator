@@ -66,6 +66,8 @@ const WORKERS_AI_MODELS = new Set([
     '@cf/meta/llama-3.1-8b-instruct',
     '@cf/deepseek-ai/deepseek-r1-distill-qwen-32b',
     '@cf/qwen/qwen2.5-coder-32b-instruct',
+    '@cf/qwen/qwen1.5-14b-chat-awq',
+    '@cf/qwen/qwen1.5-7b-chat-awq',
     '@cf/mistralai/mistral-small-3.1-24b-instruct',
 ]);
 

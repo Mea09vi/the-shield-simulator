@@ -332,6 +332,9 @@
         <tr><td class="name">ดัชนีพายุสุริยะ Kp</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">NOAA SWPC <span class="tag official">ทางการสหรัฐฯ</span></td><td>เตือน HF / GPS / DGPS เสื่อม — กระทบ C4ISR</td></tr>
         <tr><td class="name">ข่าว / เหตุการณ์ภูมิภาค</td><td class="dom"><span class="dchip d-cyb">📡 ไซเบอร์-สเปกตรัม</span></td><td class="src">GDELT 2.0 (TH/VN/KH/MM/MY)</td><td>บริบทภูมิรัฐศาสตร์ทางทะเล / ทหาร</td></tr>
         <tr><td class="name">เครื่องหมายเดินเรือ</td><td class="dom"><span class="dchip d-lit">🏝 ฝั่ง-ชายฝั่ง</span></td><td class="src">OpenStreetMap Overpass (IALA-A)</td><td>ทุ่น / ไฟ / ซากเรือ / อันตราย — วางแผนช่องทางเดินเรือ</td></tr>
+        <tr><td class="name">ติดตามดาวเทียม (Space Globe)</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">Space Globe ISR API / Orbit telemetry</td><td>ติดตามและจำลองตำแหน่งดาวเทียมสำรวจ (Optical/SAR) โคจรผ่านอ่าวไทยแบบเวลาจริง</td></tr>
+        <tr><td class="name">ดาวเทียม SpaceX Telemetry</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">SpaceX API / Live Telemetry</td><td>ติดตามสถานะ ความสูง และวงโคจรดาวเทียมสื่อสารแบบเวลาจริง</td></tr>
+        <tr><td class="name">ดาวเทียม GFW GAPs (OSINT)</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">Global Fishing Watch <span class="tag official">OSINT / GAPs</span></td><td>วิเคราะห์ช่องว่างระหว่างข้อมูล AIS และภาพดาวเทียม SAR เพื่อชี้เป้าเรือต้องสงสัย</td></tr>
       </tbody>
     </table>
   </section>
@@ -351,6 +354,9 @@
         <tr><td class="name">ความลึกทะเล</td><td class="dom"><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td class="src">GEBCO 2023 / Esri Ocean</td><td>ความปลอดภัยเดินเรือ / วางเคเบิล / contact ใต้น้ำ</td></tr>
         <tr><td class="name">ความสูงพื้นบก (DEM)</td><td class="dom"><span class="dchip d-lit">🏝 ฝั่ง-ชายฝั่ง</span></td><td class="src">Digital Elevation Model</td><td>Line-of-sight เรดาร์ฝั่ง / ภูมิประเทศทางทหาร</td></tr>
         <tr><td class="name">แผนที่ฐาน</td><td class="dom"><span class="dchip d-all">◆ ฐาน/ข้ามโดเมน</span></td><td class="src">Esri Satellite / CartoDB Dark / OpenSeaMap</td><td>พื้นหลังภาพถ่าย / แผนที่มืด สำหรับ overlay ยุทธวิธี</td></tr>
+        <tr><td class="name">GISTDA น้ำท่วม SAR</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">sphere.gistda.or.th <span class="tag official">WMS/WFS</span></td><td>แผนที่น้ำท่วมจากดาวเทียมเรดาร์ SAR ย้อนหลัง ๗ วัน ซ้อนทับการวิเคราะห์ภัยพิบัติร่วม</td></tr>
+        <tr><td class="name">ภาพดาวเทียม 3D (Land Drape)</td><td class="dom"><span class="dchip d-lit">🏝 ฝั่ง-ชายฝั่ง</span><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">MapTiler Satellite-v2 / Esri World Imagery</td><td>ภาพถ่ายดาวเทียมความละเอียดสูงซ้อนทับแบบจำลองแผ่นดินและเกาะ 3D</td></tr>
+        <tr><td class="name">ดาวเทียม ความหนาแน่นเรือ (ArcGIS)</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">ArcGIS Living Atlas / IMF / World Bank <span class="tag official">Tiled Imagery</span></td><td>แสดงสถิติความหนาแน่นและเส้นทางเดินเรือหลักในอ่าวไทยย้อนหลัง (๒๐๑๕–๒๐๒๑) เพื่อประเมินช่องทางจราจรหลัก</td></tr>
       </tbody>
     </table>
   </section>
@@ -371,6 +377,7 @@
         <tr><td class="name">Transmission Loss (TL)</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span></td><td class="src">WOA23 ray-trace + HYCOM SVP</td><td>การสูญเสียเสียงตามระยะ / ความลึก</td></tr>
         <tr><td class="name">ADCP สนามกระแส / Multibeam swath</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td class="src">กระแสจริงจาก HYCOM</td><td>คาดการณ์ drift ทุ่นระเบิด / วิถี UUV / พื้นที่สำรวจ</td></tr>
         <tr><td class="name">ตรวจจับ AIS ผิดปกติ + AI Threat</td><td class="dom"><span class="dchip d-all">◆ ข้ามโดเมน (AI)</span></td><td class="src">กฎ R1–R10 บน AIS / อากาศ / แผ่นดินไหว จริง</td><td>spoof / ลอยเรือ / EEZ violation + ข้อเสนอวางกำลัง</td></tr>
+        <tr><td class="name">สายเคเบิลใยแก้วนำแสง (DAS)</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td class="src">แบบจำลองวิเคราะห์ความหนาแน่นความร้อน/การสั่นสะเทือนทางฟิสิกส์</td><td>ตรวจจับเสียงการเคลื่อนที่ของเรือดำน้ำ/UUV/การตัดสายเคเบิลตลอดแนวใต้น้ำ</td></tr>
       </tbody>
     </table>
 
@@ -381,6 +388,7 @@
         <tr><td class="name">กำลังฝ่ายเรา (PV / GUUV / ฮ.)</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span><span class="dchip d-air">🛰 อากาศ</span></td><td>วางแผนการวางกำลัง / พื้นที่ครอบคลุม</td></tr>
         <tr><td class="name">สนามทุ่นระเบิด / FLS cone / แนวสำรวจ</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td>ฝึกสถานการณ์ ASW / MCM / อุทกศาสตร์</td></tr>
         <tr><td class="name">จุดวัด SVP / XBT</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span></td><td>ฝึกวางแผนการสำรวจสมุทรศาสตร์</td></tr>
+        <tr><td class="name">โครงข่ายเซ็นเซอร์ก้นทะเลไร้สาย (Seabed Sentry)</td><td class="dom"><span class="dchip d-bed">⚓ พื้นท้องทะเล</span><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span></td><td>จำลองการวางแนวโหนดเซ็นเซอร์ก้นทะเลไร้สาย (Mesh) เพื่อตรวจจับและสกัดกั้น UUV ฝ่ายตรงข้าม</td></tr>
       </tbody>
     </table>
 
