@@ -294,9 +294,9 @@
   </header>
 
   <div class="legend">
-    <div class="lg"><span class="dot live"></span>ข้อมูลจริง — ดึงสด Real-time (LIVE)</div>
-    <div class="lg"><span class="dot baked"></span>ข้อมูลจริง — Snapshot/ฝังในระบบ (BAKED)</div>
-    <div class="lg"><span class="dot sim"></span>แบบจำลอง / คำนวณ (SIMULATED)</div>
+    <div class="lg"><span class="dot live"></span>ข้อมูลแบบเวลาจริง (Real-time / LIVE Feed)</div>
+    <div class="lg"><span class="dot baked"></span>ข้อมูลประวัติศาสตร์และแผนที่ฐาน (BAKED / Static Dataset)</div>
+    <div class="lg"><span class="dot sim"></span>แบบจำลอง / ผลการคำนวณจำลอง (SIMULATED)</div>
   </div>
 
   <div class="legend" style="gap:8px">
@@ -314,25 +314,25 @@
   <section>
     <div class="sec-head">
       <span class="sec-pill live">กลุ่ม 1</span>
-      <h2>ข้อมูลจริง ดึงสด Real-time (LIVE feed)</h2>
-      <span class="note">— ต่ออินเทอร์เน็ตแล้วดึงข้อมูลจริงจากผู้ให้บริการระดับสากล ณ เวลานั้น</span>
+      <h2>ข้อมูลเชื่อมโยงแบบเวลาจริง (LIVE Feed)</h2>
+      <span class="note">— การเชื่อมต่อเครือข่ายอินเทอร์เน็ตเพื่อดึงข้อมูลจริงจากผู้ให้บริการระดับสากล ณ เวลาปัจจุบัน</span>
     </div>
     <table>
       <thead><tr><th style="width:17%">เซ็นเซอร์ / ชั้นข้อมูล</th><th style="width:13%">โดเมนที่ใช้ Monitor</th><th style="width:28%">แหล่งข้อมูล (Resource)</th><th>ประโยชน์ต่อการ Monitor</th></tr></thead>
       <tbody class="group-live">
-        <tr><td class="name">AIS เรือผิวน้ำ</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span></td><td class="src">AISStream.io <span class="tag official">WebSocket</span></td><td>ตำแหน่ง / เข็ม / ความเร็ว / ชนิดเรือพาณิชย์-ประมง แบบสด</td></tr>
-        <tr><td class="name">SeaVision</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span></td><td class="src">US DOT / VOLPE <span class="tag official">ทางการสหรัฐฯ</span></td><td>แหล่งติดตามเรือสำรองไว้ cross-check ข้อมูล AIS</td></tr>
-        <tr><td class="name">เรือมืด (Dark Vessel)</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span></td><td class="src">Global Fishing Watch <span class="tag official">SAR ดาวเทียม</span></td><td>จับเรือที่ปิด AIS / ลอยเรือผิดปกติในเขต EEZ ไทย</td></tr>
-        <tr><td class="name">อากาศยาน</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">ADSB.lol + OpenSky Network</td><td>ติดตามอากาศยานรัศมี 250 nm (ระดับ / เข็ม / callsign)</td></tr>
-        <tr><td class="name">แผ่นดินไหวโลก</td><td class="dom"><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td class="src">USGS <span class="tag official">ทางการสหรัฐฯ</span></td><td>เฝ้าระวัง 24 ชม. + ประเมินสึนามิ / สายเคเบิลใต้น้ำ</td></tr>
-        <tr><td class="name">แผ่นดินไหวภูมิภาค</td><td class="dom"><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td class="src">กรมอุตุนิยมวิทยา (TMD) <span class="tag official">ทางการไทย</span></td><td>แหล่งหลักของไทย — แม่นยำกว่าในพื้นที่ (ผ่าน proxy)</td></tr>
-        <tr><td class="name">สภาพทะเล / คลื่น</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span></td><td class="src">Open-Meteo Marine API</td><td>ความสูงคลื่น / ทิศ / คาบ → ป้อนแบบจำลองโซนาร์</td></tr>
-        <tr><td class="name">อากาศผิวพื้น</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">Open-Meteo Weather (สถานีสัตหีบ)</td><td>ลม / ทัศนวิสัย / ความกดอากาศ — ปฏิบัติการ ฮ. / เดินเรือ</td></tr>
-        <tr><td class="name">พายุหมุนเขตร้อน</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">GDACS <span class="tag official">UN</span></td><td>ติดตามพายุที่กระทบพื้นที่ปฏิบัติการ</td></tr>
-        <tr><td class="name">เรดาร์ฝน</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">RainViewer</td><td>ตรวจฝน / ทัศนวิสัย ใกล้เรียลไทม์</td></tr>
-        <tr><td class="name">ดัชนีพายุสุริยะ Kp</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">NOAA SWPC <span class="tag official">ทางการสหรัฐฯ</span></td><td>เตือน HF / GPS / DGPS เสื่อม — กระทบ C4ISR</td></tr>
-        <tr><td class="name">ข่าว / เหตุการณ์ภูมิภาค</td><td class="dom"><span class="dchip d-cyb">📡 ไซเบอร์-สเปกตรัม</span></td><td class="src">GDELT 2.0 (TH/VN/KH/MM/MY)</td><td>บริบทภูมิรัฐศาสตร์ทางทะเล / ทหาร</td></tr>
-        <tr><td class="name">เครื่องหมายเดินเรือ</td><td class="dom"><span class="dchip d-lit">🏝 ฝั่ง-ชายฝั่ง</span></td><td class="src">OpenStreetMap Overpass (IALA-A)</td><td>ทุ่น / ไฟ / ซากเรือ / อันตราย — วางแผนช่องทางเดินเรือ</td></tr>
+        <tr><td class="name">AIS เรือผิวน้ำ</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span></td><td class="src">AISStream.io <span class="tag official">WebSocket</span></td><td>ข้อมูลตำแหน่ง เข็มทิศ ความเร็ว และประเภทเรือพาณิชย์/ประมง แบบเวลาจริง</td></tr>
+        <tr><td class="name">SeaVision</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span></td><td class="src">US DOT / VOLPE <span class="tag official">ทางการสหรัฐฯ</span></td><td>ระบบติดตามตำแหน่งเรือสำรอง สำหรับตรวจสอบความถูกต้องร่วมกับข้อมูล AIS</td></tr>
+        <tr><td class="name">เรือมืด (Dark Vessel)</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span></td><td class="src">Global Fishing Watch <span class="tag official">SAR ดาวเทียม</span></td><td>ตรวจจับเรือที่ปิดสัญญาณระบบระบุตัวตน (AIS) หรือแสดงพฤติกรรมการลอยเรือผิดปกติในเขตเศรษฐกิจจำเพาะ (EEZ) ของประเทศไทย</td></tr>
+        <tr><td class="name">อากาศยาน</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">ADSB.lol + OpenSky Network</td><td>ติดตามพิกัดอากาศยานในรัศมี 250 ไมล์ทะเล (ความสูง เข็มทิศ และสัญญาณเรียกขาน)</td></tr>
+        <tr><td class="name">แผ่นดินไหวโลก</td><td class="dom"><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td class="src">USGS <span class="tag official">ทางการสหรัฐฯ</span></td><td>เฝ้าระวังภัยแผ่นดินไหวตลอด 24 ชั่วโมง เพื่อการประเมินภัยสึนามิและความเสี่ยงต่อโครงสร้างพื้นฐานสายเคเบิลใต้น้ำ</td></tr>
+        <tr><td class="name">แผ่นดินไหวภูมิภาค</td><td class="dom"><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td class="src">กรมอุตุนิยมวิทยา (TMD) <span class="tag official">ทางการไทย</span></td><td>แหล่งข้อมูลเฝ้าระวังแผ่นดินไหวในประเทศ — มีความแม่นยำสูงในพื้นที่ปฏิบัติการอ่าวไทย</td></tr>
+        <tr><td class="name">สภาพทะเล / คลื่น</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span></td><td class="src">Open-Meteo Marine API</td><td>ข้อมูลความสูงคลื่น ทิศทางลม และคาบเวลาคลื่น เพื่อนำเข้าวิเคราะห์ร่วมกับแบบจำลองประสิทธิภาพโซนาร์</td></tr>
+        <tr><td class="name">อากาศผิวพื้น</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">Open-Meteo Weather (สถานีสัตหีบ)</td><td>ข้อมูลความเร็วลม ทัศนวิสัย และความกดอากาศ เพื่อประกอบการวางแผนปฏิบัติการบินทางทะเลและการนำเรือ</td></tr>
+        <tr><td class="name">พายุหมุนเขตร้อน</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">GDACS <span class="tag official">UN</span></td><td>เฝ้าระวังเส้นทางพายุหมุนเขตร้อนที่อาจส่งผลกระทบต่อพื้นที่ปฏิบัติการทางเรือ</td></tr>
+        <tr><td class="name">เรดาร์ฝน</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">RainViewer</td><td>ตรวจสอบพื้นที่ปริมาณฝนและประเมินทัศนวิสัยการบินและเดินเรือ</td></tr>
+        <tr><td class="name">ดัชนีพายุสุริยะ Kp</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">NOAA SWPC <span class="tag official">ทางการสหรัฐฯ</span></td><td>การแจ้งเตือนความเสื่อมสภาพของคลื่นวิทยุความถี่สูง (HF) สัญญาณ GPS และ DGPS ซึ่งส่งผลกระทบต่อระบบ C4ISR</td></tr>
+        <tr><td class="name">ข่าว / เหตุการณ์ภูมิภาค</td><td class="dom"><span class="dchip d-cyb">📡 ไซเบอร์-สเปกตรัม</span></td><td class="src">GDELT 2.0 (TH/VN/KH/MM/MY)</td><td>การเฝ้าระวังข่าวสารสถานการณ์ที่มีความสำคัญต่อมิติภูมิรัฐศาสตร์ทางทะเลและการทหาร</td></tr>
+        <tr><td class="name">เครื่องหมายเดินเรือ</td><td class="dom"><span class="dchip d-lit">🏝 ฝั่ง-ชายฝั่ง</span></td><td class="src">OpenStreetMap Overpass (IALA-A)</td><td>ข้อมูลแสดงพิกัดทุ่น เครื่องหมายทางเรือ และสิ่งกีดขวางที่เป็นอันตรายต่อการนำเรือ เพื่อการวางแผนเส้นทางเดินเรือ</td></tr>
         <tr><td class="name">ติดตามดาวเทียม (Space Globe)</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">Space Globe ISR API / Orbit telemetry</td><td>ติดตามและจำลองตำแหน่งดาวเทียมสำรวจ (Optical/SAR) โคจรผ่านอ่าวไทยแบบเวลาจริง</td></tr>
         <tr><td class="name">ดาวเทียม SpaceX Telemetry</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">SpaceX API / Live Telemetry</td><td>ติดตามสถานะ ความสูง และวงโคจรดาวเทียมสื่อสารแบบเวลาจริง</td></tr>
         <tr><td class="name">ดาวเทียม GFW GAPs (OSINT)</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">Global Fishing Watch <span class="tag official">OSINT / GAPs</span></td><td>วิเคราะห์ช่องว่างระหว่างข้อมูล AIS และภาพดาวเทียม SAR เพื่อชี้เป้าเรือต้องสงสัย</td></tr>
@@ -344,20 +344,20 @@
   <section>
     <div class="sec-head">
       <span class="sec-pill baked">กลุ่ม 2</span>
-      <h2>ข้อมูลจริง แบบ Snapshot / ฝังในระบบ (BAKED)</h2>
-      <span class="note">— ข้อมูลจริงจากหน่วยงานทางการ แต่เป็นภาพนิ่ง/แผนที่ฐาน (อัปเดตเป็นรอบ)</span>
+      <h2>ข้อมูลประวัติศาสตร์และแผนที่ฐาน (BAKED / Static Dataset)</h2>
+      <span class="note">— ข้อมูลเชิงสถิตและข้อมูลอ้างอิงจากหน่วยงานราชการที่บันทึกไว้ในระบบ (ปรับปรุงตามรอบข้อมูล)</span>
     </div>
     <table>
       <thead><tr><th style="width:17%">เซ็นเซอร์ / ชั้นข้อมูล</th><th style="width:13%">โดเมนที่ใช้ Monitor</th><th style="width:28%">แหล่งข้อมูล (Resource)</th><th>ประโยชน์ต่อการ Monitor</th></tr></thead>
       <tbody class="group-baked">
-        <tr><td class="name">4D Ocean <span class="star">★</span></td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span></td><td class="src"><b>HYCOM 1/12°</b> — NRL / FNMOC <span class="tag official">ทางการสหรัฐฯ</span><br><small>สดผ่าน Node server · สำรองด้วย snapshot</small></td><td>โครงสร้างทะเล 4 มิติ (กระแส + ความเร็วเสียง) → ขับวงระยะตรวจจับโซนาร์/TL ตามจริง</td></tr>
-        <tr><td class="name">ตะกอนพื้นทะเล</td><td class="dom"><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td class="src">กรมทรัพยากรธรณี (DMR) <span class="tag official">ทางการไทย</span></td><td>Bottom-loss / reverberation ป้อนสมการโซนาร์</td></tr>
-        <tr><td class="name">ความลึกทะเล</td><td class="dom"><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td class="src">GEBCO 2023 / Esri Ocean</td><td>ความปลอดภัยเดินเรือ / วางเคเบิล / contact ใต้น้ำ</td></tr>
-        <tr><td class="name">ความสูงพื้นบก (DEM)</td><td class="dom"><span class="dchip d-lit">🏝 ฝั่ง-ชายฝั่ง</span></td><td class="src">Digital Elevation Model</td><td>Line-of-sight เรดาร์ฝั่ง / ภูมิประเทศทางทหาร</td></tr>
-        <tr><td class="name">แผนที่ฐาน</td><td class="dom"><span class="dchip d-all">◆ ฐาน/ข้ามโดเมน</span></td><td class="src">Esri Satellite / CartoDB Dark / OpenSeaMap</td><td>พื้นหลังภาพถ่าย / แผนที่มืด สำหรับ overlay ยุทธวิธี</td></tr>
-        <tr><td class="name">GISTDA น้ำท่วม SAR</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">sphere.gistda.or.th <span class="tag official">WMS/WFS</span></td><td>แผนที่น้ำท่วมจากดาวเทียมเรดาร์ SAR ย้อนหลัง ๗ วัน ซ้อนทับการวิเคราะห์ภัยพิบัติร่วม</td></tr>
+        <tr><td class="name">4D Ocean <span class="star">★</span></td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span></td><td class="src"><b>HYCOM 1/12°</b> — NRL / FNMOC <span class="tag official">ทางการสหรัฐฯ</span><br><small>ดึงฟีดข้อมูลแบบเวลาจริงผ่านระบบแม่ข่าย (รองรับการใช้งานข้อมูลเชิงสถิตหากขาดการเชื่อมต่อ)</small></td><td>แบบจำลองโครงสร้างมวลน้ำ 4 มิติ (กระแสน้ำและโปรไฟล์ความเร็วเสียง) เพื่อคำนวณระยะการตรวจจับของโซนาร์ตามสภาพสิ่งแวดล้อมที่แท้จริง</td></tr>
+        <tr><td class="name">ตะกอนพื้นทะเล</td><td class="dom"><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td class="src">กรมทรัพยากรธรณี (DMR) <span class="tag official">ทางการไทย</span></td><td>การวิเคราะห์ระดับการดูดซับเสียงของดินตะกอนก้นทะเล (Bottom-loss / Reverberation) เพื่อนำเข้าสมการคำนวณระยะตรวจจับ</td></tr>
+        <tr><td class="name">ความลึกทะเล</td><td class="dom"><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td class="src">GEBCO 2023 / Esri Ocean</td><td>ข้อมูลอ้างอิงความลึกทะเลเพื่อความปลอดภัยในการนำเรือ การวางตำแหน่งเคเบิลก้นทะเล และการค้นหาเรือดำน้ำ</td></tr>
+        <tr><td class="name">ความสูงพื้นบก (DEM)</td><td class="dom"><span class="dchip d-lit">🏝 ฝั่ง-ชายฝั่ง</span></td><td class="src">Digital Elevation Model</td><td>ข้อมูลความสูงภูมิประเทศเพื่อวิเคราะห์เส้นสายตาเรดาร์ชายฝั่ง (Line-of-Sight) และลักษณะภูมิประเทศทางทหาร</td></tr>
+        <tr><td class="name">แผนที่ฐาน</td><td class="dom"><span class="dchip d-all">◆ ฐาน/ข้ามโดเมน</span></td><td class="src">Esri Satellite / CartoDB Dark / OpenSeaMap</td><td>ข้อมูลแผนที่ฐานความละเอียดสูงและแผนที่ฐานสำหรับการซ้อนทับสัญลักษณ์ทางยุทธวิธี</td></tr>
+        <tr><td class="name">GISTDA น้ำท่วม SAR</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">sphere.gistda.or.th <span class="tag official">WMS/WFS</span></td><td>แผนที่แสดงพื้นที่ประสบภัยน้ำท่วมจากดาวเทียมเรดาร์ SAR ย้อนหลัง 7 วัน เพื่อการประเมินภัยพิบัติร่วมกับส่วนราชการอื่น</td></tr>
         <tr><td class="name">ภาพดาวเทียม 3D (Land Drape)</td><td class="dom"><span class="dchip d-lit">🏝 ฝั่ง-ชายฝั่ง</span><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">MapTiler Satellite-v2 / Esri World Imagery</td><td>ภาพถ่ายดาวเทียมความละเอียดสูงซ้อนทับแบบจำลองแผ่นดินและเกาะ 3D</td></tr>
-        <tr><td class="name">ดาวเทียม ความหนาแน่นเรือ (ArcGIS)</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">ArcGIS Living Atlas / IMF / World Bank <span class="tag official">Tiled Imagery</span></td><td>แสดงสถิติความหนาแน่นและเส้นทางเดินเรือหลักในอ่าวไทยย้อนหลัง (๒๐๑๕–๒๐๒๑) เพื่อประเมินช่องทางจราจรหลัก</td></tr>
+        <tr><td class="name">ดาวเทียม ความหนาแน่นเรือ (ArcGIS)</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">ArcGIS Living Atlas / IMF / World Bank <span class="tag official">Tiled Imagery</span></td><td>สถิติความหนาแน่นเชิงพื้นที่ของเรือสินค้าและเรือประมงในอ่าวไทยย้อนหลัง เพื่อประเมินและวิเคราะห์ช่องทางการเดินเรือหลัก</td></tr>
       </tbody>
     </table>
   </section>
@@ -366,39 +366,39 @@
   <section>
     <div class="sec-head">
       <span class="sec-pill sim">กลุ่ม 3</span>
-      <h2>แบบจำลอง / คำนวณ (SIMULATED)</h2>
-      <span class="note">— แยกย่อย 3 ชนิดเพื่อความถูกต้อง: ไม่ใช่ “ข้อมูลปลอม” ทั้งหมด</span>
+      <h2>แบบจำลอง / ผลการคำนวณจำลอง (SIMULATED)</h2>
+      <span class="note">— จำแนกออกเป็น 3 ประเภท เพื่อความน่าเชื่อถือและความโปร่งใสของการประมวลผล</span>
     </div>
 
-    <div class="sub-label">3ก. แบบจำลองฟิสิกส์ / วิเคราะห์ บนข้อมูลจริง (Engineering model — น่าเชื่อถือ)</div>
+    <div class="sub-label">3ก. แบบจำลองเชิงวิทยาศาสตร์ยุทธวิธีและวิศวกรรม (Engineering & Physics-based Simulation Model)</div>
     <table>
       <thead><tr><th style="width:22%">ระบบ</th><th style="width:13%">โดเมนที่ใช้ Monitor</th><th style="width:28%">ขับเคลื่อนด้วย</th><th>ประโยชน์</th></tr></thead>
       <tbody class="group-sim">
-        <tr><td class="name">สมการโซนาร์ + วงระยะตรวจจับ</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span></td><td class="src">SL−TL−NL=DT (Thorp/WOA23 + Wenz sea-state)</td><td>ประเมิน “โซนาร์ได้ยินไกลแค่ไหน” ตามสภาพแวดล้อมจริง</td></tr>
-        <tr><td class="name">Transmission Loss (TL)</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span></td><td class="src">WOA23 ray-trace + HYCOM SVP</td><td>การสูญเสียเสียงตามระยะ / ความลึก</td></tr>
-        <tr><td class="name">ADCP สนามกระแส / Multibeam swath</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td class="src">กระแสจริงจาก HYCOM</td><td>คาดการณ์ drift ทุ่นระเบิด / วิถี UUV / พื้นที่สำรวจ</td></tr>
-        <tr><td class="name">ตรวจจับ AIS ผิดปกติ + AI Threat</td><td class="dom"><span class="dchip d-all">◆ ข้ามโดเมน (AI)</span></td><td class="src">กฎ R1–R10 บน AIS / อากาศ / แผ่นดินไหว จริง</td><td>spoof / ลอยเรือ / EEZ violation + ข้อเสนอวางกำลัง</td></tr>
-        <tr><td class="name">สายเคเบิลใยแก้วนำแสง (DAS)</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td class="src">แบบจำลองวิเคราะห์ความหนาแน่นความร้อน/การสั่นสะเทือนทางฟิสิกส์</td><td>ตรวจจับเสียงการเคลื่อนที่ของเรือดำน้ำ/UUV/การตัดสายเคเบิลตลอดแนวใต้น้ำ</td></tr>
+        <tr><td class="name">สมการโซนาร์ + วงระยะตรวจจับ</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span></td><td class="src">SL−TL−NL=DT (Thorp/WOA23 + Wenz sea-state)</td><td>คำนวณขีดความสามารถและระยะการตรวจจับของเป้าหมายใต้น้ำตามสภาพแวดล้อมจริง</td></tr>
+        <tr><td class="name">Transmission Loss (TL)</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span></td><td class="src">WOA23 ray-trace + HYCOM SVP</td><td>การสูญเสียพลังงานการแพร่กระจายเสียงในน้ำตามระยะและความลึก</td></tr>
+        <tr><td class="name">ADCP สนามกระแส / Multibeam swath</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td class="src">กระแสจริงจาก HYCOM</td><td>ประเมินทิศทางการลอยตัวของวัตถุใต้น้ำ เส้นทางการเคลื่อนที่ของยานใต้น้ำไร้คนขับ (UUV) และพื้นที่สำรวจทางอุทกศาสตร์</td></tr>
+        <tr><td class="name">ตรวจจับ AIS ผิดปกติ + AI Threat</td><td class="dom"><span class="dchip d-all">◆ ข้ามโดเมน (AI)</span></td><td class="src">กฎเกณฑ์การประเมิน R1–R10 บนสัญญาณระบบระบุตัวตนเรือผิวน้ำ สภาพอากาศ และแผ่นดินไหวจริง</td><td>การพรางสัญญาณเรือ, การลอยลำผิดปกติ, การละเมิดเขตเศรษฐกิจจำเพาะ (EEZ) และข้อเสนอการวางกำลัง</td></tr>
+        <tr><td class="name">สายเคเบิลใยแก้วนำแสง (DAS)</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td class="src">แบบจำลองการวิเคราะห์สัญญาณการสั่นสะเทือนทางฟิสิกส์บนโครงข่ายสายเคเบิลก้นทะเล</td><td>ตรวจจับสัญญาณการสั่นสะเทือนทางเสียงจากการเคลื่อนที่ของเรือดำน้ำ ยานใต้น้ำไร้คนขับ (UUV) หรือการตัดทำลายสายเคเบิล</td></tr>
       </tbody>
     </table>
 
-    <div class="sub-label">3ข. เอนทิตีจำลองสถานการณ์ (ผู้ใช้วางเอง — สำหรับฝึก / วางแผน)</div>
+    <div class="sub-label">3ข. การกำหนดพารามิเตอร์และสัญลักษณ์ทางยุทธวิธีจำลอง (สำหรับการจำลองสถานการณ์และการวางแผน)</div>
     <table>
       <thead><tr><th style="width:30%">ระบบ</th><th style="width:18%">โดเมนที่ใช้ Monitor</th><th>ประโยชน์</th></tr></thead>
       <tbody class="group-sim">
-        <tr><td class="name">กำลังฝ่ายเรา (PV / GUUV / ฮ.)</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span><span class="dchip d-air">🛰 อากาศ</span></td><td>วางแผนการวางกำลัง / พื้นที่ครอบคลุม</td></tr>
-        <tr><td class="name">สนามทุ่นระเบิด / FLS cone / แนวสำรวจ</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td>ฝึกสถานการณ์ ASW / MCM / อุทกศาสตร์</td></tr>
-        <tr><td class="name">จุดวัด SVP / XBT</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span></td><td>ฝึกวางแผนการสำรวจสมุทรศาสตร์</td></tr>
-        <tr><td class="name">โครงข่ายเซ็นเซอร์ก้นทะเลไร้สาย (Seabed Sentry)</td><td class="dom"><span class="dchip d-bed">⚓ พื้นท้องทะเล</span><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span></td><td>จำลองการวางแนวโหนดเซ็นเซอร์ก้นทะเลไร้สาย (Mesh) เพื่อตรวจจับและสกัดกั้น UUV ฝ่ายตรงข้าม</td></tr>
-        <tr><td class="name">ยุทธกีฬาจำลอง (Tactical Wargame Sandbox)</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td>ฝึกประเมินหนทางปฏิบัติและกฎการปะทะ (ROE Gates 1–3) ตามหลักนิยม ทร. (อทร.๘๓๐๗) ในแบบ 3 ขั้นตอน (Infiltration → Approach → Attack)</td></tr>
+        <tr><td class="name">กำลังฝ่ายเรา (PV / GUUV / ฮ.)</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span><span class="dchip d-air">🛰 อากาศ</span></td><td>ใช้สำหรับวางแผนการวางกำลังปฏิบัติภารกิจและการคุ้มกันการโจมตี</td></tr>
+        <tr><td class="name">สนามทุ่นระเบิด / FLS cone / แนวสำรวจ</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td>จำลองสถานการณ์การรบปราบเรือดำน้ำ (ASW) การต่อต้านทุ่นระเบิด (MCM) และการสำรวจทางอุทกศาสตร์</td></tr>
+        <tr><td class="name">จุดวัด SVP / XBT</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span></td><td>จำลองการวัดโปรไฟล์ความเร็วเสียงและการวางแผนทางสมุทรศาสตร์ทหาร</td></tr>
+        <tr><td class="name">โครงข่ายเซ็นเซอร์ก้นทะเลไร้สาย (Seabed Sentry)</td><td class="dom"><span class="dchip d-bed">⚓ พื้นท้องทะเล</span><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span></td><td>จำลองการติดตั้งโครงข่ายโหนดเซ็นเซอร์แบบไร้สายก้นทะเลเพื่อตรวจจับและสกัดกั้น UUV/SDV ฝ่ายตรงข้าม</td></tr>
+        <tr><td class="name">ยุทธกีฬาจำลอง (Tactical Wargame Sandbox)</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td>การประเมินหนทางปฏิบัติและกฎการปะทะ (ROE Gates 1–3) ตามหลักนิยม ทร. (อทร.๘๓๐๗) แบ่งเป็น 3 ขั้นตอนหลัก ได้แก่ การแทรกซึม การเข้าประชิด และการเข้าโจมตี</td></tr>
       </tbody>
     </table>
 
-    <div class="sub-label">3ค. ข้อมูลสำรอง (Fallback) เมื่อไม่มีสัญญาณ</div>
+    <div class="sub-label">3ค. ชุดข้อมูลสำหรับทดสอบระบบกรณีไม่มีการเชื่อมต่อภายนอก (Fallback Test Data)</div>
     <table>
       <thead><tr><th style="width:30%">ระบบ</th><th style="width:18%">โดเมนที่ใช้ Monitor</th><th>หมายเหตุ</th></tr></thead>
       <tbody class="group-sim">
-        <tr><td class="name">AIS จำลอง / Helicorder demo / GFW mock</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td>ทำงานได้แม้ออฟไลน์ — มีป้าย DEMO / SNAPSHOT กำกับชัดเจน</td></tr>
+        <tr><td class="name">AIS จำลอง / Helicorder demo / GFW mock</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td>ระบบสามารถทำงานได้ในสภาวะออฟไลน์โดยแสดงสถานะข้อมูลจำลองไว้อย่างชัดเจน</td></tr>
       </tbody>
     </table>
   </section>
@@ -412,24 +412,24 @@
     </div>
 
     <p class="ai-intro">
-      ระบบมี <strong>เครื่องยนต์วิเคราะห์สองชั้น</strong> ทำงานต่อเนื่องกัน — ชั้นแรกเป็น
+      ระบบมี <strong>ระบบประมวลผลและการวิเคราะห์ข้อมูลสองรูปแบบ (Hybrid Processing Pipeline)</strong> ทำงานต่อเนื่องกัน — ชั้นแรกเป็น
       <strong>กฎตรรกะ (R1–R10)</strong> ที่ประมวลผลในเครื่อง ทำงานได้แม้ออฟไลน์และให้ผลคงที่ตรวจสอบได้
       ชั้นที่สองเป็น <strong>โมเดลภาษาขนาดใหญ่ (LLM) หลายผู้ให้บริการ</strong> ที่เข้ามา “เรียบเรียง–ขยายผล–เสนอแนวทาง”
-      ต่อยอดจากผลของกฎ โดยเรียกผ่าน <strong>Cloudflare Worker (พร็อกซีฝั่งเซิร์ฟเวอร์)</strong>
-      เพื่อให้กุญแจ API อยู่ฝั่งเซิร์ฟเวอร์ ไม่ฝังในหน้าเว็บ — ใน THE SHIELD 3.0 (v17) ผลทั้งสองชั้นถูกป้อนต่อให้
+      ต่อยอดจากผลของกฎ โดยเรียกผ่าน <strong>Cloudflare Worker (Serverless Proxy)</strong>
+      เพื่อรักษาความปลอดภัยของกุญแจรหัสผ่าน (API Key) บนระบบเซิร์ฟเวอร์ส่วนกลาง — ใน THE SHIELD 3.0 (v17) ผลทั้งสองชั้นถูกป้อนต่อให้
       <strong>ฝ่ายเสนาธิการ AI (AI Staff Planner)</strong> เพื่อร่างข้อเสนอการวางกำลังประกอบการตัดสินใจ
     </p>
 
     <div class="ai-arch">
       <div class="ai-card">
-        <span class="lbl">ชั้นที่ 1 · เครื่องยนต์กฎ</span>
+        <span class="lbl">รูปแบบที่ 1 · ระบบการวิเคราะห์ด้วยกฎเกณฑ์</span>
         <h4>Rule-based Classifier (R1–R10)</h4>
-        <p>ประมวลผลในเครื่อง · ออฟไลน์ได้ · ให้ผลคงที่ ตรวจสอบย้อนกลับได้ — ตรวจ AIS spoof, ลอยเรือ, ละเมิด EEZ, เหตุการณ์ข้ามโดเมนพร้อมกัน แล้วให้คะแนนความเสี่ยง</p>
+        <p>ประมวลผลในเครื่อง · ออฟไลน์ได้ · ให้ผลคงที่ ตรวจสอบย้อนกลับได้ — ประเมินระดับความเสี่ยงทางยุทธวิธีจากการพรางสัญญาณเรือ (AIS Spoofing), การลอยลำผิดปกติ, การละเมิดเขตเศรษฐกิจจำเพาะ (EEZ) และความผิดปกติข้ามโดเมน</p>
       </div>
       <div class="ai-card">
-        <span class="lbl">ชั้นที่ 2 · LLM ผู้ช่วย</span>
+        <span class="lbl">รูปแบบที่ 2 · ระบบวิเคราะห์สังเคราะห์ด้วยปัญญาประดิษฐ์ (LLM)</span>
         <h4>Multi-provider LLM (ผ่าน Cloudflare Worker)</h4>
-        <p>รับผลจากชั้นกฎ + บริบททุกโดเมน → เรียบเรียงเป็นบทประเมินภาษาไทย สรุปเชิงตัดสินใจ และข้อเสนอการวางกำลัง · Worker เลือกผู้ให้บริการตามชื่อโมเดล (<code>@cf/</code>→Workers AI, <code>gemini-</code>→Gemini)</p>
+        <p>รับผลจากชั้นกฎ + บริบททุกโดเมน → เรียบเรียงเป็นบทประเมินภาษาไทย บทสรุปสำหรับผู้บังคับบัญชา และข้อเสนอการวางกำลัง · Worker เลือกผู้ให้บริการตามชื่อโมเดล (<code>@cf/</code>→Workers AI, <code>gemini-</code>→Gemini)</p>
       </div>
     </div>
 
@@ -444,61 +444,61 @@
         <tr>
           <td class="name">Gemini 2.5 Flash <span class="badge-def">ค่าเริ่มต้น</span></td>
           <td><span class="prov prov-g">Google Gemini</span></td>
-          <td>เร็ว–สมดุล เหมาะกับงานเรียบเรียงประจำ ภาษาไทยดี</td>
+          <td>ความเร็วในการประมวลผลสูง มีเสถียรภาพ และมีประสิทธิภาพสูงในไวยากรณ์ภาษาไทย</td>
           <td>ฟรี ~10 คำขอ/นาที (free tier)</td>
         </tr>
         <tr>
           <td class="name">Gemini 2.5 Pro</td>
           <td><span class="prov prov-g">Google Gemini</span></td>
-          <td>วิเคราะห์เชิงลึกสุด ใช้กับงานประเมินซับซ้อน</td>
+          <td>ประสิทธิภาพสูงสุดสำหรับการประเมินภัยคุกคามและการวิเคราะห์เชิงลึกที่มีความซับซ้อน</td>
           <td>ฟรีแต่จำกัดโควตา (rate limit ต่ำ)</td>
         </tr>
         <tr>
           <td class="name">Gemini 2.0 Flash</td>
           <td><span class="prov prov-g">Google Gemini</span></td>
-          <td>รุ่นเร็ว ทางเลือกสำรอง</td>
+          <td>ทางเลือกสำรองสำหรับการประมวลผลความเร็วสูง</td>
           <td>⚠ ต้องผูกบัญชีชำระเงิน (billing)</td>
         </tr>
         <tr>
           <td class="name">GLM-5.2 (Zhipu AI)</td>
           <td><span class="prov prov-z">Z.AI / Zhipu</span></td>
-          <td>รุ่นธง (flagship) ความจุบริบทสูง (1M tokens) เหมาะวิเคราะห์ประเด็นข้ามโดเมนที่ซับซ้อน</td>
+          <td>โมเดลประสิทธิภาพสูง รองรับขนาดบริบทกว้างพิเศษ เหมาะสำหรับการสังเคราะห์มิติภูมิรัฐศาสตร์และความมั่นคง</td>
           <td>ต้องใช้ API Key ของ Zhipu AI (ยังไม่มีเครดิตเริ่มต้น)</td>
         </tr>
         <tr>
           <td class="name">GLM-4.6 (Zhipu AI)</td>
           <td><span class="prov prov-z">Z.AI / Zhipu</span></td>
-          <td>รุ่นเสถียร (stable) ทำงานรวดเร็ว ภาษาไทยลื่นไหล</td>
+          <td>ระบบทำงานได้อย่างเสถียรภาพ โดดเด่นด้านโครงสร้างประโยคภาษาไทยเชิงวิชาการ</td>
           <td>ต้องใช้ API Key ของ Zhipu AI (ยังไม่มีเครดิตเริ่มต้น)</td>
         </tr>
         <tr>
           <td class="name">DeepSeek R1 (Distill Qwen 32B)</td>
           <td><span class="prov prov-cf">Cloudflare Workers AI</span></td>
-          <td>เด่นด้านการให้เหตุผลเป็นขั้นตอน (reasoning) เหมาะกับวิเคราะห์ตรรกะภัยคุกคาม</td>
+          <td>โดดเด่นในกระบวนการให้เหตุผลเชิงตรรกะทีละขั้นตอน เหมาะสำหรับการประเมินเปรียบเทียบภัยคุกคาม</td>
           <td>ฟรีในโควตา 10,000 neurons/วัน</td>
         </tr>
         <tr>
           <td class="name">Llama 3.3 70B (fp8-fast)</td>
           <td><span class="prov prov-cf">Cloudflare Workers AI</span></td>
-          <td>ฉลาด+เร็ว สมดุลดี รองรับภาษาไทย</td>
+          <td>ประสิทธิภาพการสังเคราะห์ระดับสูง มีความรวดเร็วและรองรับภาษาไทย</td>
           <td>ฟรีในโควตา 10,000 neurons/วัน</td>
         </tr>
         <tr>
           <td class="name">Qwen 2.5 Coder 32B</td>
           <td><span class="prov prov-cf">Cloudflare Workers AI</span></td>
-          <td>ฉลาดตรรกะระดับสูง เข้าใจโครงสร้างและความสัมพันธ์ข้อมูลเชิงเทคนิคเด่นชัด</td>
+          <td>ขีดความสามารถสูงในการเข้าใจความสัมพันธ์โครงสร้างข้อมูลทางทหารและข้อมูลพิกัดแผนที่</td>
           <td>ฟรีในโควตา 10,000 neurons/วัน</td>
         </tr>
         <tr>
           <td class="name">Qwen 1.5 14B / 7B Chat</td>
           <td><span class="prov prov-cf">Cloudflare Workers AI</span></td>
-          <td>รุ่นน้ำหนักเบา (balanced/lightweight) รันและตอบสนองเร็วมาก</td>
+          <td>โมเดลประหยัดทรัพยากรการประมวลผล ตอบสนองรวดเร็ว เหมาะสำหรับการจำลองสถานการณ์</td>
           <td>ฟรีในโควตา 10,000 neurons/วัน (ต้องการ deploy เพิ่มเติม)</td>
         </tr>
         <tr>
           <td class="name">Llama 3.1 8B</td>
           <td><span class="prov prov-cf">Cloudflare Workers AI</span></td>
-          <td>เล็ก–เร็วที่สุด เหมาะกับงานสรุปสั้น</td>
+          <td>ประมวลผลอย่างรวดเร็ว เหมาะสำหรับการสังเคราะห์บทสรุปขนาดสั้น</td>
           <td>ฟรีในโควตา 10,000 neurons/วัน</td>
         </tr>
       </tbody>
