@@ -411,6 +411,7 @@
             background: var(--bg-dark); color: var(--text-main);
             min-height: 100vh; display: flex; flex-direction: column;
             overflow-x: hidden; overflow-y: auto;
+            transition: background-color .45s ease, color .3s ease;
         }
         /* Global Webkit Scrollbar overrides */
         ::-webkit-scrollbar {
@@ -822,21 +823,21 @@
         @keyframes sg-blink { 0%,100%{opacity:1} 50%{opacity:0.1} }
         .sg-pulse-dot { display:inline-block; width:8px; height:8px; border-radius:50%; vertical-align:middle; margin-right:4px; }
         .sg-pulse-dot.green { background:#22c55e; animation:sg-blink 1.2s ease-in-out infinite; }
-        .sg-pulse-dot.orange { background:#f59e0b; animation:sg-blink 0.7s ease-in-out infinite; }
+        .sg-pulse-dot.orange { background:var(--amber); animation:sg-blink 0.7s ease-in-out infinite; }
         /* ISR Collection Plan Gantt */
         .sg-gantt { padding:4px 0; }
         .sg-gantt-row { display:flex; align-items:center; margin-bottom:3px; gap:4px; }
         .sg-gantt-lbl { font-size:7px; color:#7c6aaa; width:68px; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
         .sg-gantt-track { flex:1; height:8px; background:rgba(124,58,237,.1); border-radius:2px; position:relative; overflow:hidden; }
         .sg-gantt-bar { position:absolute; height:100%; border-radius:1px; opacity:.85; }
-        .sg-g-sar { background:#f97316; } .sg-g-opt { background:#a78bfa; } .sg-g-ais { background:#22c55e; }
+        .sg-g-sar { background:var(--orange); } .sg-g-opt { background:#a78bfa; } .sg-g-ais { background:#22c55e; }
         .sg-gantt-now { position:absolute; top:0; bottom:0; width:1px; background:#fff; opacity:.55; }
-        .sg-gap-warn { font-size:7.5px; color:#f59e0b; padding:2px 0; }
+        .sg-gap-warn { font-size:7.5px; color:var(--amber); padding:2px 0; }
         /* Dark Contact Alert */
-        .sg-dc-card { background:rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.35); border-radius:4px; padding:5px 8px; margin:3px 0; }
+        .sg-dc-card { background:rgb(var(--red-rgb) / .12); border:1px solid rgb(var(--red-rgb) / .35); border-radius:4px; padding:5px 8px; margin:3px 0; }
         .sg-dc-ttl { font-size:10px; font-weight:700; color:#ef4444; }
         .sg-dc-sub { font-size:7.5px; color:#9aa; margin-top:2px; line-height:1.45; }
-        @keyframes sg-flash { 0%,100%{border-color:rgba(239,68,68,.35)} 50%{border-color:rgba(239,68,68,1)} }
+        @keyframes sg-flash { 0%,100%{border-color:rgb(var(--red-rgb) / .35)} 50%{border-color:rgb(var(--red-rgb) / 1)} }
         .sg-dc-fresh { animation:sg-flash 1s ease-in-out 3; }
         /* Auto-task toast */
         #sg-autotask-toast { display:none; position:absolute; bottom:52px; left:270px; background:rgba(4,2,16,.96); border:1px solid rgba(124,58,237,.55); border-left:3px solid #a78bfa; border-radius:6px; padding:10px 14px; max-width:480px; z-index:25; pointer-events:auto; box-shadow:0 4px 24px rgba(0,0,0,.7); }
@@ -926,15 +927,15 @@
             box-shadow:0 0 14px rgba(244,114,182,.6); }
         /* [v15.5 · #1-3D] ปุ่มสลับชั้นตะกอนพื้นทะเล (DMR) + legend ละเอียด */
         #d3sedBtn {
-            background:rgb(var(--bg-dark-rgb) / .85); border:1px solid #f59e0b;
+            background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--amber);
             color:#fcd34d; font-family:var(--font-mono), monospace;
             font-size:10px; padding:5px 9px; border-radius:5px;
             cursor:pointer; letter-spacing:.4px; white-space:nowrap;
         }
-        #d3sedBtn:hover { background:rgba(245,158,11,.22);
-            box-shadow:0 0 10px rgba(245,158,11,.4); }
-        #d3sedBtn.active { background:rgba(245,158,11,.34);
-            box-shadow:0 0 14px rgba(245,158,11,.6); }
+        #d3sedBtn:hover { background:rgb(var(--amber-rgb) / .22);
+            box-shadow:0 0 10px rgb(var(--amber-rgb) / .4); }
+        #d3sedBtn.active { background:rgb(var(--amber-rgb) / .34);
+            box-shadow:0 0 14px rgb(var(--amber-rgb) / .6); }
         /* [v16.3.0 SAT-2] ปุ่มสลับภาพดาวเทียมจริงบนแผ่นดิน 3D — โทนฟ้า */
         #d3satBtn {
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid #38bdf8;
@@ -948,18 +949,18 @@
             box-shadow:0 0 14px rgba(56,189,248,.6); }
         /* [v15.9 · UNDEX] ปุ่มจำลองการระเบิดทุ่นจริง 3 มิติ — โทนส้ม-แดง ให้เข้าชุดกับ BDA 2D */
         #d3detonateBtn {
-            background:rgb(var(--bg-dark-rgb) / .85); border:1px solid #f97316;
+            background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--orange);
             color:#fb923c; font-family:var(--font-mono), monospace;
             font-size:10px; padding:5px 9px; border-radius:5px;
             cursor:pointer; letter-spacing:.4px; white-space:nowrap;
         }
-        #d3detonateBtn:hover { background:rgba(249,115,22,.22);
-            box-shadow:0 0 10px rgba(249,115,22,.45); }
-        #d3detonateBtn:active { background:rgba(249,115,22,.34);
-            box-shadow:0 0 14px rgba(249,115,22,.65); }
+        #d3detonateBtn:hover { background:rgb(var(--orange-rgb) / .22);
+            box-shadow:0 0 10px rgb(var(--orange-rgb) / .45); }
+        #d3detonateBtn:active { background:rgb(var(--orange-rgb) / .34);
+            box-shadow:0 0 14px rgb(var(--orange-rgb) / .65); }
         #dive3dSedLegend {
             position:absolute; bottom:92px; left:16px; z-index:9021;
-            background:rgba(28,18,6,.90); border:1px solid rgba(245,158,11,.5);
+            background:rgba(28,18,6,.90); border:1px solid rgb(var(--amber-rgb) / .5);
             border-radius:8px; padding:9px 34px 8px 12px; max-width:336px;
             font-family:var(--font-mono), monospace; color:#f5e9d0;
             box-shadow:0 6px 22px rgba(0,0,0,.55);
@@ -969,11 +970,11 @@
         #dive3dSedLegend.sed-collapsed { transform:translateX(calc(-100% + 34px)); }
         #dive3dSedLegend .sed-lg-toggle {
             position:absolute; top:6px; right:6px; width:22px; height:22px; padding:0;
-            background:rgba(245,158,11,.18); border:1px solid rgba(245,158,11,.5); border-radius:5px;
+            background:rgb(var(--amber-rgb) / .18); border:1px solid rgb(var(--amber-rgb) / .5); border-radius:5px;
             color:#fcd34d; font-size:12px; line-height:1; cursor:pointer; pointer-events:auto; z-index:1;
             font-family:var(--font-mono), monospace; display:flex; align-items:center; justify-content:center;
         }
-        #dive3dSedLegend .sed-lg-toggle:hover { background:rgba(245,158,11,.34); box-shadow:0 0 8px rgba(245,158,11,.4); }
+        #dive3dSedLegend .sed-lg-toggle:hover { background:rgb(var(--amber-rgb) / .34); box-shadow:0 0 8px rgb(var(--amber-rgb) / .4); }
         #dive3dSedLegend .sed-lg-title {
             font-size:10.5px; font-weight:bold; color:#fcd34d;
             letter-spacing:.2px; margin-bottom:5px; line-height:1.4;
@@ -981,7 +982,7 @@
         #dive3dSedLegend .sed-lg-title small { color:#b59866; font-weight:normal; font-size:8.5px; }
         #dive3dSedLegend .sed-lg-row { margin:3px 0; }
         #dive3dSedLegend .sed-lg-row.here {
-            background:rgba(245,158,11,.15); border-left:2px solid #f59e0b;
+            background:rgb(var(--amber-rgb) / .15); border-left:2px solid var(--amber);
             border-radius:3px; padding:2px 5px 2px 4px; margin-left:-6px;
         }
         #dive3dSedLegend .sed-lg-main {
@@ -993,12 +994,12 @@
             border:1px solid rgba(255,255,255,.28); display:inline-block;
         }
         #dive3dSedLegend .sed-nm { color:#f5e9d0; }
-        #dive3dSedLegend .sed-here-tag { color:#f59e0b; font-size:8px; font-weight:bold; letter-spacing:.3px; }
+        #dive3dSedLegend .sed-here-tag { color:var(--amber); font-size:8px; font-weight:bold; letter-spacing:.3px; }
         #dive3dSedLegend .sed-en { color:#9c855f; font-style:normal; font-size:8.5px; margin-left:auto; }
         #dive3dSedLegend .sed-lg-sub { font-size:8.5px; color:#b59866; line-height:1.5; padding-left:22px; }
         #dive3dSedLegend .sed-lg-sub b { color:#fcd34d; font-weight:bold; }
         #dive3dSedLegend .sed-lg-note {
-            margin-top:6px; padding-top:6px; border-top:1px solid rgba(245,158,11,.22);
+            margin-top:6px; padding-top:6px; border-top:1px solid rgb(var(--amber-rgb) / .22);
             font-size:8.5px; color:#b59866; line-height:1.55; white-space:normal;
         }
         #dive3dLegend {
@@ -1988,10 +1989,10 @@
         .roe-rung.passed { opacity:.78; }
         .roe-rung.active { opacity:1; }
         .roe-rung.s1.active { background:rgba(255,215,0,.16);  border-color:var(--yellow); box-shadow:0 0 8px rgba(255,215,0,.40); }
-        .roe-rung.s2.active { background:rgba(245,158,11,.16); border-color:#f59e0b;       box-shadow:0 0 8px rgba(245,158,11,.42); }
-        .roe-rung.s3.active { background:rgba(249,115,22,.18); border-color:#fb923c;       box-shadow:0 0 9px rgba(249,115,22,.48); }
-        .roe-rung.s4.active { background:rgba(239,68,68,.22);  border-color:var(--red);     box-shadow:0 0 11px rgba(239,68,68,.6); animation:roePulse 1.1s ease-in-out infinite; }
-        @keyframes roePulse { 0%,100%{ box-shadow:0 0 7px rgba(239,68,68,.45); } 50%{ box-shadow:0 0 15px rgba(239,68,68,.85); } }
+        .roe-rung.s2.active { background:rgb(var(--amber-rgb) / .16); border-color:var(--amber);       box-shadow:0 0 8px rgb(var(--amber-rgb) / .42); }
+        .roe-rung.s3.active { background:rgb(var(--orange-rgb) / .18); border-color:#fb923c;       box-shadow:0 0 9px rgb(var(--orange-rgb) / .48); }
+        .roe-rung.s4.active { background:rgb(var(--red-rgb) / .22);  border-color:var(--red);     box-shadow:0 0 11px rgb(var(--red-rgb) / .6); animation:roePulse 1.1s ease-in-out infinite; }
+        @keyframes roePulse { 0%,100%{ box-shadow:0 0 7px rgb(var(--red-rgb) / .45); } 50%{ box-shadow:0 0 15px rgb(var(--red-rgb) / .85); } }
         .roe-foot {
             font-family:var(--font-body),sans-serif; font-size:8.5px; line-height:1.2;
             color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
@@ -2710,10 +2711,10 @@
          *  ทำงานแบบ CSS reflow + decorate บน DOM แถวเดิม (ไม่ re-render) → toggle wiring เดิมไม่พัง
          */
         /* per-domain accent variable (ใช้ทำกรอบการ์ด/ชิปสีตามโดเมน) */
-        #mda-layerpanel .mda-lp-group[data-domain="air"]     { --dc: #00d4ff; }
+        #mda-layerpanel .mda-lp-group[data-domain="air"]     { --dc: var(--cyan); }
         #mda-layerpanel .mda-lp-group[data-domain="surface"] { --dc: #06b6d4; }
         #mda-layerpanel .mda-lp-group[data-domain="sub"]     { --dc: #14b8a6; }
-        #mda-layerpanel .mda-lp-group[data-domain="seabed"]  { --dc: #f59e0b; }
+        #mda-layerpanel .mda-lp-group[data-domain="seabed"]  { --dc: var(--amber); }
         #mda-layerpanel .mda-lp-group[data-domain="cyber"]   { --dc: #8b5cf6; }
         #mda-layerpanel .mda-lp-group[data-domain="litt"]    { --dc: #22c55e; }
         #mda-layerpanel .mda-lp-group[data-domain="tools"]   { --dc: #94a3b8; }
@@ -2886,7 +2887,7 @@
             border-left: 3px solid var(--cyan); border-radius: 8px; overflow: hidden;
             background: rgb(var(--bg-panel-rgb) / .35);
         }
-        #bf-deploy-panel[data-layout="A"] .bf-dp-group[data-bf-group="pv"]            { border-left-color: #64ffda; }
+        #bf-deploy-panel[data-layout="A"] .bf-dp-group[data-bf-group="pv"]            { border-left-color: var(--teal); }
         #bf-deploy-panel[data-layout="A"] .bf-dp-group[data-bf-group="guuv"]          { border-left-color: #22d3ee; }
         #bf-deploy-panel[data-layout="A"] .bf-dp-group[data-bf-group="sv"]            { border-left-color: #fbbf24; }
         #bf-deploy-panel[data-layout="A"] .bf-dp-group[data-bf-group="mine"]          { border-left-color: #4ade80; }
@@ -2918,22 +2919,22 @@
         /* ═══ [v15.5 · #1] Seabed-sediment 2D — legend ลอย (ลากย้ายได้) + popup ธีมเข้ม ═══ */
         .sb-legend2d {
             position: fixed; top: 90px; left: 300px; z-index: 4600;
-            background: rgba(28,18,6,.92); border: 1px solid rgba(245,158,11,.55);
-            border-radius: 6px; box-shadow: 0 4px 18px rgba(0,0,0,.5), 0 0 10px rgba(245,158,11,.22);
+            background: rgba(28,18,6,.92); border: 1px solid rgb(var(--amber-rgb) / .55);
+            border-radius: 6px; box-shadow: 0 4px 18px rgba(0,0,0,.5), 0 0 10px rgb(var(--amber-rgb) / .22);
             font-family: var(--font-mono), monospace; font-size: 9px; color: #e7d6b8;
             backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
             user-select: none; max-width: 224px;
         }
-        .sb-legend2d.dragging { opacity: .93; box-shadow: 0 8px 28px rgba(245,158,11,.4); }
+        .sb-legend2d.dragging { opacity: .93; box-shadow: 0 8px 28px rgb(var(--amber-rgb) / .4); }
         .sb-legend2d .sb-l2-head {
             display: flex; align-items: center; cursor: move;
             color: #fcd34d; font-weight: bold; font-size: 9.5px;
-            padding: 5px 8px 4px; border-bottom: 1px solid rgba(245,158,11,.3);
+            padding: 5px 8px 4px; border-bottom: 1px solid rgb(var(--amber-rgb) / .3);
             border-radius: 6px 6px 0 0;
-            background: linear-gradient(180deg, rgba(245,158,11,.16), rgba(245,158,11,.04));
+            background: linear-gradient(180deg, rgb(var(--amber-rgb) / .16), rgb(var(--amber-rgb) / .04));
         }
         .sb-legend2d .sb-l2-head::before {
-            content: '⋮⋮'; color: rgba(245,158,11,.55); font-size: 10px;
+            content: '⋮⋮'; color: rgb(var(--amber-rgb) / .55); font-size: 10px;
             letter-spacing: -2px; margin-right: 5px; line-height: 1;
         }
         .sb-legend2d .sb-l2-body { padding: 5px 8px 6px; }
@@ -2947,15 +2948,15 @@
 
         /* Seabed popup — ธีมเข้มอ่านง่าย + จำกัดความกว้าง (กันกล่องบานเมื่อ zoom out) */
         .sb-popup .leaflet-popup-content-wrapper {
-            background: rgba(20,14,6,.96) !important; border: 1px solid rgba(245,158,11,.5) !important;
+            background: rgba(20,14,6,.96) !important; border: 1px solid rgb(var(--amber-rgb) / .5) !important;
             border-radius: 6px !important; color: #e7d6b8 !important;
-            box-shadow: 0 0 18px rgba(245,158,11,.22), 0 4px 14px rgba(0,0,0,.6) !important; padding: 2px !important;
+            box-shadow: 0 0 18px rgb(var(--amber-rgb) / .22), 0 4px 14px rgba(0,0,0,.6) !important; padding: 2px !important;
         }
         .sb-popup .leaflet-popup-content {
             margin: 8px 10px !important; line-height: 1.45 !important; max-width: 244px !important;
             white-space: normal !important; word-break: break-word !important; overflow-wrap: anywhere !important;
         }
-        .sb-popup .leaflet-popup-tip { background: rgba(20,14,6,.96) !important; border: 1px solid rgba(245,158,11,.5) !important; }
+        .sb-popup .leaflet-popup-tip { background: rgba(20,14,6,.96) !important; border: 1px solid rgb(var(--amber-rgb) / .5) !important; }
         .sb-popup .leaflet-popup-close-button { color: #cbb890 !important; top: 4px !important; right: 6px !important; font-size: 16px !important; }
         .sb-popup .leaflet-popup-close-button:hover { color: #f87171 !important; }
 
@@ -3353,7 +3354,7 @@
             margin: 4px 6px 8px; padding: 0;
             border: 1.5px solid rgba(236,72,153,.58);
             border-radius: 8px;
-            background: linear-gradient(155deg, rgba(236,72,153,.09) 0%, rgba(168,85,247,.06) 100%);
+            background: linear-gradient(155deg, rgba(236,72,153,.09) 0%, rgb(var(--purple-rgb) / .06) 100%);
             overflow: hidden;
             animation: bf-tb-glow 3s ease-in-out infinite;
         }
@@ -3389,15 +3390,15 @@
             display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 9px 12px;
             border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase;
             color: #f0abfc;
-            background: linear-gradient(135deg, rgba(236,72,153,.22) 0%, rgba(168,85,247,.15) 100%);
+            background: linear-gradient(135deg, rgba(236,72,153,.22) 0%, rgb(var(--purple-rgb) / .15) 100%);
             border: 1.5px solid rgba(236,72,153,.62);
             box-shadow: 0 0 12px rgba(236,72,153,.24);
             transition: all .18s;
         }
         #bf-deploy-panel .bf-ai-open:hover {
-            background: linear-gradient(135deg, rgba(236,72,153,.34) 0%, rgba(168,85,247,.26) 100%);
+            background: linear-gradient(135deg, rgba(236,72,153,.34) 0%, rgb(var(--purple-rgb) / .26) 100%);
             border-color: rgba(236,72,153,.92);
-            box-shadow: 0 0 22px rgba(236,72,153,.55), 0 0 8px rgba(168,85,247,.28);
+            box-shadow: 0 0 22px rgba(236,72,153,.55), 0 0 8px rgb(var(--purple-rgb) / .28);
             transform: translateY(-1px);
         }
         #bf-deploy-panel .bf-ai-open:active { transform: translateY(0); }
@@ -3470,13 +3471,13 @@
         }
         /* v15.9 — แถวจำลองการระเบิด (Battle Damage Area) สีส้ม-แดง UNDEX */
         #bf-deploy-panel .bf-dp-row.bf-mine-det {
-            border-color: rgba(249,115,22,.35);
+            border-color: rgb(var(--orange-rgb) / .35);
         }
         #bf-deploy-panel .bf-dp-row.bf-mine-det .label { color: #fb923c; font-weight: 600; }
         #bf-deploy-panel .bf-dp-row.bf-mine-det:hover {
-            background: rgba(249,115,22,.12);
-            border-color: rgba(249,115,22,.65);
-            box-shadow: 0 0 12px rgba(249,115,22,.30);
+            background: rgb(var(--orange-rgb) / .12);
+            border-color: rgb(var(--orange-rgb) / .65);
+            box-shadow: 0 0 12px rgb(var(--orange-rgb) / .3);
         }
         #bf-deploy-panel .bf-dp-row.bf-mine-det:hover .bf-dp-arrow { color: #fb923c; }
 
@@ -4211,6 +4212,168 @@
             --font-accent: 'Prompt', sans-serif;
         }
 
+        /* THEME 5 · Tactical Dark — Linear / Huly / Phantom inspired
+           พาเลต developer tool สายทหาร: near-black + violet accent
+           Linear signature: #5E6AD2 · bg #0F0F0F · panel #1A1A1A */
+        body[data-theme="tactical-dark"] {
+            --bg-dark:    #09090e;
+            --bg-panel:   #13131a;
+            --text-main:  #f0f0f8;
+            --text-muted: #6b6b8a;
+            --cyan:       #5e6ad2;   /* Linear violet */
+            --green:      #4cbe8a;
+            --red:        #e5534b;
+            --yellow:     #f0c330;
+            --amber:      #e08a4e;
+            --orange:     #d06b3e;
+            --purple:     #9b87d9;
+            --teal:       #5ac8d8;
+            /* RGB channels */
+            --cyan-rgb:       94 106 210;
+            --teal-rgb:       90 200 216;
+            --green-rgb:      76 190 138;
+            --red-rgb:        229 83 75;
+            --amber-rgb:      224 138 78;
+            --orange-rgb:     208 107 62;
+            --purple-rgb:     155 135 217;
+            --bg-dark-rgb:    9 9 14;
+            --bg-panel-rgb:   19 19 26;
+            --text-muted-rgb: 107 107 138;
+            /* MDA secondary vars */
+            --mda-glass:   rgb(var(--bg-panel-rgb) / .75);
+            --mda-edge:    rgb(var(--cyan-rgb) / .35);
+            --mda-edge-hi: rgb(var(--cyan-rgb) / .85);
+            --mda-amber:   #e08a4e;
+            --mda-crit:    #e5534b;
+            --mda-ok:      #4cbe8a;
+            /* mood overlay — violet rim light จากมุมขวาบน + ซ้ายล่าง */
+            background-image:
+                radial-gradient(ellipse 55% 45% at 98% 2%,  rgb(94 106 210 / .13) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 30% at 2%  98%, rgb(94 106 210 / .07) 0%, transparent 65%);
+        }
+
+        /* THEME 6 · Command Center — Discord / Vercel inspired
+           Deep charcoal + Discord blurple #5865F2 accent · UI command layer feel */
+        body[data-theme="command-center"] {
+            --bg-dark:    #0e0f12;
+            --bg-panel:   #1e1f24;
+            --text-main:  #dbdee1;
+            --text-muted: #80848e;
+            --cyan:       #5865f2;   /* Discord blurple */
+            --green:      #23a55a;   /* Discord online green */
+            --red:        #f23f43;   /* Discord red */
+            --yellow:     #f0b232;
+            --amber:      #e67e22;
+            --orange:     #e8591a;
+            --purple:     #9b59b6;
+            --teal:       #1abc9c;
+            /* RGB channels */
+            --cyan-rgb:       88 101 242;
+            --teal-rgb:       26 188 156;
+            --green-rgb:      35 165 90;
+            --red-rgb:        242 63 67;
+            --amber-rgb:      230 126 34;
+            --orange-rgb:     232 89 26;
+            --purple-rgb:     155 89 182;
+            --bg-dark-rgb:    14 15 18;
+            --bg-panel-rgb:   30 31 36;
+            --text-muted-rgb: 128 132 142;
+            /* MDA secondary vars */
+            --mda-glass:   rgb(var(--bg-panel-rgb) / .78);
+            --mda-edge:    rgb(var(--cyan-rgb) / .35);
+            --mda-edge-hi: rgb(var(--cyan-rgb) / .85);
+            --mda-amber:   #e67e22;
+            --mda-crit:    #f23f43;
+            --mda-ok:      #23a55a;
+            /* mood overlay — blurple bloom จากบนกลาง (Discord header feel) + ซ้ายล่าง */
+            background-image:
+                radial-gradient(ellipse 80% 30% at 50% 0%,  rgb(88 101 242 / .14) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 25% at 5%  92%, rgb(88 101 242 / .07) 0%, transparent 60%);
+        }
+
+        /* THEME 7 · Maritime AI — Attio / Dayos inspired
+           Deep navy + cyan-teal accent · AI-product / ML platform aesthetic */
+        body[data-theme="maritime-ai"] {
+            --bg-dark:    #0c1018;
+            --bg-panel:   #111c2c;
+            --text-main:  #e2e8f0;
+            --text-muted: #64748b;
+            --cyan:       #06b6d4;   /* vibrant cyan-teal */
+            --green:      #10b981;   /* emerald */
+            --red:        #ef4444;
+            --yellow:     #eab308;
+            --amber:      #f59e0b;
+            --orange:     #f97316;
+            --purple:     #8b5cf6;
+            --teal:       #14b8a6;
+            /* RGB channels */
+            --cyan-rgb:       6 182 212;
+            --teal-rgb:       20 184 166;
+            --green-rgb:      16 185 129;
+            --red-rgb:        239 68 68;
+            --amber-rgb:      245 158 11;
+            --orange-rgb:     249 115 22;
+            --purple-rgb:     139 92 246;
+            --bg-dark-rgb:    12 16 24;
+            --bg-panel-rgb:   17 28 44;
+            --text-muted-rgb: 100 116 139;
+            /* MDA secondary vars */
+            --mda-glass:   rgb(var(--bg-panel-rgb) / .78);
+            --mda-edge:    rgb(var(--cyan-rgb) / .30);
+            --mda-edge-hi: rgb(var(--cyan-rgb) / .85);
+            --mda-amber:   #f59e0b;
+            --mda-crit:    #ef4444;
+            --mda-ok:      #10b981;
+            /* mood overlay — teal deep-sea bloom จากล่างกลาง + navy rim ขวาบน */
+            background-image:
+                radial-gradient(ellipse 70% 40% at 50% 108%, rgb(6 182 212 / .14) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 35% at 90%   5%, rgb(20 184 166 / .08) 0%, transparent 65%);
+        }
+
+        /* THEME 8 · Classified — Tesla dark inspired
+           Pure black + high-contrast crimson accent · futuristic minimal
+           Tesla reference: bg #0D0D0D · panel #1C1C1C · accent #E82127 */
+        body[data-theme="classified"] {
+            --bg-dark:    #0d0d0d;
+            --bg-panel:   #1a1a1a;
+            --text-main:  #f5f5f5;
+            --text-muted: #6b6b6b;
+            --cyan:       #e82127;   /* Tesla crimson = primary accent */
+            --green:      #4caf50;
+            --red:        #e82127;
+            --yellow:     #ffc107;
+            --amber:      #ff6d00;
+            --orange:     #ff6d00;
+            --purple:     #9e9e9e;
+            --teal:       #e0e0e0;
+            /* RGB channels */
+            --cyan-rgb:       232 33 39;
+            --teal-rgb:       224 224 224;
+            --green-rgb:      76 175 80;
+            --red-rgb:        232 33 39;
+            --amber-rgb:      255 109 0;
+            --orange-rgb:     255 109 0;
+            --purple-rgb:     158 158 158;
+            --bg-dark-rgb:    13 13 13;
+            --bg-panel-rgb:   26 26 26;
+            --text-muted-rgb: 107 107 107;
+            /* MDA secondary vars */
+            --mda-glass:   rgb(var(--bg-panel-rgb) / .80);
+            --mda-edge:    rgb(var(--cyan-rgb) / .40);
+            --mda-edge-hi: rgb(var(--cyan-rgb) / .90);
+            --mda-amber:   #ff6d00;
+            --mda-crit:    #e82127;
+            --mda-ok:      #4caf50;
+            /* Mono font matches Tesla's Gotham/clean look */
+            --font-mono:   'Orbitron', sans-serif;
+            --font-accent: 'Orbitron', sans-serif;
+            /* mood overlay — crimson vignette มุมขวาบน+ซ้ายล่าง + center dark */
+            background-image:
+                radial-gradient(ellipse 50% 40% at 100% 0%,   rgb(232 33 39 / .11) 0%, transparent 60%),
+                radial-gradient(ellipse 45% 35% at 0%   100%, rgb(232 33 39 / .08) 0%, transparent 55%),
+                radial-gradient(circle           at 50% 50%,  rgb(0 0 0 / .30)     0%, transparent 75%);
+        }
+
         /* Confirmation modal */
         #udc-reset-confirm {
             position: fixed; inset: 0; z-index: 9999;
@@ -4681,7 +4844,7 @@
         /* [v16.0.4 W4-UX16] provenance watermark — แยก narrative จาก LLM จริง vs rule-generated */
         #mda-ai-modal .mda-ai-opus-narr.offline-narr {
             position: relative;
-            border-color: rgba(245,158,11,.35);
+            border-color: rgb(var(--amber-rgb) / .35);
         }
         #mda-staff-bd .bsrc { font-size: 9px; color: var(--text-muted); margin-top: 5px; line-height: 1.5; }
 
@@ -4880,12 +5043,12 @@
             box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
         }
         #mda-ai-modal .mda-wargame-panel .wg-btn.secondary {
-            background: rgba(100, 116, 139, 0.1);
+            background: rgb(var(--text-muted-rgb) / .1);
             border-color: rgba(148, 163, 184, 0.2);
             color: #94a3b8;
         }
         #mda-ai-modal .mda-wargame-panel .wg-btn.secondary:hover {
-            background: rgba(100, 116, 139, 0.2);
+            background: rgb(var(--text-muted-rgb) / .2);
             color: #fff;
         }
         #mda-ai-modal .mda-wargame-panel .wg-btn:disabled {
@@ -4907,13 +5070,13 @@
             position: absolute; inset: 0;
             display: flex; align-items: center; justify-content: center;
             transform: rotate(-18deg);
-            color: rgba(245,158,11,.14);
+            color: rgb(var(--amber-rgb) / .14);
             font-family: var(--font-mono), monospace;
             font-size: 16px; font-weight: bold; letter-spacing: 3px;
             pointer-events: none; white-space: nowrap;
         }
         #mda-ai-modal .mda-ai-opus-narr.live-narr {
-            border-color: rgba(34,197,94,.4);
+            border-color: rgb(var(--green-rgb) / .4);
         }
         #mda-ai-modal .mda-ai-opus-loading {
             display: flex; flex-direction: column;
@@ -5316,8 +5479,8 @@
             font-weight: 700; color: #e2e8f0;
         }
         #mda-ai-modal .mda-staff-coa.sel {
-            border-color: rgba(245,158,11,0.65);
-            box-shadow: inset 0 0 15px rgba(245,158,11,0.08), 0 0 12px rgba(245,158,11,0.12);
+            border-color: rgb(var(--amber-rgb) / .65);
+            box-shadow: inset 0 0 15px rgb(var(--amber-rgb) / .08), 0 0 12px rgb(var(--amber-rgb) / .12);
             background: rgba(15,23,42,0.7);
         }
         #mda-ai-modal .mda-staff-coa.sel .hd { color: #fbbf24; }
@@ -31145,15 +31308,15 @@ window.toggleSat3D = toggleSat3D;
         s.id = 'mda-inline-css';
         s.textContent = `
             .mda-if-tabs { display:flex; gap:4px; padding:6px 10px; border-bottom:1px solid var(--mda-edge);
-                background: rgba(8,21,37,.5); }
+                background: rgb(var(--bg-panel-rgb) / .5); }
             .mda-if-tab { padding:4px 10px; font-size:10px; cursor:pointer; color:var(--text-muted);
                 border:1px solid transparent; border-radius:3px; letter-spacing:.05em; }
             .mda-if-tab.active { color: var(--cyan); border-color: var(--mda-edge);
-                background: rgba(0,212,255,.10); }
+                background: rgb(var(--cyan-rgb) / .1); }
             .mda-if-body { padding:8px 10px; overflow-y:auto; flex:1;
                 max-height: calc(100vh - 160px); font-size: 11px; }
             .mda-if-item { padding:6px 8px; margin-bottom:6px; border-left:3px solid var(--cyan);
-                background: rgba(0,212,255,.05); border-radius:0 3px 3px 0; }
+                background: rgb(var(--cyan-rgb) / .05); border-radius:0 3px 3px 0; }
             .mda-if-item.warn { border-left-color: var(--mda-amber); background: rgba(255,176,32,.07); }
             .mda-if-item.crit { border-left-color: var(--mda-crit); background: rgba(255,56,96,.10); }
             .mda-if-item .mda-if-t { font-weight: 600; color: #e8f4ff; margin-bottom: 2px; }
@@ -31162,7 +31325,7 @@ window.toggleSat3D = toggleSat3D;
                 text-transform: uppercase; letter-spacing: .05em; }
             .mda-empty { color: var(--text-muted); text-align:center; padding: 20px 8px;
                 font-style: italic; font-size: 11px; }
-            .mda-tooltip { background: rgba(8,21,37,.92) !important; color:#e8f4ff !important;
+            .mda-tooltip { background: rgb(var(--bg-panel-rgb) / .92) !important; color:#e8f4ff !important;
                 border:1px solid var(--mda-edge) !important; font-size:10px !important; }
             /* [v13.0.7] Seamark popup — solid CIC-dark chrome ให้อ่านชัดบน satellite */
             .seamark-popup .leaflet-popup-content-wrapper {
@@ -32200,7 +32363,7 @@ window.toggleSat3D = toggleSat3D;
         wireUp();
         refreshAll(false);   // initial pull
         startTimers();
-        console.log('%c[THE SHIELD 3.0 v17.5.4] MDA module booted — OpenSeaMap · MarineWx · GDELT · Seismic · Aviation · SpaceWx','color:#00d4ff;font-weight:bold');
+        console.log('%c[THE SHIELD 3.0 v17.5.4] MDA module booted — OpenSeaMap · MarineWx · GDELT · Seismic · Aviation · SpaceWx','color:var(--cyan);font-weight:bold');
     }
 
     // delay boot ให้ map + v11 systems พร้อม (boot screen ใช้เวลา ~3s)
@@ -33392,11 +33555,16 @@ window.selectCOA = selectCOA;
 
     const THEMES = [
         // ── STANDARD ──
-        { id:'',                group:'Standard', name:'CIC Cyan (Default)', swatch:'#00d4ff', desc:'ของเดิม · น้ำเงิน/ไซแอน' },
+        { id:'',                group:'Standard', name:'CIC Cyan (Default)', swatch:'var(--cyan)', desc:'ของเดิม · น้ำเงิน/ไซแอน' },
         { id:'stealth',         group:'Standard', name:'Stealth Mono',       swatch:'#a3a3a3', desc:'ขาว-ดำ · สำหรับ screenshot' },
         // ── DEFENSE ──
         { id:'tactical-amber',  group:'Defense',  name:'Tactical Amber',     swatch:'#ffb000', desc:'Cold War radar / CRT' },
         { id:'royal-thai-navy', group:'Defense',  name:'Royal Thai Navy',    swatch:'#d3a027', desc:'สีกรมท่า + ทองราชนาวี · เอกลักษณ์ ทร. (อ้างอิง navy.mi.th)' },
+        // ── OPERATOR ──
+        { id:'tactical-dark',   group:'Operator', name:'Tactical Dark',      swatch:'#5e6ad2', desc:'Linear/Huly/Phantom · near-black + violet · developer tool สายทหาร' },
+        { id:'command-center',  group:'Operator', name:'Command Center',     swatch:'#5865f2', desc:'Discord/Vercel · deep charcoal + blurple · CIC command layer' },
+        { id:'maritime-ai',     group:'Operator', name:'Maritime AI',        swatch:'#06b6d4', desc:'Attio/Dayos · deep navy + cyan-teal · AI & ML platform aesthetic' },
+        { id:'classified',      group:'Operator', name:'Classified',         swatch:'#e82127', desc:'Tesla dark · pure black + crimson · futuristic minimal high-contrast' },
     ];
 
     // [Stage 4] Font catalogue — Google Fonts ที่ preload ไว้แล้ว
@@ -33416,24 +33584,24 @@ window.selectCOA = selectCOA;
     //             ใช้คุม clip size + inlay ให้แต่ละ variant ดูต่างกันโดยไม่ต้องเพิ่ม CSS
     const PANEL_STYLES = [
         // ── BASIC ──
-        { id:'',                  group:'Basic',     name:'Flat (Default)',      desc:'ดั้งเดิม · กระจกขอบโค้ง',                  swatch:'#64ffda', augValue:null },
+        { id:'',                  group:'Basic',     name:'Flat (Default)',      desc:'ดั้งเดิม · กระจกขอบโค้ง',                  swatch:'var(--teal)', augValue:null },
         { id:'glass',             group:'Basic',     name:'Glass',               desc:'frosted blur แบบ iOS/macOS',                swatch:'#a3a3a3', augValue:null },
         { id:'liquid',            group:'Basic',     name:'Liquid Glass',        desc:'Vision Pro · frosted หนา + reflection',     swatch:'#7dd3fc', augValue:null },
 
         // ── AUGMENTED · 5 sub-variants ──
-        { id:'augmented',         group:'Augmented', name:'Aug · Notched',       desc:'ตัดมุม TR+BL เฉียงเล็ก · tactical',         swatch:'#00d4ff',
+        { id:'augmented',         group:'Augmented', name:'Aug · Notched',       desc:'ตัดมุม TR+BL เฉียงเล็ก · tactical',         swatch:'var(--cyan)',
           augValue:'tr-clip bl-clip',
           cssVars:{ '--aug-tr':'10px', '--aug-bl':'10px' } },
-        { id:'augmented-frame',   group:'Augmented', name:'Aug · HUD Frame',     desc:'ตัด 4 มุมเล็ก · sci-fi uniform frame',      swatch:'#00d4ff',
+        { id:'augmented-frame',   group:'Augmented', name:'Aug · HUD Frame',     desc:'ตัด 4 มุมเล็ก · sci-fi uniform frame',      swatch:'var(--cyan)',
           augValue:'tl-clip tr-clip br-clip bl-clip both',
           cssVars:{ '--aug-tl':'8px', '--aug-tr':'8px', '--aug-br':'8px', '--aug-bl':'8px' } },
-        { id:'augmented-bar',     group:'Augmented', name:'Aug · Title Bar',     desc:'ตัดมุมบน · เหมือนแถบหัว HUD',               swatch:'#00d4ff',
+        { id:'augmented-bar',     group:'Augmented', name:'Aug · Title Bar',     desc:'ตัดมุมบน · เหมือนแถบหัว HUD',               swatch:'var(--cyan)',
           augValue:'tl-clip tr-clip both',
           cssVars:{ '--aug-tl':'12px', '--aug-tr':'12px' } },
-        { id:'augmented-stealth', group:'Augmented', name:'Aug · Stealth Slant', desc:'slant กว้าง TR+BL · F-117 / stealth',       swatch:'#00d4ff',
+        { id:'augmented-stealth', group:'Augmented', name:'Aug · Stealth Slant', desc:'slant กว้าง TR+BL · F-117 / stealth',       swatch:'var(--cyan)',
           augValue:'tr-clip-x bl-clip-x both',
           cssVars:{ '--aug-tr1':'8px', '--aug-tr-extend1':'28px', '--aug-bl1':'8px', '--aug-bl-extend1':'28px' } },
-        { id:'augmented-inset',   group:'Augmented', name:'Aug · Inset Border',  desc:'ตัดมุม + เส้นใน · industrial / premium',    swatch:'#00d4ff',
+        { id:'augmented-inset',   group:'Augmented', name:'Aug · Inset Border',  desc:'ตัดมุม + เส้นใน · industrial / premium',    swatch:'var(--cyan)',
           augValue:'tl-clip tr-clip br-clip bl-clip both',
           cssVars:{ '--aug-tl':'8px', '--aug-tr':'8px', '--aug-br':'8px', '--aug-bl':'8px',
                     '--aug-inlay-all':'3px', '--aug-inlay-bg':'rgb(var(--cyan-rgb) / .18)' } },
@@ -33441,8 +33609,8 @@ window.selectCOA = selectCOA;
         // ── DEFENSE · industrial / engineering / vintage ──
         { id:'industrial',        group:'Defense',   name:'Industrial Bezel',    desc:'rivet มุม + metal border · เรือรบ',         swatch:'#94a3b8', augValue:null },
         { id:'blueprint',         group:'Defense',   name:'Blueprint',           desc:'grid + ruler edge · engineering paper',      swatch:'#38bdf8', augValue:null },
-        { id:'crt',               group:'Defense',   name:'CRT Phosphor',        desc:'scanline + green glow · Cold War radar',    swatch:'#39ff14', augValue:null },
-        { id:'hex',               group:'Defense',   name:'Hex Tactical',        desc:'hex pattern + corner accent · Halo HUD',    swatch:'#00d4ff', augValue:null },
+        { id:'crt',               group:'Defense',   name:'CRT Phosphor',        desc:'scanline + green glow · Cold War radar',    swatch:'var(--green)', augValue:null },
+        { id:'hex',               group:'Defense',   name:'Hex Tactical',        desc:'hex pattern + corner accent · Halo HUD',    swatch:'var(--cyan)', augValue:null },
     ];
     // CSS selector ของ panel ที่ต้องได้รับ data-augmented-ui
     const PANEL_SELECTORS = '.panel, .legacy-panel, .side-panel';
@@ -33719,7 +33887,7 @@ window.selectCOA = selectCOA;
     if (document.getElementById('mda-lp-layoutbar')) return; // idempotent
 
     const DOM_ICON = {air:'🛰',surface:'🚢',sub:'🌊',seabed:'⚓',cyber:'📡',litt:'🏝',tools:'⚙'};
-    const DOM_COL  = {air:'#00d4ff',surface:'#06b6d4',sub:'#14b8a6',seabed:'#f59e0b',cyber:'#8b5cf6',litt:'#22c55e',tools:'#94a3b8'};
+    const DOM_COL  = {air:'var(--cyan)',surface:'#06b6d4',sub:'#14b8a6',seabed:'var(--amber)',cyber:'#8b5cf6',litt:'#22c55e',tools:'#94a3b8'};
     const SEGS = [
       ['A','▤','การ์ดมีกรอบ + badge นับ active'],
       ['B','▥','แถบไอคอนโดเมน (ดูทีละโดเมน)'],
@@ -34024,10 +34192,10 @@ window.selectCOA = selectCOA;
 
   // ── แกน 2: มิติ (domain) ──
   const DOMAINS = [
-    { key:'AIR',    icon:'✈️',  th:'อากาศ',      col:'#00d4ff' },
+    { key:'AIR',    icon:'✈️',  th:'อากาศ',      col:'var(--cyan)' },
     { key:'SURF',   icon:'🚢',  th:'ผิวน้ำ',     col:'#06b6d4' },
     { key:'SUB',    icon:'🌊',  th:'ใต้น้ำ',     col:'#14b8a6' },
-    { key:'SEABED', icon:'⚓',  th:'ท้องทะเล',   col:'#f59e0b' },
+    { key:'SEABED', icon:'⚓',  th:'ท้องทะเล',   col:'var(--amber)' },
     { key:'CYBER',  icon:'📡',  th:'ไซเบอร์/EW', col:'#8b5cf6' },
   ];
   const DOM_MAP={}; DOMAINS.forEach(d=>DOM_MAP[d.key]=d);
@@ -34402,7 +34570,7 @@ window.selectCOA = selectCOA;
 #trapmine-panel .tmp-head{
   display:flex; align-items:center; gap:8px; cursor:move;
   padding:11px 14px; border-bottom:1px solid rgba(74,222,128,0.18);
-  background:linear-gradient(180deg,rgba(34,197,94,0.12),transparent);
+  background:linear-gradient(180deg,rgb(var(--green-rgb) / .12),transparent);
   border-radius:14px 14px 0 0;
 }
 #trapmine-panel .tmp-head b{ color:#4ade80; font-size:13px; letter-spacing:.5px; }
@@ -34434,7 +34602,7 @@ window.selectCOA = selectCOA;
   border-radius:8px; color:#cbd5e1; transition:.12s; line-height:1.25;
 }
 .tmp-preset:hover{ border-color:rgba(74,222,128,0.5); color:#fff; }
-.tmp-preset.on{ background:rgba(34,197,94,0.18); border-color:#4ade80; color:#bbf7d0; }
+.tmp-preset.on{ background:rgb(var(--green-rgb) / .18); border-color:#4ade80; color:#bbf7d0; }
 .tmp-preset .tpi{ font-size:15px; display:block; margin-bottom:2px; }
 .tmp-desc{ font-size:10px; color:#94a3b8; margin:6px 2px 0; min-height:24px; line-height:1.35; }
 .tmp-segrow{ display:flex; flex-wrap:wrap; gap:4px; }
@@ -34444,7 +34612,7 @@ window.selectCOA = selectCOA;
   border-radius:6px; color:#cbd5e1; transition:.1s;
 }
 .tmp-seg:hover{ border-color:rgba(74,222,128,0.45); }
-.tmp-seg.on{ background:rgba(34,197,94,0.20); border-color:#4ade80; color:#bbf7d0; }
+.tmp-seg.on{ background:rgb(var(--green-rgb) / .2); border-color:#4ade80; color:#bbf7d0; }
 .tmp-field{ display:flex; align-items:center; gap:8px; margin:7px 0; }
 .tmp-field label{ font-size:11px; color:#cbd5e1; flex:0 0 118px; }
 .tmp-field input[type=range]{ flex:1; accent-color:#4ade80; }
@@ -34454,14 +34622,14 @@ window.selectCOA = selectCOA;
   padding:4px 9px; cursor:pointer; font-size:10.5px; border-radius:14px;
   background:rgba(30,41,59,0.6); border:1px solid rgba(148,163,184,0.22); color:#cbd5e1;
 }
-.tmp-chip.on{ background:rgba(34,197,94,0.20); border-color:#4ade80; color:#bbf7d0; }
+.tmp-chip.on{ background:rgb(var(--green-rgb) / .2); border-color:#4ade80; color:#bbf7d0; }
 .tmp-actions{ display:flex; gap:8px; margin-top:14px; }
 .tmp-btn{
   flex:1; padding:9px; cursor:pointer; font-size:12px; font-weight:bold;
   border-radius:8px; border:1px solid; transition:.12s; letter-spacing:.5px;
 }
-.tmp-btn.deploy{ background:rgba(34,197,94,0.20); border-color:#4ade80; color:#bbf7d0; }
-.tmp-btn.deploy:hover{ background:rgba(34,197,94,0.32); }
+.tmp-btn.deploy{ background:rgb(var(--green-rgb) / .2); border-color:#4ade80; color:#bbf7d0; }
+.tmp-btn.deploy:hover{ background:rgb(var(--green-rgb) / .32); }
 .tmp-btn.clear{ background:rgba(248,113,113,0.12); border-color:rgba(248,113,113,0.45); color:#fca5a5; }
 .tmp-btn.clear:hover{ background:rgba(248,113,113,0.22); }
 .tmp-note{ font-size:9.5px; color:#64748b; margin-top:9px; line-height:1.4; }
@@ -36539,7 +36707,7 @@ else init();
     font-family:var(--font-body,'Sarabun',sans-serif);
     font-size:11px; font-weight:600; line-height:1;
     padding:5px 9px; cursor:pointer; user-select:none;
-    color:var(--text-muted,#8892b0);
+    color:var(--text-muted,var(--text-muted));
     background:rgba(var(--bg-panel-rgb,8 21 37) / .72);
     border:1px solid rgba(var(--cyan-rgb,0 212 255) / .28);
     border-radius:6px; white-space:nowrap;
@@ -36548,19 +36716,19 @@ else init();
                background var(--dur-med,.3s) var(--ease-out,ease);
   }
   #mda-term-btn:hover{
-    color:var(--text-main,#ccd6f6);
+    color:var(--text-main,var(--text-main));
     border-color:rgba(var(--cyan-rgb,0 212 255) / .55);
   }
   #mda-term-btn .mtb-ico{ font-size:12px; line-height:1; }
   /* legal mode (default) → amber accent (กฎหมาย active) */
   body[data-term-mode="legal"] #mda-term-btn{
-    color:var(--amber,#f59e0b);
+    color:var(--amber,var(--amber));
     border-color:rgba(var(--amber-rgb,245 158 11) / .55);
     background:rgba(var(--amber-rgb,245 158 11) / .10);
   }
   /* ops mode → cyan accent (ปฏิบัติการ active) */
   body[data-term-mode="ops"] #mda-term-btn{
-    color:var(--cyan,#00d4ff);
+    color:var(--cyan,var(--cyan));
     border-color:rgba(var(--cyan-rgb,0 212 255) / .55);
     background:rgba(var(--cyan-rgb,0 212 255) / .10);
   }
@@ -36784,7 +36952,7 @@ else init();
         addLog('[ศัพท์] โหมด' + (mode === 'legal'
                 ? 'กฎหมาย — แสดง “แผนเผชิญเหตุ/แผนป้องกัน”'
                 : 'ปฏิบัติการ — แสดง “ROE” ตามต้นฉบับ'),
-               mode === 'legal' ? '#f59e0b' : '#00d4ff');
+               mode === 'legal' ? 'var(--amber)' : 'var(--cyan)');
       } catch (e) {}
     }
   }
@@ -36867,7 +37035,7 @@ window.MDA.Jurisdiction = (function () {
   var esc = (typeof escapeHtml === 'function') ? escapeHtml
           : function (s) { return String(s == null ? '' : s)
               .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
-  function _log(m, c) { try { if (typeof addLog === 'function') addLog(m, c || '#8892b0'); } catch (e) {} }
+  function _log(m, c) { try { if (typeof addLog === 'function') addLog(m, c || 'var(--text-muted)'); } catch (e) {} }
 
   // ── UDC center (standardize on the GLOBAL const, NOT the rule-engine 12.692) ──
   function _udcLat() { return (typeof UDC_LAT !== 'undefined') ? UDC_LAT : 12.712; }
@@ -36918,11 +37086,11 @@ window.MDA.Jurisdiction = (function () {
   // legal zone — they are returned as `band` so de-jure (500m) vs de-facto (MEZ)
   // can be taught separately from the UNCLOS maritime-zone (INTERNAL..EEZ).
   var ZONES = {
-    INTERNAL:    { key:'INTERNAL',    label:'น่านน้ำภายใน',          en:'Internal Waters',   color:'#39ff14' },
-    TERRITORIAL: { key:'TERRITORIAL', label:'ทะเลอาณาเขต ≤12 ไมล์',  en:'Territorial Sea',   color:'#64ffda' },
-    CONTIGUOUS:  { key:'CONTIGUOUS',  label:'เขตต่อเนื่อง 12–24 ไมล์',en:'Contiguous Zone',  color:'#ffd700' },
-    EEZ:         { key:'EEZ',         label:'เขตเศรษฐกิจจำเพาะ (EEZ)',en:'EEZ',               color:'#f59e0b' },
-    JDA:         { key:'JDA',         label:'พื้นที่พัฒนาร่วม (JDA)',  en:'Joint Dev Area',    color:'#f97316' }
+    INTERNAL:    { key:'INTERNAL',    label:'น่านน้ำภายใน',          en:'Internal Waters',   color:'var(--green)' },
+    TERRITORIAL: { key:'TERRITORIAL', label:'ทะเลอาณาเขต ≤12 ไมล์',  en:'Territorial Sea',   color:'var(--teal)' },
+    CONTIGUOUS:  { key:'CONTIGUOUS',  label:'เขตต่อเนื่อง 12–24 ไมล์',en:'Contiguous Zone',  color:'var(--yellow)' },
+    EEZ:         { key:'EEZ',         label:'เขตเศรษฐกิจจำเพาะ (EEZ)',en:'EEZ',               color:'var(--amber)' },
+    JDA:         { key:'JDA',         label:'พื้นที่พัฒนาร่วม (JDA)',  en:'Joint Dev Area',    color:'var(--orange)' }
   };
 
   // ── PERMISSION MATRIX (de jure) per zone ─────────────────────────────────
@@ -36961,9 +37129,9 @@ window.MDA.Jurisdiction = (function () {
     var d = _distFromUDCnm(lat, lng);
     // radius-band overlay (de-jure 500m vs de-facto MEZ vs buffer)
     var band = null;
-    if (d <= SAFETY_NM)        band = { key:'SAFETY_500M', label:'เขตปลอดภัย 500 ม. (UNCLOS 60(5))', deJure:true,  color:'#00d4ff' };
-    else if (d <= _mezNm)      band = { key:'MEZ',         label:'MEZ ' + _mezNm.toFixed(1) + ' ไมล์ (de-facto)', deJure:false, color:'#ff4136' };
-    else if (d <= BUFFER_OUTER)band = { key:'BUFFER',      label:'เขตกันชน/หวงห้าม 5–10 ไมล์',      deJure:false, color:'#f59e0b' };
+    if (d <= SAFETY_NM)        band = { key:'SAFETY_500M', label:'เขตปลอดภัย 500 ม. (UNCLOS 60(5))', deJure:true,  color:'var(--cyan)' };
+    else if (d <= _mezNm)      band = { key:'MEZ',         label:'MEZ ' + _mezNm.toFixed(1) + ' ไมล์ (de-facto)', deJure:false, color:'var(--red)' };
+    else if (d <= BUFFER_OUTER)band = { key:'BUFFER',      label:'เขตกันชน/หวงห้าม 5–10 ไมล์',      deJure:false, color:'var(--amber)' };
 
     // legal maritime-zone (priority: JDA polygon → TS polygon → distance rings)
     var zk;
@@ -37049,7 +37217,7 @@ window.MDA.Jurisdiction = (function () {
           var capped = clampGate(gate, z.zone);
           if (capped && capped._jurClamped && g && !g._jurLogged) {
             g._jurLogged = true;
-            _log('[เขตอำนาจ] ' + z.label + ' — ไม่มีอำนาจพนักงานเจ้าหน้าที่ · จำกัด ROE ≤ TRACK', '#f59e0b');
+            _log('[เขตอำนาจ] ' + z.label + ' — ไม่มีอำนาจพนักงานเจ้าหน้าที่ · จำกัด ROE ≤ TRACK', 'var(--amber)');
             // reset the one-shot log when it leaves the clamp zone
           }
           if (!(capped && capped._jurClamped)) { try { delete g._jurLogged; } catch (e) {} }
@@ -37082,18 +37250,18 @@ window.MDA.Jurisdiction = (function () {
     var c = [_udcLat(), _udcLng()];
     var mPerNm = 1852;
     // de-jure: UNCLOS Art.60(5) 500m safety zone (cyan, solid-ish)
-    L.circle(c, { radius: SAFETY_M, color: '#00d4ff', weight: 2, opacity: 0.9,
-      fillColor: '#00d4ff', fillOpacity: 0.05, dashArray: '2,4', interactive: false })
+    L.circle(c, { radius: SAFETY_M, color: 'var(--cyan)', weight: 2, opacity: 0.9,
+      fillColor: 'var(--cyan)', fillOpacity: 0.05, dashArray: '2,4', interactive: false })
       .bindTooltip('เขตปลอดภัย 500 ม. · UNCLOS Art.60(5) — DE JURE (AS-IS ที่มีฐานอำนาจ)', { className: 'jur-tip' })
       .addTo(_layer);
     // de-facto: MEZ ring (red, dashed) — slider-controlled
-    L.circle(c, { radius: _mezNm * mPerNm, color: '#ff4136', weight: 1.8, opacity: 0.85,
-      fillColor: '#ff4136', fillOpacity: 0.03, dashArray: '10,7', interactive: false })
+    L.circle(c, { radius: _mezNm * mPerNm, color: 'var(--red)', weight: 1.8, opacity: 0.85,
+      fillColor: 'var(--red)', fillOpacity: 0.03, dashArray: '10,7', interactive: false })
       .bindTooltip('MEZ ' + _mezNm.toFixed(1) + ' ไมล์ · เขตห้ามเข้า (de-facto) — TO-BE (เสนอเชิงนโยบาย)', { className: 'jur-tip' })
       .addTo(_layer);
     // buffer / restricted band 5–10nm (amber)
-    L.circle(c, { radius: BUFFER_OUTER * mPerNm, color: '#f59e0b', weight: 1.2, opacity: 0.6,
-      fillColor: '#f59e0b', fillOpacity: 0.02, dashArray: '6,6', interactive: false })
+    L.circle(c, { radius: BUFFER_OUTER * mPerNm, color: 'var(--amber)', weight: 1.2, opacity: 0.6,
+      fillColor: 'var(--amber)', fillOpacity: 0.02, dashArray: '6,6', interactive: false })
       .bindTooltip('เขตกันชน/หวงห้าม 5–10 ไมล์ (Buffer / Restricted)', { className: 'jur-tip' })
       .addTo(_layer);
   }
@@ -37103,63 +37271,63 @@ window.MDA.Jurisdiction = (function () {
   // ════════════════════════════════════════════════════════════════════════
   var _open = false;
   var CSS = ''
-    + '#jur-btn{cursor:pointer;font:600 12px var(--font-body,"Sarabun"),sans-serif;color:var(--text-main,#ccd6f6);'
-    +   'background:rgba(8,21,37,.85);border:1px solid rgba(100,255,218,.35);border-radius:6px;padding:5px 10px;'
+    + '#jur-btn{cursor:pointer;font:600 12px var(--font-body,"Sarabun"),sans-serif;color:var(--text-main,var(--text-main));'
+    +   'background:rgb(var(--bg-panel-rgb) / .85);border:1px solid rgb(var(--teal-rgb) / .35);border-radius:6px;padding:5px 10px;'
     +   'display:flex;align-items:center;gap:5px;user-select:none;transition:all var(--dur-med,.3s) var(--ease-out,ease);}'
-    + '#jur-btn:hover{border-color:var(--teal,#64ffda);box-shadow:0 0 10px rgba(100,255,218,.25);}'
-    + '#jur-btn.on{border-color:var(--teal,#64ffda);background:rgba(100,255,218,.12);color:var(--teal,#64ffda);}'
+    + '#jur-btn:hover{border-color:var(--teal,var(--teal));box-shadow:0 0 10px rgb(var(--teal-rgb) / .25);}'
+    + '#jur-btn.on{border-color:var(--teal,var(--teal));background:rgb(var(--teal-rgb) / .12);color:var(--teal,var(--teal));}'
     + '#juris-panel{position:fixed;top:96px;right:12px;width:354px;max-height:calc(100vh - 120px);overflow-y:auto;'
-    +   'background:var(--bg-panel,#081525);border:1px solid rgba(100,255,218,.30);border-radius:10px;'
-    +   'box-shadow:0 8px 32px rgba(0,0,0,.55);color:var(--text-main,#ccd6f6);font-family:var(--font-body,"Sarabun"),sans-serif;'
+    +   'background:var(--bg-panel,var(--bg-panel));border:1px solid rgb(var(--teal-rgb) / .3);border-radius:10px;'
+    +   'box-shadow:0 8px 32px rgba(0,0,0,.55);color:var(--text-main,var(--text-main));font-family:var(--font-body,"Sarabun"),sans-serif;'
     +   'font-size:12px;z-index:7351;opacity:0;transform:translateY(-8px);pointer-events:none;'
     +   'transition:opacity var(--dur-med,.3s) var(--ease-out,ease),transform var(--dur-med,.3s) var(--ease-out,ease);}'
     + '#juris-panel.on{opacity:1;transform:translateY(0);pointer-events:auto;}'
     + '.jur-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;'
-    +   'border-bottom:1px solid rgba(100,255,218,.20);position:sticky;top:0;background:var(--bg-panel,#081525);z-index:2;}'
-    + '.jur-head b{font-size:13px;color:var(--teal,#64ffda);letter-spacing:.02em;}'
-    + '.jur-x{cursor:pointer;color:var(--text-muted,#8892b0);font-size:15px;line-height:1;padding:2px 6px;border-radius:4px;}'
-    + '.jur-x:hover{color:var(--red,#ff4136);background:rgba(255,65,54,.1);}'
-    + '.jur-sub{padding:6px 12px;color:var(--text-muted,#8892b0);font-size:10.5px;border-bottom:1px solid rgba(136,146,176,.12);}'
+    +   'border-bottom:1px solid rgb(var(--teal-rgb) / .2);position:sticky;top:0;background:var(--bg-panel,var(--bg-panel));z-index:2;}'
+    + '.jur-head b{font-size:13px;color:var(--teal,var(--teal));letter-spacing:.02em;}'
+    + '.jur-x{cursor:pointer;color:var(--text-muted,var(--text-muted));font-size:15px;line-height:1;padding:2px 6px;border-radius:4px;}'
+    + '.jur-x:hover{color:var(--red,var(--red));background:rgba(255,65,54,.1);}'
+    + '.jur-sub{padding:6px 12px;color:var(--text-muted,var(--text-muted));font-size:10.5px;border-bottom:1px solid rgba(136,146,176,.12);}'
     + '.jur-sec{padding:9px 12px;border-bottom:1px solid rgba(136,146,176,.10);}'
-    + '.jur-sec-h{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted,#8892b0);margin-bottom:6px;}'
+    + '.jur-sec-h{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted,var(--text-muted));margin-bottom:6px;}'
     + '.jur-badge{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:7px;border-left:3px solid var(--teal);'
-    +   'background:rgba(100,255,218,.06);margin-bottom:6px;}'
+    +   'background:rgb(var(--teal-rgb) / .06);margin-bottom:6px;}'
     + '.jur-badge .zn{font-weight:700;font-size:12.5px;}'
-    + '.jur-badge .dt{font-size:10px;color:var(--text-muted,#8892b0);}'
-    + '.jur-auth-yes{color:var(--green,#39ff14);font-weight:700;}'
-    + '.jur-auth-no{color:var(--red,#ff4136);font-weight:700;}'
+    + '.jur-badge .dt{font-size:10px;color:var(--text-muted,var(--text-muted));}'
+    + '.jur-auth-yes{color:var(--green,var(--green));font-weight:700;}'
+    + '.jur-auth-no{color:var(--red,var(--red));font-weight:700;}'
     + '.jur-banner{margin:0;padding:8px 12px;background:rgba(255,65,54,.12);border-top:1px solid rgba(255,65,54,.3);'
     +   'border-bottom:1px solid rgba(255,65,54,.3);color:#ffb3ad;font-size:11px;line-height:1.45;display:none;}'
     + '.jur-banner.on{display:block;}'
-    + '.jur-banner b{color:var(--red,#ff4136);}'
+    + '.jur-banner b{color:var(--red,var(--red));}'
     + '.jur-mtx{width:100%;border-collapse:collapse;font-size:10.5px;font-family:var(--font-mono,"Share Tech Mono"),monospace;}'
     + '.jur-mtx td,.jur-mtx th{padding:2px 4px;text-align:center;border-bottom:1px solid rgba(136,146,176,.1);}'
-    + '.jur-mtx th{color:var(--text-muted,#8892b0);font-weight:400;}'
-    + '.jur-mtx .ok{color:var(--green,#39ff14);}'
-    + '.jur-mtx .no{color:var(--red,#ff4136);opacity:.65;}'
-    + '.jur-mtx .lbl{text-align:left;color:var(--text-main,#ccd6f6);font-family:var(--font-body,"Sarabun"),sans-serif;}'
-    + '.jur-tog{display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 0;color:var(--text-main,#ccd6f6);}'
-    + '.jur-tog input{accent-color:var(--teal,#64ffda);width:15px;height:15px;cursor:pointer;}'
+    + '.jur-mtx th{color:var(--text-muted,var(--text-muted));font-weight:400;}'
+    + '.jur-mtx .ok{color:var(--green,var(--green));}'
+    + '.jur-mtx .no{color:var(--red,var(--red));opacity:.65;}'
+    + '.jur-mtx .lbl{text-align:left;color:var(--text-main,var(--text-main));font-family:var(--font-body,"Sarabun"),sans-serif;}'
+    + '.jur-tog{display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 0;color:var(--text-main,var(--text-main));}'
+    + '.jur-tog input{accent-color:var(--teal,var(--teal));width:15px;height:15px;cursor:pointer;}'
     + '.jur-slider-row{margin-top:8px;}'
-    + '.jur-slider-row label{display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-muted,#8892b0);margin-bottom:3px;}'
-    + '.jur-slider-row input[type=range]{width:100%;accent-color:var(--red,#ff4136);cursor:pointer;}'
+    + '.jur-slider-row label{display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-muted,var(--text-muted));margin-bottom:3px;}'
+    + '.jur-slider-row input[type=range]{width:100%;accent-color:var(--red,var(--red));cursor:pointer;}'
     + '.jur-lc-layer{border-radius:7px;padding:7px 9px;margin-bottom:6px;border:1px solid transparent;}'
     + '.jur-lc-1{background:rgba(57,255,20,.06);border-color:rgba(57,255,20,.25);}'
     + '.jur-lc-2{background:rgba(255,65,54,.07);border-color:rgba(255,65,54,.35);}'
     + '.jur-lc-tag{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:5px;'
     +   'font-family:var(--font-mono,"Share Tech Mono"),monospace;}'
-    + '.jur-lc-tag.g{background:rgba(57,255,20,.2);color:var(--green,#39ff14);}'
-    + '.jur-lc-tag.r{background:rgba(255,65,54,.2);color:var(--red,#ff4136);}'
+    + '.jur-lc-tag.g{background:rgba(57,255,20,.2);color:var(--green,var(--green));}'
+    + '.jur-lc-tag.r{background:rgba(255,65,54,.2);color:var(--red,var(--red));}'
     + '.jur-lc-law{font-weight:600;font-size:11.5px;margin-bottom:2px;}'
-    + '.jur-lc-desc{font-size:10px;color:var(--text-muted,#8892b0);line-height:1.4;}'
-    + '.jur-foot{padding:8px 12px;font-size:9.5px;color:var(--text-muted,#8892b0);line-height:1.4;}'
+    + '.jur-lc-desc{font-size:10px;color:var(--text-muted,var(--text-muted));line-height:1.4;}'
+    + '.jur-foot{padding:8px 12px;font-size:9.5px;color:var(--text-muted,var(--text-muted));line-height:1.4;}'
     + '.jur-tip{font-size:11px;}';
 
   function _badgeHTML() {
     var toi = _trackOfInterest();
     if (!toi) {
-      return '<div class="jur-badge" style="border-left-color:#8892b0;background:rgba(136,146,176,.06);">'
-        + '<div><div class="zn" style="color:#8892b0;">— ไม่มีเป้าที่เลือก —</div>'
+      return '<div class="jur-badge" style="border-left-color:var(--text-muted);background:rgba(136,146,176,.06);">'
+        + '<div><div class="zn" style="color:var(--text-muted);">— ไม่มีเป้าที่เลือก —</div>'
         + '<div class="dt">เริ่มสถานการณ์ (กด 1–9) เพื่อดูเขตอำนาจของเป้า</div></div></div>';
     }
     var z = toi.z, t = toi.t;
@@ -37197,7 +37365,7 @@ window.MDA.Jurisdiction = (function () {
       + '</div>'
       + '<div class="jur-lc-layer jur-lc-2">'
       +   '<div class="jur-lc-law"><span class="jur-lc-tag r">ชั้น 2 · GAP</span>พ.ร.ฎ.คุ้มครอง CUI + UNCLOS Art.113–115</div>'
-      +   '<div class="jur-lc-desc">นอก 12 ไมล์ (เขตต่อเนื่อง/EEZ) — พ.ร.ฎ.คุ้มครองโครงสร้างใต้น้ำ <b style="color:#ff4136">ยังไม่ประกาศ</b> '
+      +   '<div class="jur-lc-desc">นอก 12 ไมล์ (เขตต่อเนื่อง/EEZ) — พ.ร.ฎ.คุ้มครองโครงสร้างใต้น้ำ <b style="color:var(--red)">ยังไม่ประกาศ</b> '
       +     '· UNCLOS 113–115 คุ้มครองสายเคเบิลแต่ไม่ให้อำนาจบังคับฝ่ายเดียว → ไม่มี \'พนักงานเจ้าหน้าที่\' บังคับใช้ '
       +     '· ช่องว่างกฎหมายหลัก (TO-BE — เสนอเชิงนโยบาย)</div>'
       + '</div>';
@@ -37215,10 +37383,10 @@ window.MDA.Jurisdiction = (function () {
       +   '<div id="jur-matrix-host">' + _matrixHTML() + '</div></div>'
       + '<div class="jur-sec"><div class="jur-sec-h">Legal Regime — ภาพซ้อนบนแผนที่</div>'
       +   '<label class="jur-tog"><input type="checkbox" id="jur-regime-cb">'
-      +     '<span>วาดวงแหวน <b style="color:#00d4ff">500 ม. (de jure)</b> + <b style="color:#ff4136">MEZ (de facto)</b> + <b style="color:#f59e0b">กันชน</b></span></label>'
+      +     '<span>วาดวงแหวน <b style="color:var(--cyan)">500 ม. (de jure)</b> + <b style="color:var(--red)">MEZ (de facto)</b> + <b style="color:var(--amber)">กันชน</b></span></label>'
       +   '<div class="jur-slider-row"><label><span>MEZ (de-facto · visual) '
-      +     '<span style="color:#8892b0">[rule-engine 1.5 ไมล์ ไม่เปลี่ยน]</span></span>'
-      +     '<b id="jur-mez-val" style="color:#ff4136">' + _mezNm.toFixed(1) + ' ไมล์</b></label>'
+      +     '<span style="color:var(--text-muted)">[rule-engine 1.5 ไมล์ ไม่เปลี่ยน]</span></span>'
+      +     '<b id="jur-mez-val" style="color:var(--red)">' + _mezNm.toFixed(1) + ' ไมล์</b></label>'
       +     '<input type="range" id="jur-mez-slider" min="2" max="5" step="0.5" value="' + _mezNm + '"></div>'
       + '</div>'
       + '<div class="jur-sec"><div class="jur-sec-h">Legal Card 2 ชั้น (AS-IS / GAP)</div>'
@@ -37249,7 +37417,7 @@ window.MDA.Jurisdiction = (function () {
 
   // ── color util ──
   function _rgba(hex, a) {
-    var h = (hex || '#64ffda').replace('#', '');
+    var h = (hex || 'var(--teal)').replace('#', '');
     if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
     var r = parseInt(h.substr(0, 2), 16), g = parseInt(h.substr(2, 2), 16), b = parseInt(h.substr(4, 2), 16);
     return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
@@ -37304,8 +37472,8 @@ window.MDA.Jurisdiction = (function () {
     if (cb) cb.addEventListener('change', function () {
       var lyr = _ensureLayer();
       if (!lyr || typeof map === 'undefined' || !map) return;
-      if (cb.checked) { lyr.addTo(map); _log('[เขตอำนาจ] แสดง Legal Regime (500ม de jure + MEZ de facto + กันชน)', '#64ffda'); }
-      else { try { map.removeLayer(lyr); } catch (e) {} _log('[เขตอำนาจ] ซ่อน Legal Regime overlay', '#8892b0'); }
+      if (cb.checked) { lyr.addTo(map); _log('[เขตอำนาจ] แสดง Legal Regime (500ม de jure + MEZ de facto + กันชน)', 'var(--teal)'); }
+      else { try { map.removeLayer(lyr); } catch (e) {} _log('[เขตอำนาจ] ซ่อน Legal Regime overlay', 'var(--text-muted)'); }
     });
     var sl = p.querySelector('#jur-mez-slider');
     if (sl) sl.addEventListener('input', function () {
@@ -37328,7 +37496,7 @@ window.MDA.Jurisdiction = (function () {
     } else {
       if (_poll) { clearInterval(_poll); _poll = null; }
     }
-    _log('[เขตอำนาจ] ' + (v ? 'เปิดแผง Jurisdiction & Legal-Authority' : 'ปิดแผง Jurisdiction'), v ? '#64ffda' : '#8892b0');
+    _log('[เขตอำนาจ] ' + (v ? 'เปิดแผง Jurisdiction & Legal-Authority' : 'ปิดแผง Jurisdiction'), v ? 'var(--teal)' : 'var(--text-muted)');
   }
   function toggle() { setOpen(!_open); }
   window.toggleJurisdiction = toggle;
@@ -37583,56 +37751,56 @@ window.MDA.Jurisdiction = (function () {
 
   var CSS =
     '#'+BTN+'{cursor:pointer;font-family:var(--font-body,'+"'Sarabun'"+',sans-serif);font-size:12px;'+
-      'color:var(--teal,#64ffda);background:rgba(var(--bg-panel-rgb,8 21 37)/.78);'+
+      'color:var(--teal,var(--teal));background:rgba(var(--bg-panel-rgb,8 21 37)/.78);'+
       'border:1px solid rgba(var(--teal-rgb,100 255 218)/.45);border-radius:6px;padding:4px 9px;'+
       'letter-spacing:.03em;white-space:nowrap;transition:all var(--dur-med,.3s) var(--ease-out,ease);}'+
     '#'+BTN+':hover{background:rgba(var(--teal-rgb,100 255 218)/.14);}'+
     '#'+BTN+'.on{background:rgba(var(--teal-rgb,100 255 218)/.2);'+
-      'box-shadow:0 0 10px rgba(var(--teal-rgb,100 255 218)/.4);color:var(--text-main,#ccd6f6);}'+
+      'box-shadow:0 0 10px rgba(var(--teal-rgb,100 255 218)/.4);color:var(--text-main,var(--text-main));}'+
     '#'+PANEL+'{position:fixed;top:54px;right:362px;width:340px;max-height:calc(100vh - 96px);'+
       'overflow-y:auto;z-index:7360;background:rgba(var(--bg-panel-rgb,8 21 37)/.95);'+
       'border:1px solid rgba(var(--teal-rgb,100 255 218)/.4);border-radius:10px;'+
-      'box-shadow:0 8px 34px rgba(0,0,0,.55);color:var(--text-main,#ccd6f6);'+
+      'box-shadow:0 8px 34px rgba(0,0,0,.55);color:var(--text-main,var(--text-main));'+
       'font-family:var(--font-body,'+"'Sarabun'"+',sans-serif);font-size:12px;'+
       'backdrop-filter:blur(7px);display:none;}'+
     '#'+PANEL+'.on{display:block;}'+
     '#'+PANEL+' .sbf-head{display:flex;align-items:center;justify-content:space-between;'+
       'padding:9px 12px;border-bottom:1px solid rgba(var(--teal-rgb,100 255 218)/.25);'+
       'position:sticky;top:0;background:rgba(var(--bg-panel-rgb,8 21 37)/.98);border-radius:10px 10px 0 0;}'+
-    '#'+PANEL+' .sbf-head b{color:var(--teal,#64ffda);font-size:12.5px;letter-spacing:.02em;}'+
-    '#'+PANEL+' .sbf-x{cursor:pointer;color:var(--text-muted,#8892b0);font-size:13px;padding:0 4px;}'+
-    '#'+PANEL+' .sbf-x:hover{color:var(--red,#ff4136);}'+
-    '#'+PANEL+' .sbf-tag{padding:6px 12px;color:var(--text-muted,#8892b0);font-size:10.5px;'+
+    '#'+PANEL+' .sbf-head b{color:var(--teal,var(--teal));font-size:12.5px;letter-spacing:.02em;}'+
+    '#'+PANEL+' .sbf-x{cursor:pointer;color:var(--text-muted,var(--text-muted));font-size:13px;padding:0 4px;}'+
+    '#'+PANEL+' .sbf-x:hover{color:var(--red,var(--red));}'+
+    '#'+PANEL+' .sbf-tag{padding:6px 12px;color:var(--text-muted,var(--text-muted));font-size:10.5px;'+
       'border-bottom:1px solid rgba(var(--text-muted-rgb,100 116 139)/.18);line-height:1.45;}'+
     '#'+PANEL+' .sbf-cop{display:flex;gap:10px;padding:11px 12px;align-items:center;'+
       'border-bottom:1px solid rgba(var(--text-muted-rgb,100 116 139)/.15);}'+
     '#'+PANEL+' .sbf-cop-l{flex:1;}'+
-    '#'+PANEL+' .sbf-cop-cap{font-size:9.5px;letter-spacing:.08em;color:var(--text-muted,#8892b0);'+
+    '#'+PANEL+' .sbf-cop-cap{font-size:9.5px;letter-spacing:.08em;color:var(--text-muted,var(--text-muted));'+
       'font-family:var(--font-mono,'+"'Share Tech Mono'"+',monospace);}'+
     '#'+PANEL+' .sbf-cop-val{font-size:30px;font-weight:700;line-height:1.05;'+
       'font-family:var(--font-mono,'+"'Share Tech Mono'"+',monospace);}'+
     '#'+PANEL+' .sbf-cop-val small{font-size:13px;opacity:.65;}'+
-    '#'+PANEL+' .sbf-cop-sub{font-size:9.5px;color:var(--text-muted,#8892b0);margin-top:2px;}'+
+    '#'+PANEL+' .sbf-cop-sub{font-size:9.5px;color:var(--text-muted,var(--text-muted));margin-top:2px;}'+
     '#'+PANEL+' .sbf-cop-r{display:flex;flex-direction:column;gap:3px;align-items:flex-end;}'+
     '#'+PANEL+' .sbf-chip{font-size:9px;padding:1px 6px;border-radius:3px;letter-spacing:.04em;'+
       'font-family:var(--font-mono,'+"'Share Tech Mono'"+',monospace);min-width:42px;text-align:center;}'+
-    '#'+PANEL+' .sbf-chip.on{color:var(--green,#39ff14);background:rgba(var(--green-rgb,34 197 94)/.14);'+
+    '#'+PANEL+' .sbf-chip.on{color:var(--green,var(--green));background:rgba(var(--green-rgb,34 197 94)/.14);'+
       'border:1px solid rgba(var(--green-rgb,34 197 94)/.4);}'+
-    '#'+PANEL+' .sbf-chip.off{color:var(--text-muted,#8892b0);background:rgba(var(--text-muted-rgb,100 116 139)/.1);'+
+    '#'+PANEL+' .sbf-chip.off{color:var(--text-muted,var(--text-muted));background:rgba(var(--text-muted-rgb,100 116 139)/.1);'+
       'border:1px solid rgba(var(--text-muted-rgb,100 116 139)/.3);}'+
     '#'+PANEL+' .sbf-sec{padding:8px 12px 3px;font-size:9.5px;letter-spacing:.06em;'+
-      'color:var(--cyan,#00d4ff);text-transform:uppercase;font-family:var(--font-mono,'+"'Share Tech Mono'"+',monospace);}'+
-    '#'+PANEL+' .sbf-row{margin:5px 10px;padding:6px 9px;border-left:3px solid var(--text-muted,#8892b0);'+
+      'color:var(--cyan,var(--cyan));text-transform:uppercase;font-family:var(--font-mono,'+"'Share Tech Mono'"+',monospace);}'+
+    '#'+PANEL+' .sbf-row{margin:5px 10px;padding:6px 9px;border-left:3px solid var(--text-muted,var(--text-muted));'+
       'background:rgba(var(--bg-dark-rgb,2 12 24)/.45);border-radius:0 5px 5px 0;}'+
     '#'+PANEL+' .sbf-row-h{display:flex;justify-content:space-between;gap:6px;align-items:baseline;}'+
-    '#'+PANEL+' .sbf-row-k{font-size:11.5px;color:var(--text-main,#ccd6f6);font-weight:600;}'+
-    '#'+PANEL+' .sbf-row-src{font-size:9px;color:var(--text-muted,#8892b0);white-space:nowrap;'+
+    '#'+PANEL+' .sbf-row-k{font-size:11.5px;color:var(--text-main,var(--text-main));font-weight:600;}'+
+    '#'+PANEL+' .sbf-row-src{font-size:9px;color:var(--text-muted,var(--text-muted));white-space:nowrap;'+
       'font-family:var(--font-mono,'+"'Share Tech Mono'"+',monospace);}'+
-    '#'+PANEL+' .sbf-row-src em{color:var(--amber,#f59e0b);font-style:normal;}'+
-    '#'+PANEL+' .sbf-row-sub{font-size:10px;color:var(--text-muted,#8892b0);margin-top:2px;line-height:1.4;}'+
-    '#'+PANEL+' .sbf-foot{padding:8px 12px 11px;font-size:9.5px;color:var(--text-muted,#8892b0);'+
+    '#'+PANEL+' .sbf-row-src em{color:var(--amber,var(--amber));font-style:normal;}'+
+    '#'+PANEL+' .sbf-row-sub{font-size:10px;color:var(--text-muted,var(--text-muted));margin-top:2px;line-height:1.4;}'+
+    '#'+PANEL+' .sbf-foot{padding:8px 12px 11px;font-size:9.5px;color:var(--text-muted,var(--text-muted));'+
       'line-height:1.5;border-top:1px solid rgba(var(--text-muted-rgb,100 116 139)/.15);margin-top:5px;}'+
-    '#'+PANEL+' .sbf-foot em,#'+PANEL+' .sbf-row-sub em{color:var(--amber,#f59e0b);font-style:normal;}';
+    '#'+PANEL+' .sbf-foot em,#'+PANEL+' .sbf-row-sub em{color:var(--amber,var(--amber));font-style:normal;}';
 
   function build(){
     if (document.getElementById(PANEL)) return;
@@ -37665,7 +37833,7 @@ window.MDA.Jurisdiction = (function () {
     if(_open){ _refresh(); if(!_timer) _timer=setInterval(_refresh,1500); }
     else { if(_timer){ clearInterval(_timer); _timer=null; } }
     log('[UNDERWATER COP] '+(_open?'แสดงภาพรวมปฏิบัติการใต้น้ำ (Seabed Fusion)':'ซ่อนภาพรวมใต้น้ำ'),
-        _open?'#64ffda':'#8892b0');
+        _open?'var(--teal)':'var(--text-muted)');
   }
   function toggle(){ setOpen(!_open); }
   window.toggleUnderwaterMDA = toggle;
@@ -37807,7 +37975,7 @@ window.MDA.Jurisdiction = (function () {
     log('[SONAR GRID] '+(_open
         ? ('แสดง coverage sonar — active '+_sonarNm().toFixed(1)+' nm · hydrophone '+_hydroNm().toFixed(1)+' nm')
         : 'ซ่อน coverage sonar grid'),
-        _open?'#34d399':'#8892b0');
+        _open?'#34d399':'var(--text-muted)');
   }
   function toggle(){ setOpen(!_open); }
   window.toggleSonarGrid = toggle;
@@ -37947,7 +38115,7 @@ window.MDA.Jurisdiction = (function () {
           ny: (typeof UDC.ny === 'number' ? UDC.ny : 0.5) + 0.08,
           tnx: (typeof UDC.nx === 'number' ? UDC.nx : 0.5) + 0.06,
           tny: (typeof UDC.ny === 'number' ? UDC.ny : 0.5) - 0.04,
-          color: '#64ffda',            // teal = ฝ่ายเดียวกัน/มิตร
+          color: 'var(--teal)',            // teal = ฝ่ายเดียวกัน/มิตร
           speed: 0.0007, active: true, frozen: false,
           classified: true,
           recognition: 'WHITE',        // มิตร — ไม่ใช่ภัยคุกคาม
@@ -38350,7 +38518,7 @@ window.MDA.Jurisdiction = (function () {
   /* header buttons — copy GLOBAL UDC shape but theme-token-driven so all 4 themes work */
   .p3-hbtn{ display:inline-flex; align-items:center; gap:5px; cursor:pointer;
     font-family:var(--font-body,'Sarabun',sans-serif); font-size:11px; font-weight:700;
-    color:var(--cyan,#00d4ff); background:rgba(var(--bg-panel-rgb,8 21 37) / .92);
+    color:var(--cyan,var(--cyan)); background:rgba(var(--bg-panel-rgb,8 21 37) / .92);
     border:1px solid rgba(var(--cyan-rgb,0 212 255) / .34); border-radius:10px;
     padding:3px 10px; box-shadow:0 2px 8px rgba(0,0,0,.35);
     user-select:none; letter-spacing:.3px; white-space:nowrap; line-height:1.2;
@@ -38377,25 +38545,25 @@ window.MDA.Jurisdiction = (function () {
     border-top:1px solid rgba(148,163,184,.16); }
   .p3-row{ margin:6px 9px; padding:6px 8px; background:rgba(255,255,255,.025);
     border-left:3px solid var(--cyan,#38bdf8); border-radius:0 6px 6px 0; }
-  .p3-row .k{ font-size:9px; color:var(--text-muted,#8892b0); }
+  .p3-row .k{ font-size:9px; color:var(--text-muted,var(--text-muted)); }
   .p3-row .v{ font-size:10.5px; color:var(--text-main,#e2e8f0); }
   .p3-btn{ font-family:var(--font-mono,'Share Tech Mono',monospace); font-size:10px; cursor:pointer;
-    color:var(--cyan,#00d4ff); background:rgba(var(--cyan-rgb,0 212 255) / .08);
+    color:var(--cyan,var(--cyan)); background:rgba(var(--cyan-rgb,0 212 255) / .08);
     border:1px solid rgba(var(--cyan-rgb,0 212 255) / .35); border-radius:5px; padding:4px 10px;
     letter-spacing:.04em; }
-  .p3-btn:hover{ background:rgba(var(--cyan-rgb,0 212 255) / .16); color:var(--teal,#64ffda); }
+  .p3-btn:hover{ background:rgba(var(--cyan-rgb,0 212 255) / .16); color:var(--teal,var(--teal)); }
   .p3-sel, .p3-inp{ font-family:var(--font-mono,'Share Tech Mono',monospace); font-size:10px;
-    color:var(--text-main,#ccd6f6); background:rgba(var(--bg-dark-rgb,2 12 24) / .85);
+    color:var(--text-main,var(--text-main)); background:rgba(var(--bg-dark-rgb,2 12 24) / .85);
     border:1px solid rgba(var(--cyan-rgb,0 212 255) / .28); border-radius:5px; padding:3px 6px; }
   /* chain-of-custody / evidence timeline */
   .p3-ev{ position:relative; margin:0 9px 0 18px; padding:5px 8px 5px 12px;
     border-left:2px solid rgba(var(--cyan-rgb,0 212 255) / .4); }
   .p3-ev::before{ content:''; position:absolute; left:-5px; top:9px; width:8px; height:8px; border-radius:50%;
-    background:var(--cyan,#00d4ff); box-shadow:0 0 6px var(--cyan,#00d4ff); }
-  .p3-ev.hi::before{ background:var(--red,#ff4136); box-shadow:0 0 6px var(--red,#ff4136); }
-  .p3-ev .t{ font-family:var(--font-mono,'Share Tech Mono',monospace); font-size:8.5px; color:var(--amber,#f59e0b); }
-  .p3-ev .m{ font-size:10px; color:var(--text-main,#ccd6f6); margin:1px 0; }
-  .p3-ev .c{ font-size:8.5px; color:var(--text-muted,#8892b0); }
+    background:var(--cyan,var(--cyan)); box-shadow:0 0 6px var(--cyan,var(--cyan)); }
+  .p3-ev.hi::before{ background:var(--red,var(--red)); box-shadow:0 0 6px var(--red,var(--red)); }
+  .p3-ev .t{ font-family:var(--font-mono,'Share Tech Mono',monospace); font-size:8.5px; color:var(--amber,var(--amber)); }
+  .p3-ev .m{ font-size:10px; color:var(--text-main,var(--text-main)); margin:1px 0; }
+  .p3-ev .c{ font-size:8.5px; color:var(--text-muted,var(--text-muted)); }
   .p3-badge{ display:inline-block; font-size:8.5px; font-weight:700; padding:1px 6px; border-radius:8px;
     font-family:var(--font-mono,'Share Tech Mono',monospace); }
 </style>
