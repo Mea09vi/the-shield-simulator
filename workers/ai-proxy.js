@@ -52,7 +52,7 @@
      5. คัดลอก URL (xxx.workers.dev) → UDC Simulator ผ่านปุ่ม ⚙
    ════════════════════════════════════════════════════════════════════ */
 
-const VERSION = '15.4.3';   // v15.4.3 — แก้ ZAI_ENDPOINT: /api/openai/v1/ คืน 404 NOT_FOUND → เปลี่ยนเป็น path ทางการ /api/paas/v4/chat/completions (docs.z.ai · curl ตัวอย่างใช้ paas/v4 + glm-5.2) · v15.4.2 — callZai: ดักซอง Zhipu native {code,msg,success} (แม้ HTTP 200) + ดัมพ์ raw body ใน detail · v15.4.1 — surface error จริงจาก Z.AI (Zhipu คืน HTTP 200+body error) + อ่าน raw body · v15.4 — เพิ่ม provider Z.AI (Zhipu GLM): glm-5.2/glm-4.6 ผ่าน OpenAI-compatible endpoint (callZai) · v15.3 — [JP 3-04] prompt upgrade: A1 ข้อเท็จจริง/ตีความ+สมมติฐานสุจริต+หลักฐานหักล้าง · A2 feed-trust+confidence รายโดเมน · A5 ผล/กลไก/อำนาจ/เสี่ยง/ผลลำดับสอง · A6 บทสรุปเรื่องเล่า 4 ส่วน+6 informational aspects · v15.3.1 — แก้ Gemini 2.5 โดนตัดที่ MAX_TOKENS (thinking กิน budget ร่วมกับคำตอบ)
+const VERSION = '15.5.4';   // v15.5.4 — แก้ /gdelt: multi-source RSS fallback (Diplomat→USNI→NavalNews) แทน GDELT/GNews ที่ block CF IPs · v15.5.3 — แก้ /gdelt: pivot Google News RSS (GDELT silent-blocks CF IPs) + parse RSS XML + cache 5 min · v15.5.2 — แก้ /gdelt: Cloudflare Cache API 5 min + soft-fail 200 เมื่อ 429/timeout + simplify query · v15.5.1 — แก้ /cve: เพิ่ม pubEndDate (NVD บังคับ), format +00:00, ขยาย 90d, แยก SCADA/ICS keyword (AND→OR) · v15.5.0 — เพิ่ม GET /gdelt proxy (bypass CORS ฝั่ง Worker) + GET /cve proxy (NVD ICS/SCADA HIGH/CRITICAL 30d) + เพิ่ม CVE context ใน buildUserPrompt · v15.4.3 — แก้ ZAI_ENDPOINT: /api/openai/v1/ คืน 404 NOT_FOUND → เปลี่ยนเป็น path ทางการ /api/paas/v4/chat/completions (docs.z.ai · curl ตัวอย่างใช้ paas/v4 + glm-5.2) · v15.4.2 — callZai: ดักซอง Zhipu native {code,msg,success} (แม้ HTTP 200) + ดัมพ์ raw body ใน detail · v15.4.1 — surface error จริงจาก Z.AI (Zhipu คืน HTTP 200+body error) + อ่าน raw body · v15.4 — เพิ่ม provider Z.AI (Zhipu GLM): glm-5.2/glm-4.6 ผ่าน OpenAI-compatible endpoint (callZai) · v15.3 — [JP 3-04] prompt upgrade: A1 ข้อเท็จจริง/ตีความ+สมมติฐานสุจริต+หลักฐานหักล้าง · A2 feed-trust+confidence รายโดเมน · A5 ผล/กลไก/อำนาจ/เสี่ยง/ผลลำดับสอง · A6 บทสรุปเรื่องเล่า 4 ส่วน+6 informational aspects · v15.3.1 — แก้ Gemini 2.5 โดนตัดที่ MAX_TOKENS (thinking กิน budget ร่วมกับคำตอบ)
 const DEFAULT_MODEL = 'gemini-2.5-flash';  // v14.0.7 — Google ย้าย 2.0-flash ไป paid tier · 2.5-flash ยังฟรี
 const MAX_TOKENS = 4096;                    // v15.3.1 — Workers AI cap (3000→4096) เผื่อ template v15.3 ที่ยาวขึ้น
 const MAX_TOKENS_GEMINI = 8192;             // v15.3.1 — Gemini 2.5 เป็น thinking model: การคิดภายใน (~2-3k tok ที่วัดจริง) นับรวมใน maxOutputTokens → ค่า 3000 เดิมเหลือที่ให้คำตอบ ~100 tok แล้วโดนตัดกลางประโยค
@@ -291,6 +291,14 @@ function buildUserPrompt(payload) {
             lines.push(`- OSINT/GDELT : items=${gd.count}`);
             (gd.topTitles || []).slice(0, 3).forEach(ti => lines.push(`    · ${String(ti).slice(0, 110)}`));
         } else lines.push('- OSINT/GDELT : no notable items');
+
+        const cv = ctx.cve;
+        if (cv && cv.count) {
+            const critC = (cv.items || []).filter(v => v.severity === 'CRITICAL').length;
+            lines.push(`- CVE/NVD     : count=${cv.count} (CRITICAL=${critC}) · ICS/SCADA · 30d`);
+            (cv.items || []).slice(0, 3).forEach(v =>
+                lines.push(`    · [${v.severity}/${v.score}] ${v.id} — ${String(v.description || '').slice(0, 100)}`));
+        } else lines.push('- CVE/NVD     : no data (Worker offline หรือ ไม่มี HIGH/CRITICAL ICS CVE ใน 30d)');
 
         if (env.gnssJitter != null) lines.push(`- GNSS health : jitter=${Math.round(env.gnssJitter * 100)}%` + (env.gnssJitter >= 0.5 ? '  → possible spoofing signature' : ''));
 
@@ -594,6 +602,147 @@ async function callZai(env, model, system, userMsg) {
     };
 }
 
+// ── OSINT News proxy (GET /gdelt) ───────────────────────────────────
+// fix v15.5.4: multi-source RSS fallback chain (GDELT + Google News block CF IPs)
+// Sources: The Diplomat → USNI News → Naval News (อย่างน้อยหนึ่งแหล่งควร accessible)
+// Cache 5 min (Cloudflare Cache API, defensive try-catch around cache ops)
+const OSINT_SOURCES = [
+    { name: 'USNI',      url: 'https://news.usni.org/feed' },
+    { name: 'NavalNews', url: 'https://www.navalnews.com/feed/' },
+    { name: 'Diplomat',  url: 'https://thediplomat.com/feed/' },
+];
+const GDELT_CACHE_TTL = 300; // 5 นาที
+
+function parseRssItems(xml) {
+    const items = [];
+    const itemRe = /<item>([\s\S]*?)<\/item>/g;
+    let m;
+    while ((m = itemRe.exec(xml)) !== null) {
+        const block = m[1];
+        const getTag = tag => {
+            const hit = block.match(new RegExp(`<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]><\\/${tag}>|<${tag}[^>]*>([^<]*)<\\/${tag}>`));
+            return hit ? (hit[1] ?? hit[2] ?? '').trim() : '';
+        };
+        const title   = getTag('title');
+        const link    = getTag('link') || (block.match(/<guid[^>]*isPermaLink="true"[^>]*>([^<]*)<\/guid>/)?.[1] ?? '');
+        const pubDate = getTag('pubDate');
+        const domain  = getTag('source') || (link ? (link.match(/https?:\/\/([^/]+)/)?.[1] ?? '') : '');
+        if (title) items.push({ url: link, title, seendate: pubDate, domain });
+    }
+    return items;
+}
+
+async function fetchRss(url) {
+    const ctrl = new AbortController();
+    const tid  = setTimeout(() => ctrl.abort(), 10_000);
+    try {
+        const r = await fetch(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (compatible; RSS-reader/1.0)',
+                'Accept': 'application/rss+xml,application/xml,text/xml'
+            },
+            signal: ctrl.signal
+        });
+        clearTimeout(tid);
+        if (!r.ok) return null;
+        return await r.text();
+    } catch (_) { clearTimeout(tid); return null; }
+}
+
+async function handleGdelt(request) {
+    let cache = null, cached = null;
+    const cacheKey = new Request('https://shield-osint-v2.internal/gdelt');
+    try { cache = caches.default; cached = await cache.match(cacheKey); } catch (_) {}
+    if (cached) return cached;
+
+    for (const src of OSINT_SOURCES) {
+        const xml = await fetchRss(src.url);
+        if (!xml) continue;
+        const articles = parseRssItems(xml).slice(0, 20);
+        if (articles.length === 0) continue;
+        const resp = jsonResponse({ articles, count: articles.length, source: src.name }, 200,
+            { 'Cache-Control': `public, max-age=${GDELT_CACHE_TTL}` });
+        try { if (cache) await cache.put(cacheKey, resp.clone()); } catch (_) {}
+        return resp;
+    }
+
+    // ทุก source ล้มเหลว — soft fail 200 ให้ simulator แสดง "ไม่มีข้อมูล" ไม่ใช่ ERR
+    return jsonResponse({ articles: [], count: 0, source: 'OSINT', note: 'all-sources-failed' }, 200,
+        { 'Cache-Control': 'no-store' });
+}
+
+// ── CVE proxy (GET /cve) ─────────────────────────────────────────────
+// NVD REST API v2 — SCADA/ICS HIGH+CRITICAL · 90 วันล่าสุด
+// env.NVD_API_KEY (optional): wrangler secret put NVD_API_KEY
+// ไม่มี key = rate 5 req/30s (เพียงพอสำหรับ poll 600s)
+// fix v15.5.1: เพิ่ม pubEndDate (NVD บังคับทั้งคู่), format +00:00 (ไม่ใช่ Z),
+//              ขยาย 90d (max 120d), แยก keyword SCADA/ICS (AND → OR)
+
+async function handleCve(env) {
+    const now = new Date();
+    const d90 = new Date(now.getTime() - 90 * 24 * 3_600_000);
+    // NVD v2: ต้องระบุทั้ง pubStartDate + pubEndDate (max range 120d)
+    // format: yyyy-MM-ddTHH:mm:ss.mmm+00:00 (Z ไม่รองรับ → 404)
+    const fmtNvd = d => encodeURIComponent(d.toISOString().slice(0, 23) + '+00:00');
+    const dateRange = `pubStartDate=${fmtNvd(d90)}&pubEndDate=${fmtNvd(now)}`;
+
+    const hdrs = {};
+    if (env.NVD_API_KEY) hdrs['apiKey'] = env.NVD_API_KEY;
+
+    // keyword แยกกัน (SCADA+ICS = AND → เจาะจงเกินไป, ใช้แยกเพื่อ OR ผ่าน merge)
+    const fetchKwSev = async (kw, sev) => {
+        const url = `https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=${kw}&${dateRange}&cvssV3Severity=${sev}&resultsPerPage=10`;
+        const ctrl = new AbortController();
+        const tid = setTimeout(() => ctrl.abort(), 15_000);
+        try {
+            const r = await fetch(url, { headers: hdrs, signal: ctrl.signal });
+            clearTimeout(tid);
+            if (!r.ok) return [];
+            const d = await r.json();
+            return (d && d.vulnerabilities) || [];
+        } catch (_) { clearTimeout(tid); return []; }
+    };
+
+    // 4 calls: SCADA-CRITICAL, ICS-CRITICAL, SCADA-HIGH, ICS-HIGH
+    const [sc, ic, sh, ih] = await Promise.all([
+        fetchKwSev('SCADA', 'CRITICAL'),
+        fetchKwSev('ICS',   'CRITICAL'),
+        fetchKwSev('SCADA', 'HIGH'),
+        fetchKwSev('ICS',   'HIGH'),
+    ]);
+    const crit = [...sc, ...ic];
+    const high = [...sh, ...ih];
+
+    // dedup + ไม่เกิน 15 รายการ (CRITICAL ก่อน)
+    const seen = new Set();
+    const merged = [...crit, ...high].filter(v => {
+        const id = v?.cve?.id;
+        if (!id || seen.has(id)) return false;
+        seen.add(id); return true;
+    }).slice(0, 15);
+
+    const vulnerabilities = merged.map(v => {
+        const c = v.cve || {};
+        const m = c.metrics || {};
+        const cvss = m.cvssMetricV31?.[0]?.cvssData || m.cvssMetricV30?.[0]?.cvssData || null;
+        const desc = (c.descriptions || []).find(d => d.lang === 'en')?.value || '';
+        return {
+            id: c.id,
+            published: c.published,
+            severity: cvss?.baseSeverity || 'UNKNOWN',
+            score: cvss?.baseScore ?? null,
+            description: desc.slice(0, 200)
+        };
+    });
+
+    return jsonResponse({
+        count: vulnerabilities.length,
+        vulnerabilities,
+        source: 'NVD',
+        fetched: now.toISOString()
+    }, 200, { 'Cache-Control': 'public, max-age=540' });
+}
+
 // ── main router ──────────────────────────────────────────────────────
 async function handleAnalysis(request, env) {
     let payload;
@@ -683,8 +832,23 @@ export default {
                     }
                 },
                 model_default: DEFAULT_MODEL,
-                models_allowed: Array.from(ALLOWED_MODELS)
+                models_allowed: Array.from(ALLOWED_MODELS),
+                proxy_endpoints: {
+                    'GET /gdelt': 'GDELT 2.0 OSINT proxy (ภูมิภาค + maritime keyword)',
+                    'GET /cve':   'NVD CVE proxy (SCADA/ICS · HIGH+CRITICAL · 30d)',
+                    'nvd_api_key_configured': !!env.NVD_API_KEY
+                }
             });
+        }
+
+        // GDELT proxy — bypass browser CORS
+        if (request.method === 'GET' && url.pathname === '/gdelt') {
+            return handleGdelt(request);
+        }
+
+        // CVE proxy — NVD API (SCADA/ICS) bypass CORS
+        if (request.method === 'GET' && url.pathname === '/cve') {
+            return handleCve(env);
         }
 
         // main

@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>บทที่ ๕ บทสรุปและข้อเสนอแนะ · THE SHIELD — งานวิจัยศูนย์ข้อมูลใต้น้ำ (UDC)</title>
+<title class="lang-th">บทที่ ๕ บทสรุปและข้อเสนอแนะ · THE SHIELD — งานวิจัยศูนย์ข้อมูลใต้น้ำ (UDC)</title>
+<title class="lang-en">Chapter 5 Conclusion and Recommendations · THE SHIELD — UDC Research Project</title>
 <meta name="description" content="สรุปสาระสำคัญบทที่ ๕ ของงานวิจัย: บทสรุปและข้อเสนอแนะ — สรุปผลการวิจัยตามวัตถุประสงค์ ๓ ประการ ประโยชน์ที่ได้รับจากการวิจัย ๓ ประการ และข้อเสนอแนะ ๓ ด้าน เชิงนโยบาย เชิงปฏิบัติ และการวิจัยครั้งต่อไป ภายใต้รูปแบบ The Shield 3.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -244,6 +245,31 @@
     body.menu-open .nav-menu{transform:translateY(0)}
     .nav-menu a{font-size:17px}
   }
+
+  /* ---------- bilingual switcher system ---------- */
+  body[data-lang="th"] .lang-en { display: none !important; }
+  body[data-lang="en"] .lang-th { display: none !important; }
+  .lang-btn {
+    background: transparent;
+    border: 1px solid rgba(100, 255, 218, 0.35);
+    color: var(--teal);
+    font-family: var(--f-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .15em;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .25s;
+    text-transform: uppercase;
+  }
+  .lang-btn:hover {
+    background: rgba(100, 255, 218, 0.1);
+    border-color: var(--teal);
+    color: var(--white);
+    box-shadow: 0 0 10px rgba(100, 255, 218, 0.2);
+  }
+
 </style>
 
 </head>
@@ -267,7 +293,8 @@
     <li><a href="THE_SHIELD_Ch3.html">Ch 3</a></li>
     <li><a href="THE_SHIELD_Ch4.html">Ch 4</a></li>
     <li><a class="active" href="THE_SHIELD_Ch5.html">Ch 5</a></li>
-  </ul>
+    <li><button class="lang-btn" onclick="toggleLanguage()" id="langBtn" aria-label="สลับภาษา / Switch Language">EN</button></li>
+    </ul>
 </nav>
 
 
@@ -276,17 +303,47 @@
   <div class="hero-grid"></div>
   <div class="wrap hero-inner">
     <span class="crest"><span class="dot"></span>THE SHIELD · RESEARCH DOSSIER</span>
-    <div class="ch-num">CHAPTER — 05 · บทที่ ๕</div>
-    <h1>บทสรุปและข้อเสนอแนะ</h1>
-    <p class="sub">บทปิดของงานวิจัย — สรุป<b>ผลที่ได้จากการวิจัยตามวัตถุประสงค์ทั้ง ๓ ประการ</b> และ<b>ประโยชน์ที่ได้รับจากการวิจัย ๓ ประการ</b> พร้อม<b>ข้อเสนอแนะ ๓ ด้าน</b> (เชิงนโยบาย เชิงปฏิบัติ และการวิจัยครั้งต่อไป) ภายใต้กลไก <b>ศรชล.</b> และรูปแบบ <b>The Shield 3.0</b></p>
+    <div class="ch-num">
+      <span class="lang-th">CHAPTER — 05 · บทที่ ๕</span>
+      <span class="lang-en">CHAPTER — 05 · Conclusion</span>
+    </div>
+    <h1>
+      <span class="lang-th">บทสรุปและข้อเสนอแนะ</span>
+      <span class="lang-en">Conclusion and Recommendations</span>
+    </h1>
+    <p class="sub">
+      <span class="lang-th">บทปิดของงานวิจัย — สรุป<b>ผลที่ได้จากการวิจัยตามวัตถุประสงค์ทั้ง ๓ ประการ</b> และ<b>ประโยชน์ที่ได้รับจากการวิจัย ๓ ประการ</b> พร้อม<b>ข้อเสนอแนะ ๓ ด้าน</b> (เชิงนโยบาย เชิงปฏิบัติ และการวิจัยครั้งต่อไป) ภายใต้กลไก <b>ศรชล.</b> และรูปแบบ <b>The Shield 3.0</b></span>
+      <span class="lang-en">Concluding chapter — summarizing the <b>results of the research according to the 3 objectives</b> and the <b>3 key benefits</b>, along with <b>recommendations in 3 areas</b> (policy, practical, and future research) under the <b>THMECC (ศรชล.)</b> framework and <b>The Shield 3.0</b> model.</span>
+    </p>
     <div class="meta">
-      <span class="chip ok"><b>✓</b> บทสรุปงานวิจัย</span>
-      <span class="chip">สรุปผล · <b>๓ ประการ</b></span>
-      <span class="chip">ประโยชน์ที่ได้รับ · <b>๓ ประการ</b></span>
-      <span class="chip">ข้อเสนอแนะ · <b>๓ ด้าน</b></span>
-      <span class="chip">ระเบียบวิธี · <b>เชิงคุณภาพ พรรณนาวิเคราะห์</b></span>
-      <span class="chip">ผลลัพธ์ · <b>The Shield 3.0</b></span>
-      <span class="chip">หลักสูตร สธ.ทร. รุ่นที่ <b>๘๖</b></span>
+      <span class="chip ok">
+        <span class="lang-th"><b>✓</b> บทสรุปงานวิจัย</span>
+        <span class="lang-en"><b>✓</b> Research Conclusion</span>
+      </span>
+      <span class="chip">
+        <span class="lang-th">สรุปผล · <b>๓ ประการ</b></span>
+        <span class="lang-en">Summary · <b>3 Findings</b></span>
+      </span>
+      <span class="chip">
+        <span class="lang-th">ประโยชน์ที่ได้รับ · <b>๓ ประการ</b></span>
+        <span class="lang-en">Key Benefits · <b>3 Points</b></span>
+      </span>
+      <span class="chip">
+        <span class="lang-th">ข้อเสนอแนะ · <b>๓ ด้าน</b></span>
+        <span class="lang-en">Recommendations · <b>3 Areas</b></span>
+      </span>
+      <span class="chip">
+        <span class="lang-th">ระเบียบวิธี · <b>เชิงคุณภาพ พรรณนาวิเคราะห์</b></span>
+        <span class="lang-en">Methodology · <b>Qualitative Descriptive</b></span>
+      </span>
+      <span class="chip">
+        <span class="lang-th">ผลลัพธ์ · <b>The Shield 3.0</b></span>
+        <span class="lang-en">Output · <b>The Shield 3.0</b></span>
+      </span>
+      <span class="chip">
+        <span class="lang-th">หลักสูตร สธ.ทร. รุ่นที่ <b>๘๖</b></span>
+        <span class="lang-en">Naval War College Class <b>86</b></span>
+      </span>
     </div>
   </div>
 </header>
@@ -295,12 +352,30 @@
 <nav class="toc">
   <div class="wrap">
     <a class="home-btn" href="THE_SHIELD_Pitch.html" aria-label="กลับหน้านำเสนองารวิจัย"><svg class="hb-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.3h13V10"/><path d="M10 19.3v-5.5h4v5.5"/></svg><span>Home</span></a>
-    <a href="#findings">สรุปผลการวิจัย</a>
-    <a href="#benefits">ประโยชน์ที่ได้รับ</a>
-    <a href="#policy">ข้อเสนอเชิงนโยบาย</a>
-    <a href="#practice">ข้อเสนอเชิงปฏิบัติ</a>
-    <a href="#future">การวิจัยต่อไป</a>
-    <a href="#closing">บทส่งท้าย</a>
+    <a href="#findings">
+      <span class="lang-th">สรุปผลการวิจัย</span>
+      <span class="lang-en">Findings</span>
+    </a>
+    <a href="#benefits">
+      <span class="lang-th">ประโยชน์ที่ได้รับ</span>
+      <span class="lang-en">Benefits</span>
+    </a>
+    <a href="#policy">
+      <span class="lang-th">ข้อเสนอเชิงนโยบาย</span>
+      <span class="lang-en">Policy Recs</span>
+    </a>
+    <a href="#practice">
+      <span class="lang-th">ข้อเสนอเชิงปฏิบัติ</span>
+      <span class="lang-en">Operational Recs</span>
+    </a>
+    <a href="#future">
+      <span class="lang-th">การวิจัยต่อไป</span>
+      <span class="lang-en">Future Research</span>
+    </a>
+    <a href="#closing">
+      <span class="lang-th">บทส่งท้าย</span>
+      <span class="lang-en">Epilogue</span>
+    </a>
     <span class="tag">CH.05 / 05</span>
   </div>
 </nav>
@@ -308,23 +383,47 @@
 <!-- ================= 01 · สรุปผลที่ได้จากการวิจัย ================= -->
 <section id="findings">
   <div class="wrap">
-    <div class="eyebrow rv"><span class="num">01</span> ๕.๑ · RESEARCH FINDINGS</div>
-    <h2 class="title rv">สรุปผลที่ได้จากการวิจัย</h2>
-    <p class="lead rv">การวิจัยเรื่อง<b>แนวทางการกำหนดบทบาทและการจัดระเบียบพื้นที่ทางทะเลของกองทัพเรือภายใต้กรอบแนวคิดศูนย์ข้อมูลใต้น้ำ (UDC)</b> เพื่อความมั่นคงของโครงสร้างพื้นฐานดิจิทัลภาครัฐตามกลไก ศรชล. เป็น<b>การวิจัยเชิงคุณภาพแบบพรรณนาวิเคราะห์</b> ตามวัตถุประสงค์ ๓ ประการ สรุปผลได้ดังนี้</p>
+    <div class="eyebrow rv"><span class="num">01</span> <span class="lang-th">๕.๑ · RESEARCH FINDINGS</span><span class="lang-en">5.1 · RESEARCH FINDINGS</span></div>
+    <h2 class="title rv">
+      <span class="lang-th">สรุปผลที่ได้จากการวิจัย</span>
+      <span class="lang-en">Research Findings Summary</span>
+    </h2>
+    <p class="lead rv">
+      <span class="lang-th">การวิจัยเรื่อง<b>แนวทางการกำหนดบทบาทและการจัดระเบียบพื้นที่ทางทะเลของกองทัพเรือภายใต้กรอบแนวคิดศูนย์ข้อมูลใต้น้ำ (UDC)</b> เพื่อความมั่นคงของโครงสร้างพื้นฐานดิจิทัลภาครัฐตามกลไก ศรชล. เป็น<b>การวิจัยเชิงคุณภาพแบบพรรณนาวิเคราะห์</b> ตามวัตถุประสงค์ ๓ ประการ สรุปผลได้ดังนี้</span>
+      <span class="lang-en">The research on <b>"Guidelines for Defining the Roles and Marine Spatial Planning of the Royal Thai Navy under the Underwater Data Center (UDC) Framework"</b> for the security of government digital infrastructure under the THMECC mechanism is a <b>qualitative descriptive research</b>. The findings corresponding to the three objectives are summarized below:</span>
+    </p>
 
     <div class="tier rv">
-      <div class="h"><span class="no">ประการที่ ๑</span> UDC คือทางออกเชิงยุทธศาสตร์ <span class="obj-tag">Objective 1</span></div>
-      <p>ศูนย์ข้อมูลใต้น้ำ (UDC) เป็นทางออกเชิงยุทธศาสตร์ต่อข้อจำกัดของศูนย์ข้อมูลบนบก ทั้งด้าน<b>พลังงาน ภัยพิบัติ และอธิปไตยทางข้อมูล</b> โดย<b>พื้นที่ทิศตะวันออกของเกาะคราม</b>มีความเหมาะสมสูงสุด ทั้งด้านความลึก สัณฐานกำบังตามธรรมชาติ การอยู่ภายในเขตปลอดภัยในราชการทหาร และอยู่นอกร่องน้ำเดินเรือพาณิชย์ ขณะที่ภัยคุกคามที่แท้จริงในสภาพน้ำตื้นของอ่าวไทย คือ <b>สงครามพื้นทะเลจากยานขนาดเล็กและการปฏิบัติการในลักษณะพื้นที่สีเทา</b> มิใช่เรือดำน้ำขนาดใหญ่</p>
+      <div class="h">
+        <span class="lang-th"><span class="no">ประการที่ ๑</span> UDC คือทางออกเชิงยุทธศาสตร์ <span class="obj-tag">Objective 1</span></span>
+        <span class="lang-en"><span class="no">Finding 1</span> UDC as a Strategic Solution <span class="obj-tag">Objective 1</span></span>
+      </div>
+      <p>
+        <span class="lang-th">ศูนย์ข้อมูลใต้น้ำ (UDC) เป็นทางออกเชิงยุทธศาสตร์ต่อข้อจำกัดของศูนย์ข้อมูลบนบก ทั้งด้าน<b>พลังงาน ภัยพิบัติ และอธิปไตยทางข้อมูล</b> โดย<b>พื้นที่ทิศตะวันออกของเกาะคราม</b>มีความเหมาะสมสูงสุด ทั้งด้านความลึก สัณฐานกำบังตามธรรมชาติ การอยู่ภายในเขตปลอดภัยในราชการทหาร และอยู่นอกร่องน้ำเดินเรือพาณิชย์ ขณะที่ภัยคุกคามที่แท้จริงในสภาพน้ำตื้นของอ่าวไทย คือ <b>สงครามพื้นทะเลจากยานขนาดเล็กและการปฏิบัติการในลักษณะพื้นที่สีเทา</b> มิใช่เรือดำน้ำขนาดใหญ่</span>
+        <span class="lang-en">The Underwater Data Center (UDC) is a strategic solution to the limitations of land-based facilities regarding <b>power, disasters, and data sovereignty</b>. The <b>area east of Koh Kram</b> exhibits the highest suitability in terms of depth, natural shelter, location within a military safety zone, and distance from commercial shipping lanes. The primary threats in the shallow Gulf of Thailand are <b>seabed warfare from small submersibles and gray-zone operations</b>, rather than large conventional submarines.</span>
+      </p>
     </div>
 
     <div class="tier t2 rv">
-      <div class="h"><span class="no">ประการที่ ๒</span> การจัดระเบียบพื้นที่ทางทะเลแบบพหุมิติ <span class="obj-tag">Objective 2</span></div>
-      <p>รูปแบบการคุ้มครองที่เหมาะสม คือ การประยุกต์<b>การจัดระเบียบพื้นที่ทางทะเล (MSP)</b> กำหนด<b>เขตหวงห้ามเด็ดขาด</b>และ<b>เขตควบคุมหรือพื้นที่กันชน</b> ร่วมกับระบบแยกการจราจรทางเรือ ภายใต้การคุ้มครองแบบพหุมิติและ<b>ฐานทางกฎหมาย ๒ ชั้น</b> คือ เขตปลอดภัยในราชการทหาร และกฎหมายเฉพาะคุ้มครองโครงสร้างพื้นฐานใต้น้ำที่สำคัญ</p>
+      <div class="h">
+        <span class="lang-th"><span class="no">ประการที่ ๒</span> การจัดระเบียบพื้นที่ทางทะเลแบบพหุมิติ <span class="obj-tag">Objective 2</span></span>
+        <span class="lang-en"><span class="no">Finding 2</span> Multi-dimensional Marine Spatial Planning <span class="obj-tag">Objective 2</span></span>
+      </div>
+      <p>
+        <span class="lang-th">รูปแบบการคุ้มครองที่เหมาะสม คือ การประยุกต์<b>การจัดระเบียบพื้นที่ทางทะเล (MSP)</b> กำหนด<b>เขตหวงห้ามเด็ดขาด</b>และ<b>เขตควบคุมหรือพื้นที่กันชน</b> ร่วมกับระบบแยกการจราจรทางเรือ ภายใต้การคุ้มครองแบบพหุมิติและ<b>ฐานทางกฎหมาย ๒ ชั้น</b> คือ เขตปลอดภัยในราชการทหาร และกฎหมายเฉพาะคุ้มครองโครงสร้างพื้นฐานใต้น้ำที่สำคัญ</span>
+        <span class="lang-en">The appropriate protection model involves applying <b>Marine Spatial Planning (MSP)</b> to establish an <b>Absolute Exclusion Zone (MEZ)</b> and a <b>Controlled/Buffer Zone</b>, integrated with a vessel Traffic Separation Scheme (TSS). This operates under a multi-dimensional defense framework and a <b>two-tier legal foundation</b>: military safety zones and specific legislation protecting Critical Underwater Infrastructure (CUI).</span>
+      </p>
     </div>
 
     <div class="tier t3 rv">
-      <div class="h"><span class="no">ประการที่ ๓</span> กองทัพเรือเป็นแกนปฏิบัติการภายใต้ ศรชล. <span class="obj-tag">Objective 3</span></div>
-      <p>กองทัพเรือควรทำหน้าที่เป็น<b>แกนปฏิบัติการ</b>ภายใต้กลไกศูนย์อำนวยการรักษาผลประโยชน์ของชาติทางทะเล (ศรชล.) โดยพัฒนารูปแบบการป้องกัน (The Shield) อย่างเป็นลำดับจนเป็นระบบบูรณาการเฝ้าระวังและป้องกันฯ ฉบับสมบูรณ์ <b>(The Shield 3.0)</b> ซึ่งปิดช่องว่างที่มีนัยสำคัญ ๓ ประการ ได้แก่ <b>ด้านกฎหมาย · ด้านการตระหนักรู้สถานการณ์ใต้น้ำ · ด้านการบูรณาการระหว่างหน่วยงาน</b> ทั้งนี้ ผลการวิจัยได้รับการยืนยันและเสริมความสมบูรณ์จากการสัมภาษณ์<b>ผู้ทรงคุณวุฒิทั้ง ๔ กลุ่ม</b></p>
+      <div class="h">
+        <span class="lang-th"><span class="no">ประการที่ ๓</span> กองทัพเรือเป็นแกนปฏิบัติการภายใต้ ศรชล. <span class="obj-tag">Objective 3</span></span>
+        <span class="lang-en"><span class="no">Finding 3</span> Navy as Core Operator under THMECC <span class="obj-tag">Objective 3</span></span>
+      </div>
+      <p>
+        <span class="lang-th">กองทัพเรือควรทำหน้าที่เป็น<b>แกนปฏิบัติการ</b>ภายใต้กลไกศูนย์อำนวยการรักษาผลประโยชน์ของชาติทางทะเล (ศรชล.) โดยพัฒนารูปแบบการป้องกัน (The Shield) อย่างเป็นลำดับจนเป็นระบบบูรณาการเฝ้าระวังและป้องกันฯ ฉบับสมบูรณ์ <b>(The Shield 3.0)</b> ซึ่งปิดช่องว่างที่มีนัยสำคัญ ๓ ประการ ได้แก่ <b>ด้านกฎหมาย · ด้านการตระหนักรู้สถานการณ์ใต้น้ำ · ด้านการบูรณาการระหว่างหน่วยงาน</b> ทั้งนี้ ผลการวิจัยได้รับการยืนยันและเสริมความสมบูรณ์จากการสัมภาษณ์<b>ผู้ทรงคุณวุฒิทั้ง ๔ กลุ่ม</b></span>
+        <span class="lang-en">The Royal Thai Navy should serve as the <b>operational core</b> under the Thailand Maritime Enforcement Command Center (THMECC) mechanism, iteratively developing "The Shield" into a comprehensive surveillance and defense system <b>(The Shield 3.0)</b>. This addresses 3 critical gaps: <b>legal authority, undersea situational awareness, and inter-agency integration</b>. These findings are validated and enriched by interviews with <b>four groups of key informants</b>.</span>
+      </p>
     </div>
   </div>
 </section>
@@ -332,9 +431,15 @@
 <!-- ================= 02 · ประโยชน์ที่ได้รับจากการวิจัย ================= -->
 <section id="benefits">
   <div class="wrap">
-    <div class="eyebrow rv"><span class="num">02</span> ๕.๒ · RESEARCH BENEFITS</div>
-    <h2 class="title rv">ประโยชน์ที่ได้รับจากการวิจัย</h2>
-    <p class="lead rv">ผลการวิจัยนี้มิได้เป็นเพียงการสรุปองค์ความรู้เชิงทฤษฎี หากแต่ก่อให้เกิด<b>ประโยชน์ที่สามารถให้หน่วยงานที่เกี่ยวข้องนำไปใช้ได้จริง</b> โดยจำแนกเป็น ๓ ประการ ดังนี้</p>
+    <div class="eyebrow rv"><span class="num">02</span> <span class="lang-th">๕.๒ · RESEARCH BENEFITS</span><span class="lang-en">5.2 · RESEARCH BENEFITS</span></div>
+    <h2 class="title rv">
+      <span class="lang-th">ประโยชน์ที่ได้รับจากการวิจัย</span>
+      <span class="lang-en">Research Benefits</span>
+    </h2>
+    <p class="lead rv">
+      <span class="lang-th">ผลการวิจัยนี้มิได้เป็นเพียงการสรุปองค์ความรู้เชิงทฤษฎี หากแต่ก่อให้เกิด<b>ประโยชน์ที่สามารถให้หน่วยงานที่เกี่ยวข้องนำไปใช้ได้จริง</b> โดยจำแนกเป็น ๓ ประการ ดังนี้</span>
+      <span class="lang-en">This research does not merely summarize theoretical knowledge, but yields <b>practical benefits that relevant agencies can readily implement</b>, categorized into 3 areas:</span>
+    </p>
 
     <!-- Conceptual Visualization of Benefits -->
     <figure class="cine rv" style="margin: 28px auto 34px auto; max-width: 720px; border: 1px solid var(--line2);">
@@ -346,86 +451,154 @@
     </figure>
 
     <!-- Sub-section 5.2.1: Gaps -->
-    <h3 class="sub-h rv"><span class="bar"></span>๕.๒.๑ การแก้ไขปัญหาและการลดช่องว่างของการวิจัย</h3>
-    <p class="body rv">การวิจัยนี้ช่วยแก้ไขปัญหาและลดช่องว่างเชิงโครงสร้างที่สำคัญของประเทศได้พร้อมกันสามด้าน ดังนี้</p>
+    <h3 class="sub-h rv"><span class="bar"></span>
+      <span class="lang-th">๕.๒.๑ การแก้ไขปัญหาและการลดช่องว่างของการวิจัย</span>
+      <span class="lang-en">5.2.1 Problem Solving and Addressing Research Gaps</span>
+    </h3>
+    <p class="body rv">
+      <span class="lang-th">การวิจัยนี้ช่วยแก้ไขปัญหาและลดช่องว่างเชิงโครงสร้างที่สำคัญของประเทศได้พร้อมกันสามด้าน ดังนี้</span>
+      <span class="lang-en">This research simultaneously addresses and bridges three critical structural gaps for the nation:</span>
+    </p>
     <div class="grid g3 rv">
       <div class="card">
         <h4 style="font-family:var(--f-disp);font-size:16px;font-weight:600;color:var(--cyan);margin-bottom:10px;display:flex;align-items:center;gap:8px">
-          <span style="font-size:18px">💻</span> โครงสร้างพื้นฐานดิจิทัล
+          <span style="font-size:18px">💻</span>
+          <span class="lang-th">โครงสร้างพื้นฐานดิจิทัล</span>
+          <span class="lang-en">Digital Infrastructure</span>
         </h4>
         <p style="font-size:14px;color:var(--text-muted)">
-          ลดช่องว่างของโครงสร้างพื้นฐานดิจิทัล ซึ่งศูนย์ข้อมูลบนบกเผชิญข้อจำกัดด้านการใช้พลังงานและการระบายความร้อนที่สูง ความเสี่ยงจากภัยพิบัติ และความอ่อนไหวด้านอธิปไตยทางข้อมูล โดยเสนอ <b>ศูนย์ข้อมูลใต้น้ำ (UDC)</b> พร้อมกรอบการประเมินความเหมาะสมของพื้นที่ติดตั้งที่สามารถนำไปใช้ประกอบการตัดสินใจได้จริง
+          <span class="lang-th">ลดช่องว่างของโครงสร้างพื้นฐานดิจิทัล ซึ่งศูนย์ข้อมูลบนบกเผชิญข้อจำกัดด้านการใช้พลังงานและการระบายความร้อนที่สูง ความเสี่ยงจากภัยพิบัติ และความอ่อนไหวด้านอธิปไตยทางข้อมูล โดยเสนอ <b>ศูนย์ข้อมูลใต้น้ำ (UDC)</b> พร้อมกรอบการประเมินความเหมาะสมของพื้นที่ติดตั้งที่สามารถนำไปใช้ประกอบการตัดสินใจได้จริง</span>
+          <span class="lang-en">Bridges digital infrastructure gaps, where terrestrial centers face high power/cooling limits, disaster risks, and data sovereignty sensitivities, by proposing <b>Underwater Data Centers (UDCs)</b> along with a practical site suitability evaluation framework.</span>
         </p>
       </div>
       <div class="card">
         <h4 style="font-family:var(--f-disp);font-size:16px;font-weight:600;color:var(--teal);margin-bottom:10px;display:flex;align-items:center;gap:8px">
-          <span style="font-size:18px">⚖️</span> ช่องว่างทางกฎหมาย
+          <span style="font-size:18px">⚖️</span>
+          <span class="lang-th">ช่องว่างทางกฎหมาย</span>
+          <span class="lang-en">Legal Gaps</span>
         </h4>
         <p style="font-size:14px;color:var(--text-muted)">
-          เนื่องจากปัจจุบันประเทศไทยยังไม่มีฐานอำนาจที่ชัดเจนในการคุ้มครองโครงสร้างพื้นฐานสารสนเทศสำคัญที่ตั้งอยู่ในทะเล การวิจัยจึงเสนอกลไกการตรา <b>พระราชกฤษฎีกาเขตปลอดภัยในราชการทหาร</b> ควบคู่กับ <b>การจัดระเบียบพื้นที่ทางทะเล (MSP)</b> เพื่ออุดช่องว่างดังกล่าว
+          <span class="lang-th">เนื่องจากปัจจุบันประเทศไทยยังไม่มีฐานอำนาจที่ชัดเจนในการคุ้มครองโครงสร้างพื้นฐานสารสนเทศสำคัญที่ตั้งอยู่ในทะเล การวิจัยจึงเสนอกลไกการตรา <b>พระราชกฤษฎีกาเขตปลอดภัยในราชการทหาร</b> ควบคู่กับ <b>การจัดระเบียบพื้นที่ทางทะเล (MSP)</b> เพื่ออุดช่องว่างดังกล่าว</span>
+          <span class="lang-en">Since Thailand currently lacks clear jurisdiction to protect critical marine-based IT infrastructure, the study proposes enacting a <b>Royal Decree on Military Safety Zones</b> in tandem with <b>Marine Spatial Planning (MSP)</b> to bridge this gap.</span>
         </p>
       </div>
       <div class="card">
         <h4 style="font-family:var(--f-disp);font-size:16px;font-weight:600;color:var(--purple);margin-bottom:10px;display:flex;align-items:center;gap:8px">
-          <span style="font-size:18px">🤝</span> กลไกการบูรณาการ
+          <span style="font-size:18px">🤝</span>
+          <span class="lang-th">กลไกการบูรณาการ</span>
+          <span class="lang-en">Integration Mechanism</span>
         </h4>
         <p style="font-size:14px;color:var(--text-muted)">
-          การคุ้มครองผลประโยชน์ทางทะเลเดิมยังกระจัดกระจายตามภารกิจของแต่ละหน่วยงาน การวิจัยจึงเสนอรูปแบบ <b>The Shield</b> ที่หลอมรวมขีดความสามารถของหน่วยงานต่าง ๆ เข้าด้วยกันอย่างเป็นระบบ ภายใต้กลไก <b>ศูนย์อำนวยการรักษาผลประโยชน์ของชาติทางทะเล (ศรชล.)</b>
+          <span class="lang-th">การคุ้มครองผลประโยชน์ทางทะเลเดิมยังกระจัดกระจายตามภารกิจของแต่ละหน่วยงาน การวิจัยจึงเสนอรูปแบบ <b>The Shield</b> ที่หลอมรวมขีดความสามารถของหน่วยงานต่าง ๆ เข้าด้วยกันอย่างเป็นระบบ ภายใต้กลไก <b>ศูนย์อำนวยการรักษาผลประโยชน์ของชาติทางทะเล (ศรชล.)</b></span>
+          <span class="lang-en">Consolidates scattered maritime interests into a unified, systematic active defense framework: <b>The Shield</b>, integrating various agencies' capabilities under the <b>THMECC (ศรชล.)</b> mechanism.</span>
         </p>
       </div>
     </div>
 
     <!-- Sub-section 5.2.2: Adoption vs Non-Adoption -->
-    <h3 class="sub-h rv"><span class="bar" style="background:var(--teal)"></span>๕.๒.๒ ผลของการเลือกและไม่เลือกนำผลการวิจัยไปใช้</h3>
+    <h3 class="sub-h rv"><span class="bar" style="background:var(--teal)"></span>
+      <span class="lang-th">๕.๒.๒ ผลของการเลือกและไม่เลือกนำผลการวิจัยไปใช้</span>
+      <span class="lang-en">5.2.2 Impact of Research Adoption vs. Non-Adoption</span>
+    </h3>
     <div class="grid g2 rv">
       <div class="card" style="border-color:rgba(100,255,218,.25);background:linear-gradient(180deg,rgba(100,255,218,.06),rgba(100,255,218,.01))">
         <h4 style="font-family:var(--f-disp);font-size:16.5px;font-weight:600;color:var(--teal);margin-bottom:12px;display:flex;align-items:center;gap:8px">
-          <span style="font-size:18px">🟢</span> หากเลือกนำผลการวิจัยไปใช้ (Adoption)
+          <span style="font-size:18px">🟢</span>
+          <span class="lang-th">หากเลือกนำผลการวิจัยไปใช้ (Adoption)</span>
+          <span class="lang-en">If Research is Adopted</span>
         </h4>
         <ul class="clean" style="font-size:14px">
-          <li>ทำให้มีกรอบการป้องกันโครงสร้างพื้นฐานสารสนเทศทางทะเล<b>เชิงรุกที่ชัดเจน</b></li>
-          <li>สามารถ<b>รักษาอธิปไตยทางข้อมูล</b>ofชาติ</li>
-          <li>สร้างความเชื่อมั่นที่เอื้อต่อการดึงดูดการลงทุน<b>ศูนย์ข้อมูลใต้น้ำ (UDC)</b></li>
-          <li>ยกระดับบทบาทของกองทัพเรือจากภารกิจป้องกันประเทศแบบเดิม ไปสู่<b>การเป็นหลักประกันความมั่นคงของเศรษฐกิจดิจิทัล</b></li>
+          <span class="lang-th">
+            <li>ทำให้มีกรอบการป้องกันโครงสร้างพื้นฐานสารสนเทศทางทะเล<b>เชิงรุกที่ชัดเจน</b></li>
+            <li>สามารถ<b>รักษาอธิปไตยทางข้อมูล</b>ของชาติ</li>
+            <li>สร้างความเชื่อมั่นที่เอื้อต่อการดึงดูดการลงทุน<b>ศูนย์ข้อมูลใต้น้ำ (UDC)</b></li>
+            <li>ยกระดับบทบาทของกองทัพเรือจากภารกิจป้องกันประเทศแบบเดิม ไปสู่<b>การเป็นหลักประกันความมั่นคงของเศรษฐกิจดิจิทัล</b></li>
+          </span>
+          <span class="lang-en">
+            <li>Establishes a <b>clear active defense</b> framework for marine IT infrastructure.</li>
+            <li>Enables the nation to <b>safeguard its data sovereignty</b>.</li>
+            <li>Builds investment confidence, attracting <b>Underwater Data Center (UDC)</b> development.</li>
+            <li>Elevates the Navy's role from traditional defense to <b>securing the digital economy</b>.</li>
+          </span>
         </ul>
       </div>
       <div class="card" style="border-color:rgba(255,107,97,.25);background:linear-gradient(180deg,rgba(255,107,97,.06),rgba(255,107,97,.01))">
         <h4 style="font-family:var(--f-disp);font-size:16.5px;font-weight:600;color:var(--red);margin-bottom:12px;display:flex;align-items:center;gap:8px">
-          <span style="font-size:18px">🔴</span> หากไม่เลือกนำผลการวิจัยไปใช้ (Non-Adoption)
+          <span style="font-size:18px">🔴</span>
+          <span class="lang-th">หากไม่เลือกนำผลการวิจัยไปใช้ (Non-Adoption)</span>
+          <span class="lang-en">If Research is Not Adopted</span>
         </h4>
         <ul class="clean" style="font-size:14px">
-          <li style="color:var(--text-dim)"><b style="color:var(--red)">ช่องว่างทางกฎหมายและกลไกการบูรณาการจะยังคงอยู่</b></li>
-          <li style="color:var(--text-dim)">ทำให้ศูนย์ข้อมูลที่อาจจัดตั้งใต้ทะเลมี<b>ความเสี่ยงต่อการถูกคุกคาม</b>โดยปราศจากหน่วยงานที่รับผิดชอบอย่างชัดเจน</li>
-          <li style="color:var(--text-dim)">ประเทศอาจสูญเสียโอกาสในการลงทุนและความได้เปรียบในการแข่งขันด้านเศรษฐกิจดิจิทัล</li>
-          <li style="color:var(--text-dim)">กองทัพเรือจะ<b>ขาดความพร้อมเชิงระบบ</b>เมื่อต้องเผชิญสถานการณ์จริง</li>
+          <span class="lang-th">
+            <li style="color:var(--text-dim)"><b style="color:var(--red)">ช่องว่างทางกฎหมายและกลไกการบูรณาการจะยังคงอยู่</b></li>
+            <li style="color:var(--text-dim)">ทำให้ศูนย์ข้อมูลที่อาจจัดตั้งใต้ทะเลมี<b>ความเสี่ยงต่อการถูกคุกคาม</b>โดยปราศจากหน่วยงานที่รับผิดชอบอย่างชัดเจน</li>
+            <li style="color:var(--text-dim)">ประเทศอาจสูญเสียโอกาสในการลงทุนและความได้เปรียบในการแข่งขันด้านเศรษฐกิจดิจิทัล</li>
+            <li style="color:var(--text-dim)">กองทัพเรือจะ<b>ขาดความพร้อมเชิงระบบ</b>เมื่อต้องเผชิญสถานการณ์จริง</li>
+          </span>
+          <span class="lang-en">
+            <li style="color:var(--text-dim)"><b style="color:var(--red)">Legal and integration gaps will persist</b>.</li>
+            <li style="color:var(--text-dim)">Subsea data centers face <b>vulnerabilities and threats</b> without a designated, responsible defense command.</li>
+            <li style="color:var(--text-dim)">The country risks losing investment opportunities and its digital economy competitive edge.</li>
+            <li style="color:var(--text-dim)">The Navy will <b>lack systematic readiness</b> when facing actual underwater security crises.</li>
+          </span>
         </ul>
       </div>
     </div>
 
     <!-- Sub-section 5.2.3: Stakeholder Alignment -->
-    <h3 class="sub-h rv"><span class="bar" style="background:var(--purple)"></span>๕.๒.๓ ความเหมาะสมของระบบและกลไก The Shield กับบริบทของผู้มีส่วนได้ส่วนเสีย</h3>
-    <p class="body rv">ระบบและกลไกของ <b>The Shield</b> ได้รับการออกแบบให้สอดรับกับบทบาทและขีดความสามารถของสมาชิกร่วมในแต่ละกลุ่มอย่างเหมาะสม โดยไม่สร้างภารกรรมเพิ่มเติม แต่เป็นการจัดระเบียบให้สอดประสานกัน:</p>
+    <h3 class="sub-h rv"><span class="bar" style="background:var(--purple)"></span>
+      <span class="lang-th">๕.๒.๓ ความเหมาะสมของระบบและกลไก The Shield กับบริบทของผู้มีส่วนได้ส่วนเสีย</span>
+      <span class="lang-en">5.2.3 Compatibility of The Shield with Stakeholder Contexts</span>
+    </h3>
+    <p class="body rv">
+      <span class="lang-th">ระบบและกลไกของ <b>The Shield</b> ได้รับการออกแบบให้สอดรับกับบทบาทและขีดความสามารถของสมาชิกร่วมในแต่ละกลุ่มอย่างเหมาะสม โดยไม่สร้างภารกรรมเพิ่มเติม แต่เป็นการจัดระเบียบให้สอดประสานกัน:</span>
+      <span class="lang-en">The structure of <b>The Shield</b> is tailored to align with each stakeholder group's existing roles and capabilities, avoiding operational bloat while optimizing collaboration:</span>
+    </p>
     
     <div class="grid g4 rv">
       <div class="card kpi" style="padding:15px;border-left:3px solid var(--cyan)">
         <div style="font-family:var(--f-mono);font-size:11px;color:var(--cyan);text-transform:uppercase;margin-bottom:8px">OPERATIONAL CORE</div>
-        <div style="font-family:var(--f-disp);font-size:16.5px;font-weight:600;color:var(--white);margin-bottom:6px">กองทัพเรือ (ทร.)</div>
-        <div style="font-size:13px;color:var(--text-muted)">ทำหน้าที่เป็น<b>แกนปฏิบัติการ</b> สอดคล้องกับขีดความสามารถด้านกำลังรบทางเรือและการปฏิบัติการใต้น้ำที่มีอยู่เดิม</div>
+        <div style="font-family:var(--f-disp);font-size:16.5px;font-weight:600;color:var(--white);margin-bottom:6px">
+          <span class="lang-th">กองทัพเรือ (ทร.)</span>
+          <span class="lang-en">Royal Thai Navy (RTN)</span>
+        </div>
+        <div style="font-size:13px;color:var(--text-muted)">
+          <span class="lang-th">ทำหน้าที่เป็น<b>แกนปฏิบัติการ</b> สอดคล้องกับขีดความสามารถด้านกำลังรบทางเรือและการปฏิบัติการใต้น้ำที่มีอยู่เดิม</span>
+          <span class="lang-en">Acts as the <b>operational core</b>, aligning with existing naval force structure and undersea warfare capabilities.</span>
+        </div>
       </div>
       <div class="card kpi" style="padding:15px;border-left:3px solid var(--teal)">
         <div style="font-family:var(--f-mono);font-size:11px;color:var(--teal);text-transform:uppercase;margin-bottom:8px">INTEGRATION CORE</div>
-        <div style="font-family:var(--f-disp);font-size:16.5px;font-weight:600;color:var(--white);margin-bottom:6px">ศรชล.</div>
-        <div style="font-size:13px;color:var(--text-muted)">ทำหน้าที่เป็น<b>แกนอำนวยการและบูรณาการ</b>ตามอำนาจหน้าที่ทางกฎหมายในการรักษาผลประโยชน์ของชาติทางทะเล</div>
+        <div style="font-family:var(--f-disp);font-size:16.5px;font-weight:600;color:var(--white);margin-bottom:6px">
+          <span class="lang-th">ศรชล.</span>
+          <span class="lang-en">THMECC (ศรชล.)</span>
+        </div>
+        <div style="font-size:13px;color:var(--text-muted)">
+          <span class="lang-th">ทำหน้าที่เป็น<b>แกนอำนวยการและบูรณาการ</b>ตามอำนาจหน้าที่ทางกฎหมายในการรักษาผลประโยชน์ของชาติทางทะเล</span>
+          <span class="lang-en">Acts as the <b>policy and legal integrator</b>, coordinating inter-agency maritime domain security measures.</span>
+        </div>
       </div>
       <div class="card kpi" style="padding:15px;border-left:3px solid var(--purple)">
         <div style="font-family:var(--f-mono);font-size:11px;color:var(--purple);text-transform:uppercase;margin-bottom:8px">DATA OPERATORS</div>
-        <div style="font-family:var(--f-disp);font-size:16.5px;font-weight:600;color:var(--white);margin-bottom:6px">GDCC & ภาคเอกชน</div>
-        <div style="font-size:13px;color:var(--text-muted)">ผู้รับบริการ ได้รับ<b>หลักประกันด้านความมั่นคงปลอดภัย</b>ที่ตรงกับความต้องการในการตัดสินใจลงทุน</div>
+        <div style="font-family:var(--f-disp);font-size:16.5px;font-weight:600;color:var(--white);margin-bottom:6px">
+          <span class="lang-th">GDCC & ภาคเอกชน</span>
+          <span class="lang-en">GDCC & Private Sector</span>
+        </div>
+        <div style="font-size:13px;color:var(--text-muted)">
+          <span class="lang-th">ผู้รับบริการ ได้รับ<b>หลักประกันด้านความมั่นคงปลอดภัย</b>ที่ตรงกับความต้องการในการตัดสินใจลงทุน</span>
+          <span class="lang-en">Acting as service users, receiving robust <b>physical security guarantees</b> to confidently justify subsea investments.</span>
+        </div>
       </div>
       <div class="card kpi" style="padding:15px;border-left:3px solid var(--gold)">
         <div style="font-family:var(--f-mono);font-size:11px;color:var(--gold);text-transform:uppercase;margin-bottom:8px">SECURITY NETWORK</div>
-        <div style="font-family:var(--f-disp);font-size:16.5px;font-weight:600;color:var(--white);margin-bottom:6px">หน่วยความมั่นคงอื่น</div>
-        <div style="font-size:13px;color:var(--text-muted)">เชื่อมโยงและแลกเปลี่ยนภาพสถานการณ์ร่วมกันได้ผ่านระบบสงครามที่ใช้เครือข่ายเป็นศูนย์กลาง (NCW)</div>
+        <div style="font-family:var(--f-disp);font-size:16.5px;font-weight:600;color:var(--white);margin-bottom:6px">
+          <span class="lang-th">หน่วยความมั่นคงอื่น</span>
+          <span class="lang-en">Other Security Agencies</span>
+        </div>
+        <div style="font-size:13px;color:var(--text-muted)">
+          <span class="lang-th">เชื่อมโยงและแลกเปลี่ยนภาพสถานการณ์ร่วมกันได้ผ่านระบบสงครามที่ใช้เครือข่ายเป็นศูนย์กลาง (NCW)</span>
+          <span class="lang-en">Interfacing and exchanging common operational pictures via Network-Centric Warfare (NCW) architecture.</span>
+        </div>
       </div>
     </div>
   </div>
@@ -434,29 +607,63 @@
 <!-- ================= 03 · ข้อเสนอแนะเชิงนโยบาย ================= -->
 <section id="policy">
   <div class="wrap">
-    <div class="eyebrow rv"><span class="num">03</span> ๕.๓.๑ · POLICY RECOMMENDATIONS</div>
-    <h2 class="title rv">ข้อเสนอแนะเชิงนโยบาย</h2>
-    <p class="lead rv">สถาปนา<b>ฐานอำนาจทางกฎหมายและการยกระดับเชิงนโยบาย</b>เพื่อให้กองทัพเรือคุ้มครอง UDC ได้โดยชอบด้วยกฎหมาย และผูก UDC เข้ากับโครงสร้างความมั่นคงดิจิทัลของชาติ</p>
+    <div class="eyebrow rv"><span class="num">03</span> <span class="lang-th">๕.๓.๑ · POLICY RECOMMENDATIONS</span><span class="lang-en">5.3.1 · POLICY RECOMMENDATIONS</span></div>
+    <h2 class="title rv">
+      <span class="lang-th">ข้อเสนอแนะเชิงนโยบาย</span>
+      <span class="lang-en">Policy Recommendations</span>
+    </h2>
+    <p class="lead rv">
+      <span class="lang-th">สถาปนา<b>ฐานอำนาจทางกฎหมายและการยกระดับเชิงนโยบาย</b>เพื่อให้กองทัพเรือคุ้มครอง UDC ได้โดยชอบด้วยกฎหมาย และผูก UDC เข้ากับโครงสร้างความมั่นคงดิจิทัลของชาติ</span>
+      <span class="lang-en">Establish <b>legislative authority and policy frameworks</b> to empower the Navy in legally protecting the UDC, integrating it into national digital security structures:</span>
+    </p>
     <div class="grid g2">
       <div class="card rec rv">
         <span class="no">1</span>
-        <h4><span class="ic">⚖️</span> ยกร่าง พ.ร.ฎ. เขตปลอดภัยในราชการทหาร</h4>
-        <p>ยกร่างพระราชกฤษฎีกาตาม <b>พระราชบัญญัติว่าด้วยเขตปลอดภัยในราชการทหาร พ.ศ.๒๔๗๘</b> ประกาศพิกัดที่ตั้ง UDC เป็นเขตปลอดภัยในราชการทหาร เพื่อเป็นฐานอำนาจทางกฎหมายรองรับการกำหนด<b>เขตหวงห้ามเด็ดขาด (MEZ)</b> และเขตควบคุมหรือพื้นที่กันชน ให้กองทัพเรือมีอำนาจคุ้มครองและบังคับใช้ได้โดยชอบด้วยกฎหมาย</p>
+        <h4>
+          <span class="ic">⚖️</span>
+          <span class="lang-th">ยกร่าง พ.ร.ฎ. เขตปลอดภัยในราชการทหาร</span>
+          <span class="lang-en">Draft Royal Decree on Military Safety Zones</span>
+        </h4>
+        <p>
+          <span class="lang-th">ยกร่างพระราชกฤษฎีกาตาม <b>พระราชบัญญัติว่าด้วยเขตปลอดภัยในราชการทหาร พ.ศ.๒๔๗๘</b> ประกาศพิกัดที่ตั้ง UDC เป็นเขตปลอดภัยในราชการทหาร เพื่อเป็นฐานอำนาจทางกฎหมายรองรับการกำหนด<b>เขตหวงห้ามเด็ดขาด (MEZ)</b> และเขตควบคุมหรือพื้นที่กันชน ให้กองทัพเรือมีอำนาจคุ้มครองและบังคับใช้ได้โดยชอบด้วยกฎหมาย</span>
+          <span class="lang-en">Draft a Royal Decree under the <b>Act on Military Safety Zones B.E. 2478</b> to declare the UDC site coordinates as a military safety zone. This provides a legal foundation for defining the <b>Maritime Exclusion Zone (MEZ)</b> and buffer areas, granting the Navy lawful enforcement and protection authority.</span>
+        </p>
       </div>
       <div class="card rec rv">
         <span class="no">2</span>
-        <h4><span class="ic">🛡️</span> เพิ่ม UDC เป็น CII ใน พ.ร.บ.ไซเบอร์</h4>
-        <p>แก้ไข <b>พระราชบัญญัติการรักษาความมั่นคงปลอดภัยไซเบอร์ พ.ศ.๒๕๖๒</b> เพิ่ม UDC เป็น<b>โครงสร้างพื้นฐานสารสนเทศสำคัญยิ่งยวด (CII)</b> เพื่อให้เกิดการคุ้มครองสองชั้น</p>
+        <h4>
+          <span class="ic">🛡️</span>
+          <span class="lang-th">เพิ่ม UDC เป็น CII ใน พ.ร.บ.ไซเบอร์</span>
+          <span class="lang-en">Classify UDC as CII under Cyber Act</span>
+        </h4>
+        <p>
+          <span class="lang-th">แก้ไข <b>พระราชบัญญัติการรักษาความมั่นคงปลอดภัยไซเบอร์ พ.ศ.๒๕๖๒</b> เพิ่ม UDC เป็น<b>โครงสร้างพื้นฐานสารสนเทศสำคัญยิ่งยวด (CII)</b> เพื่อให้เกิดการคุ้มครองสองชั้น</span>
+          <span class="lang-en">Amend the <b>Cybersecurity Act B.E. 2562</b> to classify the UDC as <b>Critical Information Infrastructure (CII)</b>, establishing a dual-tier protection framework combining physical defense with cybersecurity oversight.</span>
+        </p>
       </div>
       <div class="card rec rv">
         <span class="no">3</span>
-        <h4><span class="ic">🏛️</span> ยกระดับเป็นวาระความมั่นคงแห่งชาติ</h4>
-        <p>ยกระดับการคุ้มครอง UDC เป็น<b>วาระความมั่นคงแห่งชาติผ่านสภาความมั่นคงแห่งชาติ</b> และบรรจุ UDC เป็นส่วนต่อขยายที่มั่นคงปลอดภัยของระบบคลาวด์กลางภาครัฐ <b>(GDCC Secure Edge)</b></p>
+        <h4>
+          <span class="ic">🏛️</span>
+          <span class="lang-th">ยกระดับเป็นวาระความมั่นคงแห่งชาติ</span>
+          <span class="lang-en">Elevate to National Security Agenda</span>
+        </h4>
+        <p>
+          <span class="lang-th">ยกระดับการคุ้มครอง UDC เป็น<b>วาระความมั่นคงแห่งชาติผ่านสภาความมั่นคงแห่งชาติ</b> และบรรจุ UDC เป็นส่วนต่อขยายที่มั่นคงปลอดภัยของระบบคลาวด์กลางภาครัฐ <b>(GDCC Secure Edge)</b></span>
+          <span class="lang-en">Elevate UDC physical security to the <b>National Security Council agenda</b>, designating the subsea node as the secure edge extension of the Government Data Center and Cloud service <b>(GDCC Secure Edge)</b>.</span>
+        </p>
       </div>
       <div class="card rec rv">
         <span class="no">4</span>
-        <h4><span class="ic">🤝</span> ยกระดับ The Shield 3.0 เป็นหลักนิยมร่วม</h4>
-        <p>ยกระดับรูปแบบ <b>The Shield 3.0 เป็นหลักนิยมร่วม</b>ภายใต้ ศรชล. โดยดึงหน่วยงานที่ดูแลคลาวด์ภาครัฐเข้าร่วมบูรณาการ</p>
+        <h4>
+          <span class="ic">🤝</span>
+          <span class="lang-th">ยกระดับ The Shield 3.0 เป็นหลักนิยมร่วม</span>
+          <span class="lang-en">Adopt The Shield 3.0 as Joint Doctrine</span>
+        </h4>
+        <p>
+          <span class="lang-th">ยกระดับรูปแบบ <b>The Shield 3.0 เป็นหลักนิยมร่วม</b>ภายใต้ ศรชล. โดยดึงหน่วยงานที่ดูแลคลาวด์ภาครัฐเข้าร่วมบูรณาการ</span>
+          <span class="lang-en">Adopt <b>The Shield 3.0 as a joint inter-agency doctrine</b> under THMECC (ศรชล.), integrating maritime security forces with government cloud operators.</span>
+        </p>
       </div>
     </div>
   </div>
@@ -465,34 +672,75 @@
 <!-- ================= 04 · ข้อเสนอแนะเชิงปฏิบัติ ================= -->
 <section id="practice">
   <div class="wrap">
-    <div class="eyebrow rv"><span class="num">04</span> ๕.๓.๒ · OPERATIONAL RECOMMENDATIONS</div>
-    <h2 class="title rv">ข้อเสนอแนะเชิงปฏิบัติสำหรับกองทัพเรือและ ศรชล.</h2>
-    <p class="lead rv">พัฒนา<b>ขีดความสามารถด้านการตระหนักรู้สถานการณ์ใต้น้ำและการบูรณาการข้อมูล</b>ให้เป็นรูปธรรม รองรับการป้องกัน UDC แบบพหุมิติ</p>
+    <div class="eyebrow rv"><span class="num">04</span> <span class="lang-th">๕.๓.๒ · OPERATIONAL RECOMMENDATIONS</span><span class="lang-en">5.3.2 · OPERATIONAL RECOMMENDATIONS</span></div>
+    <h2 class="title rv">
+      <span class="lang-th">ข้อเสนอแนะเชิงปฏิบัติสำหรับกองทัพเรือและ ศรชล.</span>
+      <span class="lang-en">Operational Recommendations for RTN & THMECC</span>
+    </h2>
+    <p class="lead rv">
+      <span class="lang-th">พัฒนา<b>ขีดความสามารถด้านการตระหนักรู้สถานการณ์ใต้น้ำและการบูรณาการข้อมูล</b>ให้เป็นรูปธรรม รองรับการป้องกัน UDC แบบพหุมิติ</span>
+      <span class="lang-en">Translate undersea situational awareness and data integration capabilities into concrete operations supporting multi-dimensional UDC protection:</span>
+    </p>
     <div class="grid g2">
       <div class="card rec t2 rv">
         <span class="no">1</span>
-        <h4><span class="ic">📡</span> ระบบสงครามที่ใช้เครือข่ายเป็นศูนย์กลาง</h4>
-        <p>เร่งพัฒนาระบบ <b>สงครามที่ใช้เครือข่ายเป็นศูนย์กลาง (NCW)</b> และระบบเชื่อมโยงข้อมูลทางการยุทธแห่งชาติ ให้แลกเปลี่ยน<b>ภาพสถานการณ์ได้แบบเวลาจริง</b></p>
+        <h4>
+          <span class="ic">📡</span>
+          <span class="lang-th">ระบบสงครามที่ใช้เครือข่ายเป็นศูนย์กลาง</span>
+          <span class="lang-en">Network-Centric Warfare Systems</span>
+        </h4>
+        <p>
+          <span class="lang-th">เร่งพัฒนาระบบ <b>สงครามที่ใช้เครือข่ายเป็นศูนย์กลาง (NCW)</b> และระบบเชื่อมโยงข้อมูลทางการยุทธแห่งชาติ ให้แลกเปลี่ยน<b>ภาพสถานการณ์ได้แบบเวลาจริง</b></span>
+          <span class="lang-en">Accelerate the development of the <b>Network-Centric Warfare (NCW)</b> system and national tactical data link system to enable <b>real-time common operational picture sharing</b>.</span>
+        </p>
       </div>
       <div class="card rec t2 rv">
         <span class="no">2</span>
-        <h4><span class="ic">🔊</span> จัดหาและพัฒนาเซนเซอร์ที่จำเป็น</h4>
-        <p>จัดหาและพัฒนา<b>ระบบตรวจจับเสียงแบบกระจาย (DAS)</b> ข่ายโซนาร์แบบรับเสียง ยานใต้น้ำไร้คนขับ (UUV) ยานใต้น้ำควบคุมระยะไกล (ROV) และเทคโนโลยีเซนเซอร์ติดตั้ง ณ พื้นทะเล <b>(Seabed Sentry)</b> โดยมุ่งพึ่งพาตนเองและส่งเสริมอุตสาหกรรมป้องกันประเทศ</p>
+        <h4>
+          <span class="ic">🔊</span>
+          <span class="lang-th">จัดหาและพัฒนาเซนเซอร์ที่จำเป็น</span>
+          <span class="lang-en">Procure and Develop Required Sensors</span>
+        </h4>
+        <p>
+          <span class="lang-th">จัดหาและพัฒนา<b>ระบบตรวจจับเสียงแบบกระจาย (DAS)</b> ข่ายโซนาร์แบบรับเสียง ยานใต้น้ำไร้คนขับ (UUV) ยานใต้น้ำควบคุมระยะไกล (ROV) และเทคโนโลยีเซนเซอร์ติดตั้ง ณ พื้นทะเล <b>(Seabed Sentry)</b> โดยมุ่งพึ่งพาตนเองและส่งเสริมอุตสาหกรรมป้องกันประเทศ</span>
+          <span class="lang-en">Procure and develop <b>Distributed Acoustic Sensing (DAS)</b> systems, passive sonar arrays, Unmanned Undersea Vehicles (UUVs), Remotely Operated Vehicles (ROVs), and bottom-mounted sensor technologies <b>(Seabed Sentry)</b>, focusing on self-reliance and defense industry promotion.</span>
+        </p>
       </div>
       <div class="card rec t2 rv">
         <span class="no">3</span>
-        <h4><span class="ic">🗺️</span> โครงสร้างพื้นฐานข้อมูลเชิงพื้นที่ทางทะเล</h4>
-        <p>ผลักดันให้<b>กรมอุทกศาสตร์</b>จัดทำ<b>โครงสร้างพื้นฐานข้อมูลเชิงพื้นที่ทางทะเล (MSDI)</b> เพื่อนำไปสู่ผังทะเลรวม และสนับสนุนการพยากรณ์ประสิทธิภาพโซนาร์ในการกำหนดจุดวางเซนเซอร์</p>
+        <h4>
+          <span class="ic">🗺️</span>
+          <span class="lang-th">โครงสร้างพื้นฐานข้อมูลเชิงพื้นที่ทางทะเล</span>
+          <span class="lang-en">Marine Spatial Data Infrastructure</span>
+        </h4>
+        <p>
+          <span class="lang-th">ผลักดันให้<b>กรมอุทกศาสตร์</b>จัดทำ<b>โครงสร้างพื้นฐานข้อมูลเชิงพื้นที่ทางทะเล (MSDI)</b> เพื่อนำไปสู่ผังทะเลรวม และสนับสนุนการพยากรณ์ประสิทธิภาพโซนาร์ในการกำหนดจุดวางเซนเซอร์</span>
+          <span class="lang-en">Urge the <b>Hydrographic Department</b> to establish the <b>Marine Spatial Data Infrastructure (MSDI)</b> to feed into the One Marine Map and support sonar performance forecasting for sensor placement planning.</span>
+        </p>
       </div>
       <div class="card rec t2 rv">
         <span class="no">4</span>
-        <h4><span class="ic">🔗</span> ใช้อำนาจ ม.๒๗ เชื่อมโยงข้อมูลร่วม</h4>
-        <p>อาศัยอำนาจตาม<b>มาตรา ๒๗ แห่งพระราชบัญญัติ ศรชล.</b> เสนอคณะกรรมการนโยบายฯ ให้หน่วยงานที่เกี่ยวข้องเชื่อมโยงข้อมูลเข้าสู่ระบบร่วม</p>
+        <h4>
+          <span class="ic">🔗</span>
+          <span class="lang-th">ใช้อำนาจ ม.๒๗ เชื่อมโยงข้อมูลร่วม</span>
+          <span class="lang-en">Invoke Section 27 for Data Integration</span>
+        </h4>
+        <p>
+          <span class="lang-th">อาศัยอำนาจตาม<b>มาตรา ๒๗ แห่งพระราชบัญญัติ ศรชล.</b> เสนอคณะกรรมการนโยบายฯ ให้หน่วยงานที่เกี่ยวข้องเชื่อมโยงข้อมูลเข้าสู่ระบบร่วม</span>
+          <span class="lang-en">Leverage the authority under <b>Section 27 of the THMECC Act</b> to propose to the Policy Committee that all relevant agencies link their data into the joint system.</span>
+        </p>
       </div>
       <div class="card rec t2 rv">
         <span class="no">5</span>
-        <h4><span class="ic">🔧</span> วงรอบบำรุงรักษาตามสภาพอ่าวไทย</h4>
-        <p>กำหนด<b>วงรอบการบำรุงรักษา</b>เพื่อรับมือ<b>การเกาะของเพรียงและการกัดกร่อน</b>ตามสภาพน้ำของอ่าวไทย</p>
+        <h4>
+          <span class="ic">🔧</span>
+          <span class="lang-th">วงรอบบำรุงรักษาตามสภาพอ่าวไทย</span>
+          <span class="lang-en">Maintenance Cycle for the Gulf's Environment</span>
+        </h4>
+        <p>
+          <span class="lang-th">กำหนด<b>วงรอบการบำรุงรักษา</b>เพื่อรับมือ<b>การเกาะของเพรียงและการกัดกร่อน</b>ตามสภาพน้ำของอ่าวไทย</span>
+          <span class="lang-en">Define <b>maintenance cycles</b> to mitigate <b>biofouling and corrosion</b> in the specific marine environment of the Gulf of Thailand.</span>
+        </p>
       </div>
     </div>
   </div>
@@ -501,34 +749,75 @@
 <!-- ================= 05 · ข้อเสนอแนะสำหรับการวิจัยครั้งต่อไป ================= -->
 <section id="future">
   <div class="wrap">
-    <div class="eyebrow rv"><span class="num">05</span> ๕.๓.๓ · FUTURE RESEARCH</div>
-    <h2 class="title rv">ข้อเสนอแนะสำหรับการวิจัยครั้งต่อไป</h2>
-    <p class="lead rv">ต่อยอดองค์ความรู้ไปสู่<b>การทดสอบภาคสนาม การขยายพื้นที่ และมิติด้านความร่วมมือและสิ่งแวดล้อม</b></p>
+    <div class="eyebrow rv"><span class="num">05</span> <span class="lang-th">๕.๓.๓ · FUTURE RESEARCH</span><span class="lang-en">5.3.3 · FUTURE RESEARCH</span></div>
+    <h2 class="title rv">
+      <span class="lang-th">ข้อเสนอแนะสำหรับการวิจัยครั้งต่อไป</span>
+      <span class="lang-en">Recommendations for Future Research</span>
+    </h2>
+    <p class="lead rv">
+      <span class="lang-th">ต่อยอดองค์ความรู้ไปสู่<b>การทดสอบภาคสนาม การขยายพื้นที่ และมิติด้านความร่วมมือและสิ่งแวดล้อม</b></span>
+      <span class="lang-en">Extend the scope toward <b>field testing, area expansion, regional cooperation, and environmental dimensions</b>:</span>
+    </p>
     <div class="grid g2">
       <div class="card rec t3 rv">
         <span class="no">1</span>
-        <h4><span class="ic">🌊</span> ขยายพื้นที่ศึกษาความเหมาะสม</h4>
-        <p>ขยายการศึกษาความเหมาะสมของพื้นที่ติดตั้ง UDC ไปยัง<b>พื้นที่อื่นของอ่าวไทยและทะเลอันดามัน</b></p>
+        <h4>
+          <span class="ic">🌊</span>
+          <span class="lang-th">ขยายพื้นที่ศึกษาความเหมาะสม</span>
+          <span class="lang-en">Expand Suitability Site Studies</span>
+        </h4>
+        <p>
+          <span class="lang-th">ขยายการศึกษาความเหมาะสมของพื้นที่ติดตั้ง UDC ไปยัง<b>พื้นที่อื่นของอ่าวไทยและทะเลอันดามัน</b></span>
+          <span class="lang-en">Expand suitability evaluations for UDC sites to <b>other regions in the Gulf of Thailand and the Andaman Sea</b>.</span>
+        </p>
       </div>
       <div class="card rec t3 rv">
         <span class="no">2</span>
-        <h4><span class="ic">🧪</span> ทดสอบภาคสนามด้านวิศวกรรม</h4>
-        <p>ศึกษาและทดสอบภาคสนามแนวทาง<b>การป้องกันการเกาะของเพรียง (Biofouling) แบบหลายชั้น (Defense-in-Depth)</b> ระบบระบายความร้อน และความมั่นคงของแคปซูลในสภาพแวดล้อมของอ่าวไทย โดยมีรายละเอียดแนวทางตาม<b>ผนวก ง</b> ประกอบ</p>
+        <h4>
+          <span class="ic">🧪</span>
+          <span class="lang-th">ทดสอบภาคสนามด้านวิศวกรรม</span>
+          <span class="lang-en">Conduct Engineering Field Tests</span>
+        </h4>
+        <p>
+          <span class="lang-th">ศึกษาและทดสอบภาคสนามแนวทาง<b>การป้องกันการเกาะของเพรียง (Biofouling) แบบหลายชั้น (Defense-in-Depth)</b> ระบบระบายความร้อน และความมั่นคงของแคปซูลในสภาพแวดล้อมของอ่าวไทย โดยมีรายละเอียดแนวทางตาม<b>ผนวก ง</b> ประกอบ</span>
+          <span class="lang-en">Conduct field tests of <b>Defense-in-Depth biofouling protections</b>, heat dissipation systems, and capsule structural integrity in the Gulf's environment, referencing the guidelines in <b>Appendix D</b>.</span>
+        </p>
       </div>
       <div class="card rec t3 rv">
         <span class="no">3</span>
-        <h4><span class="ic">🎯</span> ทดสอบ The Shield ในการฝึกภาคสนาม</h4>
-        <p>ทดสอบรูปแบบ <b>The Shield ในการฝึกภาคสนาม</b>เพื่อปรับปรุงกระบวนการปฏิบัติ (SOP) ก่อนพัฒนาเป็นหลักนิยม</p>
+        <h4>
+          <span class="ic">🎯</span>
+          <span class="lang-th">ทดสอบ The Shield ในการฝึกภาคสนาม</span>
+          <span class="lang-en">Field Test The Shield SOPs</span>
+        </h4>
+        <p>
+          <span class="lang-th">ทดสอบรูปแบบ <b>The Shield ในการฝึกภาคสนาม</b>เพื่อปรับปรุงกระบวนการปฏิบัติ (SOP) ก่อนพัฒนาเป็นหลักนิยม</span>
+          <span class="lang-en">Integrate and test <b>The Shield concepts in joint naval exercises</b> to refine standard operating procedures (SOPs) prior to codifying doctrine.</span>
+        </p>
       </div>
       <div class="card rec t3 rv">
         <span class="no">4</span>
-        <h4><span class="ic">🌏</span> กรอบความร่วมมือระดับภูมิภาค</h4>
-        <p>ศึกษา<b>กรอบความร่วมมือระดับภูมิภาค</b>ในการแบ่งปันภาพสถานการณ์ทางทะเลร่วม</p>
+        <h4>
+          <span class="ic">🌏</span>
+          <span class="lang-th">กรอบความร่วมมือระดับภูมิภาค</span>
+          <span class="lang-en">Study Regional Security Cooperation</span>
+        </h4>
+        <p>
+          <span class="lang-th">ศึกษา<b>กรอบความร่วมมือระดับภูมิภาค</b>ในการแบ่งปันภาพสถานการณ์ทางทะเลร่วม</span>
+          <span class="lang-en">Analyze <b>regional cooperative frameworks</b> for maritime data sharing and critical subsea cable/dossier security.</span>
+        </p>
       </div>
       <div class="card rec t3 rv">
         <span class="no">5</span>
-        <h4><span class="ic">🌱</span> ผลกระทบสิ่งแวดล้อมและการมีส่วนร่วม</h4>
-        <p>ศึกษา<b>ผลกระทบด้านสิ่งแวดล้อมและการมีส่วนร่วมของผู้มีส่วนได้ส่วนเสีย</b>ในการประกาศเขตทางทะเล</p>
+        <h4>
+          <span class="ic">🌱</span>
+          <span class="lang-th">ผลกระทบสิ่งแวดล้อมและการมีส่วนร่วม</span>
+          <span class="lang-en">Assess Environmental Impact & Input</span>
+        </h4>
+        <p>
+          <span class="lang-th">ศึกษา<b>ผลกระทบด้านสิ่งแวดล้อมและการมีส่วนร่วมของผู้มีส่วนได้ส่วนเสีย</b>ในการประกาศเขตทางทะเล</span>
+          <span class="lang-en">Evaluate the <b>environmental impact and stakeholder participation</b> involved in designating marine protected/restricted zones.</span>
+        </p>
       </div>
     </div>
   </div>
@@ -538,11 +827,23 @@
 <section id="closing">
   <div class="wrap">
     <div class="eyebrow rv"><span class="num">06</span> CLOSING</div>
-    <h2 class="title rv">บทส่งท้าย</h2>
-    <p class="lead rv">งานวิจัยนี้ตอบวัตถุประสงค์ทั้ง ๓ ประการครบถ้วน — ยืนยันว่า <b>UDC</b> คือทางออกเชิงยุทธศาสตร์ <b>การจัดระเบียบพื้นที่ทางทะเลแบบพหุมิติ</b>คือรูปแบบคุ้มครองที่เหมาะสม และ<b>กองทัพเรือ</b>คือแกนปฏิบัติการภายใต้กลไก ศรชล.</p>
+    <h2 class="title rv">
+      <span class="lang-th">บทส่งท้าย</span>
+      <span class="lang-en">Epilogue</span>
+    </h2>
+    <p class="lead rv">
+      <span class="lang-th">งานวิจัยนี้ตอบวัตถุประสงค์ทั้ง ๓ ประการครบถ้วน — ยืนยันว่า <b>UDC</b> คือทางออกเชิงยุทธศาสตร์ <b>การจัดระเบียบพื้นที่ทางทะเลแบบพหุมิติ</b>คือรูปแบบคุ้มครองที่เหมาะสม และ<b>กองทัพเรือ</b>คือแกนปฏิบัติการภายใต้กลไก ศรชล.</span>
+      <span class="lang-en">This research fully achieves its 3 core objectives, establishing that <b>UDC</b> is a viable strategic solution, <b>multi-dimensional Marine Spatial Planning</b> is the appropriate protection model, and the <b>Navy</b> is the operational core under the THMECC mechanism.</span>
+    </p>
     <div class="prop rv">
-      <div class="h">◆ ข้อสรุปสุดท้าย</div>
-      <p>รูปแบบ <b>The Shield 3.0</b> เป็นระบบบูรณาการที่ปิดช่องว่างครบทั้ง ๓ ด้าน — กฎหมาย · การตระหนักรู้สถานการณ์ใต้น้ำ · การบูรณาการระหว่างหน่วยงาน — และ<b>สามารถนำไปปฏิบัติได้จริง</b> เมื่อขับเคลื่อนผ่านข้อเสนอแนะเชิงนโยบาย เชิงปฏิบัติ และการวิจัยต่อยอดข้างต้น ภายใต้การนำของกองทัพเรือในกลไก ศรชล. เพื่อ<b>ความมั่นคงของโครงสร้างพื้นฐานดิจิทัลภาครัฐและผลประโยชน์ของชาติทางทะเล</b></p>
+      <div class="h">
+        <span class="lang-th">◆ ข้อสรุปสุดท้าย</span>
+        <span class="lang-en">◆ Final Conclusion</span>
+      </div>
+      <p>
+        <span class="lang-th">รูปแบบ <b>The Shield 3.0</b> เป็นระบบบูรณาการที่ปิดช่องว่างครบทั้ง ๓ ด้าน — กฎหมาย · การตระหนักรู้สถานการณ์ใต้น้ำ · การบูรณาการระหว่างหน่วยงาน — และ<b>สามารถนำไปปฏิบัติได้จริง</b> เมื่อขับเคลื่อนผ่านข้อเสนอแนะเชิงนโยบาย เชิงปฏิบัติ และการวิจัยต่อยอดข้างต้น ภายใต้การนำของกองทัพเรือในกลไก ศรชล. เพื่อ<b>ความมั่นคงของโครงสร้างพื้นฐานดิจิทัลภาครัฐและผลประโยชน์ของชาติทางทะเล</b></span>
+        <span class="lang-en">The <b>The Shield 3.0</b> model represents an integrated system addressing 3 critical gaps: legal, undersea situational awareness, and inter-agency coordination. It is <b>highly actionable</b> when driven by the policy, operational, and future research recommendations under the Navy's leadership within the THMECC framework, securing <b>government digital infrastructure and national maritime interests</b>.</span>
+      </p>
     </div>
   </div>
 </section>
@@ -551,11 +852,23 @@
 <footer>
   <div class="wrap">
     <div class="foot-nav rv">
-      <a class="btn" href="THE_SHIELD_Ch4.html">← บทที่ ๔ · ผลการวิเคราะห์</a>
-      <a class="btn primary" href="THE_SHIELD_Pitch.html#research">⌂ กลับหน้านำเสนองานวิจัย</a>
-      <span class="btn" style="opacity:.45;cursor:default">บทสุดท้าย · จบเอกสาร</span>
+      <a class="btn" href="THE_SHIELD_Ch4.html">
+        <span class="lang-th">← บทที่ ๔ · ผลการวิเคราะห์</span>
+        <span class="lang-en">← Chapter 4 · Analysis Results</span>
+      </a>
+      <a class="btn primary" href="THE_SHIELD_Pitch.html#research">
+        <span class="lang-th">⌂ กลับหน้านำเสนองานวิจัย</span>
+        <span class="lang-en">⌂ Back to Pitch Page</span>
+      </a>
+      <span class="btn" style="opacity:.45;cursor:default">
+        <span class="lang-th">บทสุดท้าย · จบเอกสาร</span>
+        <span class="lang-en">Final Chapter · Document End</span>
+      </span>
     </div>
-    <p class="disclaim">THE SHIELD · RESEARCH DOSSIER — CHAPTER 05 · หลักสูตรเสนาธิการทหารเรือ รุ่นที่ ๘๖ · เนื้อหาคัดย่อจากเอกสารวิจัยเพื่อการนำเสนอ มิใช่เอกสารราชการฉบับสมบูรณ์</p>
+    <p class="disclaim">
+      <span class="lang-th">THE SHIELD · RESEARCH DOSSIER — CHAPTER 05 · หลักสูตรเสนาธิการทหารเรือ รุ่นที่ ๘๖ · เนื้อหาคัดย่อจากเอกสารวิจัยเพื่อการนำเสนอ มิใช่เอกสารราชการฉบับสมบูรณ์</span>
+      <span class="lang-en">THE SHIELD · RESEARCH DOSSIER — CHAPTER 05 · Naval War College Class 86 · Summarized content for presentation only, not an official publication.</span>
+    </p>
   </div>
 </footer>
 
@@ -585,6 +898,27 @@
   });
 })();
 </script>
+
+<!-- ===== BILINGUAL TRANSLATION SCRIPT ===== -->
+<script>
+(function(){
+  "use strict";
+  function applyLanguage(lang) {
+    document.body.setAttribute('data-lang', lang);
+    var btn = document.getElementById('langBtn');
+    if (btn) btn.textContent = (lang === 'th') ? 'EN' : 'TH';
+  }
+  window.toggleLanguage = function() {
+    var cur = localStorage.getItem('currentLang') || 'th';
+    var next = (cur === 'th') ? 'en' : 'th';
+    localStorage.setItem('currentLang', next);
+    applyLanguage(next);
+  };
+  var initLang = localStorage.getItem('currentLang') || 'th';
+  applyLanguage(initLang);
+})();
+</script>
+
 </body>
 
 </html>

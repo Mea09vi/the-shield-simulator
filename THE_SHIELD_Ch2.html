@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>บทที่ ๒ แนวคิด ทฤษฎี และวรรณกรรมที่เกี่ยวข้อง · THE SHIELD — งานวิจัยศูนย์ข้อมูลใต้น้ำ (UDC)</title>
+<title class="lang-th">บทที่ ๒ แนวคิด ทฤษฎี และวรรณกรรมที่เกี่ยวข้อง · THE SHIELD — งานวิจัยศูนย์ข้อมูลใต้น้ำ (UDC)</title>
+<title class="lang-en">Chapter 2 Concepts, Theories, and Related Literature · THE SHIELD — UDC Research Project</title>
 <meta name="description" content="สรุปสาระสำคัญบทที่ ๒ ของงานวิจัย: ทบทวนนโยบายและเทคโนโลยี UDC สภาพแวดล้อมทางยุทธวิธี ๓ มิติ กฎหมายทะเล แนวคิดการป้องกันแบบบูรณาการ และเครื่องมือวิเคราะห์ — สังเคราะห์เป็นโมเดล The Shield 1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -364,6 +365,31 @@
     body.menu-open .nav-menu{transform:translateY(0)}
     .nav-menu a{font-size:17px}
   }
+
+  /* ---------- bilingual switcher system ---------- */
+  body[data-lang="th"] .lang-en { display: none !important; }
+  body[data-lang="en"] .lang-th { display: none !important; }
+  .lang-btn {
+    background: transparent;
+    border: 1px solid rgba(100, 255, 218, 0.35);
+    color: var(--teal);
+    font-family: var(--f-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .15em;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .25s;
+    text-transform: uppercase;
+  }
+  .lang-btn:hover {
+    background: rgba(100, 255, 218, 0.1);
+    border-color: var(--teal);
+    color: var(--white);
+    box-shadow: 0 0 10px rgba(100, 255, 218, 0.2);
+  }
+
 </style>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
@@ -388,7 +414,8 @@
     <li><a href="THE_SHIELD_Ch3.html">Ch 3</a></li>
     <li><a href="THE_SHIELD_Ch4.html">Ch 4</a></li>
     <li><a href="THE_SHIELD_Ch5.html">Ch 5</a></li>
-  </ul>
+    <li><button class="lang-btn" onclick="toggleLanguage()" id="langBtn" aria-label="สลับภาษา / Switch Language">EN</button></li>
+    </ul>
 </nav>
 
 
@@ -397,24 +424,45 @@
   <div class="hero-grid"></div>
   <div class="wrap hero-inner">
     <span class="crest"><span class="dot"></span>THE SHIELD · RESEARCH DOSSIER</span>
-    <div class="ch-num">CHAPTER — 02 · บทที่ ๒</div>
-    <h1>แนวคิด ทฤษฎี และวรรณกรรมที่เกี่ยวข้อง</h1>
-    <p class="sub">การทบทวนวรรณกรรม (Literature Review) <b>๕ กลุ่มองค์ความรู้</b> —
-      จากนโยบายคลาวด์ภาครัฐและเทคโนโลยี UDC สภาพแวดล้อมทางยุทธวิธี ๓ มิติของอ่าวไทย
-      กรอบกฎหมายทะเล ไปจนถึงแนวคิดการป้องกันแบบบูรณาการ —
-      สังเคราะห์ขึ้นเป็น<b>กรอบแนวคิดการสร้างโมเดลการป้องกัน «The Shield 1.0»</b></p>
+    <div class="ch-num">
+      <span class="lang-th">CHAPTER — 02 · บทที่ ๒</span>
+      <span class="lang-en">CHAPTER — 02 · Literature Review</span>
+    </div>
+    <h1>
+      <span class="lang-th">แนวคิด ทฤษฎี และวรรณกรรมที่เกี่ยวข้อง</span>
+      <span class="lang-en">Concepts, Theories, and Related Literature</span>
+    </h1>
+    <p class="sub">
+      <span class="lang-th">การทบทวนวรรณกรรม (Literature Review) <b>๕ กลุ่มองค์ความรู้</b> — จากนโยบายคลาวด์ภาครัฐและเทคโนโลยี UDC สภาพแวดล้อมทางยุทธวิธี ๓ มิติของอ่าวไทย กรอบกฎหมายทะเล ไปจนถึงแนวคิดการป้องกันแบบบูรณาการ — สังเคราะห์ขึ้นเป็น<b>กรอบแนวคิดการสร้างโมเดลการป้องกัน «The Shield 1.0»</b></span>
+      <span class="lang-en">Literature review across <b>5 knowledge domains</b>: from government cloud policies and UDC technology, the 3D tactical environment of the Gulf of Thailand, international maritime law, to integrated defense concepts—synthesized into the conceptual framework of <b>"The Shield 1.0"</b> active defense model.</span>
+    </p>
     <div class="meta">
-      <span class="chip ok">✓ เสร็จสมบูรณ์</span>
-      <span class="chip">ผลลัพธ์ของบท <b>The Shield 1.0</b></span>
-      <span class="chip">วรรณกรรม <b>๕ กลุ่มองค์ความรู้</b></span>
-      <span class="chip">หลักสูตรเสนาธิการทหารเรือ <b>รุ่นที่ ๘๖</b></span>
+      <span class="chip ok">
+        <span class="lang-th">✓ เสร็จสมบูรณ์</span>
+        <span class="lang-en">✓ Completed</span>
+      </span>
+      <span class="chip">
+        <span class="lang-th">ผลลัพธ์ของบท <b>The Shield 1.0</b></span>
+        <span class="lang-en">Output: <b>The Shield 1.0</b></span>
+      </span>
+      <span class="chip">
+        <span class="lang-th">วรรณกรรม <b>๕ กลุ่มองค์ความรู้</b></span>
+        <span class="lang-en">Literature: <b>5 Core Areas</b></span>
+      </span>
+      <span class="chip">
+        <span class="lang-th">หลักสูตรเสนาธิการทหารเรือ <b>รุ่นที่ ๘๖</b></span>
+        <span class="lang-en">Naval War College Class <b>86</b></span>
+      </span>
     </div>
 
     <figure class="cine rv">
       <img src="THE_SHIELD_Ch2_hero.webp" alt="ภาพจำลอง: เครนเรือปฏิบัติการกำลังหย่อนแคปซูลศูนย์ข้อมูลใต้น้ำลงสู่ทะเล">
       <figcaption>
         <span class="cine-t">UDC DEPLOYMENT OPERATION · LITERATURE REVIEW</span>
-        <span class="cine-ai">ภาพจำลองบรรยากาศ · AI-GENERATED</span>
+        <span class="cine-ai">
+          <span class="lang-th">ภาพจำลองบรรยากาศ · AI-GENERATED</span>
+          <span class="lang-en">Simulated Atmosphere · AI-GENERATED</span>
+        </span>
       </figcaption>
     </figure>
   </div>
@@ -424,14 +472,38 @@
 <nav class="toc">
   <div class="wrap">
     <a class="home-btn" href="THE_SHIELD_Pitch.html" aria-label="กลับหน้านำเสนอ THE SHIELD"><svg class="hb-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.3h13V10"/><path d="M10 19.3v-5.5h4v5.5"/></svg><span>Home</span></a>
-    <a href="#intro">กล่าวนำ</a>
-    <a href="#policy">นโยบาย &amp; UDC</a>
-    <a href="#env">สภาพแวดล้อม ๓ มิติ</a>
-    <a href="#law">กฎหมาย &amp; MSP</a>
-    <a href="#defense">แนวคิดการป้องกัน</a>
-    <a href="#shield">The Shield 1.0</a>
-    <a href="#tools">เครื่องมือวิเคราะห์</a>
-    <a href="#summary">สรุป</a>
+    <a href="#intro">
+      <span class="lang-th">กล่าวนำ</span>
+      <span class="lang-en">Introduction</span>
+    </a>
+    <a href="#policy">
+      <span class="lang-th">นโยบาย &amp; UDC</span>
+      <span class="lang-en">Policy &amp; UDC</span>
+    </a>
+    <a href="#env">
+      <span class="lang-th">สภาพแวดล้อม ๓ มิติ</span>
+      <span class="lang-en">3D Environment</span>
+    </a>
+    <a href="#law">
+      <span class="lang-th">กฎหมาย &amp; MSP</span>
+      <span class="lang-en">Law &amp; MSP</span>
+    </a>
+    <a href="#defense">
+      <span class="lang-th">แนวคิดการป้องกัน</span>
+      <span class="lang-en">Defense Concepts</span>
+    </a>
+    <a href="#shield">
+      <span class="lang-th">The Shield 1.0</span>
+      <span class="lang-en">The Shield 1.0</span>
+    </a>
+    <a href="#tools">
+      <span class="lang-th">เครื่องมือวิเคราะห์</span>
+      <span class="lang-en">Analytical Tools</span>
+    </a>
+    <a href="#summary">
+      <span class="lang-th">สรุป</span>
+      <span class="lang-en">Summary</span>
+    </a>
     <span class="tag">CH.02 / 05</span>
   </div>
 </nav>
@@ -440,43 +512,81 @@
 <section id="intro">
   <div class="wrap">
     <div class="eyebrow rv"><span class="num">๒.๑</span>LITERATURE REVIEW — KNOWLEDGE MAP</div>
-    <h2 class="title rv">กล่าวนำ — แผนที่องค์ความรู้ของบทนี้</h2>
-    <p class="lead rv">การวางรากฐานเพื่อกำหนดบทบาทและแนวทางการจัดระเบียบพื้นที่ทางทะเลของกองทัพเรือ
-      ในการคุ้มครอง<b>ศูนย์ข้อมูลใต้น้ำ (Underwater Data Center: UDC)</b> ซึ่งเป็นโครงสร้างพื้นฐานสำคัญของชาติ
-      จำเป็นต้องอาศัย<b>การบูรณาการองค์ความรู้หลายมิติอย่างรอบด้าน</b> — บทนี้จึงทบทวนแนวคิด ทฤษฎี
-      และวรรณกรรมที่เกี่ยวข้องใน ๕ กลุ่ม แล้วสังเคราะห์ทั้งหมดขึ้นเป็น
-      <b>กรอบแนวคิดการสร้างโมเดลการป้องกัน «The Shield 1.0»</b> อันเป็นฐานสำหรับการดำเนินการวิจัยในบทต่อไป</p>
+    <h2 class="title rv">
+      <span class="lang-th">กล่าวนำ — แผนที่องค์ความรู้ของบทนี้</span>
+      <span class="lang-en">Introduction — Literature Knowledge Map</span>
+    </h2>
+    <p class="lead rv">
+      <span class="lang-th">การวางรากฐานเพื่อกำหนดบทบาทและแนวทางการจัดระเบียบพื้นที่ทางทะเลของกองทัพเรือ ในการคุ้มครอง<b>ศูนย์ข้อมูลใต้น้ำ (Underwater Data Center: UDC)</b> ซึ่งเป็นโครงสร้างพื้นฐานสำคัญของชาติ จำเป็นต้องอาศัย<b>การบูรณาการองค์ความรู้หลายมิติอย่างรอบด้าน</b> — บทนี้จึงทบทวนแนวคิด ทฤษฎี และวรรณกรรมที่เกี่ยวข้องใน ๕ กลุ่ม แล้วสังเคราะห์ทั้งหมดขึ้นเป็น <b>กรอบแนวคิดการสร้างโมเดลการป้องกัน «The Shield 1.0»</b> อันเป็นฐานสำหรับการดำเนินการวิจัยในบทต่อไป</span>
+      <span class="lang-en">Laying the foundation to define the roles and guidelines for Marine Spatial Planning (MSP) of the Royal Thai Navy in protecting <b>Underwater Data Centers (UDCs)</b>, which constitute critical national infrastructure, requires <b>integrating multi-dimensional knowledge domains</b>. This chapter reviews relevant concepts, theories, and literature across 5 groups, synthesizing them into the <b>"The Shield 1.0" active defense conceptual framework</b> to serve as the theoretical base for subsequent research chapters.</span>
+    </p>
 
     <div class="grid g3">
       <div class="card scope-card rv">
-        <h4><span class="ic">🏛️</span>๒.๒ นโยบาย &amp; เทคโนโลยี UDC</h4>
-        <p>สถานภาพ <b>GDCC</b> และ Cloud First Policy · ข้อจำกัดศูนย์ข้อมูลบนบก ·
-        วิศวกรรมแคปซูลใต้น้ำ · กรณีศึกษา <b>Natick / Highlander / Lin-gang</b></p>
+        <h4>
+          <span class="ic">🏛️</span>
+          <span class="lang-th">๒.๒ นโยบาย &amp; เทคโนโลยี UDC</span>
+          <span class="lang-en">2.2 Cloud Policy &amp; UDC Tech</span>
+        </h4>
+        <p>
+          <span class="lang-th">สถานภาพ <b>GDCC</b> และ Cloud First Policy · ข้อจำกัดศูนย์ข้อมูลบนบก · วิศวกรรมแคปซูลใต้น้ำ · กรณีศึกษา <b>Natick / Highlander / Lin-gang</b></span>
+          <span class="lang-en">GDCC status and Cloud First Policy, physical limits of land data centers, subsea capsule engineering, and case studies (Natick, Highlander, Lin-gang).</span>
+        </p>
       </div>
       <div class="card scope-card rv">
-        <h4><span class="ic">🌊</span>๒.๓ สภาพแวดล้อมทางยุทธวิธี ๓ มิติ</h4>
-        <p>ปัจจัยเหนือผิวน้ำ–ใต้น้ำ–พื้นท้องทะเลของ<b>อ่าวไทยตอนบน</b>
-        ที่ชี้ขาดความเหมาะสมในการติดตั้งและการป้องกัน UDC (ตารางที่ ๒-๒)</p>
+        <h4>
+          <span class="ic">🌊</span>
+          <span class="lang-th">๒.๓ สภาพแวดล้อมทางยุทธวิธี ๓ มิติ</span>
+          <span class="lang-en">2.3 3D Tactical Environment</span>
+        </h4>
+        <p>
+          <span class="lang-th">ปัจจัยเหนือผิวน้ำ–ใต้น้ำ–พื้นท้องทะเลของ<b>อ่าวไทยตอนบน</b> ที่ชี้ขาดความเหมาะสมในการติดตั้งและการป้องกัน UDC (ตารางที่ ๒-๒)</span>
+          <span class="lang-en">Surface, water column, and seabed characteristics in the upper Gulf of Thailand determining UDC engineering suitability and active defense parameters.</span>
+        </p>
       </div>
       <div class="card scope-card rv">
-        <h4><span class="ic">⚖️</span>๒.๔ กฎหมาย &amp; การจัดระเบียบพื้นที่</h4>
-        <p><b>UNCLOS</b> · พ.ร.บ.เขตปลอดภัยในราชการทหาร ๒๔๗๘ · ระบบ <b>TSS</b> ·
-        บทเรียน MSP จากอินโดนีเซียและทะเลเหนือ</p>
+        <h4>
+          <span class="ic">⚖️</span>
+          <span class="lang-th">๒.๔ กฎหมาย &amp; การจัดระเบียบพื้นที่</span>
+          <span class="lang-en">2.4 Law &amp; Marine Spatial Planning</span>
+        </h4>
+        <p>
+          <span class="lang-th"><b>UNCLOS</b> · พ.ร.บ.เขตปลอดภัยในราชการทหาร ๒๔๗๘ · ระบบ <b>TSS</b> · บทเรียน MSP จากอินโดนีเซียและทะเลเหนือ</span>
+          <span class="lang-en">UNCLOS limits, the Military Safety Zones Act B.E. 2478, vessel Traffic Separation Schemes (TSS), and MSP lessons from Indonesia and the North Sea.</span>
+        </p>
       </div>
       <div class="card scope-card rv">
-        <h4><span class="ic">🛡️</span>๒.๕ แนวคิดการป้องกันแบบบูรณาการ</h4>
-        <p><b>HDHC</b> (Harbor Defense / Harbor Control) · กลไก <b>ศรชล.</b> ·
-        การวิเคราะห์ปัจจัย <b>เวลา–พื้นที่–กำลังรบ</b> (ตารางที่ ๒-๓)</p>
+        <h4>
+          <span class="ic">🛡️</span>
+          <span class="lang-th">๒.๕ แนวคิดการป้องกันแบบบูรณาการ</span>
+          <span class="lang-en">2.5 Integrated Defense Concepts</span>
+        </h4>
+        <p>
+          <span class="lang-th"><b>HDHC</b> (Harbor Defense / Harbor Control) · กลไก <b>ศรชล.</b> · การวิเคราะห์ปัจจัย <b>เวลา–พื้นที่–กำลังรบ</b> (ตารางที่ ๒-๓)</span>
+          <span class="lang-en">Harbor Defense/Harbor Control doctrines, THMECC coordination machinery, and operational analyses of Time-Space-Force factors.</span>
+        </p>
       </div>
       <div class="card scope-card rv">
-        <h4><span class="ic">🧭</span>๒.๖ เครื่องมือวิเคราะห์ทางยุทธศาสตร์</h4>
-        <p><b>SWOT / TOWS Matrix</b> · <b>GAP Analysis</b> · <b>PMESII</b> —
-        รากฐานทางวิชาการของการวิเคราะห์ในบทที่ ๓</p>
+        <h4>
+          <span class="ic">🧭</span>
+          <span class="lang-th">๒.๖ เครื่องมือวิเคราะห์ทางยุทธศาสตร์</span>
+          <span class="lang-en">2.6 Strategic Analytical Tools</span>
+        </h4>
+        <p>
+          <span class="lang-th"><b>SWOT / TOWS Matrix</b> · <b>GAP Analysis</b> · <b>PMESII</b> — รากฐานทางวิชาการของการวิเคราะห์ในบทที่ ๓</span>
+          <span class="lang-en">Academic frameworks of SWOT/TOWS Matrix, GAP Analysis, and PMESII environmental checks providing the basis for analyses in Chapter 3.</span>
+        </p>
       </div>
       <div class="card scope-card rv" style="border-color:rgba(100,255,218,.4)">
-        <h4><span class="ic">⭐</span>ผลลัพธ์: The Shield 1.0 (๒.๕.๔)</h4>
-        <p>องค์ความรู้ทั้งหมดถูกสังเคราะห์เป็น<b>กรอบแนวคิดเชิงทฤษฎี</b> ของโมเดลการป้องกัน UDC —
-        Zoning Model · Multi-Domain Force · Centralized C2 (ตารางที่ ๒-๔ และภาพที่ ๒-๑๐)</p>
+        <h4>
+          <span class="ic">⭐</span>
+          <span class="lang-th">ผลลัพธ์: The Shield 1.0 (๒.๕.๔)</span>
+          <span class="lang-en">Output: The Shield 1.0 Framework</span>
+        </h4>
+        <p>
+          <span class="lang-th">องค์ความรู้ทั้งหมดถูกสังเคราะห์เป็น<b>กรอบแนวคิดเชิงทฤษฎี</b> ของโมเดลการป้องกัน UDC — Zoning Model · Multi-Domain Force · Centralized C2 (ตารางที่ ๒-๔ และภาพที่ ๒-๑๐)</span>
+          <span class="lang-en">Synthesized theoretical framework for UDC active defense, encompassing exclusion zoning, multi-domain forces, and centralized C2 structures.</span>
+        </p>
       </div>
     </div>
   </div>
@@ -486,152 +596,307 @@
 <section id="policy">
   <div class="wrap">
     <div class="eyebrow rv"><span class="num">๒.๒</span>NATIONAL CLOUD POLICY &amp; UDC TECHNOLOGY</div>
-    <h2 class="title rv">นโยบายเศรษฐกิจดิจิทัล คลาวด์กลางภาครัฐ และเทคโนโลยีศูนย์ข้อมูลใต้น้ำ</h2>
-    <p class="lead rv">ประเทศไทยขับเคลื่อนบริการภาครัฐผ่านระบบ<b>คลาวด์กลางภาครัฐ (GDCC)</b>
-      ภายใต้การกำกับของกระทรวงดิจิทัลเพื่อเศรษฐกิจและสังคม โดยมี สดช. เป็นเจ้าของโครงการและงบประมาณ
-      และ บมจ.โทรคมนาคมแห่งชาติ (NT) เป็นผู้ดำเนินการทางเทคนิค —
-      ทว่าความต้องการประมวลผลที่โตแบบก้าวกระโดดในยุค AI กำลังชนเพดาน<b>ข้อจำกัดเชิงโครงสร้างของศูนย์ข้อมูลบนบก</b></p>
+    <h2 class="title rv">
+      <span class="lang-th">นโยบายเศรษฐกิจดิจิทัล คลาวด์กลางภาครัฐ และเทคโนโลยีศูนย์ข้อมูลใต้น้ำ</span>
+      <span class="lang-en">Digital Economy Policy, Government Cloud, and UDC Tech</span>
+    </h2>
+    <p class="lead rv">
+      <span class="lang-th">ประเทศไทยขับเคลื่อนบริการภาครัฐผ่านระบบ<b>คลาวด์กลางภาครัฐ (GDCC)</b> ภายใต้การกำกับของกระทรวงดิจิทัลเพื่อเศรษฐกิจและสังคม โดยมี สดช. เป็นเจ้าของโครงการและงบประมาณ และ บมจ.โทรคมนาคมแห่งชาติ (NT) เป็นผู้ดำเนินการทางเทคนิค — ทว่าความต้องการประมวลผลที่โตแบบก้าวกระโดดในยุค AI กำลังชนเพดาน<b>ข้อจำกัดเชิงโครงสร้างของศูนย์ข้อมูลบนบก</b></span>
+      <span class="lang-en">Thailand drives its e-government services through the central <b>Government Data Center and Cloud (GDCC)</b> under the Ministry of Digital Economy and Society (MDES), with NT acting as the technical operator. However, exponential processing demand in the AI era is colliding with the <b>physical structural limitations of land-based data centers</b>.</span>
+    </p>
 
     <div class="grid g4">
-      <div class="card kpi rv"><div class="v">๓๓<small>%</small></div><div class="l">สัดส่วนความจุศูนย์ข้อมูลต่อปริมาณการใช้ข้อมูลของไทย — ขณะที่ค่าเฉลี่ยโลกอยู่ที่ <b>๗๑%</b> สะท้อนช่องว่างความจุที่ต้องเร่งปิด</div></div>
-      <div class="card kpi rv"><div class="v">๒๐๐,๐๐๐<small> VM</small></div><div class="l">เป้าหมายขยายระบบ GDCC ในปี ๒๕๖๘ จากปัจจุบันราว ๔๐,๐๐๐ เครื่องเสมือน</div></div>
-      <div class="card kpi rv"><div class="v">๔,๔๘๔<small> ลบ.</small></div><div class="l">งบประมาณระบบคลาวด์กลางภาครัฐ ปีงบประมาณ ๒๕๖๙</div></div>
-      <div class="card kpi rv"><div class="v">๑,๒๐๐<small>+</small></div><div class="l">หน่วยงานรัฐที่ยื่นความจำนงใช้บริการ GDCC</div></div>
+      <div class="card kpi rv">
+        <div class="v">
+          <span class="lang-th">๓๓<small>%</small></span>
+          <span class="lang-en">33<small>%</small></span>
+        </div>
+        <div class="l">
+          <span class="lang-th">สัดส่วนความจุศูนย์ข้อมูลต่อปริมาณการใช้ข้อมูลของไทย — ขณะที่ค่าเฉลี่ยโลกอยู่ที่ <b>๗๑%</b> สะท้อนช่องว่างความจุที่ต้องเร่งปิด</span>
+          <span class="lang-en">Thailand's data center capacity relative to data consumption—compared to a 71% global average, highlighting a capacity gap.</span>
+        </div>
+      </div>
+      <div class="card kpi rv">
+        <div class="v">
+          <span class="lang-th">๒๐๐,๐๐๐<small> VM</small></span>
+          <span class="lang-en">200,000<small> VM</small></span>
+        </div>
+        <div class="l">
+          <span class="lang-th">เป้าหมายขยายระบบ GDCC ในปี ๒๕๖๘ จากปัจจุบันราว ๔๐,๐๐0 เครื่องเสมือน</span>
+          <span class="lang-en">GDCC system expansion target for 2025, up from the current ~40,000 virtual machines.</span>
+        </div>
+      </div>
+      <div class="card kpi rv">
+        <div class="v">
+          <span class="lang-th">๔,๔๘๔<small> ลบ.</small></span>
+          <span class="lang-en">4,484<small> M THB</small></span>
+        </div>
+        <div class="l">
+          <span class="lang-th">งบประมาณระบบคลาวด์กลางภาครัฐ ปีงบประมาณ ๒๕๖๙</span>
+          <span class="lang-en">Government Data Center and Cloud (GDCC) budget allocation for Fiscal Year 2026.</span>
+        </div>
+      </div>
+      <div class="card kpi rv">
+        <div class="v">
+          <span class="lang-th">๑,๒๐๐<small>+</small></span>
+          <span class="lang-en">1,200<small>+</small></span>
+        </div>
+        <div class="l">
+          <span class="lang-th">หน่วยงานรัฐที่ยื่นความจำนงใช้บริการ GDCC</span>
+          <span class="lang-en">Number of government agencies requesting cloud resource allocation from GDCC.</span>
+        </div>
+      </div>
     </div>
 
-    <h3 class="sub-h rv"><span class="bar"></span>ข้อจำกัดเชิงโครงสร้างของศูนย์ข้อมูลบนบก ๓ ประการ</h3>
+    <h3 class="sub-h rv"><span class="bar"></span>
+      <span class="lang-th">ข้อจำกัดเชิงโครงสร้างของศูนย์ข้อมูลบนบก ๓ ประการ</span>
+      <span class="lang-en">Three Structural Constraints of Terrestrial Data Centers</span>
+    </h3>
     <div class="grid g3">
       <div class="card risk rv">
         <span class="tagline">① ENERGY &amp; WATER</span>
-        <h4>พลังงานและน้ำหล่อเย็น</h4>
-        <p>ค่า PUE เฉลี่ยภูมิภาคเอเชียแปซิฟิกสูงถึง <b>๑.๖๑</b> ภายใต้ค่าไฟฟ้า ๔.๑๘–๔.๕๔ บาท/หน่วย
-        และต้องใช้น้ำจืดหล่อเย็นราว <b>๗.๕ ล้านลิตร/เมกะวัตต์/ปี</b> —
-        คาดการณ์ความต้องการน้ำของศูนย์ข้อมูลไทยสูงถึง <b>๒,๓๖๔.๕ ล้านลิตร</b> ภายในปี ๒๕๗๑
-        สวนทางนโยบายเศรษฐกิจสีเขียว</p>
+        <h4>
+          <span class="lang-th">พลังงานและน้ำหล่อเย็น</span>
+          <span class="lang-en">Energy &amp; Water Cooling</span>
+        </h4>
+        <p>
+          <span class="lang-th">ค่า PUE เฉลี่ยภูมิภาคเอเชียแปซิฟิกสูงถึง <b>๑.๖๑</b> ภายใต้ค่าไฟฟ้า ๔.๑๘–๔.๕๔ บาท/หน่วย และต้องใช้น้ำจืดหล่อเย็นราว <b>๗.๕ ล้านลิตร/เมกะวัตต์/ปี</b> — คาดการณ์ความต้องการน้ำของศูนย์ข้อมูลไทยสูงถึง <b>๒,๓๖๔.๕ ล้านลิตร</b> ภายในปี ๒๕๗๑ สวนทางนโยบายเศรษฐกิจสีเขียว</span>
+          <span class="lang-en">The APAC average PUE stands at <b>1.61</b>. Under utility rates of 4.18–4.54 THB/kWh, facilities require <b>7.5M liters of fresh water/MW/year</b>. Projected Thai data center water consumption reaches <b>2.36B liters</b> by 2028, conflicting with green economy policies.</span>
+        </p>
       </div>
       <div class="card risk r2 rv">
         <span class="tagline">② PHYSICAL RISK</span>
-        <h4>ความเสี่ยงทางกายภาพและภัยพิบัติ</h4>
-        <p>ที่ราบลุ่มภาคกลางเผชิญ<b>อุทกภัยซ้ำซาก</b> ขณะที่แผ่นดินไหวขนาด ๘.๒ ในเมียนมา (มี.ค. ๒๕๖๘)
-        ตามด้วยอาฟเตอร์ช็อกกว่า <b>๒๐๐ ครั้ง</b> ที่รับรู้ได้ถึงภาคเหนือของไทย
-        ตอกย้ำความเปราะบางของอาคารศูนย์ข้อมูลบนบก รวมถึงความเสี่ยงจากการก่อวินาศกรรมโดยตรง</p>
+        <h4>
+          <span class="lang-th">ความเสี่ยงทางกายภาพและภัยพิบัติ</span>
+          <span class="lang-en">Physical &amp; Disaster Risks</span>
+        </h4>
+        <p>
+          <span class="lang-th">ที่ราบลุ่มภาคกลางเผชิญ<b>อุทกภัยซ้ำซาก</b> ขณะที่แผ่นดินไหวขนาด ๘.๒ ในเมียนมา (มี.ค. ๒๕๖๘) ตามด้วยอาฟเตอร์ช็อกกว่า <b>๒๐๐ ครั้ง</b> ที่รับรู้ได้ถึงภาคเหนือของไทย ตอกย้ำความเปราะบางของอาคารศูนย์ข้อมูลบนบก รวมถึงความเสี่ยงจากการก่อวินาศกรรมโดยตรง</span>
+          <span class="lang-en">Central plains suffer <b>chronic floods</b>, while the March 2025 magnitude 8.2 earthquake in Myanmar, followed by over <b>200 aftershocks</b> felt in northern Thailand, highlights the physical vulnerability of terrestrial buildings to seismic and sabotage risks.</span>
+        </p>
       </div>
       <div class="card risk r3 rv">
         <span class="tagline">③ DATA SOVEREIGNTY</span>
-        <h4>อธิปไตยของข้อมูล</h4>
-        <p>ข้อมูลชั้นความลับระดับ <b>"ลับมาก" และ "ลับที่สุด"</b> ต้องจัดเก็บใน
-        <b>Sovereign Territory</b> ที่รัฐควบคุมได้เบ็ดเสร็จทั้งทางกายภาพและทางไซเบอร์ —
-        ศูนย์ข้อมูลเชิงพาณิชย์ทั่วไปไม่อาจตอบโจทย์นี้ได้อย่างสมบูรณ์</p>
+        <h4>
+          <span class="lang-th">อธิปไตยของข้อมูล</span>
+          <span class="lang-en">Data Sovereignty</span>
+        </h4>
+        <p>
+          <span class="lang-th">ข้อมูลชั้นความลับระดับ <b>"ลับมาก" และ "ลับที่สุด"</b> ต้องจัดเก็บใน <b>Sovereign Territory</b> ที่รัฐควบคุมได้เบ็ดเสร็จทั้งทางกายภาพและทางไซเบอร์ — ศูนย์ข้อมูลเชิงพาณิชย์ทั่วไปไม่อาจตอบโจทย์นี้ได้อย่างสมบูรณ์</span>
+          <span class="lang-en">State classified data (<b>"Secret" and "Top Secret"</b>) must reside within a <b>Sovereign Territory</b> under absolute physical and cyber state control, a requirement that generic commercial data centers cannot satisfy.</span>
+        </p>
       </div>
     </div>
 
-    <h3 class="sub-h rv"><span class="bar"></span>จาก Cloud First สู่คลาวด์อธิปไตย (Sovereign Cloud)</h3>
-    <p class="body rv">ทิศทางนโยบายคลาวด์ภาครัฐวิวัฒน์จาก <b>Cloud First Policy</b> ไปสู่สถาปัตยกรรม
-      <b>Hybrid Multi-Cloud</b> และมุ่งสู่ <b>Sovereign Cloud</b> สำหรับข้อมูลที่กระทบความมั่นคงแห่งรัฐ
-      โดยสำนักงานพัฒนารัฐบาลดิจิทัล (สพร.) ได้วางกรอบการจำแนกชั้นข้อมูลซึ่งชี้ชัดว่า
-      ข้อมูลชั้นสูงสุดสองระดับต้องการโครงสร้างพื้นฐานที่รัฐเป็นเจ้าของและป้องกันได้ในเชิงกายภาพ</p>
+    <h3 class="sub-h rv"><span class="bar"></span>
+      <span class="lang-th">จาก Cloud First สู่คลาวด์อธิปไตย (Sovereign Cloud)</span>
+      <span class="lang-en">From Cloud First to Sovereign Cloud</span>
+    </h3>
+    <p class="body rv">
+      <span class="lang-th">ทิศทางนโยบายคลาวด์ภาครัฐวิวัฒน์จาก <b>Cloud First Policy</b> ไปสู่สถาปัตยกรรม <b>Hybrid Multi-Cloud</b> และมุ่งสู่ <b>Sovereign Cloud</b> สำหรับข้อมูลที่กระทบความมั่นคงแห่งรัฐ โดยสำนักงานพัฒนารัฐบาลดิจิทัล (สพร.) ได้วางกรอบการจำแนกชั้นข้อมูลซึ่งชี้ชัดว่า ข้อมูลชั้นสูงสุดสองระดับต้องการโครงสร้างพื้นฐานที่รัฐเป็นเจ้าของและป้องกันได้ในเชิงกายภาพ</span>
+      <span class="lang-en">Government cloud policies are evolving from a <b>Cloud First Policy</b> to a <b>Hybrid Multi-Cloud</b> architecture, targeting <b>Sovereign Cloud</b> deployments for state security datasets. The DGA data classification guidelines emphasize that the top two tiers require physical infrastructure owned and secured by the state.</span>
+    </p>
 
     <div class="t-cap rv">
-      <span class="t">ตารางที่ ๒-๑ · ระดับชั้นข้อมูลภาครัฐกับนัยต่อโครงสร้างพื้นฐานจัดเก็บ</span>
-      <span class="src">ที่มา : สพร. (๒๕๖๕), หน้า ๑๗ — เรียบเรียงโดยผู้วิจัย</span>
+      <span class="t">
+        <span class="lang-th">ตารางที่ ๒-๑ · ระดับชั้นข้อมูลภาครัฐกับนัยต่อโครงสร้างพื้นฐานจัดเก็บ</span>
+        <span class="lang-en">Table 2-1 · Government Data Classification and Storage Implications</span>
+      </span>
+      <span class="src">
+        <span class="lang-th">ที่มา : สพร. (๒๕๖๕), หน้า ๑๗ — เรียบเรียงโดยผู้วิจัย</span>
+        <span class="lang-en">Source: DGA (2022), p. 17 - Compiled by the researcher</span>
+      </span>
     </div>
     <div class="tbl-wrap rv">
       <table class="dtbl">
         <thead><tr>
-          <th>ระดับชั้นข้อมูล</th><th>เทียบเคียงสากล</th><th>ระดับความอ่อนไหว</th><th>นัยสำคัญต่อการจัดเก็บ</th>
+          <th>
+            <span class="lang-th">ระดับชั้นข้อมูล</span>
+            <span class="lang-en">Classification Level</span>
+          </th>
+          <th>
+            <span class="lang-th">เทียบเคียงสากล</span>
+            <span class="lang-en">International Equivalent</span>
+          </th>
+          <th>
+            <span class="lang-th">ระดับความอ่อนไหว</span>
+            <span class="lang-en">Sensitivity Level</span>
+          </th>
+          <th>
+            <span class="lang-th">นัยสำคัญต่อการจัดเก็บ</span>
+            <span class="lang-en">Storage Requirements &amp; Implications</span>
+          </th>
         </tr></thead>
         <tbody>
           <tr>
-            <td class="dim">ลับมาก</td><td><b>Secret</b></td><td>Medium Sensitive</td>
-            <td>หากรั่วไหลจะเกิดความเสียหายร้ายแรงต่อความมั่นคงและผลประโยชน์แห่งรัฐ — ต้องควบคุมการเข้าถึงอย่างเข้มงวดทั้งบุคคลและสถานที่</td>
+            <td class="dim">
+              <span class="lang-th">ลับมาก</span>
+              <span class="lang-en">Secret</span>
+            </td>
+            <td><b>Secret</b></td>
+            <td>
+              <span class="lang-th">ปานกลาง-สูง</span>
+              <span class="lang-en">Medium Sensitive</span>
+            </td>
+            <td>
+              <span class="lang-th">หากรั่วไหลจะเกิดความเสียหายร้ายแรงต่อความมั่นคงและผลประโยชน์แห่งรัฐ — ต้องควบคุมการเข้าถึงอย่างเข้มงวดทั้งบุคคลและสถานที่</span>
+              <span class="lang-en">Unauthorized disclosure causes serious damage to national security. Requires strict physical and logical access controls.</span>
+            </td>
           </tr>
           <tr>
-            <td class="dim">ลับที่สุด</td><td><b>Top Secret</b></td><td>Highly Sensitive</td>
-            <td>เสียหายร้ายแรงที่สุด เช่น ข้อมูลกำลังรบและข่าวกรองยุทธศาสตร์ — ต้องการ <b>Sovereign Territory</b> ที่รัฐป้องกันได้เบ็ดเสร็จ ไม่อาจฝากไว้ในระบบเชิงพาณิชย์ทั่วไป</td>
+            <td class="dim">
+              <span class="lang-th">ลับที่สุด</span>
+              <span class="lang-en">Top Secret</span>
+            </td>
+            <td><b>Top Secret</b></td>
+            <td>
+              <span class="lang-th">สูงสุด</span>
+              <span class="lang-en">Highly Sensitive</span>
+            </td>
+            <td>
+              <span class="lang-th">เสียหายร้ายแรงที่สุด เช่น ข้อมูลกำลังรบและข่าวกรองยุทธศาสตร์ — ต้องการ <b>Sovereign Territory</b> ที่รัฐป้องกันได้เบ็ดเสร็จ ไม่อาจฝากไว้ในระบบเชิงพาณิชย์ทั่วไป</span>
+              <span class="lang-en">Unauthorized disclosure causes exceptionally grave national harm (e.g. strategic intelligence). Requires absolute state-protected sovereign territory.</span>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <h3 class="sub-h rv"><span class="bar"></span>เทคโนโลยีและองค์ประกอบทางวิศวกรรมของ UDC</h3>
-    <p class="body rv">ศูนย์ข้อมูลใต้น้ำตอบข้อจำกัดทั้งสามด้วยหลักวิศวกรรม <b>๓ จุดแข็ง</b> —
-      ใช้มหาสมุทรเป็นระบบหล่อเย็นธรรมชาติ (ไม่ใช้น้ำจืด) · ซ่อนพรางใต้ผิวน้ำพ้นจากภัยพิบัติบนบกและการก่อวินาศกรรม ·
-      และวางในเขตอำนาจรัฐที่กองทัพเรือป้องกันได้จริง องค์ประกอบหลักมีดังนี้</p>
+    <h3 class="sub-h rv"><span class="bar"></span>
+      <span class="lang-th">เทคโนโลยีและองค์ประกอบทางวิศวกรรมของ UDC</span>
+      <span class="lang-en">Technology &amp; Engineering Components of UDCs</span>
+    </h3>
+    <p class="body rv">
+      <span class="lang-th">ศูนย์ข้อมูลใต้น้ำตอบข้อจำกัดทั้งสามด้วยหลักวิศวกรรม <b>๓ จุดแข็ง</b> — ใช้มหาสมุทรเป็นระบบหล่อเย็นธรรมชาติ (ไม่ใช้น้ำจืด) · ซ่อนพรางใต้ผิวน้ำพ้นจากภัยพิบัติบนบกและการก่อวินาศกรรม · และวางในเขตอำนาจรัฐที่กองทัพเรือป้องกันได้จริง องค์ประกอบหลักมีดังนี้</span>
+      <span class="lang-en">Underwater data centers address the three structural limits through <b>3 engineering strengths</b>: utilizing oceans for natural heat dissipation (zero freshwater consumption), subsea concealment from land hazards, and deployment in sovereign waters protected by the Navy. The core components are:</span>
+    </p>
     <div class="grid g2">
       <div class="card scope-card rv">
-        <h4><span class="ic">🛢️</span>แคปซูลทนแรงดัน (Pressure Vessel)</h4>
-        <p>ขนาดเทียบตู้คอนเทนเนอร์ ISO ๔๐ ฟุต (ยาว <b>๑๒.๒ ม.</b> ⌀ <b>๒.๘ ม.</b>) น้ำหนักรวมได้ถึง <b>๑,๓๐๐ ตัน</b>
-        ภายในรักษาความดัน ๑ บรรยากาศ บรรจุ<b>ไนโตรเจนแห้ง ๑๐๐%</b> ไร้ออกซิเจนและความชื้น —
-        ปฏิบัติการแบบ <b>Lights-Out</b> ไร้มนุษย์ ทำให้อัตราชำรุดของเซิร์ฟเวอร์เหลือเพียง <b>๑ ใน ๘</b> ของศูนย์ข้อมูลบนบก</p>
+        <h4>
+          <span class="ic">🛢️</span>
+          <span class="lang-th">แคปซูลทนแรงดัน (Pressure Vessel)</span>
+          <span class="lang-en">Pressure Vessel Capsule</span>
+        </h4>
+        <p>
+          <span class="lang-th">ขนาดเทียบตู้คอนเทนเนอร์ ISO ๔๐ ฟุต (ยาว <b>๑๒.๒ ม.</b> ⌀ <b>๒.๘ ม.</b>) น้ำหนักรวมได้ถึง <b>๑,๓๐๐ ตัน</b> ภายในรักษาความดัน ๑ บรรยากาศ บรรจุ<b>ไนโตรเจนแห้ง ๑๐๐%</b> ไร้ออกซิเจนและความชื้น — ปฏิบัติการแบบ <b>Lights-Out</b> ไร้มนุษย์ ทำให้อัตราชำรุดของเซิร์ฟเวอร์เหลือเพียง <b>๑ ใน ๘</b> ของศูนย์ข้อมูลบนบก</span>
+          <span class="lang-en">Equivalent in dimensions to a 40ft ISO container (12.2m length, 2.8m diameter), weighing up to 1,300 tons. Maintained at 1 atm, filled with <b>100% dry nitrogen</b> (moisture/oxygen-free). Operating in <b>lights-out</b> mode, server failure rates fall to <b>1/8th</b> of terrestrial sites.</span>
+        </p>
       </div>
       <div class="card scope-card rv">
-        <h4><span class="ic">⚖️</span>Pressure-Equalized Pods</h4>
-        <p>แนวทางทางเลือกของ <b>Subsea Cloud</b> — ปรับความดันภายในเท่าภายนอกด้วยของเหลวไดอิเล็กทริก
-        ทำให้ติดตั้งได้ลึกถึง <b>๓,๐๐๐ ม.</b> ซึ่งมนุษย์เข้าถึงไม่ได้ ต้องปฏิบัติงานด้วย <b>ROV</b> เท่านั้น —
-        ความลึกกลายเป็นเกราะป้องกันในตัวเอง</p>
+        <h4>
+          <span class="ic">⚖️</span>
+          <span class="lang-th">Pressure-Equalized Pods</span>
+          <span class="lang-en">Pressure-Equalized Pods</span>
+        </h4>
+        <p>
+          <span class="lang-th">แนวทางทางเลือกของ <b>Subsea Cloud</b> — ปรับความดันภายในเท่าภายนอกด้วยของเหลวไดอิเล็กทริก ทำให้ติดตั้งได้ลึกถึง <b>๓,๐๐๐ ม.</b> ซึ่งมนุษย์เข้าถึงไม่ได้ ต้องปฏิบัติงานด้วย <b>ROV</b> เท่านั้น — ความลึกกลายเป็นเกราะป้องกันในตัวเอง</span>
+          <span class="lang-en">Alternative <b>Subsea Cloud</b> approach, equalizing internal pressure with dielectric fluids. Enables deployments at depths up to <b>3,000m</b>, accessible only by <b>ROVs</b>. The depth functions as a physical security barrier.</span>
+        </p>
       </div>
       <div class="card scope-card rv">
-        <h4><span class="ic">❄️</span>ระบบหล่อเย็นแบบ Passive</h4>
-        <p>แลกเปลี่ยนความร้อนกับมวลน้ำทะเลโดยตรง ทำค่า <b>PUE ต่ำถึง ๑.๐๗๕</b>
-        โดย<b>ไม่ใช้น้ำจืดแม้แต่ลิตรเดียว</b> — ตัดปัญหาการแย่งชิงทรัพยากรน้ำกับภาคเกษตรและชุมชน
-        และลดพลังงานหล่อเย็นลง ๔๐–๕๐%</p>
+        <h4>
+          <span class="ic">❄️</span>
+          <span class="lang-th">ระบบหล่อเย็นแบบ Passive</span>
+          <span class="lang-en">Passive Cooling System</span>
+        </h4>
+        <p>
+          <span class="lang-th">แลกเปลี่ยนความร้อนกับมวลน้ำทะเลโดยตรง ทำค่า <b>PUE ต่ำถึง ๑.๐๗๕</b> โดย<b>ไม่ใช้น้ำจืดแม้แต่ลิตรเดียว</b> — ตัดปัญหาการแย่งชิงทรัพยากรน้ำกับภาคเกษตรและชุมชน และลดพลังงานหล่อเย็นลง ๔๐–๕๐%</span>
+          <span class="lang-en">Direct heat exchange with the surrounding sea water body, yielding a PUE as low as <b>1.075</b>, with <b>zero freshwater consumption</b>, mitigating resource competition with coastal communities and reducing cooling power by 40-50%.</span>
+        </p>
       </div>
       <div class="card scope-card rv">
-        <h4><span class="ic">🔌</span>สายสะดือ (Umbilical) และ Hub</h4>
-        <p>สายรวมพลังงานไฟฟ้าและใยแก้วนำแสงเชื่อมแคปซูลเข้ากับสถานีฝั่ง ผ่านโครงสร้าง Hub ใต้น้ำ
-        (⌀ <b>๓.๖ ม.</b>) ที่กระจายการเชื่อมต่อไปยังหลายแคปซูล —
-        เป็นจุดอ่อนสำคัญที่สุดของระบบซึ่งการออกแบบการป้องกันต้องให้น้ำหนักเป็นพิเศษ</p>
+        <h4>
+          <span class="ic">🔌</span>
+          <span class="lang-th">สายสะดือ (Umbilical) และ Hub</span>
+          <span class="lang-en">Umbilical Cables &amp; Hubs</span>
+        </h4>
+        <p>
+          <span class="lang-th">สายรวมพลังงานไฟฟ้าและใยแก้วนำแสงเชื่อมแคปซูลเข้ากับสถานีฝั่ง ผ่านโครงสร้าง Hub ใต้น้ำ (⌀ <b>๓.๖ ม.</b>) ที่กระจายการเชื่อมต่อไปยังหลายแคปซูล — เป็นจุดอ่อนสำคัญที่สุดของระบบซึ่งการออกแบบการป้องกันต้องให้น้ำหนักเป็นพิเศษ</span>
+          <span class="lang-en">Bundled power and fiber optic links connecting the UDC capsule to the Cable Landing Station via a subsea Hub (3.6m diameter) distributing links to multiple nodes. The umbilical constitutes the most vulnerable single point of failure.</span>
+        </p>
       </div>
       <div class="card scope-card rv" style="grid-column:1 / -1">
-        <h4><span class="ic">🔄</span>วงรอบอายุการใช้งาน</h4>
-        <p>โครงสร้างแคปซูลออกแบบให้มีอายุ <b>๒๐–๒๕ ปี</b> โดยกู้ขึ้นมาเปลี่ยนชุดเซิร์ฟเวอร์ทุก <b>๕ ปี</b>
-        พร้อมสารเคลือบป้องกันการเกาะของสิ่งมีชีวิต (Anti-fouling) —
-        ในมิติความมั่นคง UDC จึงมีสถานะเป็น<b>โครงสร้างพื้นฐานสำคัญใต้น้ำ (Critical Underwater Infrastructure: CUI)</b>
-        ที่ต้องได้รับการคุ้มครองตลอดวงรอบชีวิต ตั้งแต่การติดตั้ง ปฏิบัติการ ไปจนถึงการซ่อมบำรุง</p>
+        <h4>
+          <span class="ic">🔄</span>
+          <span class="lang-th">วงรอบอายุการใช้งาน</span>
+          <span class="lang-en">Operational Lifespan Cycle</span>
+        </h4>
+        <p>
+          <span class="lang-th">โครงสร้างแคปซูลออกแบบให้มีอายุ <b>๒๐–๒๕ ปี</b> โดยกู้ขึ้นมาเปลี่ยนชุดเซิร์ฟเวอร์ทุก <b>๕ ปี</b> พร้อมสารเคลือบป้องกันการเกาะของสิ่งมีชีวิต (Anti-fouling) — ในมิติความมั่นคง UDC จึงมีสถานะเป็น<b>โครงสร้างพื้นฐานสำคัญใต้น้ำ (Critical Underwater Infrastructure: CUI)</b> ที่ต้องได้รับการคุ้มครองตลอดวงรอบชีวิต ตั้งแต่การติดตั้ง ปฏิบัติการ ไปจนถึงการซ่อมบำรุง</span>
+          <span class="lang-en">Pressure capsules are designed for a <b>20–25 year</b> lifespan, retrieved to swap server generations every <b>5 years</b> using specialized anti-fouling coatings. In security terms, UDCs constitute <b>Critical Underwater Infrastructure (CUI)</b> requiring protection throughout its lifecycle phases.</span>
+        </p>
       </div>
     </div>
 
     <figure class="fig rv">
-      <div class="fig-box"><img src="THE_SHIELD_Ch2_capsule.webp" alt="ภาพจำลอง: แคปซูลศูนย์ข้อมูลใต้น้ำ UDC วางบนฐานรากโครงเหล็กที่พื้นทะเล มีครีบระบายความร้อนและสายสะดือ"></div>
+      <div class="fig-box"><img src="THE_SHIELD_Ch2_capsule.webp" alt="Conceptual illustration of UDC capsule on its structural seabed foundation with cooling fins and umbilical cable."></div>
       <figcaption>
-        <span class="t">ภาพประกอบ · แคปซูลศูนย์ข้อมูลใต้น้ำ (UDC) บนฐานรากโครงเหล็กที่พื้นทะเล — พร้อมครีบระบายความร้อนและสายสะดือ (Umbilical) เชื่อมสู่สถานีฝั่ง</span>
-        <span class="src">ภาพจำลองโดยปัญญาประดิษฐ์ เพื่อสื่อบรรยากาศ · AI-GENERATED</span>
+        <span class="t">
+          <span class="lang-th">ภาพประกอบ · แคปซูลศูนย์ข้อมูลใต้น้ำ (UDC) บนฐานรากโครงเหล็กที่พื้นทะเล — พร้อมครีบระบายความร้อนและสายสะดือ (Umbilical) เชื่อมสู่สถานีฝั่ง</span>
+          <span class="lang-en">Illustration · Underwater Data Center (UDC) capsule on a seabed steel structural foundation, complete with heat dissipation fins and umbilical link to shore</span>
+        </span>
+        <span class="src">
+          <span class="lang-th">ภาพจำลองโดยปัญญาประดิษฐ์ เพื่อสื่อบรรยากาศ · AI-GENERATED</span>
+          <span class="lang-en">AI-Generated illustration for conceptual purposes</span>
+        </span>
       </figcaption>
     </figure>
 
-    <h3 class="sub-h rv"><span class="bar"></span>กรณีศึกษาระดับสากล — จากการทดลองสู่เชิงพาณิชย์</h3>
+    <h3 class="sub-h rv"><span class="bar"></span>
+      <span class="lang-th">กรณีศึกษาระดับสากล — จากการทดลองสู่เชิงพาณิชย์</span>
+      <span class="lang-en">International Case Studies — From Experiment to Commercialization</span>
+    </h3>
     <div class="grid g3">
       <div class="card case rv">
         <span class="flag">🇺🇸 USA · MICROSOFT · 2015–2020</span>
         <h4>Project Natick</h4>
-        <p>โครงการบุกเบิกของโลก — เฟส ๒ <b>"Northern Isles"</b> จมแคปซูลบรรจุเซิร์ฟเวอร์ ๘๖๔ เครื่อง
-        ใต้ทะเลหมู่เกาะออร์กนีย์ สกอตแลนด์ ทดสอบปฏิบัติการ Lights-Out เต็มวงรอบจนถึงปี 2020
-        โดยใช้พลังงานหมุนเวียนจากทะเล ๑๐๐%</p>
-        <div class="hl">พิสูจน์อัตราชำรุดต่ำกว่าบนบกถึง ๘ เท่า — ยืนยันความเป็นไปได้ทางวิศวกรรมของ UDC</div>
+        <p>
+          <span class="lang-th">โครงการบุกเบิกของโลก — เฟส ๒ <b>"Northern Isles"</b> จมแคปซูลบรรจุเซิร์ฟเวอร์ ๘๖๔ เครื่อง ใต้ทะเลหมู่เกาะออร์กนีย์ สกอตแลนด์ ทดสอบปฏิบัติการ Lights-Out เต็มวงรอบจนถึงปี 2020 โดยใช้พลังงานหมุนเวียนจากทะเล ๑๐๐%</span>
+          <span class="lang-en">The world's pioneering project. Phase 2 <b>"Northern Isles"</b> deployed a capsule with 86 server racks (864 servers) off the Orkney Islands, Scotland. Successfully operated in lights-out mode using 100% offshore renewable energy.</span>
+        </p>
+        <div class="hl">
+          <span class="lang-th">พิสูจน์อัตราชำรุดต่ำกว่าบนบกถึง ๘ เท่า — ยืนยันความเป็นไปได้ทางวิศวกรรมของ UDC</span>
+          <span class="lang-en">Proved hardware failure rate is 8x lower than on land—validating engineering viability.</span>
+        </div>
       </div>
       <div class="card case rv">
         <span class="flag">🇨🇳 CHINA · HAINAN · 2021–2023</span>
-        <h4>Highlander UDC — ไห่หนาน</h4>
-        <p>UDC <b>เชิงพาณิชย์แห่งแรกของโลก</b> ที่ความลึก ๓๕ ม. แคปซูลหนัก <b>๑,๔๓๓ ตัน</b>
-        สมรรถนะเทียบเท่าคอมพิวเตอร์ ๖๐,๐๐๐ เครื่อง วางแผนขยายเป็น <b>๑๐๐ โมดูล</b>
-        รองรับยุทธศาสตร์ Global AI Leader 2030</p>
-        <div class="hl">ประหยัดไฟฟ้า ๑๒๒ ล้าน kWh · น้ำจืด ๑๐๕,๐๐๐ ตัน/ปี · พื้นที่ดิน ๖๘,๐๐๐ ตร.ม.</div>
+        <h4>
+          <span class="lang-th">Highlander UDC — ไห่หนาน</span>
+          <span class="lang-en">Highlander UDC — Hainan</span>
+        </h4>
+        <p>
+          <span class="lang-th">UDC <b>เชิงพาณิชย์แห่งแรกของโลก</b> ที่ความลึก ๓๕ ม. แคปซูลหนัก <b>๑,๔๓๓ ตัน</b> สมรรถนะเทียบเท่าคอมพิวเตอร์ ๖๐,๐๐0 เครื่อง วางแผนขยายเป็น <b>๑๐๐ โมดูล</b> รองรับยุทธศาสตร์ Global AI Leader 2030</span>
+          <span class="lang-en">The world's <b>first commercial UDC</b>, operating at 35m depth. The capsule weighs <b>1,433 tons</b>, matching the capacity of 60,000 servers, with a plan to scale up to <b>100 modules</b> supporting the Global AI Leader 2030 strategy.</span>
+        </p>
+        <div class="hl">
+          <span class="lang-th">ประหยัดไฟฟ้า ๑๒๒ ล้าน kWh · น้ำจืด ๑๐๕,๐๐๐ ตัน/ปี · พื้นที่ดิน ๖๘,๐๐๐ ตร.ม.</span>
+          <span class="lang-en">Saves 122M kWh, 105,000 tons of freshwater/year, and 68,000 sqm of land area.</span>
+        </div>
       </div>
       <div class="card case rv">
         <span class="flag">🇨🇳 CHINA · SHANGHAI LIN-GANG</span>
         <h4>Lin-gang Wind-Powered UDC</h4>
-        <p>UDC <b>ขับเคลื่อนด้วยพลังงานลมนอกชายฝั่งแห่งแรกของโลก</b> ณ เขตพิเศษหลินกั่ง เซี่ยงไฮ้
-        ที่ความลึก ๓๕ ม. มูลค่าลงทุน ๑.๖ พันล้านหยวน (~๒๒๖ ล้านดอลลาร์สหรัฐ)
-        ตั้งเป้ากำลังผลิตรวม <b>๒๔ MW</b></p>
-        <div class="hl">ใช้พลังงานลม &gt;๙๕% · PUE &lt; ๑.๑๕ — เฟสแรก ๒.๓ MW ก่อสร้างแล้วเสร็จ</div>
+        <p>
+          <span class="lang-th">UDC <b>ขับเคลื่อนด้วยพลังงานลมนอกชายฝั่งแห่งแรกของโลก</b> ณ เขตพิเศษหลินกั่ง เซี่ยงไฮ้ ที่ความลึก ๓๕ ม. มูลค่าลงทุน ๑.๖ พันล้านหยวน (~๒๒๖ ล้านดอลลาร์สหรัฐ) ตั้งเป้ากำลังผลิตรวม <b>๒๔ MW</b></span>
+          <span class="lang-en">The world's <b>first wind-powered offshore UDC</b>, deployed in the Lin-gang Special Area, Shanghai, at 35m depth. Capital investment of 1.6B CNY (~226M USD), aiming for a <b>24 MW</b> capacity.</span>
+        </p>
+        <div class="hl">
+          <span class="lang-th">ใช้พลังงานลม &gt;๙๕% · PUE &lt; ๑.๑๕ — เฟสแรก ๒.๓ MW ก่อสร้างแล้วเสร็จ</span>
+          <span class="lang-en">Utilizes >95% wind power with PUE < 1.15; the first 2.3 MW phase is fully constructed.</span>
+        </div>
       </div>
     </div>
 
     <div class="prop rv">
-      <div class="h">◈ IMPLICATION — นัยสำคัญต่องานวิจัย</div>
-      <p>เทคโนโลยี UDC ผ่านการพิสูจน์แล้วทั้งทางวิศวกรรม (Natick) และทางพาณิชย์ (Highlander / Lin-gang)
-      คำถามของไทยจึงไม่ใช่ <b>"สร้างได้หรือไม่"</b> แต่คือ <b>"จะคุ้มครองอย่างไร"</b> —
-      ช่องว่างที่งานวิจัยนี้เข้าไปตอบด้วยการออกแบบการจัดระเบียบพื้นที่ทางทะเลและกลไกการป้องกันของกองทัพเรือ</p>
+      <div class="h">
+        <span class="lang-th">◈ IMPLICATION — นัยสำคัญต่องานวิจัย</span>
+        <span class="lang-en">◈ IMPLICATION — Research Significance</span>
+      </div>
+      <p>
+        <span class="lang-th">เทคโนโลยี UDC ผ่านการพิสูจน์แล้วทั้งทางวิศวกรรม (Natick) และทางพาณิชย์ (Highlander / Lin-gang) คำถามของไทยจึงไม่ใช่ <b>"สร้างได้หรือไม่"</b> แต่คือ <b>"จะคุ้มครองอย่างไร"</b> — ช่องว่างที่งานวิจัยนี้เข้าไปตอบด้วยการออกแบบการจัดระเบียบพื้นที่ทางทะเลและกลไกการป้องกันของกองทัพเรือ</span>
+        <span class="lang-en">UDC technology is proven both operationally (Natick) and commercially (Highlander, Lin-gang). The question for Thailand is not <b>"whether we can build it,"</b> but <b>"how we protect it."</b> This is the gap this research addresses by designing Marine Spatial Planning models and naval active defense mechanisms.</span>
+      </p>
     </div>
   </div>
 </section>
@@ -640,129 +905,353 @@
 <section id="env">
   <div class="wrap">
     <div class="eyebrow rv"><span class="num">๒.๓</span>TACTICAL ENVIRONMENT — GULF OF THAILAND</div>
-    <h2 class="title rv">สภาพแวดล้อมทางยุทธวิธีของอ่าวไทย — การประเมิน ๓ มิติ</h2>
-    <p class="lead rv">อ่าวไทยเป็นทะเล<b>กึ่งปิด (Semi-enclosed Sea)</b> กว้างราว ๕๔๐–๕๕๕ กม. ยาว ๘๑๐–๘๓๘ กม.
-      ความลึกเฉลี่ยเพียง ๔๔ ม. — สำหรับการติดตั้งและป้องกัน UDC
-      งานวิจัยประเมินสภาพแวดล้อมแบบ<b>องค์รวม ๓ มิติ</b> ได้แก่ มิติเหนือผิวน้ำ มิติใต้น้ำ และมิติพื้นท้องทะเล
-      เพราะปัจจัยทางสมุทรศาสตร์เดียวกันนี้กำหนดทั้ง<b>ความเหมาะสมทางวิศวกรรม</b>และ<b>สมการการตรวจจับภัยคุกคาม</b></p>
+    <h2 class="title rv">
+      <span class="lang-th">สภาพแวดล้อมทางยุทธวิธีของอ่าวไทย — การประเมิน ๓ มิติ</span>
+      <span class="lang-en">Gulf of Thailand Tactical Environment — 3D Assessment</span>
+    </h2>
+    <p class="lead rv">
+      <span class="lang-th">อ่าวไทยเป็นทะเล<b>กึ่งปิด (Semi-enclosed Sea)</b> กว้างราว ๕๔๐–๕๕๕ กม. ยาว ๘๑๐–๘๓๘ กม. ความลึกเฉลี่ยเพียง ๔๔ ม. — สำหรับการติดตั้งและป้องกัน UDC งานวิจัยประเมินสภาพแวดล้อมแบบ<b>องค์รวม ๓ มิติ</b> ได้แก่ มิติเหนือผิวน้ำ มิติใต้น้ำ และมิติพื้นท้องทะเล เพราะปัจจัยทางสมุทรศาสตร์เดียวกันนี้กำหนดทั้ง<b>ความเหมาะสมทางวิศวกรรม</b>และ<b>สมการการตรวจจับภัยคุกคาม</b></span>
+      <span class="lang-en">The Gulf of Thailand is a <b>semi-enclosed sea</b>, roughly 540–555 km wide and 810–838 km long, with an average depth of just 44 m. For UDC deployment and protection, this research conducts a <b>holistic 3D environment assessment</b> (surface, water column, and seabed), as these oceanographic factors determine both <b>engineering feasibility</b> and <b>threat detection equations</b>.</span>
+    </p>
 
     <div class="grid g4">
-      <div class="card kpi rv"><div class="v">๒๐๒,๖๗๖<small> ตร.กม.</small></div><div class="l">พื้นที่อ่าวไทย — ทะเลกึ่งปิดที่ล้อมด้วยแผ่นดิน ๓ ด้าน</div></div>
-      <div class="card kpi rv"><div class="v">๔๔<small> ม.</small></div><div class="l">ความลึกเฉลี่ย (ลึกสุดราว ๘๖ ม.) — สนามรบน้ำตื้นโดยแท้</div></div>
-      <div class="card kpi rv"><div class="v">๒๐–๔๐<small> ม.</small></div><div class="l">ช่วงความลึกเหมาะสมต่อการติดตั้ง UDC ในอ่าวไทยตอนบน — นักประดาน้ำยังปฏิบัติงานได้</div></div>
-      <div class="card kpi rv"><div class="v">๘๐,๐๐๐–๑๒๐,๐๐๐</div><div class="l">เที่ยวการจราจรทางเรือต่อปี — ความหนาแน่นที่เป็นทั้งภัยคุกคามและฉากกำบัง</div></div>
+      <div class="card kpi rv">
+        <div class="v">
+          <span class="lang-th">๒๐๒,๖๗๖<small> ตร.กม.</small></span>
+          <span class="lang-en">202,676<small> km²</small></span>
+        </div>
+        <div class="l">
+          <span class="lang-th">พื้นที่อ่าวไทย — ทะเลกึ่งปิดที่ล้อมด้วยแผ่นดิน ๓ ด้าน</span>
+          <span class="lang-en">Gulf area — semi-enclosed basin surrounded by land on three sides.</span>
+        </div>
+      </div>
+      <div class="card kpi rv">
+        <div class="v">
+          <span class="lang-th">๔๔<small> ม.</small></span>
+          <span class="lang-en">44<small> m</small></span>
+        </div>
+        <div class="l">
+          <span class="lang-th">ความลึกเฉลี่ย (ลึกสุดราว ๘๖ ม.) — สนามรบน้ำตื้นโดยแท้</span>
+          <span class="lang-en">Average depth (deepest point ~86m) — a classic shallow-water battlespace.</span>
+        </div>
+      </div>
+      <div class="card kpi rv">
+        <div class="v">
+          <span class="lang-th">๒๐–๔๐<small> ม.</small></span>
+          <span class="lang-en">20–40<small> m</small></span>
+        </div>
+        <div class="l">
+          <span class="lang-th">ช่วงความลึกเหมาะสมต่อการติดตั้ง UDC ในอ่าวไทยตอนบน — นักประดาน้ำยังปฏิบัติงานได้</span>
+          <span class="lang-en">Optimal deployment depth range in Upper Gulf — accessible for divers.</span>
+        </div>
+      </div>
+      <div class="card kpi rv">
+        <div class="v">
+          <span class="lang-th">๘๐,๐๐๐–๑๒๐,๐๐๐</span>
+          <span class="lang-en">80,000–120,000</span>
+        </div>
+        <div class="l">
+          <span class="lang-th">เที่ยวการจราจรทางเรือต่อปี — ความหนาแน่นที่เป็นทั้งภัยคุกคามและฉากกำบัง</span>
+          <span class="lang-en">Vessel transits per year — traffic serving as both a threat and visual clutter.</span>
+        </div>
+      </div>
     </div>
 
-    <p class="body rv">ลักษณะทางสมุทรศาสตร์สำคัญ: พื้นท้องทะเลเป็น<b>โคลนเลนราวร้อยละ ๖๐</b>
-      อุณหภูมิน้ำ ๒๖.๕–๒๘.๕ °C ความเค็ม ๓๑.๑–๓๑.๒ PSU ความเร็วเสียงใต้น้ำราว <b>๑,๕๓๔–๑,๕๓๕ ม./วินาที</b> —
-      โครงสร้างความเร็วเสียงในน้ำตื้นก่อให้เกิด <b>Shadow Zone</b> ที่โซนาร์ตรวจไม่ถึง
-      ขณะที่ภัยคุกคามจริงของสนามรบน้ำตื้นคือ <b>SDV (Swimmer Delivery Vehicle) · เรือดำน้ำขนาดเล็ก (Midget Submarine) · UUV</b>
-      ซึ่งอาศัยข้อจำกัดทางเสียงเหล่านี้แทรกซึม — เทคโนโลยี <b>DAS/OTDR</b> ที่เปลี่ยนสายเคเบิลให้เป็นเซนเซอร์แบบ Tripwire
-      จึงเป็นมาตรการชดเชยที่สำคัญ</p>
+    <p class="body rv">
+      <span class="lang-th">ลักษณะทางสมุทรศาสตร์สำคัญ: พื้นท้องทะเลเป็น<b>โคลนเลนราวร้อยละ ๖๐</b> อุณหภูมิน้ำ ๒๖.๕–๒๘.๕ °C ความเค็ม ๓๑.๑–๓๑.๒ PSU ความเร็วเสียงใต้น้ำราว <b>๑,๕๓๔–๑,๕๓๕ ม./วินาที</b> — โครงสร้างความเร็วเสียงในน้ำตื้นก่อให้เกิด <b>Shadow Zone</b> ที่โซนาร์ตรวจไม่ถึง ขณะที่ภัยคุกคามจริงของสนามรบน้ำตื้นคือ <b>SDV (Swimmer Delivery Vehicle) · เรือดำน้ำขนาดเล็ก (Midget Submarine) · UUV</b> ซึ่งอาศัยข้อจำกัดทางเสียงเหล่านี้แทรกซึม — เทคโนโลยี <b>DAS/OTDR</b> ที่เปลี่ยนสายเคเบิลให้เป็นเซนเซอร์แบบ Tripwire จึงเป็นมาตรการชดเชยที่สำคัญ</span>
+      <span class="lang-en">Key Oceanographic Features: The seabed is <b>~60% muddy silt</b>, water temperature ranges from 26.5–28.5 °C, salinity is 31.1–31.2 PSU, and subsea sound speed is approximately <b>1,534–1,535 m/s</b>. Undersea sound velocity profiles in shallow waters generate acoustic <b>Shadow Zones</b>, providing concealment for threats like <b>SDVs, midget submarines, and UUVs</b>. Deploying <b>DAS/OTDR</b> technology to transform fiber optic cables into acoustic tripwire sensors serves as a critical compensatory measure.</span>
+    </p>
 
     <figure class="fig rv">
-      <div class="fig-box"><img src="THE_SHIELD_Ch2_gulfseabed.webp" alt="ภาพจำลอง: สภาพน้ำขุ่นและพื้นโคลนทรายของอ่าวไทยตอนบน ยาน ROV สำรวจในทัศนวิสัยจำกัด"></div>
+      <div class="fig-box"><img src="THE_SHIELD_Ch2_gulfseabed.webp" alt="ROV operating in turbid water on muddy seabed."></div>
       <figcaption>
-        <span class="t">ภาพประกอบ · สภาพน้ำขุ่นและพื้นท้องทะเลโคลนทรายของอ่าวไทยตอนบน — ยานสำรวจใต้น้ำ (ROV) ปฏิบัติงานในทัศนวิสัยจำกัด ซึ่งเป็นทั้งข้อจำกัดและฉากกำบังเชิงยุทธวิธี</span>
-        <span class="src">ภาพจำลองโดยปัญญาประดิษฐ์ เพื่อสื่อบรรยากาศ · AI-GENERATED</span>
+        <span class="t">
+          <span class="lang-th">ภาพประกอบ · สภาพน้ำขุ่นและพื้นท้องทะเลโคลนทรายของอ่าวไทยตอนบน — ยานสำรวจใต้น้ำ (ROV) ปฏิบัติงานในทัศนวิสัยจำกัด ซึ่งเป็นทั้งข้อจำกัดและฉากกำบังเชิงยุทธวิธี</span>
+          <span class="lang-en">Illustration · Turbid waters and muddy/sandy seabed of the Upper Gulf — ROVs operating in limited visibility, representing both an operational constraint and a tactical shelter</span>
+        </span>
+        <span class="src">
+          <span class="lang-th">ภาพจำลองโดยปัญญาประดิษฐ์ เพื่อสื่อบรรยากาศ · AI-GENERATED</span>
+          <span class="lang-en">AI-Generated illustration for conceptual purposes</span>
+        </span>
       </figcaption>
     </figure>
 
     <div class="t-cap rv">
-      <span class="t">ตารางที่ ๒-๒ · ปัจจัยสภาพแวดล้อมทางยุทธวิธี ๓ มิติ ที่มีผลต่อการติดตั้งและป้องกัน UDC ในอ่าวไทยตอนบน</span>
-      <span class="src">ที่มา : ผู้วิจัย</span>
+      <span class="t">
+        <span class="lang-th">ตารางที่ ๒-๒ · ปัจจัยสภาพแวดล้อมทางยุทธวิธี ๓ มิติ ที่มีผลต่อการติดตั้งและป้องกัน UDC ในอ่าวไทยตอนบน</span>
+        <span class="lang-en">Table 2-2 · 3D Tactical Environmental Factors Affecting UDC Installation and Defense in the Upper Gulf of Thailand</span>
+      </span>
+      <span class="src">
+        <span class="lang-th">ที่มา : ผู้วิจัย</span>
+        <span class="lang-en">Source: Researcher</span>
+      </span>
     </div>
     <div class="tbl-wrap rv">
       <table class="dtbl w1100">
         <thead><tr>
-          <th>มิติ</th><th>ปัจจัย</th><th>เครื่องมือ / ทฤษฎีที่เกี่ยวข้อง</th><th>ผลกระทบต่อ UDC</th><th>ข้อพิจารณาเฉพาะอ่าวไทยตอนบน</th>
+          <th>
+            <span class="lang-th">มิติ</span>
+            <span class="lang-en">Dimension</span>
+          </th>
+          <th>
+            <span class="lang-th">ปัจจัย</span>
+            <span class="lang-en">Factor</span>
+          </th>
+          <th>
+            <span class="lang-th">เครื่องมือ / ทฤษฎีที่เกี่ยวข้อง</span>
+            <span class="lang-en">Related Tools / Theories</span>
+          </th>
+          <th>
+            <span class="lang-th">ผลกระทบต่อ UDC</span>
+            <span class="lang-en">Impact on UDC</span>
+          </th>
+          <th>
+            <span class="lang-th">ข้อพิจารณาเฉพาะอ่าวไทยตอนบน</span>
+            <span class="lang-en">Upper Gulf Considerations</span>
+          </th>
         </tr></thead>
         <tbody>
           <tr>
-            <td class="dim" rowspan="2">เหนือผิวน้ำ</td>
-            <td><b>การจราจรทางเรือ / เส้นทาง SLOC</b></td>
-            <td>AIS (Class A/B) · VTS · MDA · ภาพถ่ายดาวเทียม SAR/EO · AI วิเคราะห์ (YOLO v11, Bi-LSTM)</td>
-            <td>จราจรหนาแน่น ๘๐,๐๐๐–๑๒๐,๐๐๐ เที่ยว/ปี เสี่ยงสมอเรือและอวนลากทำลายเคเบิล เสียงรบกวนสูง รวมถึง <b>Dark Vessels</b> ปิด AIS และการปลอมสัญญาณ (Spoofing)</td>
-            <td>เลือกที่ตั้งหลบแนวจราจรหลัก ประกอบการพิจารณา TSS / Q-Route และโครงการ Landbridge ในอนาคต</td>
+            <td class="dim" rowspan="2">
+              <span class="lang-th">เหนือผิวน้ำ</span>
+              <span class="lang-en">Surface</span>
+            </td>
+            <td>
+              <span class="lang-th"><b>การจราจรทางเรือ / เส้นทาง SLOC</b></span>
+              <span class="lang-en"><b>Vessel Traffic / SLOC Routes</b></span>
+            </td>
+            <td>
+              <span class="lang-th">AIS (Class A/B) · VTS · MDA · ภาพถ่ายดาวเทียม SAR/EO · AI วิเคราะห์ (YOLO v11, Bi-LSTM)</span>
+              <span class="lang-en">AIS (Class A/B), VTS, MDA feeds, SAR/EO satellite imagery, AI analytics (YOLO v11, Bi-LSTM).</span>
+            </td>
+            <td>
+              <span class="lang-th">จราจรหนาแน่น ๘๐,๐๐๐–๑๒๐,๐๐๐ เที่ยว/ปี เสี่ยงสมอเรือและอวนลากทำลายเคเบิล เสียงรบกวนสูง รวมถึง <b>Dark Vessels</b> ปิด AIS และการปลอมสัญญาณ (Spoofing)</span>
+              <span class="lang-en">Dense traffic (80,000–120,000 transits/year) poses anchor/trawl cable hazards, high background noise, and <b>Dark Vessels</b> switching off AIS or spoofing signals.</span>
+            </td>
+            <td>
+              <span class="lang-th">เลือกที่ตั้งหลบแนวจราจรหลัก ประกอบการพิจารณา TSS / Q-Route และโครงการ Landbridge ในอนาคต</span>
+              <span class="lang-en">Site selection must avoid primary shipping corridors, incorporating TSS/Q-Routes and future Landbridge project channels.</span>
+            </td>
           </tr>
           <tr>
-            <td><b>สภาพอากาศ / Sea State</b></td>
-            <td>การพยากรณ์เชิงตัวเลข (NWP) · ดาวเทียมอุตุนิยมวิทยา · มาตรา Beaufort · Combined Sea State</td>
-            <td>Sea State ๔–๕ ขึ้นไปกระทบเรือสนับสนุนและอุปกรณ์ผิวน้ำ หมอกและฝนลดประสิทธิภาพการตรวจการณ์ด้วยสายตา/EO/เรดาร์</td>
-            <td>ฤดูมรสุมจำกัดห้วงเวลาติดตั้ง–ซ่อมบำรุง · ปรากฏการณ์ Ducting ในบางฤดูทำให้การตรวจจับด้วยเสียงได้เปรียบการตรวจการณ์ด้วยสายตา</td>
+            <td>
+              <span class="lang-th"><b>สภาพอากาศ / Sea State</b></span>
+              <span class="lang-en"><b>Weather / Sea State</b></span>
+            </td>
+            <td>
+              <span class="lang-th">การพยากรณ์เชิงตัวเลข (NWP) · ดาวเทียมอุตุนิยมวิทยา · มาตรา Beaufort · Combined Sea State</span>
+              <span class="lang-en">Numerical Weather Prediction (NWP), meteorological satellites, Beaufort Scale, Combined Sea State.</span>
+            </td>
+            <td>
+              <span class="lang-th">Sea State ๔–๕ ขึ้นไปกระทบเรือสนับสนุนและอุปกรณ์ผิวน้ำ หมอกและฝนลดประสิทธิภาพการตรวจการณ์ด้วยสายตา/EO/เรดาร์</span>
+              <span class="lang-en">Sea States of 4–5 and above disrupt support vessels and surface telemetry buoys; fog/rain degrades optical, EO, and radar surveillance.</span>
+            </td>
+            <td>
+              <span class="lang-th">ฤดูมรสุมจำกัดห้วงเวลาติดตั้ง–ซ่อมบำรุง · ปรากฏการณ์ Ducting ในบางฤดูทำให้การตรวจจับด้วยเสียงได้เปรียบการตรวจการณ์ด้วยสายตา</span>
+              <span class="lang-en">Monsoon seasons limit deployment and maintenance windows. Atmospheric ducting in certain seasons may favor acoustic detection over optical line-of-sight.</span>
+            </td>
           </tr>
           <tr>
-            <td class="dim" rowspan="5">ใต้น้ำ</td>
-            <td><b>โครงสร้างความเร็วเสียง (SSP) / อุณหภูมิ / ความเค็ม</b></td>
-            <td>CTD · XBT · MODAS/NCOM · Nomogram · เครื่องวัด ABP5 (SAIV) · สมการ Mackenzie (1981)</td>
-            <td>กำหนดเส้นทางการแพร่ของคลื่นเสียงโซนาร์ — การหักเหในน้ำตื้นสร้าง <b>Shadow Zone</b> ให้ภัยคุกคามซ่อนตัว</td>
-            <td>Salt Wedge บริเวณปากแม่น้ำ · ไม่มี Convergence Zone — พึ่งการตรวจจับแบบ Direct Path / Bottom Bounce เท่านั้น</td>
+            <td class="dim" rowspan="5">
+              <span class="lang-th">ใต้น้ำ</span>
+              <span class="lang-en">Water Column</span>
+            </td>
+            <td>
+              <span class="lang-th"><b>โครงสร้างความเร็วเสียง (SSP) / อุณหภูมิ / ความเค็ม</b></span>
+              <span class="lang-en"><b>Sound Velocity Profile (SSP) / Temp / Salinity</b></span>
+            </td>
+            <td>
+              <span class="lang-th">CTD · XBT · MODAS/NCOM · Nomogram · เครื่องวัด ABP5 (SAIV) · สมการ Mackenzie (1981)</span>
+              <span class="lang-en">CTD, XBT, MODAS/NCOM models, nomograms, SAIV ABP5 sensors, Mackenzie equation (1981).</span>
+            </td>
+            <td>
+              <span class="lang-th">กำหนดเส้นทางการแพร่ของคลื่นเสียงโซนาร์ — การหักเหในน้ำตื้นสร้าง <b>Shadow Zone</b> ให้ภัยคุกคามซ่อนตัว</span>
+              <span class="lang-en">Determines acoustic wave propagation paths; refraction in shallow water generates <b>Shadow Zones</b> allowing threats to evade detection.</span>
+            </td>
+            <td>
+              <span class="lang-th">Salt Wedge บริเวณปากแม่น้ำ · ไม่มี Convergence Zone — พึ่งการตรวจจับแบบ Direct Path / Bottom Bounce เท่านั้น</span>
+              <span class="lang-en">River runoff creates salt wedges near estuaries; absence of Convergence Zones forces reliance on Direct Path and Bottom Bounce sonar modes.</span>
+            </td>
           </tr>
           <tr>
-            <td><b>Natural Cooling / พลังงาน</b></td>
-            <td>ค่า PUE · Passive Heat Exchanger</td>
-            <td>มวลน้ำเย็นช่วยลดพลังงานหล่อเย็นลง ๔๐–๕๐% (PUE &lt; ๑.๑) เพิ่มขีดความสามารถรองรับงานประมวลผล AI</td>
-            <td>ความลึก ๒๐–๔๐ ม. เพียงพอต่อการหล่อเย็น แต่อุณหภูมิน้ำผันแปรตามฤดูกาล ต้องเผื่อในการออกแบบ</td>
+            <td>
+              <span class="lang-th"><b>Natural Cooling / พลังงาน</b></span>
+              <span class="lang-en"><b>Natural Cooling / Energy</b></span>
+            </td>
+            <td>
+              <span class="lang-th">ค่า PUE · Passive Heat Exchanger</span>
+              <span class="lang-en">PUE metric, Passive Heat Exchangers.</span>
+            </td>
+            <td>
+              <span class="lang-th">มวลน้ำเย็นช่วยลดพลังงานหล่อเย็นลง ๔๐–๕๐% (PUE &lt; ๑.๑) เพิ่มขีดความสามารถรองรับงานประมวลผล AI</span>
+              <span class="lang-en">Cold seawater body reduces cooling energy load by 40–50% (PUE < 1.1), boosting capacity for AI processing workloads.</span>
+            </td>
+            <td>
+              <span class="lang-th">ความลึก ๒๐–๔๐ ม. เพียงพอต่อการหล่อเย็น แต่อุณหภูมิน้ำผันแปรตามฤดูกาล ต้องเผื่อในการออกแบบ</span>
+              <span class="lang-en">Depths of 20–40m provide adequate cooling, but seasonal water temperature fluctuations must be accounted for in capsule design.</span>
+            </td>
           </tr>
           <tr>
-            <td><b>เสียงแวดล้อม / เสียงชีวภาพ</b></td>
-            <td>Passive Sonar · Spectrum Level · ฐานข้อมูล Acoustic Signature · Wenz Curves</td>
-            <td>เสียงกุ้งดีดขัน (ย่าน 100 Hz–10 kHz) ผสมเสียงเรือสินค้า ทำให้อัตราการแจ้งเตือนผิดพลาด (False Alarm) สูง</td>
-            <td>ต้องจัดทำฐานข้อมูลเสียงแวดล้อมเฉพาะพื้นที่ เพื่อสอนระบบให้แยกเสียงภัยคุกคามจากเสียงธรรมชาติ</td>
+            <td>
+              <span class="lang-th"><b>เสียงแวดล้อม / เสียงชีวภาพ</b></span>
+              <span class="lang-en"><b>Ambient Noise / Biophony</b></span>
+            </td>
+            <td>
+              <span class="lang-th">Passive Sonar · Spectrum Level · ฐานข้อมูล Acoustic Signature · Wenz Curves</span>
+              <span class="lang-en">Passive sonar, spectrum levels, acoustic signature databases, Wenz Curves.</span>
+            </td>
+            <td>
+              <span class="lang-th">เสียงกุ้งดีดขัน (ย่าน 100 Hz–10 kHz) ผสมเสียงเรือสินค้า ทำให้อัตราการแจ้งเตือนผิดพลาด (False Alarm) สูง</span>
+              <span class="lang-en">Snapping shrimp noise (100 Hz–10 kHz band) mixed with commercial vessel traffic causes high False Alarm Rates.</span>
+            </td>
+            <td>
+              <span class="lang-th">ต้องจัดทำฐานข้อมูลเสียงแวดล้อมเฉพาะพื้นที่ เพื่อสอนระบบให้แยกเสียงภัยคุกคามจากเสียงธรรมชาติ</span>
+              <span class="lang-en">Requires establishing a localized ambient noise database to train classification algorithms to isolate threat signatures from biological background noise.</span>
+            </td>
           </tr>
           <tr>
-            <td><b>ความขุ่น / กระแสน้ำ / Biofouling</b></td>
-            <td>การตรวจวัด In situ · แบบจำลองน้ำขึ้นน้ำลง · ADCP · สารเคลือบ Anti-fouling</td>
-            <td>ความขุ่นจำกัดการใช้กล้องและ ROV กระแสน้ำสร้างภาระต่อโครงสร้าง เพรียงและแมงกะพรุนอุดตันช่องทางน้ำหล่อเย็น</td>
-            <td>ตะกอนจากแม่น้ำเจ้าพระยาสูง · น้ำอุ่นเร่งการเกาะของสิ่งมีชีวิต — ต้องใช้ ROV ตรวจสภาพและสารเคลือบพิเศษ</td>
+            <td>
+              <span class="lang-th"><b>ความขุ่น / กระแสน้ำ / Biofouling</b></span>
+              <span class="lang-en"><b>Turbidity / Currents / Biofouling</b></span>
+            </td>
+            <td>
+              <span class="lang-th">การตรวจวัด In situ · แบบจำลองน้ำขึ้นน้ำลง · ADCP · สารเคลือบ Anti-fouling</span>
+              <span class="lang-en">In situ measurements, tidal models, ADCP, anti-fouling coatings.</span>
+            </td>
+            <td>
+              <span class="lang-th">ความขุ่นจำกัดการใช้กล้องและ ROV กระแสน้ำสร้างภาระต่อโครงสร้าง เพรียงและแมงกะพรุนอุดตันช่องทางน้ำหล่อเย็น</span>
+              <span class="lang-en">Turbidity restricts camera and ROV operations; tidal currents exert drag on subsea structures; barnacles and jellyfish clog cooling pathways.</span>
+            </td>
+            <td>
+              <span class="lang-th">ตะกอนจากแม่น้ำเจ้าพระยาสูง · น้ำอุ่นเร่งการเกาะของสิ่งมีชีวิต — ต้องใช้ ROV ตรวจสภาพและสารเคลือบพิเศษ</span>
+              <span class="lang-en">High sediment load from the Chao Phraya River and warm water accelerate biofouling, requiring regular ROV monitoring and specialized anti-fouling paint.</span>
+            </td>
           </tr>
           <tr>
-            <td><b>การตรวจจับทาง Acoustics</b></td>
-            <td>WADER · NCW · สมการโซนาร์ (Urick) · SNR · PSR/TSR</td>
-            <td>ประเมินระยะและความน่าจะเป็นในการตรวจจับ (PoD) เพื่อป้องกัน <b>Seabed Warfare</b> — ภัยจริงของน้ำตื้นคือ SDV, Midget Submarine และ UUV</td>
-            <td>UDC บริเวณปากอ่าวสามารถทำหน้าที่เครือข่ายแจ้งเตือนล่วงหน้า (Early Warning) ต่อเรือดำน้ำ/UUV ของชาติเพื่อนบ้านได้ในตัว</td>
+            <td>
+              <span class="lang-th"><b>การตรวจจับทาง Acoustics</b></span>
+              <span class="lang-en"><b>Acoustic Detection Systems</b></span>
+            </td>
+            <td>
+              <span class="lang-th">WADER · NCW · สมการโซนาร์ (Urick) · SNR · PSR/TSR</span>
+              <span class="lang-en">WADER propagation models, NCW architecture, Sonar Equation (Urick), SNR, PSR/TSR metrics.</span>
+            </td>
+            <td>
+              <span class="lang-th">ประเมินระยะและความน่าจะเป็นในการตรวจจับ (PoD) เพื่อป้องกัน <b>Seabed Warfare</b> — ภัยจริงของน้ำตื้นคือ SDV, Midget Submarine และ UUV</span>
+              <span class="lang-en">Estimates detection ranges and Probability of Detection (PoD) to counter <b>Seabed Warfare</b>; shallow water threats include SDVs, midget submarines, and UUVs.</span>
+            </td>
+            <td>
+              <span class="lang-th">UDC บริเวณปากอ่าวสามารถทำหน้าที่เครือข่ายแจ้งเตือนล่วงหน้า (Early Warning) ต่อเรือดำน้ำ/UUV ของชาติเพื่อนบ้านได้ในตัว</span>
+              <span class="lang-en">A UDC near the Gulf entrance can function as an integrated subsea Early Warning network for regional submarine and UUV transits.</span>
+            </td>
           </tr>
           <tr>
-            <td class="dim" rowspan="5">พื้นท้องทะเล</td>
-            <td><b>Bathymetry / ความลาดชัน</b></td>
-            <td>Multibeam Echo Sounder · แผนที่ ENC/DNC · Site Suitability Analysis</td>
-            <td>ความลึกและความราบเรียบกำหนดรูปแบบฐานรากและวิธีติดตั้ง — ช่วง ๒๐–๔๐ ม. นักประดาน้ำยังปฏิบัติงานได้</td>
-            <td>อ่าวตอนบนตื้น ๑๕–๔๐ ม. พื้นราบเรียบเหมาะติดตั้ง แต่จำกัดรูปแบบการสะท้อนของคลื่นเสียง</td>
+            <td class="dim" rowspan="5">
+              <span class="lang-th">พื้นท้องทะเล</span>
+              <span class="lang-en">Seabed</span>
+            </td>
+            <td>
+              <span class="lang-th"><b>Bathymetry / ความลาดชัน</b></span>
+              <span class="lang-en"><b>Bathymetry / Seabed Slope</b></span>
+            </td>
+            <td>
+              <span class="lang-th">Multibeam Echo Sounder · แผนที่ ENC/DNC · Site Suitability Analysis</span>
+              <span class="lang-en">Multibeam Echo Sounders, ENC/DNC charts, site suitability analysis.</span>
+            </td>
+            <td>
+              <span class="lang-th">ความลึกและความราบเรียบกำหนดรูปแบบฐานรากและวิธีติดตั้ง — ช่วง ๒๐–๔๐ ม. นักประดาน้ำยังปฏิบัติงานได้</span>
+              <span class="lang-en">Bathymetry and slope gradients dictate foundation design and installation methods; the 20–40m depth remains within diver access limits.</span>
+            </td>
+            <td>
+              <span class="lang-th">อ่าวตอนบนตื้น ๑๕–๔๐ ม. พื้นราบเรียบเหมาะติดตั้ง แต่จำกัดรูปแบบการสะท้อนของคลื่นเสียง</span>
+              <span class="lang-en">Upper Gulf depths of 15–40m are flat and suitable for construction, but shallow waters restrict acoustic bounce angles.</span>
+            </td>
           </tr>
           <tr>
-            <td><b>องค์ประกอบพื้นทะเล / การฝังตัว</b></td>
-            <td>Bottom Sampling · STRATAFORM · High-Frequency Bottom Loss (HFBL)</td>
-            <td>พื้นโคลน/ตะกอนเสี่ยงการจมตัวของแคปซูลและการสูญเสียประสิทธิภาพระบายความร้อน · Bottom Loss สูงทำให้ Bottom Bounce ระยะสั้น</td>
-            <td>โคลนเลนราว ๖๐% โดยเฉพาะปากแม่น้ำเสี่ยงสุด — ควรเลือกพื้นทรายปนโคลนเนื้อแน่นเป็นจุดวางแคปซูล</td>
+            <td>
+              <span class="lang-th"><b>องค์ประกอบพื้นทะเล / การฝังตัว</b></span>
+              <span class="lang-en"><b>Bottom Composition / Settlement</b></span>
+            </td>
+            <td>
+              <span class="lang-th">Bottom Sampling · STRATAFORM · High-Frequency Bottom Loss (HFBL)</span>
+              <span class="lang-en">Bottom sampling cores, STRATAFORM models, High-Frequency Bottom Loss (HFBL) curves.</span>
+            </td>
+            <td>
+              <span class="lang-th">พื้นโคลน/ตะกอนเสี่ยงการจมตัวของแคปซูลและการสูญเสียประสิทธิภาพระบายความร้อน · Bottom Loss สูงทำให้ Bottom Bounce ระยะสั้น</span>
+              <span class="lang-en">Soft silt/mud risks capsule settlement and loss of natural cooling efficiency; high Bottom Loss limits bottom bounce propagation ranges.</span>
+            </td>
+            <td>
+              <span class="lang-th">โคลนเลนราว ๖๐% โดยเฉพาะปากแม่น้ำเสี่ยงสุด — ควรเลือกพื้นทรายปนโคลนเนื้อแน่นเป็นจุดวางแคปซูล</span>
+              <span class="lang-en">Mud/silt accounts for ~60% of bottom area, especially off estuaries; sites should prioritize compact sandy-muddy patches to minimize sinking risks.</span>
+            </td>
           </tr>
           <tr>
-            <td><b>CUI / ความหนาแน่นสิ่งกีดขวาง</b></td>
-            <td>Side-scan Sonar · One Marine Map · ข้อมูลสัมปทานปิโตรเลียม</td>
-            <td>ท่อก๊าซ สายเคเบิลสื่อสาร (เช่น SJC2) ซากเรือ และปะการังเทียม ทั้งกีดขวางการวางตัวและบดบังการตรวจจับ (Clutter)</td>
-            <td>ต้องบูรณาการแผนที่ CUI ทุกระบบก่อนกำหนดจุดติดตั้ง · DAS ทำหน้าที่ Tripwire ตรวจการลากสมอใกล้แนวเคเบิล</td>
+            <td>
+              <span class="lang-th"><b>CUI / ความหนาแน่นสิ่งกีดขวาง</b></span>
+              <span class="lang-en"><b>CUI / Obstruction Density</b></span>
+            </td>
+            <td>
+              <span class="lang-th">Side-scan Sonar · One Marine Map · ข้อมูลสัมปทานปิโตรเลียม</span>
+              <span class="lang-en">Side-scan sonar, One Marine Map, petroleum concession charts.</span>
+            </td>
+            <td>
+              <span class="lang-th">ท่อก๊าซ สายเคเบิลสื่อสาร (เช่น SJC2) ซากเรือ และปะการังเทียม ทั้งกีดขวางการวางตัวและบดบังการตรวจจับ (Clutter)</span>
+              <span class="lang-en">Existing pipelines, submarine cables (e.g. SJC2), shipwrecks, and artificial reefs obstruct installation and generate acoustic clutter.</span>
+            </td>
+            <td>
+              <span class="lang-th">ต้องบูรณาการแผนที่ CUI ทุกระบบก่อนกำหนดจุดติดตั้ง · DAS ทำหน้าที่ Tripwire ตรวจการลากสมอใกล้แนวเคเบิล</span>
+              <span class="lang-en">Requires integrating all CUI mapping datasets prior to site selection; DAS serves as a tripwire to detect anchor drags near cable paths.</span>
+            </td>
           </tr>
           <tr>
-            <td><b>สงครามทุ่นระเบิด (Mine Warfare)</b></td>
-            <td>การปฏิบัติการต่อต้านทุ่นระเบิด (MCM) · เรือ MCM ชั้นลาดหญ้า/บางระจัน · Side-scan + Synthetic Aperture Sonar</td>
-            <td>UDC เป็นเป้าหมายอยู่กับที่ (Fixed Asset) เสี่ยงถูกวางทุ่นระเบิดปิดล้อมทั้งที่ตั้งและเส้นทางส่งกำลังบำรุง</td>
-            <td>กำหนดวงรอบการกวาดตรวจทุ่นระเบิดสม่ำเสมอ ควบคู่เขตควบคุมการทอดสมอ</td>
+            <td>
+              <span class="lang-th"><b>สงครามทุ่นระเบิด (Mine Warfare)</b></span>
+              <span class="lang-en"><b>Mine Warfare</b></span>
+            </td>
+            <td>
+              <span class="lang-th">การปฏิบัติการต่อต้านทุ่นระเบิด (MCM) · เรือ MCM ชั้นลาดหญ้า/บางระจัน · Side-scan + Synthetic Aperture Sonar</span>
+              <span class="lang-en">Mine Countermeasures (MCM) operations, Lat Ya/Bang Rachan class MCM vessels, side-scan sonar, Synthetic Aperture Sonar.</span>
+            </td>
+            <td>
+              <span class="lang-th">UDC เป็นเป้าหมายอยู่กับที่ (Fixed Asset) เสี่ยงถูกวางทุ่นระเบิดปิดล้อมทั้งที่ตั้งและเส้นทางส่งกำลังบำรุง</span>
+              <span class="lang-en">As a fixed subsea asset, UDCs are vulnerable to offensive mining targeting the site coordinates or maintenance vessel access lanes.</span>
+            </td>
+            <td>
+              <span class="lang-th">กำหนดวงรอบการกวาดตรวจทุ่นระเบิดสม่ำเสมอ ควบคู่เขตควบคุมการทอดสมอ</span>
+              <span class="lang-en">Establishes regular MCM survey sweeps combined with strict vessel anchoring prohibitions.</span>
+            </td>
           </tr>
           <tr>
-            <td><b>เฝ้าตรวจการแทรกซึม / การลากสมอบนแนวเคเบิล</b></td>
-            <td>DAS (Distributed Acoustic Sensing) + OTDR</td>
-            <td>เปลี่ยนสายเคเบิลทั้งเส้นให้เป็นเซนเซอร์ตรวจการสั่นสะเทือนและการลากสมอ — มาตรการรับมือปฏิบัติการ Grey-zone โดยตรง</td>
-            <td>ช่วยอุดช่องว่างการแจ้งเตือนในย่าน Shadow Zone ของอ่าวตอนบน</td>
+            <td>
+              <span class="lang-th"><b>เฝ้าตรวจการแทรกซึม / การลากสมอบนแนวเคเบิล</b></span>
+              <span class="lang-en"><b>Intrusion Monitoring / Cable Anchor Dragging</b></span>
+            </td>
+            <td>
+              <span class="lang-th">DAS (Distributed Acoustic Sensing) + OTDR</span>
+              <span class="lang-en">Distributed Acoustic Sensing (DAS) + OTDR.</span>
+            </td>
+            <td>
+              <span class="lang-th">เปลี่ยนสายเคเบิลทั้งเส้นให้เป็นเซนเซอร์ตรวจการสั่นสะเทือนและการลากสมอ — มาตรการรับมือปฏิบัติการ Grey-zone โดยตรง</span>
+              <span class="lang-en">Transforms the entire length of the umbilical fiber into a seismic/vibrational sensor, actively detecting anchor drags and diver tampering.</span>
+            </td>
+            <td>
+              <span class="lang-th">ช่วยอุดช่องว่างการแจ้งเตือนในย่าน Shadow Zone ของอ่าวตอนบน</span>
+              <span class="lang-en">Closes the detection gap inside the acoustic Shadow Zones of the Upper Gulf.</span>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="prop rv">
-      <div class="h">◈ KEY INSIGHT — ข้อค้นพบจากมิติสภาพแวดล้อม</div>
-      <p>อ่าวไทยตอนบน<b>เหมาะสมทางวิศวกรรม</b> (ตื้น พื้นราบ ใกล้ฝั่ง ใกล้ศูนย์เศรษฐกิจ)
-      แต่<b>ท้าทายทางยุทธวิธี</b> (Shadow Zone จราจรหนาแน่น เสียงรบกวนสูง) —
-      การป้องกัน UDC จึงพึ่งเซนเซอร์ชนิดเดียวไม่ได้ ต้องเป็น<b>เครือข่ายตรวจจับหลายชั้นหลายมิติ</b>
-      ที่ออกแบบจากข้อมูลสมุทรศาสตร์จริงของพื้นที่</p>
+      <div class="h">
+        <span class="lang-th">◈ KEY INSIGHT — ข้อค้นพบจากมิติสภาพแวดล้อม</span>
+        <span class="lang-en">◈ KEY INSIGHT — Environmental Dimension Findings</span>
+      </div>
+      <p>
+        <span class="lang-th">อ่าวไทยตอนบน<b>เหมาะสมทางวิศวกรรม</b> (ตื้น พื้นราบ ใกล้ฝั่ง ใกล้ศูนย์เศรษฐกิจ) แต่<b>ท้าทายทางยุทธวิธี</b> (Shadow Zone จราจรหนาแน่น เสียงรบกวนสูง) — การป้องกัน UDC จึงพึ่งเซนเซอร์ชนิดเดียวไม่ได้ ต้องเป็น<b>เครือข่ายตรวจจับหลายชั้นหลายมิติ</b> ที่ออกแบบจากข้อมูลสมุทรศาสตร์จริงของพื้นที่</span>
+        <span class="lang-en">The Upper Gulf of Thailand presents high <b>engineering suitability</b> (shallow, flat, close to shore and economic hubs) but poses severe <b>tactical challenges</b> (acoustic shadow zones, dense shipping traffic, high noise levels). Consequently, protecting a UDC cannot rely on a single sensor type but requires a <b>multi-layered, multi-dimensional detection network</b> tailored to the local oceanographic profile.</span>
+      </p>
     </div>
   </div>
 </section>
@@ -771,97 +1260,160 @@
 <section id="law">
   <div class="wrap">
     <div class="eyebrow rv"><span class="num">๒.๔</span>LEGAL FRAMEWORK &amp; MARITIME SPATIAL PLANNING</div>
-    <h2 class="title rv">กรอบกฎหมายและการจัดระเบียบพื้นที่ทางทะเล</h2>
-    <p class="lead rv">การคุ้มครอง UDC ต้องยืนอยู่บนฐานกฎหมาย ๓ ระดับ —
-      <b>กฎหมายระหว่างประเทศ (UNCLOS)</b> ที่ให้อำนาจแต่ก็จำกัดอำนาจ ·
-      <b>กฎหมายภายใน</b> ที่เป็นเครื่องมือ Hard Power ของรัฐ ·
-      และ<b>เครื่องมือจัดระเบียบพื้นที่</b> (TSS / MSP) ที่แปลงข้อกฎหมายให้เป็นรูปธรรมบนแผนที่เดินเรือ</p>
+    <h2 class="title rv">
+      <span class="lang-th">กรอบกฎหมายและการจัดระเบียบพื้นที่ทางทะเล</span>
+      <span class="lang-en">Legal Framework &amp; Marine Spatial Planning</span>
+    </h2>
+    <p class="lead rv">
+      <span class="lang-th">การคุ้มครอง UDC ต้องยืนอยู่บนฐานกฎหมาย ๓ ระดับ — <b>กฎหมายระหว่างประเทศ (UNCLOS)</b> ที่ให้อำนาจแต่ก็จำกัดอำนาจ · <b>กฎหมายภายใน</b> ที่เป็นเครื่องมือ Hard Power ของรัฐ · และ<b>เครื่องมือจัดระเบียบพื้นที่</b> (TSS / MSP) ที่แปลงข้อกฎหมายให้เป็นรูปธรรมบนแผนที่เดินเรือ</span>
+      <span class="lang-en">Protecting UDCs relies on a three-tiered legal framework: <b>international law (UNCLOS)</b> which grants rights but also imposes limitations, <b>domestic law</b> serving as state hard power, and <b>spatial planning tools</b> (TSS/MSP) that translate legal concepts into actionable coordinates on nautical charts.</span>
+    </p>
 
-    <h3 class="sub-h rv"><span class="bar"></span>อนุสัญญาสหประชาชาติว่าด้วยกฎหมายทะเล ค.ศ. 1982 (UNCLOS)</h3>
+    <h3 class="sub-h rv"><span class="bar"></span>
+      <span class="lang-th">อนุสัญญาสหประชาชาติว่าด้วยกฎหมายทะเล ค.ศ. 1982 (UNCLOS)</span>
+      <span class="lang-en">1982 United Nations Convention on the Law of the Sea (UNCLOS)</span>
+    </h3>
     <div class="tier rv">
-      <div class="h"><span class="no">ข้อ ๕๖ / ๘๐</span>สิทธิอธิปไตยและเขตอำนาจใน EEZ</div>
-      <p>รัฐชายฝั่งมี<b>เขตอำนาจ (Jurisdiction)</b> เหนือการสร้างและใช้งานเกาะเทียม สิ่งติดตั้ง
-      และสิ่งก่อสร้างในเขตเศรษฐกิจจำเพาะ — เป็นฐานอำนาจหลักในการติดตั้ง UDC นอกทะเลอาณาเขต</p>
+      <div class="h">
+        <span class="no">Art 56 / 80</span>
+        <span class="lang-th">สิทธิอธิปไตยและเขตอำนาจใน EEZ</span>
+        <span class="lang-en">Sovereign Rights &amp; Jurisdiction in EEZ</span>
+      </div>
+      <p>
+        <span class="lang-th">รัฐชายฝั่งมี<b>เขตอำนาจ (Jurisdiction)</b> เหนือการสร้างและใช้งานเกาะเทียม สิ่งติดตั้ง และสิ่งก่อสร้างในเขตเศรษฐกิจจำเพาะ — เป็นฐานอำนาจหลักในการติดตั้ง UDC นอกทะเลอาณาเขต</span>
+        <span class="lang-en">Coastal states possess <b>jurisdiction</b> over the establishment and use of artificial islands, installations, and structures in the EEZ—serving as the primary legal basis for UDC deployment beyond the territorial sea.</span>
+      </p>
     </div>
     <div class="tier rv" style="border-left-color:var(--red)">
-      <div class="h"><span class="no" style="color:var(--red)">ข้อ ๖๐ วรรค ๕</span>Safety Zone ๕๐๐ เมตร — จุดอ่อนสำคัญ</div>
-      <p>เขตปลอดภัยรอบสิ่งติดตั้งกำหนดได้<b>ไม่เกิน ๕๐๐ ม.</b> —
-      ระยะที่แคบเกินกว่าจะหยุดยั้งภัยคุกคามความเร็วสูงหรือ UUV ได้ทันการณ์
-      งานวิจัยนี้จึงต้องออกแบบกลไกก้าวข้ามข้อจำกัดดังกล่าวด้วยกฎหมายภายใน</p>
+      <div class="h">
+        <span class="no" style="color:var(--red)">Art 60 (5)</span>
+        <span class="lang-th">Safety Zone ๕๐๐ เมตร — จุดอ่อนสำคัญ</span>
+        <span class="lang-en">500-Meter Safety Zone — The Critical Vulnerability</span>
+      </div>
+      <p>
+        <span class="lang-th">เขตปลอดภัยรอบสิ่งติดตั้งกำหนดได้<b>ไม่เกิน ๕๐๐ ม.</b> — ระยะที่แคบเกินกว่าจะหยุดยั้งภัยคุกคามความเร็วสูงหรือ UUV ได้ทันการณ์ งานวิจัยนี้จึงต้องออกแบบกลไกก้าวข้ามข้อจำกัดดังกล่าวด้วยกฎหมายภายใน</span>
+        <span class="lang-en">Safety zones around installations must <b>not exceed 500m</b>—a distance far too narrow to intercept high-speed threats or UUVs in time. This research seeks to bypass this restriction via domestic legal instruments.</span>
+      </p>
     </div>
     <div class="tier rv">
-      <div class="h"><span class="no">ข้อ ๑๗</span>สิทธิการผ่านโดยสุจริต (Innocent Passage)</div>
-      <p>เรือทุกชาติมีสิทธิผ่านทะเลอาณาเขตโดยสุจริต — รัฐชายฝั่งห้ามเรือต่างชาติแบบเหวี่ยงแหไม่ได้
-      ทำให้การ "ปิดทะเล" รอบ UDC โดยตรงขัดต่อพันธกรณีระหว่างประเทศ ต้องใช้การจัดระเบียบพื้นที่แทน</p>
+      <div class="h">
+        <span class="no">Art 17</span>
+        <span class="lang-th">สิทธิการผ่านโดยสุจริต (Innocent Passage)</span>
+        <span class="lang-en">Right of Innocent Passage</span>
+      </div>
+      <p>
+        <span class="lang-th">เรือทุกชาติมีสิทธิผ่านทะเลอาณาเขตโดยสุจริต — รัฐชายฝั่งห้ามเรือต่างชาติแบบเหวี่ยงแหไม่ได้ ทำให้การ "ปิดทะเล" รอบ UDC โดยตรงขัดต่อพันธกรณีระหว่างประเทศ ต้องใช้การจัดระเบียบพื้นที่แทน</span>
+        <span class="lang-en">Vessels of all states enjoy the right of innocent passage through the territorial sea. A coastal state cannot unilaterally suspend passage indiscriminately; direct closure around a UDC violates international obligations, requiring spatial planning alternatives instead.</span>
+      </p>
     </div>
 
-    <h3 class="sub-h rv"><span class="bar"></span>กฎหมายภายใน — เครื่องมือ Hard Power ที่มีอยู่จริง</h3>
-    <p class="body rv"><b>พระราชบัญญัติว่าด้วยเขตปลอดภัยในราชการทหาร พุทธศักราช ๒๔๗๘</b>
-      (มาตรา ๓, ๔ และ ๖) ให้อำนาจตรา<b>พระราชกฤษฎีกา</b>กำหนดเขตปลอดภัยรอบที่ตั้งทางทหาร
-      พร้อมบทลงโทษผู้ฝ่าฝืน โดยมีแบบอย่างที่ใช้งานจริงคือ <b>พ.ร.ฎ. เขตปลอดภัยฯ สัตหีบ พ.ศ. ๒๕๓๖</b> —
-      นี่คือกลไกที่ทำให้รัฐขยายการคุ้มครอง UDC ได้กว้างกว่า ๕๐๐ ม. ของ UNCLOS อย่างมีฐานกฎหมายรองรับ</p>
-    <p class="body rv">บทเรียนสำคัญ: เขตหวงห้ามตามประกาศยุคเก่า (พ.ศ. ๒๕๐๒)
-      ซึ่งแผนที่แนบท้าย<b>ไม่ระบุพิกัดมูลฐานทางราบ (Geodetic Datum)</b> เคยเป็นเหตุให้<b>ศาลยกฟ้อง</b>คดีรุกล้ำเขตทหารมาแล้ว —
-      เขตคุ้มครอง UDC จึงต้องผูกพิกัดมาตรฐานสากล (WGS-84) ตั้งแต่ชั้นร่างกฎหมาย
-      นอกจากนี้การบริหารทะเลไทยยังกระจายแบบ <b>Sector-by-Sector ใน ๑๗ กระทรวง/หน่วยงาน</b>
-      โดยไร้ผังแม่บทเชิงพื้นที่ฉบับเดียว — ช่องว่างเชิงบูรณาการที่งานวิจัยนี้ต้องออกแบบกลไกมาอุด</p>
+    <h3 class="sub-h rv"><span class="bar"></span>
+      <span class="lang-th">กฎหมายภายใน — เครื่องมือ Hard Power ที่มีอยู่จริง</span>
+      <span class="lang-en">Domestic Law — Enforceable Hard Power Instruments</span>
+    </h3>
+    <p class="body rv">
+      <span class="lang-th"><b>พระราชบัญญัติว่าด้วยเขตปลอดภัยในราชการทหาร พุทธศักราช ๒๔๗๘</b> (มาตรา ๓, ๔ และ ๖) ให้อำนาจตรา<b>พระราชกฤษฎีกา</b>กำหนดเขตปลอดภัยรอบที่ตั้งทางทหาร พร้อมบทลงโทษผู้ฝ่าฝืน โดยมีแบบอย่างที่ใช้งานจริงคือ <b>พ.ร.ฎ. เขตปลอดภัยฯ สัตหีบ พ.ศ. ๒๕๓๖</b> — นี่คือกลไกที่ทำให้รัฐขยายการคุ้มครอง UDC ได้กว้างกว่า ๕๐๐ ม. ของ UNCLOS อย่างมีฐานกฎหมายรองรับ</span>
+      <span class="lang-en">The <b>Military Safety Zone Act, B.E. 2478</b> (Sections 3, 4, and 6) grants authority to issue a <b>Royal Decree</b> establishing safety zones around military installations, carrying penal provisions for violators. A real-world precedent is the <b>Sattahip Military Safety Zone Royal Decree, B.E. 2536</b>. This mechanism allows the state to extend UDC protection zones wider than UNCLOS's 500m limit under domestic law.</span>
+    </p>
+    <p class="body rv">
+      <span class="lang-th">บทเรียนสำคัญ: เขตหวงห้ามตามประกาศยุคเก่า (พ.ศ. ๒๕๐๒) ซึ่งแผนที่แนบท้าย<b>ไม่ระบุพิกัดมูลฐานทางราบ (Geodetic Datum)</b> เคยเป็นเหตุให้<b>ศาลยกฟ้อง</b>คดีรุกล้ำเขตทหารมาแล้ว — เขตคุ้มครอง UDC จึงต้องผูกพิกัดมาตรฐานสากล (WGS-84) ตั้งแต่ชั้นร่างกฎหมาย นอกจากนี้การบริหารทะเลไทยยังกระจายแบบ <b>Sector-by-Sector ใน ๑๗ กระทรวง/หน่วยงาน</b> โดยไร้ผังแม่บทเชิงพื้นที่ฉบับเดียว — ช่องว่างเชิงบูรณาการที่งานวิจัยนี้ต้องออกแบบกลไกมาอุด</span>
+      <span class="lang-en">Critical Lesson: Historical restricted zones (e.g. B.E. 2502) whose annexed maps <b>lacked a Geodetic Datum</b> led to <b>dismissals of trespass lawsuits in court</b>. Hence, the UDC protection zones must link to the international geodetic standard (WGS84) directly within the draft decree. Furthermore, Thailand's ocean governance remains fragmented <b>sector-by-sector across 17 ministries/agencies</b> without a unified master spatial plan—an integration gap this research aims to bridge.</span>
+    </p>
 
     <figure class="fig rv">
-      <div class="fig-box"><img src="THE_SHIELD_Ch2_lawzones.jpg" alt="แผนภาพเขตทางทะเลตามอนุสัญญาสหประชาชาติว่าด้วยกฎหมายทะเล ค.ศ. 1982 — ทะเลอาณาเขต เขตต่อเนื่อง เขตเศรษฐกิจจำเพาะ และทะเลหลวง"></div>
+      <div class="fig-box"><img src="THE_SHIELD_Ch2_lawzones.jpg" alt="Maritime zones under UNCLOS 1982, showing territorial sea, contiguous zone, EEZ, and high seas."></div>
       <figcaption>
-        <span class="t">ภาพที่ ๒-๗ · เขตทางทะเลภายใต้อนุสัญญาสหประชาชาติว่าด้วยกฎหมายทะเล ค.ศ. 1982 (UNCLOS)</span>
-        <span class="src">ที่มา : แผนกกฎหมายปฏิบัติการทางทหาร สำนักงานพระธรรมนูญทหารเรือ</span>
+        <span class="t">
+          <span class="lang-th">ภาพที่ ๒-๗ · เขตทางทะเลภายใต้อนุสัญญาสหประชาชาติว่าด้วยกฎหมายทะเล ค.ศ. 1982 (UNCLOS)</span>
+          <span class="lang-en">Figure 2-7 · Maritime Zones under the 1982 United Nations Convention on the Law of the Sea (UNCLOS)</span>
+        </span>
+        <span class="src">
+          <span class="lang-th">ที่มา : แผนกกฎหมายปฏิบัติการทางทหาร สำนักงานพระธรรมนูญทหารเรือ</span>
+          <span class="lang-en">Source: Military Operational Law Division, Office of the Judge Advocate General, RTN</span>
+        </span>
       </figcaption>
     </figure>
 
-    <h3 class="sub-h rv"><span class="bar"></span>ระบบแบ่งแนวจราจร (Traffic Separation Scheme: TSS)</h3>
-    <p class="body rv">TSS คือเครื่องมือจัดระเบียบการเดินเรือที่ได้รับการรับรองโดย IMO ประกอบด้วย ๓ องค์ประกอบ
-      และบังคับพฤติกรรมเรือผ่าน <b>COLREGs ข้อ ๑๐</b> — เรือที่จำเป็นต้องตัดผ่านช่องจราจรต้องตัดให้
-      <b>ใกล้มุมฉาก (~๙๐°)</b> มากที่สุด ทำให้เรือที่เคลื่อนที่ "ผิดแบบแผน" ใกล้เขต UDC
-      ถูกจำแนกเป็นพฤติกรรมต้องสงสัยได้ทันทีจากข้อมูล AIS/เรดาร์</p>
+    <h3 class="sub-h rv"><span class="bar"></span>
+      <span class="lang-th">ระบบแบ่งแนวจราจร (Traffic Separation Scheme: TSS)</span>
+      <span class="lang-en">Traffic Separation Schemes (TSS)</span>
+    </h3>
+    <p class="body rv">
+      <span class="lang-th">TSS คือเครื่องมือจัดระเบียบการเดินเรือที่ได้รับการรับรองโดย IMO ประกอบด้วย ๓ องค์ประกอบ และบังคับพฤติกรรมเรือผ่าน <b>COLREGs ข้อ ๑๐</b> — เรือที่จำเป็นต้องตัดผ่านช่องจราจรต้องตัดให้ <b>ใกล้มุมฉาก (~๙๐°)</b> มากที่สุด ทำให้เรือที่เคลื่อนที่ "ผิดแบบแผน" ใกล้เขต UDC ถูกจำแนกเป็นพฤติกรรมต้องสงสัยได้ทันทีจากข้อมูล AIS/เรดาร์</span>
+      <span class="lang-en">Traffic Separation Schemes (TSS) are IMO-approved routing measures comprising three main elements, enforcing shipping behaviors through <b>COLREGs Rule 10</b>. Vessels crossing traffic lanes must do so at <b>as close to a 90° angle as practicable</b>, enabling immediate classification of anomalous vessel courses near UDC zones using AIS/radar data.</span>
+    </p>
     <div class="grid g3">
       <div class="card scope-card rv">
         <h4><span class="ic">➡️</span>Traffic Lanes</h4>
-        <p>ช่องทางเดินเรือ<b>ทิศทางเดียว</b> แยกกระแสจราจรขาเข้า–ขาออก ลดความเสี่ยงการเผชิญหน้า
-        และทำให้แบบแผนจราจรรอบ UDC คาดการณ์ได้</p>
+        <p>
+          <span class="lang-th">ช่องทางเดินเรือ<b>ทิศทางเดียว</b> แยกกระแสจราจรขาเข้า–ขาออก ลดความเสี่ยงการเผชิญหน้า และทำให้แบบแผนจราจรรอบ UDC คาดการณ์ได้</span>
+          <span class="lang-en"><b>One-way traffic lanes</b> separating inbound and outbound flows, mitigating collision risks and making vessel patterns around UDCs predictable.</span>
+        </p>
       </div>
       <div class="card scope-card rv">
         <h4><span class="ic">⏸️</span>Separation Zone</h4>
-        <p>แนวกันชนกลางระหว่างช่องจราจรสวนทาง — เป็นพื้นที่ที่เรือทั่วไป "ไม่ควรอยู่"
-        จึงใช้เป็นแถบเฝ้าระวังที่ความผิดปกติเด่นชัดที่สุด</p>
+        <p>
+          <span class="lang-th">แนวกันชนกลางระหว่างช่องจราจรสวนทาง — เป็นพื้นที่ที่เรือทั่วไป "ไม่ควรอยู่" จึงใช้เป็นแถบเฝ้าระวังที่ความผิดปกติเด่นชัดที่สุด</span>
+          <span class="lang-en">A <b>central buffer strip</b> separating opposing lanes; an area where non-emergency vessels should not linger, serving as an active surveillance trigger zone.</span>
+        </p>
       </div>
       <div class="card scope-card rv">
         <h4><span class="ic">🚤</span>Inshore Traffic Zone</h4>
-        <p>เขตชายฝั่งสำหรับเรือประมงและเรือขนาดเล็ก แยกออกจากเรือพาณิชย์ขนาดใหญ่ —
-        ลดความหนาแน่นและเสียงรบกวนในพื้นที่ใกล้แนวเคเบิลเข้าฝั่ง</p>
+        <p>
+          <span class="lang-th">เขตชายฝั่งสำหรับเรือประมงและเรือขนาดเล็ก แยกออกจากเรือพาณิชย์ขนาดใหญ่ — ลดความหนาแน่นและเสียงรบกวนในพื้นที่ใกล้แนวเคเบิลเข้าฝั่ง</span>
+          <span class="lang-en"><b>Coastal corridors</b> for fishing and small vessels, separated from deep-draft commercial traffic to reduce density and acoustic noise near cable landings.</span>
+        </p>
       </div>
     </div>
 
     <figure class="fig rv">
-      <div class="fig-box"><img src="THE_SHIELD_Ch2_tss.webp" alt="ภาพจำลอง: ระบบแบ่งแนวจราจรทางเรือ TSS ช่องจราจรทิศทางเดียวคั่นด้วยเขตแบ่งแยกกลาง"></div>
+      <div class="fig-box"><img src="THE_SHIELD_Ch2_tss.webp" alt="Conceptual illustration of a Traffic Separation Scheme separating inbound and outbound lanes."></div>
       <figcaption>
-        <span class="t">ภาพประกอบ · ระบบแบ่งแนวจราจรทางเรือ (Traffic Separation Scheme) — ช่องจราจรทิศทางเดียวคั่นด้วยเขตแบ่งแยกกลาง ทำให้แบบแผนการเดินเรือรอบที่ตั้ง UDC คาดการณ์ได้และตรวจจับพฤติกรรมผิดปกติได้ทันที</span>
-        <span class="src">ภาพจำลองโดยปัญญาประดิษฐ์ เพื่อสื่อบรรยากาศ · AI-GENERATED</span>
+        <span class="t">
+          <span class="lang-th">ภาพประกอบ · ระบบแบ่งแนวจราจรทางเรือ (Traffic Separation Scheme) — ช่องจราจรทิศทางเดียวคั่นด้วยเขตแบ่งแยกกลาง ทำให้แบบแผนการเดินเรือรอบที่ตั้ง UDC คาดการณ์ได้และตรวจจับพฤติกรรมผิดปกติได้ทันที</span>
+          <span class="lang-en">Illustration · Vessel Traffic Separation Scheme (TSS) — One-way lanes separated by a central zone, making traffic patterns near UDC sites predictable and enabling rapid anomaly detection</span>
+        </span>
+        <span class="src">
+          <span class="lang-th">ภาพจำลองโดยปัญญาประดิษฐ์ เพื่อสื่อบรรยากาศ · AI-GENERATED</span>
+          <span class="lang-en">AI-Generated illustration for conceptual purposes</span>
+        </span>
       </figcaption>
     </figure>
 
-    <h3 class="sub-h rv"><span class="bar"></span>บทเรียนจากต่างประเทศ (Benchmarking)</h3>
+    <h3 class="sub-h rv"><span class="bar"></span>
+      <span class="lang-th">บทเรียนจากต่างประเทศ (Benchmarking)</span>
+      <span class="lang-en">International Lessons (Benchmarking)</span>
+    </h3>
     <div class="grid g2">
       <div class="card case rv">
         <span class="flag">🇮🇩 INDONESIA · SUNDA &amp; LOMBOK STRAITS</span>
-        <h4>TSS ช่องแคบซุนดา–ลอมบอก + Merak VTS</h4>
-        <p>อินโดนีเซียเป็นประเทศแรกที่ผลักดัน TSS ใน<b>เส้นทางเดินเรือหมู่เกาะ (ASL)</b> ผ่าน IMO สำเร็จ
-        พร้อมตั้งสถานี VTS ควบคุม — พิสูจน์ว่ารัฐชายฝั่งกำลังพัฒนาสามารถใช้กลไกสากล
-        จัดระเบียบทะเลของตนได้จริง</p>
-        <div class="hl">ผลลัพธ์: อุบัติเหตุทางเรือและเหตุสมอเรือทำลายสายเคเบิลใต้น้ำลดลงชัดเจน</div>
+        <h4>
+          <span class="lang-th">TSS ช่องแคบซุนดา–ลอมบอก + Merak VTS</span>
+          <span class="lang-en">Sunda–Lombok Straits TSS + Merak VTS</span>
+        </h4>
+        <p>
+          <span class="lang-th">อินโดนีเซียเป็นประเทศแรกที่ผลักดัน TSS ใน<b>เส้นทางเดินเรือหมู่เกาะ (ASL)</b> ผ่าน IMO สำเร็จ พร้อมตั้งสถานี VTS ควบคุม — พิสูจน์ว่ารัฐชายฝั่งกำลังพัฒนาสามารถใช้กลไกสากล จัดระเบียบทะเลของตนได้จริง</span>
+          <span class="lang-en">Indonesia was the first archipelagic state to establish TSS within its <b>Archipelagic Sea Lanes (ASLs)</b> via IMO approval, supported by the Merak VTS station, proving developing coastal states can leverage international frameworks.</span>
+        </p>
+        <div class="hl">
+          <span class="lang-th">ผลลัพธ์: อุบัติเหตุทางเรือและเหตุสมอเรือทำลายสายเคเบิลใต้น้ำลดลงชัดเจน</span>
+          <span class="lang-en">Result: Ship collisions and subsea cable damage from anchor drags were significantly reduced.</span>
+        </div>
       </div>
       <div class="card case rv">
         <span class="flag">🇳🇱🇩🇰🇩🇪 NORTH SEA · MSP</span>
-        <h4>การวางผังพื้นที่ทะเลเหนือ — คุ้มครอง CUI</h4>
-        <p>เนเธอร์แลนด์ เดนมาร์ก และเยอรมนี บรรจุโครงสร้างพื้นฐานใต้น้ำเป็น<b>"เขตคุ้มครองพิเศษ"</b>
-        ในผังแม่บททะเลแห่งชาติ (National Marine Spatial Plan) ให้<b>ลำดับความสำคัญเหนือกิจกรรมเศรษฐกิจ</b>อื่น
-        พร้อมข้อห้ามอวนลากและทอดสมอตามแนวเคเบิล</p>
-        <div class="hl">ต้นแบบการยก CUI ขึ้นเป็นวาระผังเมืองทางทะเลระดับชาติ — แนวทางเดียวกับที่งานวิจัยนี้เสนอ</div>
+        <h4>
+          <span class="lang-th">การวางผังพื้นที่ทะเลเหนือ — คุ้มครอง CUI</span>
+          <span class="lang-en">North Sea MSP — Protecting CUI</span>
+        </h4>
+        <p>
+          <span class="lang-th">เนเธอร์แลนด์ เดนมาร์ก และเยอรมนี บรรจุโครงสร้างพื้นฐานใต้น้ำเป็น<b>"เขตคุ้มครองพิเศษ"</b> ในผังแม่บททะเลแห่งชาติ (National Marine Spatial Plan) ให้<b>ลำดับความสำคัญเหนือกิจกรรมเศรษฐกิจ</b>อื่น พร้อมข้อห้ามอวนลากและทอดสมอตามแนวเคเบิล</span>
+          <span class="lang-en">Netherlands, Denmark, and Germany integrate subsea critical infrastructure as <b>"Special Protection Zones"</b> in their National Marine Spatial Plans, granting them <b>priority over other economic activities</b> and banning bottom trawling/anchoring near cables.</span>
+        </p>
+        <div class="hl">
+          <span class="lang-th">ต้นแบบการยก CUI ขึ้นเป็นวาระผังเมืองทางทะเลระดับชาติ — แนวทางเดียวกับที่งานวิจัยนี้เสนอ</span>
+          <span class="lang-en">Precedent for elevating CUI protection to national marine spatial agendas—a path aligned with this research proposal.</span>
+        </div>
       </div>
     </div>
 
@@ -869,30 +1421,78 @@
     <figure class="fig rv msp-demo" id="mspDemo">
       <div class="msp-panel">
         <div class="msp-head">
-          <span class="msp-kicker">LIVE WMS · ดึงข้อมูลสดจากระบบราชการเดนมาร์ก</span>
-          <h3 class="msp-title">สาธิตด้วยข้อมูลจริง: แผนผังการใช้พื้นที่ทางทะเลของเดนมาร์ก (Danmarks Havplan 2024)</h3>
-          <div class="msp-sub">โซนจริงตามแผนแม่บทที่ประกาศใช้ ๒๘ มิ.ย. ๒๐๒๔ — ลากเลื่อน/ซูมได้ และกดปุ่มเพื่อซ้อนชั้นข้อมูลรายธีม แล้วเทียบกับแนวคิดจัดระเบียบพื้นที่อ่าวไทยของ THE SHIELD</div>
+          <span class="msp-kicker">
+            <span class="lang-th">LIVE WMS · ดึงข้อมูลสดจากระบบราชการเดนมาร์ก</span>
+            <span class="lang-en">LIVE WMS · Real-time feed from Danish Maritime Authority</span>
+          </span>
+          <h3 class="msp-title">
+            <span class="lang-th">สาธิตด้วยข้อมูลจริง: แผนผังการใช้พื้นที่ทางทะเลของเดนมาร์ก (Danmarks Havplan 2024)</span>
+            <span class="lang-en">Real-world Demonstration: Danish Marine Spatial Plan (Danmarks Havplan 2024)</span>
+          </h3>
+          <div class="msp-sub">
+            <span class="lang-th">โซนจริงตามแผนแม่บทที่ประกาศใช้ ๒๘ มิ.ย. ๒๐๒๔ — ลากเลื่อน/ซูมได้ และกดปุ่มเพื่อซ้อนชั้นข้อมูลรายธีม แล้วเทียบกับแนวคิดจัดระเบียบพื้นที่อ่าวไทยของ THE SHIELD</span>
+            <span class="lang-en">Actual spatial zones decreed on June 28, 2024—pan/zoom map and toggle theme layers below to compare with THE SHIELD's ocean zoning concept for the Gulf of Thailand.</span>
+          </div>
         </div>
         <div class="msp-tools" id="mspTools">
-          <span class="msp-chip on" data-l="plan"  style="--c:#00d4ff"><i class="dot"></i>โซนแผนแม่บท (havplan)</span>
-          <span class="msp-chip"    data-l="wind"  style="--c:#f5c451"><i class="dot"></i>กังหันลมนอกฝั่ง</span>
-          <span class="msp-chip"    data-l="mil"   style="--c:#ff6b61"><i class="dot"></i>เขตทหาร</span>
-          <span class="msp-chip"    data-l="nat"   style="--c:#39ff14"><i class="dot"></i>เขตอนุรักษ์ Natura 2000</span>
-          <span class="msp-chip"    data-l="route" style="--c:#bd93f9"><i class="dot"></i>ความหนาแน่นการเดินเรือ</span>
+          <span class="msp-chip on" data-l="plan"  style="--c:#00d4ff"><i class="dot"></i>
+            <span class="lang-th">โซนแผนแม่บท (havplan)</span>
+            <span class="lang-en">MSP Spatial Zones (havplan)</span>
+          </span>
+          <span class="msp-chip"    data-l="wind"  style="--c:#f5c451"><i class="dot"></i>
+            <span class="lang-th">กังหันลมนอกฝั่ง</span>
+            <span class="lang-en">Offshore Wind Farms</span>
+          </span>
+          <span class="msp-chip"    data-l="mil"   style="--c:#ff6b61"><i class="dot"></i>
+            <span class="lang-th">เขตทหาร</span>
+            <span class="lang-en">Military Restricted Areas</span>
+          </span>
+          <span class="msp-chip"    data-l="nat"   style="--c:#39ff14"><i class="dot"></i>
+            <span class="lang-th">เขตอนุรักษ์ Natura 2000</span>
+            <span class="lang-en">Natura 2000 Protected Sites</span>
+          </span>
+          <span class="msp-chip"    data-l="route" style="--c:#bd93f9"><i class="dot"></i>
+            <span class="lang-th">ความหนาแน่นการเดินเรือ</span>
+            <span class="lang-en">Vessel Traffic Density</span>
+          </span>
         </div>
         <div class="msp-mapwrap">
           <div id="mspMap" class="msp-map" role="img" aria-label="แผนที่อินเทอร์แอกทีฟแสดงผังการใช้พื้นที่ทางทะเลของเดนมาร์ก"></div>
           <div class="msp-legend">
-            <b>ชั้นข้อมูล · MSP</b>
-            <div class="lg"><span class="sw" style="background:#00d4ff"></span>โซนแผนแม่บท (ทางการ)</div>
-            <div class="lg"><span class="sw" style="background:#f5c451"></span>พลังงานลมนอกฝั่ง</div>
-            <div class="lg"><span class="sw" style="background:#ff6b61"></span>เขตทหาร</div>
-            <div class="lg"><span class="sw" style="background:#39ff14"></span>อนุรักษ์ธรรมชาติ</div>
-            <div class="lg"><span class="sw" style="background:#bd93f9"></span>เส้นทางเดินเรือหนาแน่น</div>
+            <b>
+              <span class="lang-th">ชั้นข้อมูล · MSP</span>
+              <span class="lang-en">MSP Layers</span>
+            </b>
+            <div class="lg"><span class="sw" style="background:#00d4ff"></span>
+              <span class="lang-th">โซนแผนแม่บท (ทางการ)</span>
+              <span class="lang-en">Decreed MSP Zones (Official)</span>
+            </div>
+            <div class="lg"><span class="sw" style="background:#f5c451"></span>
+              <span class="lang-th">พลังงานลมนอกฝั่ง</span>
+              <span class="lang-en">Offshore Wind Energy</span>
+            </div>
+            <div class="lg"><span class="sw" style="background:#ff6b61"></span>
+              <span class="lang-th">เขตทหาร</span>
+              <span class="lang-en">Military Zones</span>
+            </div>
+            <div class="lg"><span class="sw" style="background:#39ff14"></span>
+              <span class="lang-th">อนุรักษ์ธรรมชาติ</span>
+              <span class="lang-en">Nature Conservation</span>
+            </div>
+            <div class="lg"><span class="sw" style="background:#bd93f9"></span>
+              <span class="lang-th">เส้นทางเดินเรือหนาแน่น</span>
+              <span class="lang-en">High Shipping Density</span>
+            </div>
           </div>
           <div class="msp-fallback" id="mspFallback">
-            <div>⚠️ ไม่สามารถโหลดแผนที่สดได้ในขณะนี้<br>(เซิร์ฟเวอร์ MSP ของราชการเดนมาร์กอาจไม่ว่างชั่วคราว)</div>
-            <a href="https://havplan.dk/" target="_blank" rel="noopener">เปิดดูแผนที่ต้นทางที่ havplan.dk ↗</a>
+            <div>
+              <span class="lang-th">⚠️ ไม่สามารถโหลดแผนที่สดได้ในขณะนี้<br>(เซิร์ฟเวอร์ MSP ของราชการเดนมาร์กอาจไม่ว่างชั่วคราว)</span>
+              <span class="lang-en">⚠️ Live map currently unavailable<br>(Danish Havplan server may be experiencing downtime)</span>
+            </div>
+            <a href="https://havplan.dk/" target="_blank" rel="noopener">
+              <span class="lang-th">เปิดดูแผนที่ต้นทางที่ havplan.dk ↗</span>
+              <span class="lang-en">View source map at havplan.dk ↗</span>
+            </a>
           </div>
         </div>
         <div class="msp-cred">
@@ -901,8 +1501,14 @@
         </div>
       </div>
       <figcaption>
-        <span class="t">การสาธิตด้วยข้อมูลจริง · แผนผังการใช้พื้นที่ทางทะเล (Maritime Spatial Plan) ของเดนมาร์ก ดึงสดผ่านระบบ WMS ของกรมเจ้าท่าเดนมาร์ก — แสดงการแบ่งทะเลเป็นโซนหน้าที่ (เดินเรือ · พลังงาน · อนุรักษ์ · ทหาร) อย่างเป็นระบบ ซึ่งเป็นตรรกะเดียวกับที่ THE SHIELD เสนอให้นำมาใช้จัดระเบียบและคุ้มครองพื้นที่รอบ UDC ในอ่าวไทย</span>
-        <span class="src">ข้อมูลสดจาก havplan.dk · EMODnet Human Activities (ยุโรป) · แสดงผลด้วย Leaflet — LIVE DATA</span>
+        <span class="t">
+          <span class="lang-th">การสาธิตด้วยข้อมูลจริง · แผนผังการใช้พื้นที่ทางทะเล (Maritime Spatial Plan) ของเดนมาร์ก ดึงสดผ่านระบบ WMS ของกรมเจ้าท่าเดนมาร์ก — แสดงการแบ่งทะเลเป็นโซนหน้าที่ (เดินเรือ · พลังงาน · อนุรักษ์ · ทหาร) อย่างเป็นระบบ ซึ่งเป็นตรรกะเดียวกับที่ THE SHIELD เสนอให้นำมาใช้จัดระเบียบและคุ้มครองพื้นที่รอบ UDC ในอ่าวไทย</span>
+          <span class="lang-en">Live Demonstration · Denmark's Maritime Spatial Plan (MSP) pulled dynamically via Danish DMA's WMS service—showcasing systematic zoning (shipping, energy, nature, military), corresponding directly to the spatial methodology proposed by THE SHIELD to secure subsea UDC corridors in the Gulf of Thailand</span>
+        </span>
+        <span class="src">
+          <span class="lang-th">ข้อมูลสดจาก havplan.dk · EMODnet Human Activities (ยุโรป) · แสดงผลด้วย Leaflet — LIVE DATA</span>
+          <span class="lang-en">Live data feeds from havplan.dk and EMODnet Human Activities; rendered using Leaflet — LIVE DATA</span>
+        </span>
       </figcaption>
     </figure>
   </div>
@@ -912,97 +1518,200 @@
 <section id="defense">
   <div class="wrap">
     <div class="eyebrow rv"><span class="num">๒.๕</span>INTEGRATED DEFENSE CONCEPTS</div>
-    <h2 class="title rv">แนวคิดการป้องกันโครงสร้างพื้นฐานสำคัญทางทะเล</h2>
-    <p class="lead rv">UDC คือ <b>Maritime Critical Infrastructure</b> ที่เผชิญภัยคุกคามแบบผสมผสานทั้ง
-      <b>Cyber–Physical Threats</b> และ<b>สงครามพื้นท้องทะเล (Seabed Warfare)</b> —
-      การป้องกันจึงต้องบูรณาการสามแนวคิดเข้าด้วยกัน: หลักนิยมการป้องกันฐานทัพ/ท่าเรือของฝ่ายทหาร
-      กลไกอำนวยการของ ศรชล. และการวิเคราะห์ปัจจัย<b>เวลา–พื้นที่–กำลังรบ</b>ตามศิลปะการยุทธ์</p>
+    <h2 class="title rv">
+      <span class="lang-th">แนวคิดการป้องกันโครงสร้างพื้นฐานสำคัญทางทะเล</span>
+      <span class="lang-en">Maritime Critical Infrastructure Protection Concepts</span>
+    </h2>
+    <p class="lead rv">
+      <span class="lang-th">UDC คือ <b>Maritime Critical Infrastructure</b> ที่เผชิญภัยคุกคามแบบผสมผสานทั้ง <b>Cyber–Physical Threats</b> และ<b>สงครามพื้นท้องทะเล (Seabed Warfare)</b> — การป้องกันจึงต้องบูรณาการสามแนวคิดเข้าด้วยกัน: หลักนิยมการป้องกันฐานทัพ/ท่าเรือของฝ่ายทหาร กลไกอำนวยการของ ศรชล. และการวิเคราะห์ปัจจัย<b>เวลา–พื้นที่–กำลังรบ</b>ตามศิลปะการยุทธ์</span>
+      <span class="lang-en">UDCs are <b>Maritime Critical Infrastructure</b> facing hybrid <b>cyber-physical threats</b> and <b>seabed warfare</b> tactics. Subsea protection requires integrating three pillars: military harbor defense/harbor control doctrines, THMECC inter-agency maritime coordination, and operational-art analyses of Time-Space-Force factors.</span>
+    </p>
 
-    <h3 class="sub-h rv"><span class="bar"></span>๒.๕.๑ — หลักนิยม Harbor Defense &amp; Harbor Control (HDHC)</h3>
+    <h3 class="sub-h rv"><span class="bar"></span>
+      <span class="lang-th">๒.๕.๑ — หลักนิยม Harbor Defense &amp; Harbor Control (HDHC)</span>
+      <span class="lang-en">2.5.1 — Harbor Defense &amp; Harbor Control (HDHC) Doctrines</span>
+    </h3>
     <div class="grid g2">
       <div class="card scope-card rv">
-        <h4><span class="ic">🛡️</span>Harbor Defense — การป้องกันเชิงรุก</h4>
-        <p>จัดการป้องกันเป็น<b>แนวลึกหลายชั้น (Defense in Depth + Layered Defense)</b>
-        ผสานเรือผิวน้ำ อากาศยาน และยานใต้น้ำไร้คนขับ ภายใต้เครือข่าย <b>NCW</b> —
-        ภัยคุกคามต้องถูกตรวจพบและสกัดตั้งแต่ชั้นนอกสุด ก่อนเข้าถึงทรัพย์สินที่คุ้มครอง</p>
+        <h4>
+          <span class="ic">🛡️</span>
+          <span class="lang-th">Harbor Defense — การป้องกันเชิงรุก</span>
+          <span class="lang-en">Harbor Defense — Active Protection</span>
+        </h4>
+        <p>
+          <span class="lang-th">จัดการป้องกันเป็น<b>แนวลึกหลายชั้น (Defense in Depth + Layered Defense)</b> ผสานเรือผิวน้ำ อากาศยาน และยานใต้น้ำไร้คนขับ ภายใต้เครือข่าย <b>NCW</b> — ภัยคุกคามต้องถูกตรวจพบและสกัดตั้งแต่ชั้นนอกสุด ก่อนเข้าถึงทรัพย์สินที่คุ้มครอง</span>
+          <span class="lang-en">Establishes <b>Defense in depth / Layered Defense</b>, coordinating surface combatants, aircraft, and unmanned underwater assets under a <b>NCW</b> network. Threats must be detected and intercepted at the outer layers before reaching protected assets.</span>
+        </p>
       </div>
       <div class="card scope-card rv">
-        <h4><span class="ic">🚦</span>Harbor Control — การควบคุมเชิงระเบียบ</h4>
-        <p>ควบคุมการเข้า–ออกพื้นที่ด้วยมาตรการ <b>Routing · Movement Control · Reporting · Convoy</b>
-        บนฐานข้อมูล <b>MDA</b> ที่ต่อเนื่อง — ยกระดับจากภาวะปกติสู่ภาวะสงครามได้โดยไม่ต้องรื้อโครงสร้างใหม่</p>
+        <h4>
+          <span class="ic">🚦</span>
+          <span class="lang-th">Harbor Control — การควบคุมเชิงระเบียบ</span>
+          <span class="lang-en">Harbor Control — Procedural Control</span>
+        </h4>
+        <p>
+          <span class="lang-th">ควบคุมการเข้า–ออกพื้นที่ด้วยมาตรการ <b>Routing · Movement Control · Reporting · Convoy</b> บนฐานข้อมูล <b>MDA</b> ที่ต่อเนื่อง — ยกระดับจากภาวะปกติสู่ภาวะสงครามได้โดยไม่ต้องรื้อโครงสร้างใหม่</span>
+          <span class="lang-en">Controls area transit through measures such as <b>Routing, Movement Control, Reporting, and Convoys</b> driven by continuous <b>MDA</b> data, permitting seamless escalation from peacetime to conflict operations.</span>
+        </p>
       </div>
     </div>
     <div class="quote rv">
-      <p>"การนำหลักนิยม HDHC มาประยุกต์กับ UDC คือการยกระดับศูนย์ข้อมูลใต้น้ำให้ได้รับการคุ้มครอง
-      เทียบเท่าฐานทัพเรือแห่งหนึ่ง — เพียงแต่ฐานทัพแห่งนี้จมอยู่ใต้ผิวน้ำ"</p>
-      <div class="who">— สังเคราะห์จากหลักนิยมการป้องกันท่าเรือและฐานทัพ</div>
+      <p>
+        <span class="lang-th">"การนำหลักนิยม HDHC มาประยุกต์กับ UDC คือการยกระดับศูนย์ข้อมูลใต้น้ำให้ได้รับการคุ้มครอง เทียบเท่าฐานทัพเรือแห่งหนึ่ง — เพียงแต่ฐานทัพแห่งนี้จมอยู่ใต้ผิวน้ำ"</span>
+        <span class="lang-en">"Applying HDHC doctrine to UDCs essentially elevates subsea data centers to receive protection comparable to a naval base—only this base lies completely submerged."</span>
+      </p>
+      <div class="who">
+        <span class="lang-th">— สังเคราะห์จากหลักนิยมการป้องกันท่าเรือและฐานทัพ</span>
+        <span class="lang-en">— Synthesized from naval harbor defense and base protection doctrines</span>
+      </div>
     </div>
 
     <figure class="fig rv">
-      <div class="fig-box"><img src="THE_SHIELD_Ch2_layers.webp" alt="ภาพจำลอง: การป้องกันแบบแนวลึกหลายชั้น วงแหวนเฝ้าตรวจซ้อนชั้นรอบที่ตั้ง UDC พร้อมเรือตรวจการณ์"></div>
+      <div class="fig-box"><img src="THE_SHIELD_Ch2_layers.webp" alt="Layered defense concentric rings protecting a subsea site."></div>
       <figcaption>
-        <span class="t">ภาพประกอบ · การป้องกันแบบแนวลึกหลายชั้น (Defense in Depth + Layered Defense) — วงแหวนเฝ้าตรวจซ้อนชั้นรอบที่ตั้ง UDC ภัยคุกคามต้องถูกสกัดตั้งแต่ชั้นนอกสุดก่อนเข้าถึงทรัพย์สินที่คุ้มครอง</span>
-        <span class="src">ภาพจำลองโดยปัญญาประดิษฐ์ เพื่อสื่อบรรยากาศ · AI-GENERATED</span>
+        <span class="t">
+          <span class="lang-th">ภาพประกอบ · การป้องกันแบบแนวลึกหลายชั้น (Defense in Depth + Layered Defense) — วงแหวนเฝ้าตรวจซ้อนชั้นรอบที่ตั้ง UDC ภัยคุกคามต้องถูกสกัดตั้งแต่ชั้นนอกสุดก่อนเข้าถึงทรัพย์สินที่คุ้มครอง</span>
+          <span class="lang-en">Illustration · Defense in Depth / Layered Defense — Concentric surveillance rings safeguarding the subsea site; threats are neutralized at the outer perimeter before reaching critical assets</span>
+        </span>
+        <span class="src">
+          <span class="lang-th">ภาพจำลองโดยปัญญาประดิษฐ์ เพื่อสื่อบรรยากาศ · AI-GENERATED</span>
+          <span class="lang-en">AI-Generated illustration for conceptual purposes</span>
+        </span>
       </figcaption>
     </figure>
 
-    <h3 class="sub-h rv"><span class="bar"></span>๒.๕.๒ — กลไกอำนวยการ: ศรชล. และเครือข่ายความมั่นคงทางทะเล</h3>
-    <p class="body rv"><b>ศูนย์อำนวยการรักษาผลประโยชน์ของชาติทางทะเล (ศรชล.)</b> ตาม พ.ร.บ. ๒๕๖๒
-      มีฐานะเป็น<b>"กลไกอำนวยการกลาง"</b> ที่เชื่อม ๗ หน่วยงานหลักทางทะเลเข้าด้วยกัน —
-      จุดแข็งที่งานวิจัยนำมาต่อยอดมี ๔ ประการ</p>
+    <h3 class="sub-h rv"><span class="bar"></span>
+      <span class="lang-th">๒.๕.๒ — กลไกอำนวยการ: ศรชล. และเครือข่ายความมั่นคงทางทะเล</span>
+      <span class="lang-en">2.5.2 — Coordination Machinery: THMECC &amp; Maritime Security Networks</span>
+    </h3>
+    <p class="body rv">
+      <span class="lang-th"><b>ศูนย์อำนวยการรักษาผลประโยชน์ของชาติทางทะเล (ศรชล.)</b> ตาม พ.ร.บ. ๒๕๖๒ มีฐานะเป็น<b>"กลไกอำนวยการกลาง"</b> ที่เชื่อม ๗ หน่วยงานหลักทางทะเลเข้าด้วยกัน — จุดแข็งที่งานวิจัยนำมาต่อยอดมี ๔ ประการ</span>
+      <span class="lang-en">The <b>Thai Maritime Enforcement Command Center (THMECC)</b>, established under the 2019 Act, serves as the <b>"central coordination agency"</b> linking 7 primary maritime agencies. This research leverages 4 core THMECC strengths:</span>
+    </p>
     <ul class="clean rv">
-      <li><b>Data-Driven Operations</b> — โครงการ One Marine Chart และ Big Data สู่ภาพสถานการณ์ร่วม (COP) ผืนเดียวของทะเลไทย</li>
-      <li><b>เทคโนโลยี MDA</b> — AIS / VMS / เรดาร์ชายฝั่ง / ดาวเทียม / UAV–UUV ผสาน AI วิเคราะห์แบบ Near Real-time ตรวจจับ <b>Dark Vessels</b> ที่ปิดสัญญาณ</li>
-      <li><b>MECC Model</b> — วงรอบบริหาร (ตามแนว PDCA): บูรณาการยุทธศาสตร์ทางทะเล → บังคับใช้และปฏิบัติ → ติดตามประเมินผล → ปรับปรุงต่อเนื่อง</li>
-      <li><b>มิติไซเบอร์</b> — ประสาน สกมช. คุ้มครอง <b>"เส้นทางคมนาคมดิจิทัล" (Digital SLOC)</b> ซึ่ง UDC และสายเคเบิลใต้น้ำเป็นหัวใจ</li>
+      <li>
+        <span class="lang-th"><b>Data-Driven Operations</b> — โครงการ One Marine Chart และ Big Data สู่ภาพสถานการณ์ร่วม (COP) ผืนเดียวของทะเลไทย</span>
+        <span class="lang-en"><b>Data-Driven Operations</b> — One Marine Map and Big Data projects feeding a unified Common Operating Picture (COP) for Thai waters.</span>
+      </li>
+      <li>
+        <span class="lang-th"><b>เทคโนโลยี MDA</b> — AIS / VMS / เรดาร์ชายฝั่ง / ดาวเทียม / UAV–UUV ผสาน AI วิเคราะห์แบบ Near Real-time ตรวจจับ <b>Dark Vessels</b> ที่ปิดสัญญาณ</span>
+        <span class="lang-en"><b>MDA Technologies</b> — Integrating AIS, VMS, coastal radar, satellites, and UAVs/UUVs with AI tools for near real-time detection of non-transponding <b>Dark Vessels</b>.</span>
+      </li>
+      <li>
+        <span class="lang-th"><b>MECC Model</b> — วงรอบบริหาร (ตามแนว PDCA): บูรณาการยุทธศาสตร์ทางทะเล → บังคับใช้และปฏิบัติ → ติดตามประเมินผล → ปรับปรุงต่อเนื่อง</span>
+        <span class="lang-en"><b>MECC Model</b> — Policy lifecycle (PDCA cycle): Integrating maritime strategy → enforcement and execution → monitoring and assessment → continuous improvement.</span>
+      </li>
+      <li>
+        <span class="lang-th"><b>มิติไซเบอร์</b> — ประสาน สกมช. คุ้มครอง <b>"เส้นทางคมนาคมดิจิทัล" (Digital SLOC)</b> ซึ่ง UDC และสายเคเบิลใต้น้ำเป็นหัวใจ</span>
+        <span class="lang-en"><b>Cyber Dimension</b> — Coordinating with NCSA to secure <b>"Digital Lines of Communication" (Digital SLOCs)</b>, where UDCs and subsea cables form the backbone.</span>
+      </li>
     </ul>
 
     <figure class="fig rv">
-      <div class="fig-box"><img src="THE_SHIELD_Ch2_opsroom.webp" alt="ภาพจำลอง: ศูนย์อำนวยการร่วม เจ้าหน้าที่ประจำคอนโซล จอผนังแสดงภาพสถานการณ์ทางทะเลรวมศูนย์"></div>
+      <div class="fig-box"><img src="THE_SHIELD_Ch2_opsroom.webp" alt="Conceptual illustration of a joint operations room with operators monitoring central screens displaying maritime COP."></div>
       <figcaption>
-        <span class="t">ภาพประกอบ · ศูนย์อำนวยการร่วม — การหลอมรวมภาพสถานการณ์ทางทะเล (MDA → Common Operational Picture) จากหลายเซนเซอร์สู่จอแสดงผลเดียว เพื่อการบัญชาการรวมศูนย์แบบ Near Real-time</span>
-        <span class="src">ภาพจำลองโดยปัญญาประดิษฐ์ เพื่อสื่อบรรยากาศ · AI-GENERATED</span>
+        <span class="t">
+          <span class="lang-th">ภาพประกอบ · ศูนย์อำนวยการร่วม — การหลอมรวมภาพสถานการณ์ทางทะเล (MDA → Common Operational Picture) จากหลายเซนเซอร์สู่จอแสดงผลเดียว เพื่อการบัญชาการรวมศูนย์แบบ Near Real-time</span>
+          <span class="lang-en">Illustration · Joint Operations Command Center — Fusion of Maritime Domain Awareness data into a unified Common Operational Picture (COP) on a single visual console for near real-time centralized command</span>
+        </span>
+        <span class="src">
+          <span class="lang-th">ภาพจำลองโดยปัญญาประดิษฐ์ เพื่อสื่อบรรยากาศ · AI-GENERATED</span>
+          <span class="lang-en">AI-Generated illustration for conceptual purposes</span>
+        </span>
       </figcaption>
     </figure>
 
-    <h3 class="sub-h rv"><span class="bar"></span>๒.๕.๓ — การวิเคราะห์ปัจจัยเวลา–พื้นที่–กำลังรบ (Time–Space–Force)</h3>
-    <p class="body rv">ตาม<b>ศิลปะการยุทธ์ (Operational Art)</b> ผู้วางแผนต้องจัดความสัมพันธ์ของสามปัจจัย
-      ให้เกื้อกูลกัน — งานวิจัยนี้ใช้กรอบดังกล่าวเป็นแกนสังเคราะห์แนวคิดทั้งบทเข้าเป็นโมเดลเดียว</p>
+    <h3 class="sub-h rv"><span class="bar"></span>
+      <span class="lang-th">๒.๕.๓ — การวิเคราะห์ปัจจัยเวลา–พื้นที่–กำลังรบ (Time–Space–Force)</span>
+      <span class="lang-en">2.5.3 — Time–Space–Force Factors Analysis</span>
+    </h3>
+    <p class="body rv">
+      <span class="lang-th">ตาม<b>ศิลปะการยุทธ์ (Operational Art)</b> ผู้วางแผนต้องจัดความสัมพันธ์ของสามปัจจัย ให้เกื้อกูลกัน — งานวิจัยนี้ใช้กรอบดังกล่าวเป็นแกนสังเคราะห์แนวคิดทั้งบทเข้าเป็นโมเดลเดียว</span>
+      <span class="lang-en">Under the principles of <b>Operational Art</b>, planners must coordinate the relationships among three critical factors to ensure mutual reinforcement. This research utilizes this framework as a central axis to synthesize all concepts into a unified active defense model.</span>
+    </p>
 
     <div class="t-cap rv">
-      <span class="t">ตารางที่ ๒-๓ · การประยุกต์ปัจจัยเวลา–พื้นที่–กำลังรบ กับการป้องกัน UDC</span>
-      <span class="src">ที่มา : ผู้วิจัย</span>
+      <span class="t">
+        <span class="lang-th">ตารางที่ ๒-๓ · การประยุกต์ปัจจัยเวลา–พื้นที่–กำลังรบ กับการป้องกัน UDC</span>
+        <span class="lang-en">Table 2-3 · Time–Space–Force Factors Applied to UDC Active Defense</span>
+      </span>
+      <span class="src">
+        <span class="lang-th">ที่มา : ผู้วิจัย</span>
+        <span class="lang-en">Source: Researcher</span>
+      </span>
     </div>
     <div class="tbl-wrap rv">
       <table class="dtbl w900">
         <thead><tr>
-          <th>ปัจจัยทางการยุทธ์</th><th>ทฤษฎี / แนวคิดที่เกี่ยวข้อง</th><th>การประยุกต์กับการป้องกัน UDC</th>
+          <th>
+            <span class="lang-th">ปัจจัยทางการยุทธ์</span>
+            <span class="lang-en">Operational Factor</span>
+          </th>
+          <th>
+            <span class="lang-th">ทฤษฎี / แนวคิดที่เกี่ยวข้อง</span>
+            <span class="lang-en">Related Concepts / Theories</span>
+          </th>
+          <th>
+            <span class="lang-th">การประยุกต์กับการป้องกัน UDC</span>
+            <span class="lang-en">UDC Defense Application</span>
+          </th>
         </tr></thead>
         <tbody>
           <tr>
-            <td class="dim">พื้นที่ (Space)</td>
-            <td>การจัดระเบียบพื้นที่ทางทะเล (MSP) · TSS · เขตปลอดภัยตามกฎหมาย</td>
-            <td>ใช้กฎหมายและผังพื้นที่จำกัด<b>เสรีในการเคลื่อนที่</b>ของภัยคุกคาม สถาปนา <b>Battle Space Dominance</b> รอบที่ตั้ง UDC</td>
+            <td class="dim">
+              <span class="lang-th">พื้นที่ (Space)</span>
+              <span class="lang-en">Space</span>
+            </td>
+            <td>
+              <span class="lang-th">การจัดระเบียบพื้นที่ทางทะเล (MSP) · TSS · เขตปลอดภัยตามกฎหมาย</span>
+              <span class="lang-en">Marine Spatial Planning (MSP), TSS routing, legal exclusion zoning.</span>
+            </td>
+            <td>
+              <span class="lang-th">ใช้กฎหมายและผังพื้นที่จำกัด<b>เสรีในการเคลื่อนที่</b>ของภัยคุกคาม สถาปนา <b>Battle Space Dominance</b> รอบที่ตั้ง UDC</span>
+              <span class="lang-en">Uses legislative acts and spatial allocation charts to restrict threat <b>freedom of maneuver</b>, establishing local battlespace dominance around UDC coordinates.</span>
+            </td>
           </tr>
           <tr>
-            <td class="dim">เวลา (Time)</td>
-            <td>MDA · เครือข่ายเซนเซอร์ · การแจ้งเตือนล่วงหน้า (Early Warning)</td>
-            <td>ตรวจจับให้ไกลและเร็วที่สุดเพื่อซื้อ<b>เวลาตอบโต้ (Reaction Time)</b> ให้กำลังที่อยู่ห่างออกไปเข้าถึงพื้นที่ทันการณ์</td>
+            <td class="dim">
+              <span class="lang-th">เวลา (Time)</span>
+              <span class="lang-en">Time</span>
+            </td>
+            <td>
+              <span class="lang-th">MDA · เครือข่ายเซนเซอร์ · การแจ้งเตือนล่วงหน้า (Early Warning)</span>
+              <span class="lang-en">MDA feeds, subsea sensor networks, Early Warning models.</span>
+            </td>
+            <td>
+              <span class="lang-th">ตรวจจับให้ไกลและเร็วที่สุดเพื่อซื้อ<b>เวลาตอบโต้ (Reaction Time)</b> ให้กำลังที่อยู่ห่างออกไปเข้าถึงพื้นที่ทันการณ์</span>
+              <span class="lang-en">Detects anomalies at maximum ranges to maximize <b>reaction time</b>, allowing response forces dispatched from shore/stations to reach intercept coordinates in time.</span>
+            </td>
           </tr>
           <tr>
-            <td class="dim">กำลังรบ (Force)</td>
-            <td>NCW · การปฏิบัติการหลายมิติ (Multi-Domain) · Force Multiplier</td>
-            <td>ผนึกกำลังใต้น้ำ (USW Center + UUV) ผิวน้ำ–อากาศ (ทรภ.๑) และชายฝั่ง (สอ.รฝ.) ให้เครือข่ายทำหน้าที่<b>ทวีกำลัง</b>แทนการเพิ่มจำนวนเรือ</td>
+            <td class="dim">
+              <span class="lang-th">กำลังรบ (Force)</span>
+              <span class="lang-en">Force</span>
+            </td>
+            <td>
+              <span class="lang-th">NCW · การปฏิบัติการหลายมิติ (Multi-Domain) · Force Multiplier</span>
+              <span class="lang-en">Network-Centric Warfare (NCW), Multi-Domain Operations, Force Multipliers.</span>
+            </td>
+            <td>
+              <span class="lang-th">ผนึกกำลังใต้น้ำ (USW Center + UUV) ผิวน้ำ–อากาศ (ทรภ.๑) และชายฝั่ง (สอ.รฝ.) ให้เครือข่ายทำหน้าที่<b>ทวีกำลัง</b>แทนการเพิ่มจำนวนเรือ</span>
+              <span class="lang-en">Integrates subsea assets (USW Center &amp; UUVs), surface/air forces (1st Naval Area Command), and coastal units (ACDC) via network loops acting as a <b>force multiplier</b> rather than merely adding hulls.</span>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="prop rv">
-      <div class="h">◈ OPERATIONAL EQUATION — สมการทางยุทธการของโมเดล</div>
-      <p>ใช้ <b>พื้นที่</b> (กฎหมาย + MSP) จำกัดเสรีการเคลื่อนที่ของภัยคุกคาม →
-      สร้าง <b>เวลา</b> (MDA + Early Warning) ให้ฝ่ายเรามากกว่า →
-      เปิดโอกาสให้ <b>กำลังรบ</b> พหุมิติเข้าสกัดกั้นอย่างเฉียบขาด ณ จุดและเวลาที่ได้เปรียบ</p>
+      <div class="h">
+        <span class="lang-th">◈ OPERATIONAL EQUATION — สมการทางยุทธการของโมเดล</span>
+        <span class="lang-en">◈ OPERATIONAL EQUATION — Tactical Formula of the Model</span>
+      </div>
+      <p>
+        <span class="lang-th">ใช้ <b>พื้นที่</b> (กฎหมาย + MSP) จำกัดเสรีการเคลื่อนที่ของภัยคุกคาม → สร้าง <b>เวลา</b> (MDA + Early Warning) ให้ฝ่ายเรามากกว่า → เปิดโอกาสให้ <b>กำลังรบ</b> พหุมิติเข้าสกัดกั้นอย่างเฉียบขาด ณ จุดและเวลาที่ได้เปรียบ</span>
+        <span class="lang-en">Leverage <b>Space</b> (Legislative acts + MSP) to restrict threat maneuverability → Generate superior reaction <b>Time</b> (MDA + Early Warning arrays) → Enable multi-dimensional <b>Force</b> packages to intercept decisively at optimal intercepts.</span>
+      </p>
     </div>
   </div>
 </section>
@@ -1011,12 +1720,14 @@
 <section id="shield">
   <div class="wrap">
     <div class="eyebrow rv"><span class="num">๒.๕.๔</span>SYNTHESIS — THE SHIELD 1.0</div>
-    <h2 class="title rv">กรอบแนวคิดการสร้างโมเดลการป้องกัน «The Shield 1.0»</h2>
-    <p class="lead rv">จุดบรรจบขององค์ความรู้ทั้งบท — สังเคราะห์สภาพแวดล้อมทางยุทธวิธี (๒.๓)
-      กรอบกฎหมาย (๒.๔) และปัจจัยเวลา–พื้นที่–กำลังรบ (๒.๕.๓) ขึ้นเป็นโมเดลการป้องกัน UDC เชิงทฤษฎี
-      ที่<b>ก้าวข้ามข้อจำกัด Safety Zone ๕๐๐ ม.</b> ของ UNCLOS ข้อ ๖๐ วรรค ๕
-      ด้วยอำนาจตาม <b>พ.ร.บ. เขตปลอดภัยในราชการทหาร ๒๔๗๘</b> — ตราพระราชกฤษฎีกา
-      พร้อมแผนที่พิกัดมาตรฐานสากลแนบท้าย</p>
+    <h2 class="title rv">
+      <span class="lang-th">กรอบแนวคิดการสร้างโมเดลการป้องกัน «The Shield 1.0»</span>
+      <span class="lang-en">Conceptual Framework: The Shield 1.0 Active Defense Model</span>
+    </h2>
+    <p class="lead rv">
+      <span class="lang-th">จุดบรรจบขององค์ความรู้ทั้งบท — สังเคราะห์สภาพแวดล้อมทางยุทธวิธี (๒.๓) กรอบกฎหมาย (๒.๔) และปัจจัยเวลา–พื้นที่–กำลังรบ (๒.๕.๓) ขึ้นเป็นโมเดลการป้องกัน UDC เชิงทฤษฎี ที่<b>ก้าวข้ามข้อจำกัด Safety Zone ๕๐๐ ม.</b> ของ UNCLOS ข้อ ๖๐ วรรค ๕ ด้วยอำนาจตาม <b>พ.ร.บ. เขตปลอดภัยในราชการทหาร ๒๔๗๘</b> — ตราพระราชกฤษฎีกา พร้อมแผนที่พิกัดมาตรฐานสากลแนบท้าย</span>
+      <span class="lang-en">The synthesis of this chapter—merging 3D tactical environments (2.3), legal frameworks (2.4), and Time-Space-Force operational calculations (2.5.3) into a theoretical UDC defense model. It <b>bypasses UNCLOS Article 60(5)'s 500m Safety Zone restriction</b> by utilizing the legal powers of the <b>Military Safety Zone Act, B.E. 2478</b> to issue a Royal Decree annexed with standard geodetic coord maps.</span>
+    </p>
 
     <div class="zones rv">
       <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="แผนภาพเขตการป้องกันสองชั้นรอบ UDC">
@@ -1033,86 +1744,227 @@
       </svg>
       <div class="zone-leg">
         <div class="zl"><span class="sw" style="background:#00d4ff"></span>
-          <span><b>UDC Cluster</b> — แคปซูลศูนย์ข้อมูล + Hub + แนวสายสะดือเข้าฝั่ง บนพิกัดที่ประกาศในพระราชกฤษฎีกา</span></div>
+          <span>
+            <span class="lang-th"><b>UDC Cluster</b> — แคปซูลศูนย์ข้อมูล + Hub + แนวสายสะดือเข้าฝั่ง บนพิกัดที่ประกาศในพระราชกฤษฎีกา</span>
+            <span class="lang-en"><b>UDC Cluster</b> — The subsea data capsules, hub node, and umbilical path on coordinates decreed in the Royal Decree.</span>
+          </span>
+        </div>
         <div class="zl"><span class="sw" style="background:#ff6b61"></span>
-          <span><b>Maritime Exclusion Zone (MEZ)</b> · รัศมี ๒–๕ ไมล์ทะเล — เขตหวงห้ามเด็ดขาด
-          ห้ามเรือทุกประเภทที่ไม่ได้รับอนุญาต บังคับใช้ด้วยอำนาจ พ.ร.บ. ๒๔๗๘</span></div>
+          <span>
+            <span class="lang-th"><b>Maritime Exclusion Zone (MEZ)</b> · รัศมี ๒–๕ ไมล์ทะเล — เขตหวงห้ามเด็ดขาด ห้ามเรือทุกประเภทที่ไม่ได้รับอนุญาต บังคับใช้ด้วยอำนาจ พ.ร.บ. ๒๔๗๘</span>
+            <span class="lang-en"><b>Maritime Exclusion Zone (MEZ)</b> · 2–5 nm radius — Absolute exclusion zone; all unauthorized vessels prohibited, enforced under the Act of B.E. 2478.</span>
+          </span>
+        </div>
         <div class="zl"><span class="sw" style="background:#f5c451"></span>
-          <span><b>Restricted / Buffer Zone</b> · รัศมี ๕–๑๐ ไมล์ทะเล — เขตจำกัดพฤติกรรม
-          (ห้ามทอดสมอ ห้ามอวนลาก ห้ามลอยลำ) ควบคู่ TSS จัดระเบียบจราจร และ MDA เฝ้าตรวจ ๒๔/๗</span></div>
+          <span>
+            <span class="lang-th"><b>Restricted / Buffer Zone</b> · รัศมี ๕–๑๐ ไมล์ทะเล — เขตจำกัดพฤติกรรม (ห้ามทอดสมอ ห้ามอวนลาก ห้ามลอยลำ) ควบคู่ TSS จัดระเบียบจราจร และ MDA เฝ้าตรวจ ๒๔/๗</span>
+            <span class="lang-en"><b>Restricted / Buffer Zone</b> · 5–10 nm radius — Behavioral restriction zone (no anchoring, trawling, or loitering) integrated with TSS routing and 24/7 MDA surveillance.</span>
+          </span>
+        </div>
       </div>
     </div>
 
-    <h3 class="sub-h rv"><span class="bar"></span>สถาปัตยกรรมของโมเดล — ๓ องค์ประกอบหลัก</h3>
+    <h3 class="sub-h rv"><span class="bar"></span>
+      <span class="lang-th">สถาปัตยกรรมของโมเดล — ๓ องค์ประกอบหลัก</span>
+      <span class="lang-en">Model Architecture — 3 Core Pillars</span>
+    </h3>
     <div class="tier rv">
-      <div class="h"><span class="no">①</span>Zoning Model — เกราะชั้นนอก (Outer Shield)</div>
-      <p>เขตป้องกันสองชั้นตามแผนภาพข้างต้น แปลงหลักการ <b>"ใช้พื้นที่จำกัดเสรีภัยคุกคาม"</b>
-      ให้เป็นเส้นบนแผนที่เดินเรือที่มีผลทางกฎหมายจริง</p>
+      <div class="h">
+        <span class="no">①</span>
+        <span class="lang-th">Zoning Model — เกราะชั้นนอก (Outer Shield)</span>
+        <span class="lang-en">Zoning Model — Outer Shield</span>
+      </div>
+      <p>
+        <span class="lang-th">เขตป้องกันสองชั้นตามแผนภาพข้างต้น แปลงหลักการ <b>"ใช้พื้นที่จำกัดเสรีภัยคุกคาม"</b> ให้เป็นเส้นบนแผนที่เดินเรือที่มีผลทางกฎหมายจริง</span>
+        <span class="lang-en">A two-layered maritime boundary system translating the principle of <b>"using spatial controls to restrict threat maneuvers"</b> into legally binding lines on official marine charts.</span>
+      </p>
     </div>
     <div class="tier rv">
-      <div class="h"><span class="no">②</span>Multi-Domain Force Integration — การผนึกกำลังพหุมิติ</div>
-      <p>มอบความรับผิดชอบเป็นรายมิติ: ชายฝั่ง = <b>สอ.รฝ.</b> · ผิวน้ำ–อากาศ = <b>ทรภ.๑</b> ·
-      ใต้น้ำ = <b>ศูนย์สงครามใต้น้ำ (USW Center) + UUV</b> · พื้นท้องทะเล = <b>กรมอุทกศาสตร์</b>
-      (ร.ล.สุริยะ / ร.ล.ศุกร์ พร้อม Multibeam และ ROV)</p>
+      <div class="h">
+        <span class="no">②</span>
+        <span class="lang-th">Multi-Domain Force Integration — การผนึกกำลังพหุมิติ</span>
+        <span class="lang-en">Multi-Domain Force Integration</span>
+      </div>
+      <p>
+        <span class="lang-th">มอบความรับผิดชอบเป็นรายมิติ: ชายฝั่ง = <b>สอ.รฝ.</b> · ผิวน้ำ–อากาศ = <b>ทรภ.๑</b> · ใต้น้ำ = <b>ศูนย์สงครามใต้น้ำ (USW Center) + UUV</b> · พื้นท้องทะเล = <b>กรมอุทกศาสตร์</b> (ร.ล.สุริยะ / ร.ล.ศุกร์ พร้อม Multibeam และ ROV)</span>
+        <span class="lang-en">Allocates operational tasks across warfare domains: Coastal/Estuary = <b>ACDC</b>; Surface/Air = <b>1st Naval Area Command</b>; Subsea = <b>Undersea Warfare (USW) Center + UUVs</b>; Seabed = <b>Hydrographic Dept</b> (HTMS Suriya/HTMS Suk with multibeam &amp; ROVs).</span>
+      </p>
     </div>
     <div class="tier rv">
-      <div class="h"><span class="no">③</span>Centralized C2 — การบัญชาการรวมศูนย์</div>
-      <p>โครงข่าย <b>NCW</b> หลอมรวมภาพสถานการณ์ทุกมิติ มี <b>Underwater Element Coordinator</b>
-      ประสานการปฏิบัติใต้น้ำ และใช้ <b>AI / Big Data</b> วิเคราะห์แจ้งเตือนล่วงหน้า
-      เพื่อสั่งการตอบโต้จากศูนย์เดียว</p>
+      <div class="h">
+        <span class="no">③</span>
+        <span class="lang-th">Centralized C2 — การบัญชาการรวมศูนย์</span>
+        <span class="lang-en">Centralized Command &amp; Control (C2)</span>
+      </div>
+      <p>
+        <span class="lang-th">โครงข่าย <b>NCW</b> หลอมรวมภาพสถานการณ์ทุกมิติ มี <b>Underwater Element Coordinator</b> ประสานการปฏิบัติใต้น้ำ และใช้ <b>AI / Big Data</b> วิเคราะห์แจ้งเตือนล่วงหน้า เพื่อสั่งการตอบโต้จากศูนย์เดียว</span>
+        <span class="lang-en">A <b>NCW</b> network integrating multi-sensor feeds. Features a dedicated <b>Underwater Element Coordinator</b> to manage subsea maneuvers, leveraging <b>AI / Big Data</b> predictive warnings to direct responses from a unified command.</span>
+      </p>
     </div>
 
     <div class="t-cap rv">
-      <span class="t">ตารางที่ ๒-๔ · โครงสร้างโมเดล The Shield 1.0 — มิติ องค์ประกอบ ผู้รับผิดชอบ และปัจจัยความเสี่ยง</span>
-      <span class="src">ที่มา : ผู้วิจัย</span>
+      <span class="t">
+        <span class="lang-th">ตารางที่ ๒-๔ · โครงสร้างโมเดล The Shield 1.0 — มิติ องค์ประกอบ ผู้รับผิดชอบ และปัจจัยความเสี่ยง</span>
+        <span class="lang-en">Table 2-4 · Structure of The Shield 1.0 — Dimensions, Elements, Responsibilities, and Risk Factors</span>
+      </span>
+      <span class="src">
+        <span class="lang-th">ที่มา : ผู้วิจัย</span>
+        <span class="lang-en">Source: Researcher</span>
+      </span>
     </div>
     <div class="tbl-wrap rv">
       <table class="dtbl w1100">
         <thead><tr>
-          <th>มิติทางการยุทธ์</th><th>องค์ประกอบของโมเดล</th><th>ผู้รับผิดชอบหลัก</th><th>รายละเอียดการปฏิบัติ</th><th>ปัจจัยความเสี่ยง</th>
+          <th>
+            <span class="lang-th">มิติทางการยุทธ์</span>
+            <span class="lang-en">Combat Dimension</span>
+          </th>
+          <th>
+            <span class="lang-th">องค์ประกอบของโมเดล</span>
+            <span class="lang-en">Model Element</span>
+          </th>
+          <th>
+            <span class="lang-th">ผู้รับผิดชอบหลัก</span>
+            <span class="lang-en">Primary Responsibility</span>
+          </th>
+          <th>
+            <span class="lang-th">รายละเอียดการปฏิบัติ</span>
+            <span class="lang-en">Operational Details</span>
+          </th>
+          <th>
+            <span class="lang-th">ปัจจัยความเสี่ยง</span>
+            <span class="lang-en">Risk Factors</span>
+          </th>
         </tr></thead>
         <tbody>
           <tr>
-            <td class="dim">พื้นที่</td>
-            <td><b>Outer Shield</b> — MEZ ๒–๕ nm + Buffer ๕–๑๐ nm + TSS</td>
-            <td>ศรชล. ร่วมกับกรมเจ้าท่า / IMO</td>
-            <td>ตราพระราชกฤษฎีกาเขตปลอดภัย ประกาศผ่านแผนที่เดินเรือและประกาศชาวเรือ บังคับพฤติกรรมผ่าน COLREGs ข้อ ๑๐</td>
-            <td>แรงเสียดทานจากประมงพื้นบ้านและผู้ประกอบการเดินเรือ — ต้องมีกระบวนการมีส่วนร่วม</td>
+            <td class="dim">
+              <span class="lang-th">พื้นที่</span>
+              <span class="lang-en">Space (Zoning)</span>
+            </td>
+            <td>
+              <span class="lang-th"><b>Outer Shield</b> — MEZ ๒–๕ nm + Buffer ๕–๑๐ nm + TSS</span>
+              <span class="lang-en"><b>Outer Shield</b> — MEZ 2–5 nm + Buffer 5–10 nm + TSS</span>
+            </td>
+            <td>
+              <span class="lang-th">ศรชล. ร่วมกับกรมเจ้าท่า / IMO</span>
+              <span class="lang-en">THMECC, Marine Dept, IMO</span>
+            </td>
+            <td>
+              <span class="lang-th">ตราพระราชกฤษฎีกาเขตปลอดภัย ประกาศผ่านแผนที่เดินเรือและประกาศชาวเรือ บังคับพฤติกรรมผ่าน COLREGs ข้อ ๑๐</span>
+              <span class="lang-en">Enact Royal Decree, publish on charts &amp; Notices to Mariners, enforce COLREGs Rule 10.</span>
+            </td>
+            <td>
+              <span class="lang-th">แรงเสียดทานจากประมงพื้นบ้านและผู้ประกอบการเดินเรือ — ต้องมีกระบวนการมีส่วนร่วม</span>
+              <span class="lang-en">Friction from local fishers and shipping operators—requires public hearing processes.</span>
+            </td>
           </tr>
           <tr>
-            <td class="dim">เวลา</td>
+            <td class="dim">
+              <span class="lang-th">เวลา</span>
+              <span class="lang-en">Time (Command)</span>
+            </td>
             <td><b>Centralized C2</b> — NCW + AI Early Warning</td>
-            <td>ศปก.ทร. / ศรชล. (COP ร่วม)</td>
-            <td>หลอมรวมข้อมูล AIS เรดาร์ ดาวเทียม และเซนเซอร์ใต้น้ำ วิเคราะห์พฤติกรรมผิดแบบแผนแบบ Near Real-time</td>
-            <td>ความหน่วงของข้อมูลต่างหน่วยงาน · ภัยไซเบอร์ต่อตัวโครงข่าย C2 เอง</td>
+            <td>
+              <span class="lang-th">ศปก.ทร. / ศรชล. (COP ร่วม)</span>
+              <span class="lang-en">RTN Operations Center, THMECC (Joint COP)</span>
+            </td>
+            <td>
+              <span class="lang-th">หลอมรวมข้อมูล AIS เรดาร์ ดาวเทียม และเซนเซอร์ใต้น้ำ วิเคราะห์พฤติกรรมผิดแบบแผนแบบ Near Real-time</span>
+              <span class="lang-en">Fuses AIS, radar, satellite, and subsea sensors to analyze anomalous courses in near real-time.</span>
+            </td>
+            <td>
+              <span class="lang-th">ความหน่วงของข้อมูลต่างหน่วยงาน · ภัยไซเบอร์ต่อตัวโครงข่าย C2 เอง</span>
+              <span class="lang-en">Inter-agency data latency; cyber threats targeting the C2 network architecture.</span>
+            </td>
           </tr>
           <tr>
-            <td class="dim">กำลังรบ — ใต้น้ำ</td>
-            <td>เครือข่ายโซนาร์ + DAS + UUV ลาดตระเวน</td>
-            <td>ศูนย์สงครามใต้น้ำ ศปก.ทร.</td>
-            <td>เฝ้าตรวจ SDV / Midget / UUV ในย่าน Shadow Zone ด้วยเซนเซอร์หลายชนิดเสริมกัน มี Underwater Element Coordinator กำกับ</td>
-            <td>สภาพเสียงน้ำตื้นจำกัดระยะตรวจจับ · False Alarm จากเสียงชีวภาพ</td>
+            <td class="dim">
+              <span class="lang-th">กำลังรบ — ใต้น้ำ</span>
+              <span class="lang-en">Force (Undersea)</span>
+            </td>
+            <td>
+              <span class="lang-th">เครือข่ายโซนาร์ + DAS + UUV ลาดตระเวน</span>
+              <span class="lang-en">Sonar Network + DAS + Patrol UUVs</span>
+            </td>
+            <td>
+              <span class="lang-th">ศูนย์สงครามใต้น้ำ ศปก.ทร.</span>
+              <span class="lang-en">Undersea Warfare (USW) Center, RTN</span>
+            </td>
+            <td>
+              <span class="lang-th">เฝ้าตรวจ SDV / Midget / UUV ในย่าน Shadow Zone ด้วยเซนเซอร์หลายชนิดเสริมกัน มี Underwater Element Coordinator กำกับ</span>
+              <span class="lang-en">Monitors SDVs, midget subs, and UUVs in Shadow Zones using multi-sensor arrays, directed by Underwater Element Coordinator.</span>
+            </td>
+            <td>
+              <span class="lang-th">สภาพเสียงน้ำตื้นจำกัดระยะตรวจจับ · False Alarm จากเสียงชีวภาพ</span>
+              <span class="lang-en">Shallow water acoustics restrict sensor ranges; biological false alarms.</span>
+            </td>
           </tr>
           <tr>
-            <td class="dim">กำลังรบ — ผิวน้ำ/อากาศ</td>
-            <td>เรือตรวจการณ์ + อากาศยานลาดตระเวน</td>
-            <td>ทัพเรือภาคที่ ๑ (ทรภ.๑)</td>
-            <td>ลาดตระเวนแสดงกำลัง ตรวจค้น และสกัดกั้นเป้าผิวน้ำต้องสงสัยใน MEZ/Buffer ตามขั้นการใช้กำลัง</td>
-            <td>จำนวนเรือจำกัดเทียบพื้นที่ — ต้องพึ่ง Early Warning เพื่อจัดวางกำลังล่วงหน้า</td>
+            <td class="dim">
+              <span class="lang-th">กำลังรบ — ผิวน้ำ/อากาศ</span>
+              <span class="lang-en">Force (Surface/Air)</span>
+            </td>
+            <td>
+              <span class="lang-th">เรือตรวจการณ์ + อากาศยานลาดตระเวน</span>
+              <span class="lang-en">Patrol Vessels + Patrol Aircraft</span>
+            </td>
+            <td>
+              <span class="lang-th">ทัพเรือภาคที่ ๑ (ทรภ.๑)</span>
+              <span class="lang-en">1st Naval Area Command (NAC 1)</span>
+            </td>
+            <td>
+              <span class="lang-th">ลาดตระเวนแสดงกำลัง ตรวจค้น และสกัดกั้นเป้าผิวน้ำต้องสงสัยใน MEZ/Buffer ตามขั้นการใช้กำลัง</span>
+              <span class="lang-en">Conducts presence patrols, inspections, and intercepts suspicious surface targets in MEZ/Buffer under ROEs.</span>
+            </td>
+            <td>
+              <span class="lang-th">จำนวนเรือจำกัดเทียบพื้นที่ — ต้องพึ่ง Early Warning เพื่อจัดวางกำลังล่วงหน้า</span>
+              <span class="lang-en">Limited hulls relative to patrol sectors; requires Early Warning for proactive placement.</span>
+            </td>
           </tr>
           <tr>
-            <td class="dim">กำลังรบ — พื้นท้องทะเล</td>
-            <td>สำรวจ/พิสูจน์ทราบพื้นท้องทะเลเป็นวงรอบ</td>
-            <td>กรมอุทกศาสตร์ (ร.ล.สุริยะ / ร.ล.ศุกร์)</td>
-            <td>Multibeam + Side-scan + ROV จัดทำ Baseline พื้นท้องทะเลและตรวจความเปลี่ยนแปลง (Change Detection) รอบที่ตั้ง</td>
-            <td>วัตถุต้องสงสัย/ทุ่นระเบิดแยกยากจาก Clutter ในพื้นโคลน</td>
+            <td class="dim">
+              <span class="lang-th">กำลังรบ — พื้นท้องทะเล</span>
+              <span class="lang-en">Force (Seabed)</span>
+            </td>
+            <td>
+              <span class="lang-th">สำรวจ/พิสูจน์ทราบพื้นท้องทะเลเป็นวงรอบ</span>
+              <span class="lang-en">Periodic Seabed Survey/Verification</span>
+            </td>
+            <td>
+              <span class="lang-th">กรมอุทกศาสตร์ (ร.ล.สุริยะ / ร.ล.ศุกร์)</span>
+              <span class="lang-en">Hydrographic Department (HTMS Suriya / HTMS Suk)</span>
+            </td>
+            <td>
+              <span class="lang-th">Multibeam + Side-scan + ROV จัดทำ Baseline พื้นท้องทะเลและตรวจความเปลี่ยนแปลง (Change Detection) รอบที่ตั้ง</span>
+              <span class="lang-en">Deploys multibeam, side-scan, and ROVs to establish seabed baselines and run periodic change detection.</span>
+            </td>
+            <td>
+              <span class="lang-th">วัตถุต้องสงสัย/ทุ่นระเบิดแยกยากจาก Clutter ในพื้นโคลน</span>
+              <span class="lang-en">Suspicious objects or subsea mines are difficult to resolve from mud clutter.</span>
+            </td>
           </tr>
           <tr>
-            <td class="dim">กำลังรบ — ชายฝั่ง</td>
-            <td>เรดาร์ชายฝั่ง + อาวุธปล่อยฐานบก</td>
-            <td>หน่วยบัญชาการต่อสู้อากาศยานและรักษาฝั่ง (สอ.รฝ.)</td>
-            <td>เฝ้าตรวจและพร้อมสนับสนุนการยิงคุ้มครองจากฝั่ง ครอบคลุมแนวสายสะดือและสถานีรับขึ้นฝั่ง (Landing Station)</td>
-            <td>จุดเชื่อมต่อบนฝั่งเป็นเป้านิ่งต่อการก่อวินาศกรรมภาคพื้น</td>
+            <td class="dim">
+              <span class="lang-th">กำลังรบ — ชายฝั่ง</span>
+              <span class="lang-en">Force (Coastal)</span>
+            </td>
+            <td>
+              <span class="lang-th">เรดาร์ชายฝั่ง + อาวุธปล่อยฐานบก</span>
+              <span class="lang-en">Coastal Radar + Land-based Missiles</span>
+            </td>
+            <td>
+              <span class="lang-th">หน่วยบัญชาการต่อสู้อากาศยานและรักษาฝั่ง (สอ.รฝ.)</span>
+              <span class="lang-en">Air and Coastal Defence Command (ACDC)</span>
+            </td>
+            <td>
+              <span class="lang-th">เฝ้าตรวจและพร้อมสนับสนุนการยิงคุ้มครองจากฝั่ง ครอบคลุมแนวสายสะดือและสถานีรับขึ้นฝั่ง (Landing Station)</span>
+              <span class="lang-en">Monitors and provides coastal gunfire support covering subsea cable corridors and Cable Landing Stations.</span>
+            </td>
+            <td>
+              <span class="lang-th">จุดเชื่อมต่อบนฝั่งเป็นเป้านิ่งต่อการก่อวินาศกรรมภาคพื้น</span>
+              <span class="lang-en">Terrestrial Cable Landing Stations represent static high-value targets for sabotage.</span>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -1120,29 +1972,47 @@
 
     <figure class="fig rv">
       <div class="fig-box" style="background:#06121f;padding:0">
-        <img src="THE_SHIELD_Ch2_model.webp" alt="แผนภาพจำลองโมเดล The Shield 1.0 — เขตป้องกันหลายชั้นรอบศูนย์ข้อมูลใต้น้ำ ผนึกกำลังหลายมิติภายใต้การบัญชาการรวมศูนย์" style="border-radius:14px">
+        <img src="THE_SHIELD_Ch2_model.webp" alt="Conceptual diagram of The Shield 1.0 Active Defense Model, illustrating multi-layered zones and multi-domain command structures." style="border-radius:14px">
       </div>
       <figcaption>
-        <span class="t">ภาพที่ ๒-๑๐ · กรอบแนวคิดโมเดลการป้องกัน The Shield 1.0</span>
-        <span class="src">ที่มา : ผู้วิจัย</span>
+        <span class="t">
+          <span class="lang-th">ภาพที่ ๒-๑๐ · กรอบแนวคิดโมเดลการป้องกัน The Shield 1.0</span>
+          <span class="lang-en">Figure 2-10 · Conceptual Framework of The Shield 1.0 Active Defense Model</span>
+        </span>
+        <span class="src">
+          <span class="lang-th">ที่มา : ผู้วิจัย</span>
+          <span class="lang-en">Source: Researcher</span>
+        </span>
       </figcaption>
     </figure>
 
-    <h3 class="sub-h rv"><span class="bar"></span>เส้นทางวิวัฒน์ของโมเดลตลอดงานวิจัย</h3>
+    <h3 class="sub-h rv"><span class="bar"></span>
+      <span class="lang-th">เส้นทางวิวัฒน์ของโมเดลตลอดงานวิจัย</span>
+      <span class="lang-en">Model Evolution Roadmap Throughout the Research</span>
+    </h3>
     <div class="evo rv">
       <div class="stage s1">
         <div class="v">SHIELD 1.0</div>
-        <div class="w"><b>บทที่ ๒ — กรอบทฤษฎี</b> · สังเคราะห์จากวรรณกรรม กฎหมาย และหลักนิยม เป็นโมเดลเชิงแนวคิด</div>
+        <div class="w">
+          <span class="lang-th"><b>บทที่ ๒ — กรอบทฤษฎี</b> · สังเคราะห์จากวรรณกรรม กฎหมาย และหลักนิยม เป็นโมเดลเชิงแนวคิด</span>
+          <span class="lang-en"><b>Chapter 2 — Theoretical Framework</b> · Synthesized from literature, maritime law, and naval doctrines into a conceptual model.</span>
+        </div>
       </div>
       <div class="arr">➜</div>
       <div class="stage s2">
         <div class="v">SHIELD 2.0</div>
-        <div class="w"><b>บทที่ ๓ — ผูกพื้นที่จริง</b> · ปรับเทียบกับข้อมูลอ่าวไทยตอนบน ผลสัมภาษณ์เชิงลึก และ SWOT/TOWS</div>
+        <div class="w">
+          <span class="lang-th"><b>บทที่ ๓ — ผูกพื้นที่จริง</b> · ปรับเทียบกับข้อมูลอ่าวไทยตอนบน ผลสัมภาษณ์เชิงลึก และ SWOT/TOWS</span>
+          <span class="lang-en"><b>Chapter 3 — Real-World Application</b> · Calibrated with Upper Gulf data, SWOT/TOWS parameters, and expert deep interviews.</span>
+        </div>
       </div>
       <div class="arr">➜</div>
       <div class="stage s3">
         <div class="v">SHIELD 3.0</div>
-        <div class="w"><b>บทที่ ๔ — ระบบบูรณาการ</b> · ยกร่างเป็นข้อเสนอเชิงนโยบาย โครงสร้างกำลัง และแผนแม่บทที่นำไปปฏิบัติได้</div>
+        <div class="w">
+          <span class="lang-th"><b>บทที่ ๔ — ระบบบูรณาการ</b> · ยกร่างเป็นข้อเสนอเชิงนโยบาย โครงสร้างกำลัง และแผนแม่บทที่นำไปปฏิบัติได้</span>
+          <span class="lang-en"><b>Chapter 4 — Policy &amp; Integration</b> · Formulated into concrete policy proposals, force structure guidelines, and actionable master plans.</span>
+        </div>
       </div>
     </div>
   </div>
@@ -1152,33 +2022,38 @@
 <section id="tools">
   <div class="wrap">
     <div class="eyebrow rv"><span class="num">๒.๖</span>STRATEGIC ANALYSIS TOOLKIT</div>
-    <h2 class="title rv">เครื่องมือวิเคราะห์ทางยุทธศาสตร์ที่ใช้ในงานวิจัย</h2>
-    <p class="lead rv">บทที่ ๓ จะวิเคราะห์สถานภาพและออกแบบยุทธศาสตร์ด้วยเครื่องมือมาตรฐาน ๓ ชุด
-      ซึ่งทบทวนหลักวิชาไว้ในบทนี้</p>
+    <h2 class="title rv">
+      <span class="lang-th">เครื่องมือวิเคราะห์ทางยุทธศาสตร์ที่ใช้ในงานวิจัย</span>
+      <span class="lang-en">Strategic Analytical Tools Utilized in the Research</span>
+    </h2>
+    <p class="lead rv">
+      <span class="lang-th">บทที่ ๓ จะวิเคราะห์สถานภาพและออกแบบยุทธศาสตร์ด้วยเครื่องมือมาตรฐาน ๓ ชุด ซึ่งทบทวนหลักวิชาไว้ในบทนี้</span>
+      <span class="lang-en">Chapter 3 conducts current state analysis and strategic formulations using 3 standard toolsets reviewed theoretically in this section.</span>
+    </p>
     <div class="grid g3">
       <div class="card ben rv">
         <div class="ic">⚔️</div>
         <h4>SWOT Analysis + TOWS Matrix</h4>
-        <p>พัฒนาขึ้นในทศวรรษ 1960 โดย <b>Albert Humphrey</b> (Stanford Research Institute) —
-        วิเคราะห์จุดแข็ง–จุดอ่อน (ปัจจัยภายใน) และโอกาส–ภัยคุกคาม (ปัจจัยภายนอก)
-        แล้วจับคู่เป็นยุทธศาสตร์ <b>SO · ST · WO · WT</b> ผ่าน TOWS Matrix
-        เพื่อแปลงผลวิเคราะห์ให้เป็นทางเลือกเชิงรุก–เชิงรับที่จับต้องได้</p>
+        <p>
+          <span class="lang-th">พัฒนาขึ้นในทศวรรษ 1960 โดย <b>Albert Humphrey</b> (Stanford Research Institute) — วิเคราะห์จุดแข็ง–จุดอ่อน (ปัจจัยภายใน) และโอกาส–ภัยคุกคาม (ปัจจัยภายนอก) แล้วจับคู่เป็นยุทธศาสตร์ <b>SO · ST · WO · WT</b> ผ่าน TOWS Matrix เพื่อแปลงผลวิเคราะห์ให้เป็นทางเลือกเชิงรุก–เชิงรับที่จับต้องได้</span>
+          <span class="lang-en">Developed in the 1960s by <b>Albert Humphrey</b> (Stanford Research Institute)—evaluating internal Strengths/Weaknesses and external Opportunities/Threats, then pairing them into <b>SO, ST, WO, and WT</b> strategies via a TOWS Matrix to generate concrete operational options.</span>
+        </p>
       </div>
       <div class="card ben rv">
         <div class="ic">📐</div>
         <h4>GAP Analysis</h4>
-        <p>เทียบสถานภาพปัจจุบัน (<b>As-Is</b>) กับสภาพที่พึงประสงค์ (<b>To-Be</b>) ใน ๔ ขั้นตอน
-        โดยงานวิจัยจำแนกช่องว่างเป็น ๓ ประเภท:
-        <b>กฎหมายและกระบวนการ · ขีดความสามารถและเทคโนโลยี · การประสานงานและบูรณาการ</b> —
-        ผลลัพธ์คือบัญชีช่องว่างที่ยุทธศาสตร์ต้องอุดเป็นรายข้อ</p>
+        <p>
+          <span class="lang-th">เทียบสถานภาพปัจจุบัน (<b>As-Is</b>) กับสภาพที่พึงประสงค์ (<b>To-Be</b>) ใน ๔ ขั้นตอน โดยงานวิจัยจำแนกช่องว่างเป็น ๓ ประเภท: <b>กฎหมายและกระบวนการ · ขีดความสามารถและเทคโนโลยี · การประสานงานและบูรณาการ</b> — ผลลัพธ์คือบัญชีช่องว่างที่ยุทธศาสตร์ต้องอุดเป็นรายข้อ</span>
+          <span class="lang-en">Compares current status (<b>As-Is</b>) against desired outcomes (<b>To-Be</b>) in 4 stages. The research categorizes gaps into 3 types: <b>legal/procedural, capability/technology, and integration/coordination</b>, producing a systematic checklist of deficiencies.</span>
+        </p>
       </div>
       <div class="card ben rv">
         <div class="ic">🌐</div>
         <h4>PMESII Framework</h4>
-        <p>กรอบวิเคราะห์สภาวะแวดล้อมการปฏิบัติการของฝ่ายเสนาธิการสหรัฐฯ/NATO —
-        มอง ๖ มิติ: <b>การเมือง ทหาร เศรษฐกิจ สังคม สารสนเทศ โครงสร้างพื้นฐาน</b>
-        (ขยายเป็น PMESII-PT เมื่อรวมมิติกายภาพและเวลา)
-        ใช้ตรวจสอบว่าข้อเสนอของโมเดลครอบคลุมผลกระทบทุกมิติของชาติ ไม่ใช่เฉพาะมิติทหาร</p>
+        <p>
+          <span class="lang-th">กรอบวิเคราะห์สภาวะแวดล้อมการปฏิบัติการของฝ่ายเสนาธิการสหรัฐฯ/NATO — มอง ๖ มิติ: <b>การเมือง ทหาร เศรษฐกิจ สังคม สารสนเทศ โครงสร้างพื้นฐาน</b> (ขยายเป็น PMESII-PT เมื่อรวมมิติกายภาพและเวลา) ใช้ตรวจสอบว่าข้อเสนอของโมเดลครอบคลุมผลกระทบทุกมิติของชาติ ไม่ใช่เฉพาะมิติทหาร</span>
+          <span class="lang-en">US/NATO operational environment framework analyzing 6 dimensions: <b>Political, Military, Economic, Social, Information, and Infrastructure</b> (expanded to PMESII-PT with physical and time elements). Verifies that proposed defense models cover national-level impacts, not just naval factors.</span>
+        </p>
       </div>
     </div>
   </div>
@@ -1188,24 +2063,28 @@
 <section id="summary">
   <div class="wrap">
     <div class="eyebrow rv"><span class="num">๒.๗</span>CHAPTER SUMMARY</div>
-    <h2 class="title rv">สรุปท้ายบท — จากวรรณกรรมสู่โจทย์วิจัย</h2>
-    <p class="lead rv">การทบทวนวรรณกรรมทั้ง ๕ กลุ่มชี้ข้อสรุปเดียวกัน:
-      อ่าวไทยตอนบน<b>มีความเหมาะสมเชิงวิศวกรรม</b>ต่อการติดตั้ง UDC
-      แต่<b>ติดข้อจำกัดเชิงกฎหมาย</b> (Safety Zone ๕๐๐ ม.) และ<b>การบริหารทะเลแบบแยกส่วน</b> (๑๗ หน่วยงาน) —
-      กลไกที่มีอยู่จึง<b>ยังไม่เพียงพอ</b>ต่อภัยคุกคามยุค Seabed Warfare และปฏิบัติการ Grey-zone</p>
-
+    <h2 class="title rv">
+      <span class="lang-th">สรุปท้ายบท — จากวรรณกรรมสู่โจทย์วิจัย</span>
+      <span class="lang-en">Chapter Summary — From Literature to Research Goal</span>
+    </h2>
+    <p class="lead rv">
+      <span class="lang-th">การทบทวนวรรณกรรมทั้ง ๕ กลุ่มชี้ข้อสรุปเดียวกัน: อ่าวไทยตอนบน<b>มีความเหมาะสมเชิงวิศวกรรม</b>ต่อการติดตั้ง UDC แต่<b>ติดข้อจำกัดเชิงกฎหมาย</b> (Safety Zone ๕๐๐ ม.) และ<b>การบริหารทะเลแบบแยกส่วน</b> (๑๗ หน่วยงาน) — กลไกที่มีอยู่จึง<b>ยังไม่เพียงพอ</b>ต่อภัยคุกคามยุค Seabed Warfare และปฏิบัติการ Grey-zone</span>
+      <span class="lang-en">The review of the 5 literature groups points to a unified conclusion: while the Upper Gulf of Thailand is <b>highly suitable from an engineering perspective</b> for UDC deployment, it remains <b>constrained by legal limitations</b> (the 500m UNCLOS safety zone) and <b>fragmented ocean governance</b> (across 17 agencies). Consequently, existing protection frameworks are <b>inadequate</b> against modern seabed warfare threats and grey-zone operations.</span>
+    </p>
     <div class="prop rv">
-      <div class="h">◈ SYNTHESIS — สิ่งที่บทนี้ส่งมอบ</div>
-      <p>บทที่ ๒ ส่งมอบ <b>กรอบแนวคิด The Shield 1.0</b> (ตารางที่ ๒-๔ และภาพที่ ๒-๑๐) —
-      โมเดลการป้องกันเชิงทฤษฎีที่ผนวก <b>Zoning Model + Multi-Domain Force + Centralized C2</b>
-      บนฐานกฎหมายไทยที่ใช้ได้จริง พร้อมเข้าสู่การทดสอบกับพื้นที่จริงในบทที่ ๓
-      ด้วยกระบวนการฝ่ายอำนวยการ การเทียบเคียงต่างประเทศ (Benchmarking)
-      การวิเคราะห์ SWOT/TOWS และการสัมภาษณ์เชิงลึกผู้เชี่ยวชาญ</p>
+      <div class="h">
+        <span class="lang-th">◈ SYNTHESIS — สิ่งที่บทนี้ส่งมอบ</span>
+        <span class="lang-en">◈ SYNTHESIS — Chapter Output</span>
+      </div>
+      <p>
+        <span class="lang-th">บทที่ ๒ ส่งมอบ <b>กรอบแนวคิด The Shield 1.0</b> (ตารางที่ ๒-๔ และภาพที่ ๒-๑๐) — โมเดลการป้องกันเชิงทฤษฎีที่ผนวก <b>Zoning Model + Multi-Domain Force + Centralized C2</b> บนฐานกฎหมายไทยที่ใช้ได้จริง พร้อมเข้าสู่การทดสอบกับพื้นที่จริงในบทที่ ๓ ด้วยกระบวนการฝ่ายอำนวยการ การเทียบเคียงต่างประเทศ (Benchmarking) การวิเคราะห์ SWOT/TOWS และการสัมภาษณ์เชิงลึกผู้เชี่ยวชาญ</span>
+        <span class="lang-en">Chapter 2 delivers the <b>"The Shield 1.0" active defense conceptual framework</b> (Table 2-4 and Figure 2-10)—a theoretical model integrating <b>exclusion zoning, multi-domain forces, and centralized C2 structures</b> under Thai legal authority. This conceptual model will be tested against real-world settings in Chapter 3 using staff-level processes, international benchmarking, SWOT/TOWS assessments, and expert in-depth interviews.</span>
+      </p>
     </div>
-
-    <p class="body rv" style="margin-top:22px">โครงสร้างการนำเสนอเอกสารฉบับเต็มของบทนี้ประกอบด้วยตาราง ๔ รายการ
-      และภาพประกอบ ๑๐ รายการ — หน้าเว็บนี้คัดเฉพาะองค์ประกอบสำคัญมาเรียบเรียงใหม่
-      เพื่อการสื่อสารที่กระชับ ผู้สนใจรายละเอียดเชิงอ้างอิงโปรดดูเอกสารวิจัยฉบับสมบูรณ์</p>
+    <p class="body rv" style="margin-top:22px">
+      <span class="lang-th">โครงสร้างการนำเสนอเอกสารฉบับเต็มของบทนี้ประกอบด้วยตาราง ๔ รายการ และภาพประกอบ ๑๐ รายการ — หน้าเว็บนี้คัดเฉพาะองค์ประกอบสำคัญมาเรียบเรียงใหม่ เพื่อการสื่อสารที่กระชับ ผู้สนใจรายละเอียดเชิงอ้างอิงโปรดดูเอกสารวิจัยฉบับสมบูรณ์</span>
+      <span class="lang-en">The complete structure of this research chapter contains 4 tables and 10 figures. This webpage abstracts the core elements for concise communication; please refer to the full research dissertation for complete citations and references.</span>
+    </p>
   </div>
 </section>
 
@@ -1213,12 +2092,23 @@
 <footer>
   <div class="wrap">
     <div class="foot-nav rv">
-      <a class="btn" href="THE_SHIELD_Ch1.html">← บทที่ ๑ · บทนำ</a>
-      <a class="btn primary" href="THE_SHIELD_Pitch.html#research">⌂ กลับหน้านำเสนองานวิจัย</a>
-      <a class="btn" href="THE_SHIELD_Ch3.html">บทที่ ๓ · ระเบียบวิธีวิจัย →</a>
+      <a class="btn" href="THE_SHIELD_Ch1.html">
+        <span class="lang-th">← บทที่ ๑ · บทนำ</span>
+        <span class="lang-en">← Chapter 1 · Introduction</span>
+      </a>
+      <a class="btn primary" href="THE_SHIELD_Pitch.html#research">
+        <span class="lang-th">⌂ กลับหน้านำเสนองานวิจัย</span>
+        <span class="lang-en">⌂ Back to Research Portal</span>
+      </a>
+      <a class="btn" href="THE_SHIELD_Ch3.html">
+        <span class="lang-th">บทที่ ๓ · ระเบียบวิธีวิจัย →</span>
+        <span class="lang-en">Chapter 3 · Methodology →</span>
+      </a>
     </div>
-    <p class="disclaim">THE SHIELD · RESEARCH DOSSIER — CHAPTER 02 · หลักสูตรเสนาธิการทหารเรือ รุ่นที่ ๘๖ ·
-    เนื้อหาคัดย่อจากเอกสารวิจัยเพื่อการนำเสนอ มิใช่เอกสารราชการฉบับสมบูรณ์</p>
+    <p class="disclaim">
+      <span class="lang-th">THE SHIELD · RESEARCH DOSSIER — CHAPTER 02 · หลักสูตรเสนาธิการทหารเรือ รุ่นที่ ๘๖ · เนื้อหาคัดย่อจากเอกสารวิจัยเพื่อการนำเสนอ มิใช่เอกสารราชการฉบับสมบูรณ์</span>
+      <span class="lang-en">THE SHIELD · RESEARCH DOSSIER — CHAPTER 02 · Naval War College Class 86 · Executive summary abstracted for presentation purposes; not an official government policy document.</span>
+    </p>
   </div>
 </footer>
 
@@ -1304,6 +2194,27 @@
   });
 })();
 </script>
+
+<!-- ===== BILINGUAL TRANSLATION SCRIPT ===== -->
+<script>
+(function(){
+  "use strict";
+  function applyLanguage(lang) {
+    document.body.setAttribute('data-lang', lang);
+    var btn = document.getElementById('langBtn');
+    if (btn) btn.textContent = (lang === 'th') ? 'EN' : 'TH';
+  }
+  window.toggleLanguage = function() {
+    var cur = localStorage.getItem('currentLang') || 'th';
+    var next = (cur === 'th') ? 'en' : 'th';
+    localStorage.setItem('currentLang', next);
+    applyLanguage(next);
+  };
+  var initLang = localStorage.getItem('currentLang') || 'th';
+  applyLanguage(initLang);
+})();
+</script>
+
 </body>
 
 </html>
