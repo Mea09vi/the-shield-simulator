@@ -359,7 +359,7 @@
             --text-main:  #ccd6f6;
             --text-muted: #8892b0;
             --cyan:   #00d4ff;
-            --green:  #39ff14;
+            --green:  #22c55e;
             --red:    #ff4136;
             --yellow: #ffd700;
             --amber:  #f59e0b;
@@ -465,6 +465,12 @@
                     transparent 55%, rgb(0 0 0 / .28) 100%);
         }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        /* QW-5: keyboard-focus indicator (accessibility) */
+        :focus-visible {
+            outline: 2px solid var(--cyan);
+            outline-offset: 2px;
+            border-radius: var(--radius-xs);
+        }
         body {
             font-family: var(--font-body), sans-serif;
             background: var(--bg-dark); color: var(--text-main);
@@ -640,59 +646,6 @@
             margin-top: 18px;
         }
 
-        /* ═══ TIER 2 — Visual Polish ═════════════════════════════ */
-        .panel {
-            background: linear-gradient(165deg, rgb(var(--bg-panel-rgb) / 0.62), rgba(4, 12, 22, 0.78)) !important;
-            backdrop-filter: blur(12px) saturate(180%);
-            -webkit-backdrop-filter: blur(12px) saturate(180%);
-            border-width: 1px !important;
-            border-style: solid !important;
-            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05),
-                        0 8px 32px 0 rgba(0, 0, 0, 0.45) !important;
-            transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), 
-                        box-shadow 0.25s cubic-bezier(0.25, 0.8, 0.25, 1),
-                        border-color 0.25s ease !important;
-        }
-        .panel:hover {
-            transform: translateY(-2px);
-            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08),
-                        0 12px 38px 0 rgb(var(--cyan-rgb) / 0.08) !important;
-        }
-        /* [v17.2.3 UI-2] Metallic gradient — panel ซ้าย/ขวาให้มีมิติแบบโลหะปัดเงาเล็กน้อย
-           ชั้นบน: sheen ทแยง (ไฮไลต์ขาวมุมบนซ้าย → แถบสะท้อนฟ้าเหล็กกลางแผ่น → เงาจางมุมล่างขวา)
-           ชั้นล่าง: ไล่สว่างบน-มืดล่างจากสีธีม (--bg-panel-rgb เปลี่ยนตาม THEME ได้เหมือนเดิม)
-           + inset ขอบบนรับแสง/ขอบล่างเงา ให้ขอบแผ่นดูนูน — วางท้าย cascade เพื่อทับกฎ TIER 2 ด้านบน */
-        .panel {
-            background:
-                linear-gradient(115deg,
-                    rgba(255, 255, 255, 0.085) 0%,
-                    rgba(255, 255, 255, 0.025) 14%,
-                    rgba(255, 255, 255, 0.00) 30%,
-                    rgba(132, 180, 216, 0.055) 46%,
-                    rgba(255, 255, 255, 0.00) 62%,
-                    rgba(0, 0, 0, 0.14) 100%),
-                linear-gradient(165deg,
-                    rgb(var(--bg-panel-rgb) / 0.74) 0%,
-                    rgba(4, 12, 22, 0.72) 48%,
-                    rgba(2, 7, 14, 0.87) 100%) !important;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10),
-                        inset 0 -1px 0 rgba(0, 0, 0, 0.42),
-                        inset 1px 0 0 rgba(255, 255, 255, 0.035),
-                        inset -1px 0 0 rgba(0, 0, 0, 0.22),
-                        0 8px 32px 0 rgba(0, 0, 0, 0.45) !important;
-        }
-        .panel:hover {
-            border-color: rgb(var(--cyan-rgb) / 0.50) !important;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
-                        inset 0 -1px 0 rgba(0, 0, 0, 0.42),
-                        inset 1px 0 0 rgba(255, 255, 255, 0.045),
-                        inset -1px 0 0 rgba(0, 0, 0, 0.22),
-                        0 12px 38px 0 rgb(var(--cyan-rgb) / 0.20) !important;
-        }
-        .panel-title {
-            border-left: 2px solid currentColor;
-            padding-left: 6px;
-        }
         /* Compass rose — bottom-left nav cluster (เหนือ coord readout) */
         #compassRose {
             position: absolute; bottom: 96px; left: 12px; z-index: 620;
@@ -782,16 +735,47 @@
         }
         #uiZoomCtl .uz-btn:hover { background:rgb(var(--teal-rgb) / .22); }
         .panel {
-            background: var(--bg-panel); border-radius:var(--radius-lg); border: 1px solid rgb(var(--cyan-rgb) / 0.25);
+            background:
+                linear-gradient(115deg,
+                    rgba(255, 255, 255, 0.085) 0%,
+                    rgba(255, 255, 255, 0.025) 14%,
+                    rgba(255, 255, 255, 0.00) 30%,
+                    rgba(132, 180, 216, 0.055) 46%,
+                    rgba(255, 255, 255, 0.00) 62%,
+                    rgba(0, 0, 0, 0.14) 100%),
+                linear-gradient(165deg,
+                    rgb(var(--bg-panel-rgb) / 0.74) 0%,
+                    rgba(4, 12, 22, 0.72) 48%,
+                    rgba(2, 7, 14, 0.87) 100%);
+            border-radius:var(--radius-lg); border: 1px solid rgb(var(--cyan-rgb) / 0.25);
             padding: 8px 10px; display: flex; flex-direction: column; gap: 5px; overflow: hidden;
             /* [v16.0.5 W5-Q11] entrance นุ่มๆ ตอน mount/แสดงผล */
             animation: udc-panel-in var(--dur-med) var(--ease-out);
             /* glassmorphism enhancement */
             backdrop-filter: blur(12px) saturate(180%);
             -webkit-backdrop-filter: blur(12px) saturate(180%);
-            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10),
+                        inset 0 -1px 0 rgba(0, 0, 0, 0.42),
+                        inset 1px 0 0 rgba(255, 255, 255, 0.035),
+                        inset -1px 0 0 rgba(0, 0, 0, 0.22),
+                        0 8px 32px 0 rgba(0, 0, 0, 0.45);
+            transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1),
+                        box-shadow 0.25s cubic-bezier(0.25, 0.8, 0.25, 1),
+                        border-color 0.25s ease;
         }
-        .panel-title { font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }
+        .panel:hover {
+            transform: translateY(-2px);
+            border-color: rgb(var(--cyan-rgb) / 0.50);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
+                        inset 0 -1px 0 rgba(0, 0, 0, 0.42),
+                        inset 1px 0 0 rgba(255, 255, 255, 0.045),
+                        inset -1px 0 0 rgba(0, 0, 0, 0.22),
+                        0 12px 38px 0 rgb(var(--cyan-rgb) / 0.20);
+        }
+        .panel-title {
+            font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+            border-left: 2px solid currentColor; padding-left: 6px;
+        }
         .panel-sub   { font-size:10px; letter-spacing:1px; opacity:.65; margin-top:-4px; }
         hr.divider   { border:none; border-top:1px solid var(--border-dim); margin:1px 0; }
         .sensor-row  { display:flex; justify-content:space-between; align-items:center;
@@ -929,7 +913,8 @@
             position:absolute; top:14px; right:16px; z-index:9020;
             background:rgb(var(--bg-panel-rgb) / .92); border:1px solid var(--red);
             color:var(--red); font-family:var(--font-mono), monospace;
-            font-size:12px; padding:7px 14px; border-radius:var(--radius-md); cursor:pointer;
+            font-size:12px; padding:7px 14px; min-height:44px; border-radius:var(--radius-md); cursor:pointer;
+            display:flex; align-items:center; touch-action:manipulation;
         }
         #dive3dClose:hover { background:rgb(var(--red-rgb) / .18); }
         #dive3dHud {
@@ -946,39 +931,57 @@
             position:absolute; top:62px; right:16px; z-index:9020;
             display:flex; flex-direction:column; align-items:center; gap:7px;
         }
+        /* [ui-ux-pro-max] แถวปุ่มหมุน/ซูมกล้อง — ทางเลือกแทน drag/wheel บน touch/trackpad */
+        #d3camctlRow {
+            display:flex; gap:7px;
+        }
+        .d3-camctl-btn {
+            background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--cyan);
+            color:var(--cyan); font-family:var(--font-mono), monospace;
+            font-size:15px; font-weight:700; min-width:44px; min-height:44px;
+            border-radius:var(--radius-sm); cursor:pointer;
+            display:flex; align-items:center; justify-content:center;
+            touch-action:manipulation;
+        }
+        .d3-camctl-btn:hover { background:rgba(34,211,238,.22); }
         #d3resetBtn {
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--cyan);
             color:var(--cyan); font-family:var(--font-mono), monospace;
-            font-size:10px; padding:5px 9px; border-radius:var(--radius-sm);
+            font-size:11px; padding:8px 12px; min-height:44px; min-width:44px; border-radius:var(--radius-sm);
             cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+            display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
         #d3resetBtn:hover { background:rgba(34,211,238,.22); }
         #d3northBtn {
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--purple);
             color:var(--purple); font-family:var(--font-mono), monospace;
-            font-size:10px; padding:5px 9px; border-radius:var(--radius-sm);
+            font-size:11px; padding:8px 12px; min-height:44px; min-width:44px; border-radius:var(--radius-sm);
             cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+            display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
         #d3northBtn:hover { background:rgba(167,139,250,.22); }
         #d3straitBtn {
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--amber);
             color:var(--yellow); font-family:var(--font-mono), monospace;
-            font-size:10px; padding:5px 9px; border-radius:var(--radius-sm);
+            font-size:11px; padding:8px 12px; min-height:44px; min-width:44px; border-radius:var(--radius-sm);
             cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+            display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
         #d3straitBtn:hover { background:rgba(251,191,36,.22); }
         #d3udcBtn {
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--teal);
             color:#9affe9; font-family:var(--font-mono), monospace;
-            font-size:10px; padding:5px 9px; border-radius:var(--radius-sm);
+            font-size:11px; padding:8px 12px; min-height:44px; min-width:44px; border-radius:var(--radius-sm);
             cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+            display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
         #d3udcBtn:hover { background:rgb(var(--teal-rgb) / .22); }
         #d3raysBtn {
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid #f472b6;
             color:#f9a8d4; font-family:var(--font-mono), monospace;
-            font-size:10px; padding:5px 9px; border-radius:var(--radius-sm);
+            font-size:11px; padding:8px 12px; min-height:44px; min-width:44px; border-radius:var(--radius-sm);
             cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+            display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
         #d3raysBtn:hover { background:rgba(244,114,182,.22);
             box-shadow:0 0 10px rgba(244,114,182,.4); }
@@ -988,8 +991,9 @@
         #d3sedBtn {
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--amber);
             color:#fcd34d; font-family:var(--font-mono), monospace;
-            font-size:10px; padding:5px 9px; border-radius:var(--radius-sm);
+            font-size:11px; padding:8px 12px; min-height:44px; min-width:44px; border-radius:var(--radius-sm);
             cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+            display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
         #d3sedBtn:hover { background:rgb(var(--amber-rgb) / .22);
             box-shadow:0 0 10px rgb(var(--amber-rgb) / .4); }
@@ -999,8 +1003,9 @@
         #d3satBtn {
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid #38bdf8;
             color:#7dd3fc; font-family:var(--font-mono), monospace;
-            font-size:10px; padding:5px 9px; border-radius:var(--radius-sm);
+            font-size:11px; padding:8px 12px; min-height:44px; min-width:44px; border-radius:var(--radius-sm);
             cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+            display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
         #d3satBtn:hover { background:rgba(56,189,248,.22);
             box-shadow:0 0 10px rgba(56,189,248,.4); }
@@ -1010,8 +1015,9 @@
         #d3detonateBtn {
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--orange);
             color:#fb923c; font-family:var(--font-mono), monospace;
-            font-size:10px; padding:5px 9px; border-radius:var(--radius-sm);
+            font-size:11px; padding:8px 12px; min-height:44px; min-width:44px; border-radius:var(--radius-sm);
             cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+            display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
         #d3detonateBtn:hover { background:rgb(var(--orange-rgb) / .22);
             box-shadow:0 0 10px rgb(var(--orange-rgb) / .45); }
@@ -2591,6 +2597,19 @@
             cursor:pointer; letter-spacing:.5px; transition:background .15s;
         }
         .iff-toggle-btn:hover { background:rgba(255,255,255,.09); }
+
+        /* ── MI-5: Tidal Monitor accordion sub-sections ── */
+        .mi5-accordion { margin-top:2px; }
+        .mi5-accordion-summary {
+            display:flex; align-items:center; gap:5px; cursor:pointer; list-style:none;
+            font-family:var(--font-mono), monospace; font-size:10px; font-weight:700;
+            letter-spacing:1px; text-transform:uppercase; padding:2px 0;
+            -webkit-tap-highlight-color:transparent;
+        }
+        .mi5-accordion-summary::-webkit-details-marker { display:none; }
+        .mi5-accordion-summary::before { content:"▶"; font-size:8px; transition:transform .15s ease; }
+        .mi5-accordion[open] > .mi5-accordion-summary::before { transform:rotate(90deg); }
+        .mi5-accordion-body { padding-top:3px; }
 
         /* ── Outcome Floating Popup ── */
         #outcomePopup {
@@ -7186,92 +7205,103 @@
             <div class="sensor-row"><span>🔊 Acoustic Env</span><span id="tide-acoustic" class="val s-ok">NOMINAL</span></div>
             <div class="sensor-row"><span>🤿 UUV Det.</span><span id="tide-detect" class="val s-ok">NORMAL</span></div>
             <hr class="divider" style="margin:2px 0;">
-            <!-- ── Detection Modifier Panel (A+B combined into one step) ── -->
-            <div class="panel-sub" style="color:#38bdf8;margin-bottom:1px;letter-spacing:1px;">🎯 DET.MOD A+B</div>
-            <div style="display:flex;justify-content:space-between;align-items:baseline;">
-                <span id="det-mod-label" style="font-family:var(--font-mono), monospace;font-size:10px;color:#22c55e;">NOMINAL</span>
-                <span id="det-mod-val" style="font-family:var(--font-mono), monospace;font-size:13px;font-weight:700;color:#38bdf8;">×1.00</span>
-            </div>
-            <div class="det-mod-bar-wrap"><div id="det-mod-bar" class="det-mod-bar-fill" style="width:60%;background:#22c55e;"></div></div>
-            <div class="det-mini-row">
-                <span>∿ Hydro</span>
-                <div class="det-mini-bar-wrap"><div id="dm-hydro-bar" class="det-mini-bar" style="width:60%;background:#22c55e;"></div></div>
-                <span id="dm-hydro-v" style="font-family:var(--font-mono), monospace;font-size:10px;min-width:32px;text-align:right;">6.0nm</span>
-            </div>
-            <div class="det-mini-row">
-                <span>📻 Sonar</span>
-                <div class="det-mini-bar-wrap"><div id="dm-sonar-bar" class="det-mini-bar" style="width:60%;background:#22c55e;"></div></div>
-                <span id="dm-sonar-v" style="font-family:var(--font-mono), monospace;font-size:10px;min-width:32px;text-align:right;">2.0nm</span>
-            </div>
-            <div class="det-mini-row">
-                <span>🤿 FLS</span>
-                <div class="det-mini-bar-wrap"><div id="dm-fls-bar" class="det-mini-bar" style="width:60%;background:#22c55e;"></div></div>
-                <span id="dm-fls-v" style="font-family:var(--font-mono), monospace;font-size:10px;min-width:36px;text-align:right;">1500m</span>
-            </div>
 
-            <!-- ── Sea State Control ── -->
-            <hr class="divider" style="margin:2px 0;">
-            <div class="panel-sub" style="color:#38bdf8;margin-bottom:1px;letter-spacing:1px;">🌊 SEA STATE (Douglas)</div>
-            <div class="ss-btn-row">
-                <button class="ss-btn ss0" id="ss-btn-0" onclick="setSeaState(0)">SS0 สงบ</button>
-                <button class="ss-btn ss1 active" id="ss-btn-1" onclick="setSeaState(1)">SS1 เบา</button>
-                <button class="ss-btn ss2" id="ss-btn-2" onclick="setSeaState(2)">SS2 ปกติ</button>
-                <button class="ss-btn ss3" id="ss-btn-3" onclick="setSeaState(3)">SS3 แรง</button>
-                <button class="ss-btn ss4" id="ss-btn-4" onclick="setSeaState(4)">SS4 จัด</button>
-            </div>
-            <div class="ss-info-row">
-                <span>🌬 <span id="ss-wind">3 kt</span></span>
-                <span>〰 <span id="ss-wave">0.1 m</span></span>
-                <span>🔊 <span id="ss-noise">60 dB</span></span>
-                <span>∿×<span id="ss-hydro-mod">1.00</span></span>
-                <span id="ss-season" style="color:#fbbf24;">แล้ง</span>
-            </div>
+            <!-- ── MI-5: Sea Conditions accordion (Sea State + Season Preset) ── -->
+            <details class="mi5-accordion" open>
+                <summary class="mi5-accordion-summary" style="color:#38bdf8;">🌊 Sea Conditions</summary>
+                <div class="mi5-accordion-body">
+                    <div class="panel-sub" style="color:#38bdf8;margin-bottom:1px;letter-spacing:1px;">🌊 SEA STATE (Douglas)</div>
+                    <div class="ss-btn-row">
+                        <button class="ss-btn ss0" id="ss-btn-0" onclick="setSeaState(0)">SS0 สงบ</button>
+                        <button class="ss-btn ss1 active" id="ss-btn-1" onclick="setSeaState(1)">SS1 เบา</button>
+                        <button class="ss-btn ss2" id="ss-btn-2" onclick="setSeaState(2)">SS2 ปกติ</button>
+                        <button class="ss-btn ss3" id="ss-btn-3" onclick="setSeaState(3)">SS3 แรง</button>
+                        <button class="ss-btn ss4" id="ss-btn-4" onclick="setSeaState(4)">SS4 จัด</button>
+                    </div>
+                    <div class="ss-info-row">
+                        <span>🌬 <span id="ss-wind">3 kt</span></span>
+                        <span>〰 <span id="ss-wave">0.1 m</span></span>
+                        <span>🔊 <span id="ss-noise">60 dB</span></span>
+                        <span>∿×<span id="ss-hydro-mod">1.00</span></span>
+                        <span id="ss-season" style="color:#fbbf24;">แล้ง</span>
+                    </div>
 
-            <!-- ── SVP (Sound Velocity Profile) Control ── -->
-            <hr class="divider" style="margin:5px 0 3px;">
-            <div class="panel-sub" style="color:var(--purple-dim);margin-bottom:1px;letter-spacing:1px;">〜 SVP (Sound Velocity Profile)</div>
-            <div class="svp-btn-row">
-                <button class="svp-btn svp-iso active" id="svp-btn-ISO"
-                        onclick="setSVP('ISO')" title="Isothermal — น้ำผสมสม่ำเสมอ ไม่มี thermocline (ฤดูหนาว/หลังพายุ)">
-                    ISO<br><span style="font-size:var(--text-xs);opacity:.7;">×1.15</span>
-                </button>
-                <button class="svp-btn svp-duct" id="svp-btn-DUCT"
-                        onclick="setSVP('DUCT')" title="Surface Duct — เสียงถูก trap ใกล้ผิวน้ำ ตรวจจับได้ไกลมาก">
-                    DUCT<br><span style="font-size:var(--text-xs);opacity:.7;">×1.35</span>
-                </button>
-                <button class="svp-btn svp-thermo" id="svp-btn-THERMO"
-                        onclick="setSVP('THERMO')" title="Thermocline — ชั้นน้ำอุ่น/เย็น สร้าง shadow zone (เม.ย.–ก.ค.)">
-                    THERMO<br><span style="font-size:var(--text-xs);opacity:.7;">×0.45</span>
-                </button>
-                <button class="svp-btn svp-neg" id="svp-btn-NEG"
-                        onclick="setSVP('NEG')" title="Negative Gradient — เสียงหักเหขึ้น ออกจากพื้นทะเล">
-                    NEG<br><span style="font-size:var(--text-xs);opacity:.7;">×0.75</span>
-                </button>
-            </div>
-            <div class="svp-info-row">
-                <span>🌡 ผิว: <span id="svp-sst">28°C</span></span>
-                <span title="ความเร็วเสียงที่ผิวน้ำ (Mackenzie eq. · S≈32 psu)">🔊 c: <span id="svp-cval" style="color:#22c55e;">1532 m/s</span></span>
-                <span>↕ Thermo: <span id="svp-thermo-depth">—</span></span>
-                <span>SVP×<span id="svp-mod-val" style="color:var(--purple-dim);">1.15</span></span>
-            </div>
+                    <!-- ── Season Preset ── -->
+                    <div style="display:flex;gap:3px;margin-top:3px;">
+                        <button onclick="setSeasonPreset('DRY')" id="season-dry-btn"
+                                style="flex:1;padding:3px;font-family:var(--font-mono), monospace;font-size:9px;
+                                       background:rgba(251,191,36,.12);border:1px solid #fbbf24;color:#fbbf24;
+                                       border-radius:var(--radius-xs);cursor:pointer;"
+                                title="ฤดูแล้ง พ.ย.–เม.ย.: ทะเลสงบ SS1, SVP Isothermal">
+                            ☀ DRY SEASON
+                        </button>
+                        <button onclick="setSeasonPreset('WET')" id="season-wet-btn"
+                                style="flex:1;padding:3px;font-family:var(--font-mono), monospace;font-size:9px;
+                                       background:rgba(56,189,248,.10);border:1px solid #475569;color:#64748b;
+                                       border-radius:var(--radius-xs);cursor:pointer;"
+                                title="ฤดูมรสุม พ.ค.–ต.ค.: คลื่นแรง SS3, SVP Thermocline">
+                            🌧 WET/MONSOON
+                        </button>
+                    </div>
+                </div>
+            </details>
 
-            <!-- ── Season Preset ── -->
-            <div style="display:flex;gap:3px;margin-top:3px;">
-                <button onclick="setSeasonPreset('DRY')" id="season-dry-btn"
-                        style="flex:1;padding:3px;font-family:var(--font-mono), monospace;font-size:9px;
-                               background:rgba(251,191,36,.12);border:1px solid #fbbf24;color:#fbbf24;
-                               border-radius:var(--radius-xs);cursor:pointer;"
-                        title="ฤดูแล้ง พ.ย.–เม.ย.: ทะเลสงบ SS1, SVP Isothermal">
-                    ☀ DRY SEASON
-                </button>
-                <button onclick="setSeasonPreset('WET')" id="season-wet-btn"
-                        style="flex:1;padding:3px;font-family:var(--font-mono), monospace;font-size:9px;
-                               background:rgba(56,189,248,.10);border:1px solid #475569;color:#64748b;
-                               border-radius:var(--radius-xs);cursor:pointer;"
-                        title="ฤดูมรสุม พ.ค.–ต.ค.: คลื่นแรง SS3, SVP Thermocline">
-                    🌧 WET/MONSOON
-                </button>
-            </div>
+            <!-- ── MI-5: Sonar Modifiers accordion (DET.MOD A+B + SVP) ── -->
+            <details class="mi5-accordion" open>
+                <summary class="mi5-accordion-summary" style="color:var(--purple-dim);">🎯 Sonar Modifiers</summary>
+                <div class="mi5-accordion-body">
+                    <!-- ── Detection Modifier Panel (A+B combined into one step) ── -->
+                    <div class="panel-sub" style="color:#38bdf8;margin-bottom:1px;letter-spacing:1px;">🎯 DET.MOD A+B</div>
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;">
+                        <span id="det-mod-label" style="font-family:var(--font-mono), monospace;font-size:10px;color:#22c55e;">NOMINAL</span>
+                        <span id="det-mod-val" style="font-family:var(--font-mono), monospace;font-size:13px;font-weight:700;color:#38bdf8;">×1.00</span>
+                    </div>
+                    <div class="det-mod-bar-wrap"><div id="det-mod-bar" class="det-mod-bar-fill" style="width:60%;background:#22c55e;"></div></div>
+                    <div class="det-mini-row">
+                        <span>∿ Hydro</span>
+                        <div class="det-mini-bar-wrap"><div id="dm-hydro-bar" class="det-mini-bar" style="width:60%;background:#22c55e;"></div></div>
+                        <span id="dm-hydro-v" style="font-family:var(--font-mono), monospace;font-size:10px;min-width:32px;text-align:right;">6.0nm</span>
+                    </div>
+                    <div class="det-mini-row">
+                        <span>📻 Sonar</span>
+                        <div class="det-mini-bar-wrap"><div id="dm-sonar-bar" class="det-mini-bar" style="width:60%;background:#22c55e;"></div></div>
+                        <span id="dm-sonar-v" style="font-family:var(--font-mono), monospace;font-size:10px;min-width:32px;text-align:right;">2.0nm</span>
+                    </div>
+                    <div class="det-mini-row">
+                        <span>🤿 FLS</span>
+                        <div class="det-mini-bar-wrap"><div id="dm-fls-bar" class="det-mini-bar" style="width:60%;background:#22c55e;"></div></div>
+                        <span id="dm-fls-v" style="font-family:var(--font-mono), monospace;font-size:10px;min-width:36px;text-align:right;">1500m</span>
+                    </div>
+
+                    <!-- ── SVP (Sound Velocity Profile) Control ── -->
+                    <hr class="divider" style="margin:5px 0 3px;">
+                    <div class="panel-sub" style="color:var(--purple-dim);margin-bottom:1px;letter-spacing:1px;">〜 SVP (Sound Velocity Profile)</div>
+                    <div class="svp-btn-row">
+                        <button class="svp-btn svp-iso active" id="svp-btn-ISO"
+                                onclick="setSVP('ISO')" title="Isothermal — น้ำผสมสม่ำเสมอ ไม่มี thermocline (ฤดูหนาว/หลังพายุ)">
+                            ISO<br><span style="font-size:var(--text-xs);opacity:.7;">×1.15</span>
+                        </button>
+                        <button class="svp-btn svp-duct" id="svp-btn-DUCT"
+                                onclick="setSVP('DUCT')" title="Surface Duct — เสียงถูก trap ใกล้ผิวน้ำ ตรวจจับได้ไกลมาก">
+                            DUCT<br><span style="font-size:var(--text-xs);opacity:.7;">×1.35</span>
+                        </button>
+                        <button class="svp-btn svp-thermo" id="svp-btn-THERMO"
+                                onclick="setSVP('THERMO')" title="Thermocline — ชั้นน้ำอุ่น/เย็น สร้าง shadow zone (เม.ย.–ก.ค.)">
+                            THERMO<br><span style="font-size:var(--text-xs);opacity:.7;">×0.45</span>
+                        </button>
+                        <button class="svp-btn svp-neg" id="svp-btn-NEG"
+                                onclick="setSVP('NEG')" title="Negative Gradient — เสียงหักเหขึ้น ออกจากพื้นทะเล">
+                            NEG<br><span style="font-size:var(--text-xs);opacity:.7;">×0.75</span>
+                        </button>
+                    </div>
+                    <div class="svp-info-row">
+                        <span>🌡 ผิว: <span id="svp-sst">28°C</span></span>
+                        <span title="ความเร็วเสียงที่ผิวน้ำ (Mackenzie eq. · S≈32 psu)">🔊 c: <span id="svp-cval" style="color:#22c55e;">1532 m/s</span></span>
+                        <span>↕ Thermo: <span id="svp-thermo-depth">—</span></span>
+                        <span>SVP×<span id="svp-mod-val" style="color:var(--purple-dim);">1.15</span></span>
+                    </div>
+                </div>
+            </details>
         </div>
 
         <div class="panel" id="panel-air" style="border-color:#06b6d4;flex:0 0 auto;">
@@ -7985,9 +8015,9 @@
         <div class="panel" style="padding:6px 10px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
                 <div class="panel-title" style="color:var(--text-muted);">🎯 IFF Legend</div>
-                <button class="iff-toggle-btn" onclick="toggleIFF()" id="iffToggleBtn">▶ แสดง</button>
+                <button class="iff-toggle-btn" onclick="toggleIFF()" id="iffToggleBtn">▼ ซ่อน</button>
             </div>
-            <div id="iffContent" class="iff-legend" style="display:none;">
+            <div id="iffContent" class="iff-legend">
                 <div class="iff-row"><div class="iff-dot" style="background:#f59e0b;box-shadow:0 0 4px #f59e0b;"></div><span style="color:#f59e0b;">UNKNOWN — ยังไม่จำแนกฝ่าย</span></div>
                 <div class="iff-row"><div class="iff-dot" style="background:#ff4136;box-shadow:0 0 4px #ff4136;"></div><span style="color:#ff4136;">HOSTILE — จำแนกแล้ว ศัตรู</span></div>
                 <div class="iff-row"><div class="iff-dot" style="background:#ffd700;box-shadow:0 0 4px #ffd700;"></div><span style="color:#ffd700;">SUSPECT — ต้องสงสัย</span></div>
@@ -8246,6 +8276,12 @@
     <div id="dive3dSedLegend" style="display:none;"></div>
     <div id="dive3dHint">🖱 ลาก: หมุนกล้อง · Scroll: ซูม</div>
     <div id="dive3dNav">
+        <div id="d3camctlRow">
+            <button class="d3-camctl-btn" onclick="d3RotateLeft()" title="หมุนกล้องซ้าย" aria-label="หมุนกล้องซ้าย">↺</button>
+            <button class="d3-camctl-btn" onclick="d3ZoomOut()" title="ซูมออก" aria-label="ซูมออก">−</button>
+            <button class="d3-camctl-btn" onclick="d3ZoomIn()" title="ซูมเข้า" aria-label="ซูมเข้า">+</button>
+            <button class="d3-camctl-btn" onclick="d3RotateRight()" title="หมุนกล้องขวา" aria-label="หมุนกล้องขวา">↻</button>
+        </div>
         <svg viewBox="0 0 64 64" width="58" height="58">
             <circle cx="32" cy="32" r="29" fill="rgba(2,12,24,.82)" stroke="#22d3ee" stroke-width="1.5"/>
             <g id="d3compassRose">
@@ -19437,6 +19473,27 @@ function zoomToUDC() {
     const ux=_d3x(UDC.nx), uz=_d3z(UDC.ny);
     if (d3_cam.target) d3_cam.target.set(ux, _d3y(24), uz);
 }
+// ── [ui-ux-pro-max] ปุ่มควบคุมกล้องบนจอ — สำรองสำหรับ trackpad/touch ที่ไม่มี drag/wheel ──
+function d3RotateLeft() {
+    if (typeof d3_camGoal==='undefined') return;
+    d3_camGoal.theta -= 0.28;
+    _d3LastInput = performance.now(); _d3FlyAnim = null;
+}
+function d3RotateRight() {
+    if (typeof d3_camGoal==='undefined') return;
+    d3_camGoal.theta += 0.28;
+    _d3LastInput = performance.now(); _d3FlyAnim = null;
+}
+function d3ZoomIn() {
+    if (typeof d3_camGoal==='undefined') return;
+    d3_camGoal.radius = Math.max(5, d3_camGoal.radius * 0.82);
+    _d3LastInput = performance.now(); _d3FlyAnim = null;
+}
+function d3ZoomOut() {
+    if (typeof d3_camGoal==='undefined') return;
+    d3_camGoal.radius = Math.min(900, d3_camGoal.radius / 0.82);
+    _d3LastInput = performance.now(); _d3FlyAnim = null;
+}
 let d3_drag = { on:false, x:0, y:0 };
 
 const D3_W      = 420;   // world span (= ขอบกรอบ crop, ไม่ใช่ play area เต็ม)
@@ -25414,7 +25471,7 @@ function resumeAfterFLS() {
 //  [V06] Dynamic UI — Briefing Overlay · Threat Timeline · IFF Toggle · Outcome
 // ═══════════════════════════════════════════════════════════════
 let scenarioStartTime = 0;
-let iffCollapsed   = true;   // v12.2: default collapsed to declutter right panel
+let iffCollapsed   = false;  // QW-3: default expanded per UI/UX audit
 let thermCollapsed = false;
 
 // ── Scenario Briefing Definitions ────────────────────────────────
