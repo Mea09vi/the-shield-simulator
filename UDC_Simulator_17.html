@@ -366,6 +366,7 @@
             --orange: #f97316;
             --purple: #bd93f9;
             --teal:   #64ffda;
+            --brass:  #c9a876; /* [Staff Planner elegance pass] เส้นกรอบ/หัวข้อ AI Decision-Support — แยกจาก --amber (สงวนไว้ semantic warning) */
 
             /* Purple suite — satellite HUD & staff panels */
             --purple-dim:   #a78bfa;
@@ -386,6 +387,7 @@
             --amber-rgb:      245 158 11;
             --orange-rgb:     249 115 22;
             --purple-rgb:     168 85 247;
+            --brass-rgb:      201 168 118;
             --bg-dark-rgb:    2 12 24;
             --bg-panel-rgb:   8 21 37;
             --text-muted-rgb: 100 116 139;
@@ -4136,6 +4138,45 @@
             opacity: .8;
         }
 
+        /* ── PANEL · PALANTIR — Nexus Ops · dense fused command dashboard ── */
+        body[data-panel="palantir"] .panel,
+        body[data-panel="palantir"] .legacy-panel,
+        body[data-panel="palantir"] .side-panel {
+            background:
+                /* sparse horizontal telemetry grid */
+                repeating-linear-gradient(0deg,
+                    transparent 0 27px,
+                    rgb(var(--cyan-rgb) / .05) 27px 28px),
+                linear-gradient(180deg,
+                    rgb(var(--bg-panel-rgb) / .97),
+                    rgb(var(--bg-dark-rgb) / .99)) !important;
+            border: 1px solid rgb(var(--cyan-rgb) / .32) !important;
+            box-shadow:
+                inset 0 1px 0 rgb(var(--cyan-rgb) / .10),
+                0 4px 14px rgba(0,0,0,.55) !important;
+            border-radius: 3px !important;
+            padding: 12px 16px !important;
+            position: relative;
+        }
+        /* live-status pulse dot — top-right corner */
+        body[data-panel="palantir"] .panel::before,
+        body[data-panel="palantir"] .legacy-panel::before,
+        body[data-panel="palantir"] .side-panel::before {
+            content: '';
+            position: absolute;
+            top: 10px; right: 12px;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: rgb(var(--cyan-rgb) / .9);
+            box-shadow: 0 0 6px rgb(var(--cyan-rgb) / .8);
+            pointer-events: none;
+            animation: udc-palantir-live 2.2s ease-in-out infinite;
+        }
+        @keyframes udc-palantir-live {
+            0%, 100% { opacity: .5; transform: scale(0.85); }
+            50%      { opacity: 1;  transform: scale(1.1); }
+        }
+
         /* ── PANEL · LIQUID GLASS — Apple Vision Pro · multi-layer reflection ── */
         body[data-panel="liquid"] .panel,
         body[data-panel="liquid"] .legacy-panel,
@@ -4609,12 +4650,12 @@
             max-height: calc(100vh - 40px);
             z-index: var(--z-modal);
             background: linear-gradient(180deg, rgb(var(--bg-panel-rgb) / 0.98) 0%, rgba(6,16,30,0.98) 100%);
-            border: 1.5px solid rgb(var(--purple-rgb) / 0.55);
+            border: 1px solid rgb(var(--brass-rgb) / 0.42);
             border-radius:var(--radius-xl);
             box-shadow:
                 0 24px 64px rgba(0,0,0,0.65),
-                0 0 36px rgb(var(--purple-rgb) / 0.30),
-                inset 0 1px 0 rgba(196,181,253,0.14);
+                0 0 1px rgb(var(--brass-rgb) / 0.55),
+                inset 0 1px 0 rgb(var(--brass-rgb) / 0.10);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             /* [v17.2.2 FONT-1] Chakra Petch — ทรง techno-military + มี glyph ไทยครบ
@@ -4642,24 +4683,23 @@
         }
         #mda-ai-modal .mda-ai-head {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 12px 18px;
-            background: linear-gradient(90deg, rgba(125,211,252,0.10) 0%, rgb(var(--purple-rgb) / 0.18) 50%, rgba(125,211,252,0.10) 100%);
-            border-bottom: 1px solid rgb(var(--purple-rgb) / 0.40);
+            padding: 14px 20px;
+            background: linear-gradient(90deg, rgba(8,16,28,0.92) 0%, rgb(var(--brass-rgb) / 0.08) 50%, rgba(8,16,28,0.92) 100%);
+            border-bottom: 1px solid rgb(var(--brass-rgb) / 0.35);
         }
         #mda-ai-modal .mda-ai-title {
-            font-size: 14px; font-weight: 700; letter-spacing: 1.8px;
-            color: var(--purple);
-            text-shadow: var(--glow-purple);
+            font-size: 14px; font-weight: 700; letter-spacing: 2.2px;
+            color: var(--brass);
             display: flex; align-items: center; gap: 10px;
         }
         #mda-ai-modal .mda-ai-title .mda-ai-dot {
-            width: 9px; height: 9px; border-radius: 50%;
-            background: var(--purple);
-            box-shadow: 0 0 10px var(--purple), 0 0 18px rgba(167,139,250,0.65);
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--brass);
+            box-shadow: 0 0 6px rgb(var(--brass-rgb) / 0.65);
             animation: aiPulse 1.6s ease-in-out infinite;
         }
         #mda-ai-modal .mda-ai-title .mda-ai-sub {
-            font-size: 10px; color: var(--purple); opacity: 0.7;
+            font-size: 9.5px; color: var(--text-muted); opacity: 0.85;
             letter-spacing: 1.2px;
             font-weight: 400;
             margin-left: 8px;
@@ -4670,51 +4710,49 @@
         }
         #mda-ai-modal .mda-ai-close {
             background: transparent;
-            border: 1px solid rgb(var(--purple-rgb) / 0.40);
-            color: var(--purple);
-            font-size: 14px;
-            width: 28px; height: 28px; line-height: 24px; padding: 0;
+            border: 1px solid rgb(var(--brass-rgb) / 0.35);
+            color: var(--brass);
+            font-size: 13px;
+            width: 26px; height: 26px; line-height: 22px; padding: 0;
             border-radius: 4px;
             cursor: pointer;
             transition: all .15s;
         }
         #mda-ai-modal .mda-ai-close:hover {
-            background: rgb(var(--purple-rgb) / 0.22); color: #fff;
-            box-shadow: 0 0 12px rgb(var(--purple-rgb) / 0.55);
-            border-color: var(--purple);
+            background: rgb(var(--brass-rgb) / 0.16); color: #f3e9d2;
+            border-color: var(--brass);
         }
         #mda-ai-modal .mda-ai-toolbar {
-            display: flex; align-items: center; gap: 10px;
-            padding: 8px 18px;
-            border-bottom: 1px solid rgba(125,211,252,0.18);
-            background: rgba(15,23,42,0.45);
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 20px;
+            border-bottom: 1px solid rgb(var(--brass-rgb) / 0.16);
+            background: rgba(8,15,28,0.55);
             font-size: 10px; letter-spacing: 0.10em;
         }
         #mda-ai-modal .mda-ai-mode-pill {
             display: inline-flex; align-items: center; gap: 5px;
-            padding: 3px 10px;
-            border: 1px solid rgba(125,211,252,0.32);
-            border-radius: 12px;
+            padding: 4px 12px;
+            border: 1px solid rgba(136,146,176,0.28);
+            border-radius: 3px;
             font-size: 10px;
-            color: var(--cyan);
+            color: var(--text-muted);
             cursor: pointer;
-            background: rgba(15,23,42,0.55);
+            background: rgba(15,23,42,0.45);
             transition: all .15s;
         }
         #mda-ai-modal .mda-ai-mode-pill.on {
-            background: rgb(var(--purple-rgb) / 0.22);
-            border-color: rgb(var(--purple-rgb) / 0.65);
-            color: var(--purple);
-            box-shadow: 0 0 10px rgb(var(--purple-rgb) / 0.45);
+            background: rgb(var(--brass-rgb) / 0.14);
+            border-color: rgb(var(--brass-rgb) / 0.55);
+            color: var(--brass);
         }
         #mda-ai-modal .mda-ai-mode-pill.off { opacity: 0.55; }
         /* v14.0.6 — model selector */
         #mda-ai-modal .mda-ai-model-select {
             background: rgba(15,23,42,0.85);
-            color: var(--purple);
-            border: 1px solid rgb(var(--purple-rgb) / 0.45);
-            border-radius: 12px;
-            padding: 3px 8px;
+            color: var(--text-main);
+            border: 1px solid rgb(var(--brass-rgb) / 0.32);
+            border-radius: 3px;
+            padding: 4px 8px;
             font-size: 10.5px;
             font-family: var(--font-mono), 'Consolas', monospace;
             letter-spacing: 0.05em;
@@ -4725,14 +4763,13 @@
         }
         #mda-ai-modal .mda-ai-model-select:hover,
         #mda-ai-modal .mda-ai-model-select:focus {
-            border-color: var(--purple);
-            box-shadow: 0 0 10px rgb(var(--purple-rgb) / 0.45);
+            border-color: var(--brass);
             background: rgba(15,23,42,0.95);
         }
         #mda-ai-modal .mda-ai-model-select option,
         #mda-ai-modal .mda-ai-model-select optgroup {
             background: #0f172a;
-            color: #e9d5ff;
+            color: #e9e2cf;
         }
         #mda-ai-modal .mda-ai-toolbar-spacer { flex: 1; }
         #mda-ai-modal .mda-ai-toolbar-info {
@@ -4745,81 +4782,64 @@
             flex: 1;
             display: grid;
             grid-template-columns: 1fr 1.6fr 1fr;
-            gap: 14px;
-            padding: 14px 18px;
+            gap: 16px;
+            padding: 16px 20px;
             overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: rgb(var(--purple-rgb) / 0.40) transparent;
+            scrollbar-color: rgb(var(--brass-rgb) / 0.35) transparent;
         }
         #mda-ai-modal .mda-ai-body::-webkit-scrollbar { width: 7px; }
         #mda-ai-modal .mda-ai-body::-webkit-scrollbar-thumb {
-            background: rgb(var(--purple-rgb) / 0.40); border-radius:var(--radius-xs);
+            background: rgb(var(--brass-rgb) / 0.35); border-radius:var(--radius-xs);
         }
         #mda-ai-modal .mda-ai-col {
-            display: flex; flex-direction: column; gap: 10px;
+            display: flex; flex-direction: column; gap: 12px;
             min-width: 0;  /* allow shrink */
         }
         #mda-ai-modal .mda-ai-col-head {
-            display: flex; align-items: center; gap: 6px;
+            display: flex; align-items: center; gap: 8px;
             font-size: 10px; letter-spacing: 0.18em;
+            font-weight: 600;
             text-transform: uppercase;
-            padding: 6px 8px;
-            border-radius: 4px;
-            border: 1px solid;
-            background: rgba(15,23,42,0.65);
+            padding: 7px 10px;
+            border-radius: 3px;
+            border: 1px solid rgba(136,146,176,0.22);
+            border-bottom: 1px solid rgb(var(--brass-rgb) / 0.40);
+            background: rgba(8,15,28,0.65);
+            color: var(--text-main);
         }
         #mda-ai-modal .mda-ai-col-head .mda-ai-col-tag {
             font-weight: 700;
-            padding: 1px 5px;
+            padding: 1px 6px;
             border-radius: 2px;
             font-size: 9px;
             letter-spacing: 0.10em;
+            background: rgb(var(--brass-rgb) / 0.20);
+            color: var(--brass);
         }
-        #mda-ai-modal .mda-ai-col.rule .mda-ai-col-head {
-            color: var(--cyan);
-            border-color: rgba(125,211,252,0.45);
-            box-shadow: inset 0 0 12px rgba(125,211,252,0.10);
-        }
-        #mda-ai-modal .mda-ai-col.rule .mda-ai-col-tag {
-            background: rgba(125,211,252,0.22);
-            color: #e0f2fe;
-        }
-        #mda-ai-modal .mda-ai-col.opus .mda-ai-col-head {
-            color: var(--purple);
-            border-color: rgb(var(--purple-rgb) / 0.55);
-            box-shadow: inset 0 0 12px rgb(var(--purple-rgb) / 0.15);
-        }
-        #mda-ai-modal .mda-ai-col.opus .mda-ai-col-tag {
-            background: rgb(var(--purple-rgb) / 0.28);
-            color: var(--purple);
-        }
-        #mda-ai-modal .mda-ai-col.force .mda-ai-col-head {
-            color: var(--yellow);
-            border-color: rgba(252,211,77,0.45);
-            box-shadow: inset 0 0 12px rgba(252,211,77,0.10);
-        }
-        #mda-ai-modal .mda-ai-col.force .mda-ai-col-tag {
-            background: rgba(252,211,77,0.22);
-            color: var(--yellow);
-        }
+        #mda-ai-modal .mda-ai-col.rule .mda-ai-col-head { color: var(--text-main); }
+        #mda-ai-modal .mda-ai-col.opus .mda-ai-col-head { color: var(--text-main); }
+        #mda-ai-modal .mda-ai-col.force .mda-ai-col-head { color: var(--text-main); }
         #mda-ai-modal .mda-ai-section {
-            background: rgba(15,23,42,0.55);
-            border: 1px solid rgba(125,211,252,0.14);
-            border-radius: 4px;
-            padding: 8px 10px;
+            background: rgba(15,23,42,0.42);
+            border: 1px solid rgba(136,146,176,0.14);
+            border-radius: 5px;
+            padding: 10px 12px;
         }
         #mda-ai-modal .mda-ai-sec-head {
             font-size: 9.5px; letter-spacing: 0.14em;
+            font-weight: 600;
             color: var(--text-muted);
-            border-bottom: 1px solid rgba(125,211,252,0.16);
-            padding-bottom: 4px;
-            margin-bottom: 6px;
+            border-bottom: 1px solid rgb(var(--brass-rgb) / 0.18);
+            padding-bottom: 5px;
+            margin-bottom: 8px;
             text-transform: uppercase;
             display: flex; justify-content: space-between; align-items: center;
         }
         #mda-ai-modal .mda-ai-sec-head .mda-ai-sec-count {
-            color: var(--cyan);
+            color: var(--brass);
             font-weight: 700;
+            font-variant-numeric: tabular-nums;
         }
         #mda-ai-modal .mda-ai-alert {
             padding: 6px 8px;
@@ -4835,23 +4855,23 @@
         #mda-ai-modal .mda-ai-alert:hover { background: rgba(8,15,28,0.95); }
         #mda-ai-modal .mda-ai-alert.crit {
             border-left-color: var(--red);
-            background: rgb(var(--red-rgb) / 0.10);
-            box-shadow: 0 0 8px rgb(var(--red-rgb) / 0.15);
-            animation: alert-crit-pulse 2s infinite ease-in-out;
+            background: rgb(var(--red-rgb) / 0.07);
+            box-shadow: none;
+            animation: alert-crit-pulse 2.6s infinite ease-in-out;
         }
         #mda-ai-modal .mda-ai-alert.warn {
             border-left-color: var(--amber);
-            background: rgb(var(--amber-rgb) / 0.08);
-            box-shadow: 0 0 8px rgb(var(--amber-rgb) / 0.10);
-            animation: alert-warn-pulse 2s infinite ease-in-out;
+            background: rgb(var(--amber-rgb) / 0.06);
+            box-shadow: none;
+            animation: alert-warn-pulse 2.6s infinite ease-in-out;
         }
         @keyframes alert-crit-pulse {
-            0%, 100% { box-shadow: 0 0 4px rgb(var(--red-rgb) / 0.12); border-left-color: rgb(var(--red-rgb) / 0.7); }
-            50% { box-shadow: 0 0 12px rgb(var(--red-rgb) / 0.32); border-left-color: rgb(var(--red-rgb) / 1.0); }
+            0%, 100% { border-left-color: rgb(var(--red-rgb) / 0.65); }
+            50% { border-left-color: rgb(var(--red-rgb) / 1.0); }
         }
         @keyframes alert-warn-pulse {
-            0%, 100% { box-shadow: 0 0 4px rgb(var(--amber-rgb) / 0.08); border-left-color: rgb(var(--amber-rgb) / 0.7); }
-            50% { box-shadow: 0 0 10px rgb(var(--amber-rgb) / 0.25); border-left-color: rgb(var(--amber-rgb) / 1.0); }
+            0%, 100% { border-left-color: rgb(var(--amber-rgb) / 0.65); }
+            50% { border-left-color: rgb(var(--amber-rgb) / 1.0); }
         }
         #mda-ai-modal .mda-ai-alert.info {
             border-left-color: var(--cyan);
@@ -4874,8 +4894,8 @@
             padding: 1px 5px;
             font-size: 8.5px;
             border-radius: 2px;
-            background: rgba(125,211,252,0.12);
-            color: var(--cyan);
+            background: rgb(var(--brass-rgb) / 0.14);
+            color: var(--brass);
             letter-spacing: 0.08em;
         }
         #mda-ai-modal .mda-ai-tax-grid {
@@ -4908,11 +4928,12 @@
             font-family: var(--font-body), sans-serif;
             font-size: 12.5px;
             line-height: 1.65;
-            color: #e9d5ff;
-            background: linear-gradient(180deg, rgba(76,29,149,0.12), rgba(17,24,39,0.55));
+            color: var(--text-main);
+            background: rgba(17,24,39,0.55);
             padding: 12px 14px;
             border-radius:var(--radius-sm);
-            border: 1px solid rgb(var(--purple-rgb) / 0.30);
+            border: 1px solid rgb(var(--brass-rgb) / 0.24);
+            border-top: 1px solid rgb(var(--brass-rgb) / 0.40);
             min-height: 200px;
             max-height: 480px;
             overflow-y: auto;
@@ -5538,38 +5559,25 @@
             display: none;
             flex: 1;
             grid-template-columns: 0.95fr 1.35fr 1.1fr;
-            gap: 14px;
-            padding: 14px 18px;
+            gap: 16px;
+            padding: 16px 20px;
             overflow-y: auto;
             min-height: 0;
         }
         #mda-ai-modal .mda-staff-view.show { display: grid; }
-        #mda-ai-modal .mda-ai-col.staff1 .mda-ai-col-head {
-            color: #5eead4;
-            border-color: rgba(94,234,212,0.45);
-            box-shadow: inset 0 0 12px rgba(94,234,212,0.10);
-        }
-        #mda-ai-modal .mda-ai-col.staff1 .mda-ai-col-tag {
-            background: rgba(94,234,212,0.20);
-            color: #ccfbf1;
-        }
-        #mda-ai-modal .mda-ai-col.staff2 .mda-ai-col-head {
-            color: var(--cyan);
-            border-color: rgba(125,211,252,0.45);
-            box-shadow: inset 0 0 12px rgba(125,211,252,0.10);
-        }
-        #mda-ai-modal .mda-ai-col.staff2 .mda-ai-col-tag {
-            background: rgba(125,211,252,0.22);
-            color: #e0f2fe;
-        }
+        #mda-ai-modal .mda-ai-col.staff1 .mda-ai-col-head,
+        #mda-ai-modal .mda-ai-col.staff2 .mda-ai-col-head,
         #mda-ai-modal .mda-ai-col.staff3 .mda-ai-col-head {
-            color: var(--yellow);
-            border-color: rgba(252,211,77,0.45);
-            box-shadow: inset 0 0 12px rgba(252,211,77,0.10);
+            color: var(--text-main);
+            border-color: rgba(136,146,176,0.22);
+            border-bottom: 1px solid rgb(var(--brass-rgb) / 0.40);
+            box-shadow: none;
         }
+        #mda-ai-modal .mda-ai-col.staff1 .mda-ai-col-tag,
+        #mda-ai-modal .mda-ai-col.staff2 .mda-ai-col-tag,
         #mda-ai-modal .mda-ai-col.staff3 .mda-ai-col-tag {
-            background: rgba(252,211,77,0.22);
-            color: var(--yellow);
+            background: rgb(var(--brass-rgb) / 0.20);
+            color: var(--brass);
         }
         /* stepper — กระบวนการ IPOE → ปมส. */
         #mda-ai-modal .mda-staff-step {
@@ -5598,15 +5606,15 @@
             transition: all 0.25s;
         }
         #mda-ai-modal .mda-staff-step.run {
-            color: #e0f2fe;
-            border-color: rgba(56,189,248,0.22);
-            background: rgba(14,165,233,0.08);
-            box-shadow: 0 0 10px rgba(14,165,233,0.05);
+            color: var(--text-main);
+            border-color: rgb(var(--brass-rgb) / 0.30);
+            background: rgb(var(--brass-rgb) / 0.07);
+            box-shadow: none;
         }
         #mda-ai-modal .mda-staff-step.run .dot {
-            border-color: var(--cyan);
-            background: rgba(125,211,252,0.85);
-            animation: staffPulse 0.9s ease-in-out infinite;
+            border-color: var(--brass);
+            background: rgb(var(--brass-rgb) / 0.85);
+            animation: staffStepPulse 1.4s ease-in-out infinite;
         }
         #mda-ai-modal .mda-staff-step.done {
             color: #cbd5e1;
@@ -5627,6 +5635,10 @@
         @keyframes staffPulse {
             0%,100% { box-shadow: 0 0 0 0 rgba(125,211,252,0.55); }
             50%     { box-shadow: 0 0 0 5px rgba(125,211,252,0.0); }
+        }
+        @keyframes staffStepPulse {
+            0%,100% { box-shadow: 0 0 0 0 rgb(var(--brass-rgb) / 0.45); }
+            50%     { box-shadow: 0 0 0 5px rgb(var(--brass-rgb) / 0.0); }
         }
         /* ECOA cards */
         #mda-ai-modal .mda-staff-ecoa {
@@ -5659,7 +5671,7 @@
         /* mini-map */
         #mda-ai-modal #mda-staff-map {
             height: 330px;
-            border: 1px solid rgba(125,211,252,0.3);
+            border: 1px solid rgb(var(--brass-rgb) / 0.3);
             border-radius: 4px;
             background: #0b1220;
         }
@@ -5692,9 +5704,9 @@
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
         #mda-ai-modal .mda-staff-coa:hover {
-            border-color: rgba(125,211,252,0.45);
+            border-color: rgb(var(--brass-rgb) / 0.40);
             background: rgba(15,23,42,0.8);
-            box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+            box-shadow: none;
         }
         #mda-ai-modal .mda-staff-coa .hd {
             display: flex; justify-content: space-between; gap: 6px;
@@ -5702,11 +5714,11 @@
             font-weight: 700; color: #e2e8f0;
         }
         #mda-ai-modal .mda-staff-coa.sel {
-            border-color: rgb(var(--amber-rgb) / .65);
-            box-shadow: inset 0 0 15px rgb(var(--amber-rgb) / .08), 0 0 12px rgb(var(--amber-rgb) / .12);
+            border-color: rgb(var(--brass-rgb) / .55);
+            box-shadow: inset 0 1px 0 rgb(var(--brass-rgb) / .10);
             background: rgba(15,23,42,0.7);
         }
-        #mda-ai-modal .mda-staff-coa.sel .hd { color: #fbbf24; }
+        #mda-ai-modal .mda-staff-coa.sel .hd { color: var(--brass); }
         #mda-ai-modal .mda-staff-coa .pick {
             font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
             color: #34d399; white-space: nowrap;
@@ -5733,7 +5745,7 @@
         }
         #mda-ai-modal .mda-staff-crit .bar i {
             display: block; height: 100%; width: 0;
-            background: linear-gradient(90deg, #0ea5e9, #34d399);
+            background: rgb(var(--brass-rgb) / 0.85);
             transition: width 0.7s ease;
         }
         #mda-ai-modal .mda-staff-crit .pct {
@@ -5747,9 +5759,9 @@
         }
         #mda-ai-modal .mda-staff-tbl th {
             text-align: left; font-weight: 700;
-            color: var(--cyan); letter-spacing: 0.06em;
+            color: var(--text-main); letter-spacing: 0.06em;
             padding: 3px 5px;
-            border-bottom: 1px solid rgba(125,211,252,0.3);
+            border-bottom: 1px solid rgb(var(--brass-rgb) / 0.35);
             white-space: nowrap;
         }
         #mda-ai-modal .mda-staff-tbl td {
@@ -5768,9 +5780,9 @@
             user-select: none;
         }
         #mda-ai-modal .mda-staff-ptype.on {
-            border-color: rgba(94,234,212,0.6);
-            color: #5eead4;
-            background: rgba(94,234,212,0.12);
+            border-color: rgb(var(--brass-rgb) / 0.6);
+            color: var(--brass);
+            background: rgb(var(--brass-rgb) / 0.12);
         }
         /* คำสั่งยุทธการย่อ ๕ ข้อ */
         #mda-ai-modal .mda-staff-brief {
@@ -5788,17 +5800,17 @@
         #mda-ai-modal .mda-ai-btn:disabled { opacity: 0.45; cursor: not-allowed; }
         /* ═══ [v17.1.0 STAFF-6] DATA FUSION — ข้อมูลสถิต+พลวัตเรียลไทม์เข้าแผน + LLM narrative ═══ */
         #mda-ai-modal .mda-staff-fusion {
-            border: 1px solid rgba(125,211,252,0.25);
-            border-left: 4px solid var(--cyan);
+            border: 1px solid rgb(var(--brass-rgb) / 0.22);
+            border-left: 3px solid rgb(var(--brass-rgb) / 0.55);
             border-radius:var(--radius-lg);
-            background: linear-gradient(180deg, rgba(14,165,233,0.06), rgba(2,6,23,0.35));
+            background: rgba(2,6,23,0.35);
             padding: 9px 10px; margin-bottom: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            box-shadow: none;
             backdrop-filter: blur(8px);
         }
         #mda-ai-modal .mda-staff-fusion .fhd {
             display: flex; justify-content: space-between; align-items: center; gap: 6px;
-            font-size: 10px; font-weight: 700; color: #7dd3fc;
+            font-size: 10px; font-weight: 700; color: var(--brass);
             font-family: 'Share Tech Mono', monospace;
             letter-spacing: 0.05em; margin-bottom: 6px;
         }
@@ -5823,13 +5835,13 @@
         #mda-ai-modal .mda-staff-chip.crit { border-color: rgba(248,113,113,0.6); color: #fca5a5; }
         #mda-ai-modal .mda-staff-llm {
             margin-top: 6px; padding: 6px 7px;
-            border-left:3px solid var(--purple-dim); border-radius: 4px;
-            background: rgba(167,139,250,0.08);
-            font-size: 10px; line-height: 1.55; color: #ddd6fe;
+            border-left:3px solid rgb(var(--brass-rgb) / 0.55); border-radius: 4px;
+            background: rgba(17,24,39,0.45);
+            font-size: 10px; line-height: 1.55; color: var(--text-main);
             max-height: 96px; overflow-y: auto;
         }
         #mda-ai-modal .mda-staff-llm .lhd {
-            font-weight: 700; color:var(--purple-light); font-size: 9.5px;
+            font-weight: 700; color:var(--brass); font-size: 9.5px;
             letter-spacing: 0.06em; margin-bottom: 2px;
             display: flex; justify-content: space-between; gap: 6px;
         }
@@ -5837,7 +5849,7 @@
         #mda-ai-modal .mda-staff-bd { margin-top: 7px; }
         #mda-ai-modal .mda-staff-bd .bgrp {
             font-size: 9.5px; font-weight: 700; letter-spacing: 0.05em;
-            color: #7dd3fc; margin: 6px 0 2px;
+            color: var(--brass); margin: 6px 0 2px;
             display: flex; justify-content: space-between;
         }
         #mda-ai-modal .mda-staff-bd .brow {
@@ -6995,9 +7007,9 @@
                 <div class="mda-staff-bd" id="mda-staff-bd"></div>
 
                 <!-- Criteria Explanation Pop-up -->
-                <div id="mda-crit-popup" style="display:none; position:absolute; top:45%; left:50%; transform:translate(-50%, -50%); width:330px; background:#0f172a; border:1.5px solid #38bdf8; border-radius:var(--radius-lg); box-shadow:0 15px 35px rgba(0,0,0,0.9); z-index:9999; padding:12px; font-family:var(--font-body), sans-serif; font-size:10px; color:#e2e8f0;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(56,189,248,0.3); padding-bottom:6px; margin-bottom:8px;">
-                        <span id="mda-crit-popup-title" style="font-weight:700; color:#38bdf8; letter-spacing:0.03em;">คำอธิบายเกณฑ์</span>
+                <div id="mda-crit-popup" style="display:none; position:absolute; top:45%; left:50%; transform:translate(-50%, -50%); width:330px; background:#0f172a; border:1.5px solid rgb(201 168 118 / 0.55); border-radius:var(--radius-lg); box-shadow:0 15px 35px rgba(0,0,0,0.9); z-index:9999; padding:12px; font-family:var(--font-body), sans-serif; font-size:10px; color:#e2e8f0;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgb(201 168 118 / 0.3); padding-bottom:6px; margin-bottom:8px;">
+                        <span id="mda-crit-popup-title" style="font-weight:700; color:#c9a876; letter-spacing:0.03em;">คำอธิบายเกณฑ์</span>
                         <button onclick="window.closeCriteriaExplanation && window.closeCriteriaExplanation()" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:14px; padding:0 4px; line-height:1;">✕</button>
                     </div>
                     <div id="mda-crit-popup-body" style="line-height:1.6; white-space:pre-wrap; max-height:300px; overflow-y:auto; padding-right:4px;"></div>
@@ -35177,6 +35189,8 @@ window.selectCOA = selectCOA;
         { id:'blueprint',         group:'Defense',   name:'Blueprint',           desc:'grid + ruler edge · engineering paper',      swatch:'#38bdf8', augValue:null },
         { id:'crt',               group:'Defense',   name:'CRT Phosphor',        desc:'scanline + green glow · Cold War radar',    swatch:'var(--green)', augValue:null },
         { id:'hex',               group:'Defense',   name:'Hex Tactical',        desc:'hex pattern + corner accent · Halo HUD',    swatch:'var(--cyan)', augValue:null },
+        // ── DATA OPS · fused command dashboard ──
+        { id:'palantir',          group:'Data Ops',  name:'Palantir',            desc:'grid เข้ม + live-pulse dot · fused command dashboard (Maven-style)', swatch:'var(--cyan)', augValue:null },
     ];
     // CSS selector ของ panel ที่ต้องได้รับ data-augmented-ui
     const PANEL_SELECTORS = '.panel, .legacy-panel, .side-panel';
