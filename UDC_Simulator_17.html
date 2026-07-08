@@ -9345,12 +9345,23 @@ function buildTlHeatOverlay() {
     const img = ctx.createImageData(N, N);
     const d = img.data;
     const cx = (N - 1) / 2, cy = (N - 1) / 2;
+    // Land masking: skip painting over coastline/islands so the TL circle is
+    // "bitten" by real terrain instead of overlapping land.
+    const landOK = (typeof landMaskReady !== 'undefined' && landMaskReady && typeof isOnLand === 'function');
+    const cosLat = Math.cos(UDC_LAT * Math.PI / 180);
     for (let py = 0; py < N; py++) {
         const dy = (py - cy) * m_per_px;
+        const lat = UDC_LAT - dy / 111000;            // py↑ = south = lower lat
+        const ny = (LAT_TOP - lat) / (LAT_TOP - LAT_BOT);
         for (let px = 0; px < N; px++) {
             const dx = (px - cx) * m_per_px;
             const R = Math.sqrt(dx*dx + dy*dy);
             if (R > half_m) continue;
+            if (landOK) {
+                const lng = UDC_LNG + dx / (111000 * cosLat);
+                const nx = (lng - LNG_LEFT) / (LNG_RIGHT - LNG_LEFT);
+                if (nx >= 0 && nx <= 1 && ny >= 0 && ny <= 1 && isOnLand(nx, ny)) continue;
+            }
             const tl = WoaTL.sample(R, tlHeatRxDepth, tlHeatSrcDepth, tlHeatFreqHz);
             const [r,g,b,a] = _tlHeatColor(tl);
             if (a === 0) continue;
