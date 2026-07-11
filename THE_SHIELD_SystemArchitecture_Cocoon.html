@@ -356,7 +356,7 @@
       <div class="sh-left">
         <div class="sh-kick">System Architecture &middot; Data Flow Chart &middot; Sheet 2/2</div>
         <h1>Flow Chart ของข้อมูลระบบจำลอง <b>“THE SHIELD 3.0”</b> &nbsp;<span class="en">SENSOR → PROCESSING → SHOOTER</span></h1>
-        <div class="sh-desc">อ่านจากซ้ายไปขวา — <b>① เซนเซอร์ ๖ โดเมน</b> + แหล่งข้อมูลจริง → <b>② โดเมนการประมวลผล ๘ โมดูล</b> → <b>③ Shooter — หน่วยใช้กำลัง ทร.</b> (มีประจำการ / ต้องการจัดหา) · ถอดจากสถาปัตยกรรมโค้ดจริงของ Simulator (v17.7.12)</div>
+        <div class="sh-desc">อ่านจากซ้ายไปขวา — <b>① เซนเซอร์ ๖ โดเมน</b> + แหล่งข้อมูลจริง → <b>② โดเมนการประมวลผล ๘ โมดูล</b> → <b>③ Shooter — หน่วยใช้กำลัง ทร.</b> (มีประจำการ / ต้องการจัดหา) · ถอดจากสถาปัตยกรรมโค้ดจริงของ Simulator (v17.12.0)</div>
       </div>
       <div class="sh-right">
         <div class="tag">
@@ -418,7 +418,7 @@
       <div class="tbgrid">
         <div class="cell"><div class="k">Document</div><div class="v">เอกสารวิจัย <b>หลักสูตรเสนาธิการทหารเรือ</b></div></div>
         <div class="cell"><div class="k">Scope</div><div class="v">เซนเซอร์ ๑๘ · โมดูล ๘ · Shooter ๑๕ หน่วย</div></div>
-        <div class="cell"><div class="k">Source</div><div class="v"><b>UDC_Simulator_17.html</b> (v17.7.12)</div></div>
+        <div class="cell"><div class="k">Source</div><div class="v"><b>UDC_Simulator_17.html</b> (v17.12.0)</div></div>
         <div class="cell"><div class="k">Sheet / Size</div><div class="v">2 / 2 · A2 Landscape</div></div>
         <div class="cell"><div class="k">Date</div><div class="v">๑๕ มิ.ย. ๒๕๖๙ (2026-06-15)</div></div>
         <div class="cell"><div class="k">Drawn for</div><div class="v">การบรรยายสรุป <b>เสธ.ทร.</b></div></div>
@@ -431,6 +431,7 @@
             <tr><td>2.3</td><td>2026-06-15</td><td>Sync ขีดความสามารถ v17.3.5: ขยาย Processing ⑥→⑧ โมดูล (+⑦ เขตอำนาจ/กรอบกฎหมาย + เครื่องยนต์ศัพท์ Legal⇄Ops · +⑧ ประสานหน่วย ศรชล./Attribution/Fisher-MSP) · กรอบ 7-Domain MDA (๖ sensing + AI) · บันได ROE/EOF SHOUT→SHOW→SHOVE→SHOOT · ศัพท์แผน CONPLAN/OPLAN/CAP · กฎ R4 Cyber-Phys (GNSS spoofing ≥0.5 → 4σ/8 nm)</td></tr>
             <tr><td>2.4</td><td>2026-06-23</td><td>Sync v17.5.6: +Space Globe ISR (เซนเซอร์ ⑱) ดาวเทียม ๒๑ ดวง · GISTDA THEOS-2/1 NAPA-1/2 + พันธมิตร · ISR Window / DARK CONTACTS / COLLECTION PLAN 24h</td></tr>
             <tr><td>2.5</td><td>2026-07-08</td><td>Sync v17.7.12: อัปเดตเวอร์ชันอ้างอิง v17.5.6→v17.7.12 · +<b>COA-PLANNER</b> — ปุ่ม GENERATE COA (LLM ประกอบ World State → COA JSON → referee → deploy) เสริมโมดูลฝ่ายเสนาธิการ AI ⑤ · +ชั้นข้อมูล <b>Global Ship Density</b> (ArcGIS/IMF·World Bank ๒๐๑๕–๒๐๒๑) โดเมนพื้นน้ำ</td></tr>
+            <tr><td>2.6</td><td>2026-07-11</td><td>Sync v17.12.0: อัปเดตเวอร์ชันอ้างอิง v17.7.12→v17.12.0 · +ด่าน <b>Force Validator</b> (referee) ตรวจ domain/terrain/เพดานกำลัง → repair(snap เลี่ยงบก)/reject ก่อนวางกำลัง ⑤ · HITL <b>fail-closed</b> (ยืนยันไม่ได้ = ไม่วาง) · CYBER-EM: threat-intel feeds (ThreatFox·Feodo·URLhaus·CISA KEV·CVE·Ransomware-TH) ผ่าน <b>Cloudflare Worker relay</b></td></tr>
           </table>
         </div>
         <div class="warn">⚠ DECISION SUPPORT ONLY — NOT FOR OPERATIONAL USE · เครื่องมือเพื่อการศึกษา/บรรยายสรุปเท่านั้น</div>
@@ -513,6 +514,26 @@ window.BLOCK_DETAILS = {"p1":{"id":"p1","titleTH":"การจำลองภ�
     ],
     illustration:`ลูกโลก 3 มิติ: วงโคจร TLE/SGP4 + ground track + coverage cone · AO อ่าวไทย 10°N 102°E รัศมี 500km · ISR WINDOW: 🟢 IN / 🟡 APPROACH / ⬜ BEYOND · 🚨 DARK CONTACTS (SAR ต่างชาติ = counter-ISR) · 📅 COLLECTION PLAN 24h`
   };
+  window.BLOCK_DETAILS.sn_gdelt = {
+    id:'sn_gdelt',
+    titleTH:`OSINT & ข่าวกรองภัยไซเบอร์ — GDELT + Threat-Intelligence (Cyber-EM Domain)`,
+    conceptTH:`เซนเซอร์โดเมนไซเบอร์–สเปกตรัม (Cyber-EM) หลอมข่าวสารเปิด ๒ ชั้นเข้าด้วยกัน: (๑) ข่าวภูมิรัฐศาสตร์เรียลไทม์ — GDELT 2.0 (Global Database of Events, Language & Tone) กรองคำค้น navy/maritime เพื่อจับแนวโน้มเหตุการณ์ทางทะเลที่อาจนำสู่ภัยคุกคาม. (๒) ข่าวกรองภัยไซเบอร์ (Threat-Intel) ๖ ฟีด แสดงเป็นหมุดบนแผนที่ด้วย lexicon ๔ รูปทรง: ●(circle)=อื่นๆ / ◆(diamond)=ThreatFox espionage (โครงสร้าง C2 จารกรรม) / ▲(triangle)=Feodo botnet (C2 มัลแวร์ธนาคาร) / ★(star)=URLhaus malware-URL (URL อันตราย แสดงเป็นข้อความ escape เท่านั้น ไม่เคยเป็นลิงก์คลิกได้). เสริมด้วยชั้นข้อมูล CVE (ช่องโหว่ล่าสุด) · CISA KEV (ช่องโหว่ที่ถูกใช้โจมตีจริง — มี info-drawer) · Ransomware-TH (เหยื่อ ransomware ในไทยจาก ransomware.live). ทุกฟีดเป็น keyless (ไม่มี API key ฝังใน client) และไหลผ่าน Cloudflare Worker relay ฝั่ง server-to-server เพื่อเลี่ยง CORS/rate-limit.`,
+    theoryTH:`สถาปัตยกรรม ingestion: OSINT feeds ที่ปลายทางไม่ส่ง Access-Control-Allow-Origin (adsb.lol · ransomware.live) หรือถูก rate-limit เมื่อยิงตรง (GDELT → HTTP 429) จะไม่สามารถ fetch จาก client (file://) ได้ — จึงย้ายเข้า Cloudflare Worker relay 'udc-threatfox.js' ที่ dispatch ตาม query ?feed= (threatfox|feodo|urlhaus|kev|ransomware|gdelt|aviation) พร้อม per-feed edge cache ใช้ร่วมกันทุกผู้ใช้. Worker ทำ geocode IP ด้วย ip-api batch ฝั่ง server (เดิม client-side geocode ถูกตัดทิ้ง). ฝั่ง client มี circuit breaker (threshold 3 · cooldown exponential 1→30 นาที) + per-proxy AbortController กัน retry storm เมื่อปลายทางล่ม. GDELT คงชั้น fallback เดิม (direct + CORS-proxy + demo) โดยแทรก Worker relay เป็นชั้นแรก.`,
+    references:[
+      {label:'GDELT 2.0 — Global Database of Events, Language & Tone',note:'ข่าวเหตุการณ์เรียลไทม์ กรอง navy/maritime · Worker v5 ?feed=gdelt (เลี่ยง HTTP 429)'},
+      {label:'ThreatFox (abuse.ch) — espionage C2 IOC',note:'◆ diamond · Worker v3 ?feed=threatfox'},
+      {label:'Feodo Tracker (abuse.ch) — botnet C2',note:'▲ triangle · Worker v3 ?feed=feodo'},
+      {label:'URLhaus (abuse.ch) — malware distribution URLs',note:'★ star · URL แสดงเป็นข้อความ escape เท่านั้น (ไม่เป็น <a href>) · Worker v3 ?feed=urlhaus'},
+      {label:'CISA KEV — Known Exploited Vulnerabilities',note:'ช่องโหว่ที่ถูกใช้โจมตีจริง · info-drawer · Worker v3 ?feed=kev'},
+      {label:'ransomware.live — Ransomware victims (TH filter)',note:'Worker v5 ?feed=ransomware · geocode ip-api ฝั่ง Worker'}
+    ],
+    simComments:[
+      {text:`// [v17.11.0 WORKER-1] udc-threatfox.js v3 dispatch\n//   ?feed=threatfox|feodo|urlhaus|kev — per-feed edge cache\n// [v17.11.0 CYBER-2] Worker v5 ?feed=ransomware|gdelt`,where:`Cloudflare Worker relay · changelog v17.11.0`},
+      {text:`// 4-shape lexicon (keyless):\n// ● other · ◆ ThreatFox espionage · ▲ Feodo botnet · ★ URLhaus malware-URL`,where:`Cyber-EM layer render`},
+      {text:`// [v17.12.0 CIRCUIT-2/PROXY-1] _cbCheck/_cbOk/_cbFail\n//   breaker key 'proxy:'+hostname · per-proxy AbortController (bandwidth ×4→×1)`,where:`fetchViaAnyProxy · changelog v17.12.0`}
+    ],
+    illustration:`Cyber-EM COP overlay: ● other · ◆ ThreatFox(espionage) · ▲ Feodo(botnet) · ★ URLhaus(malware-URL) + CVE / CISA KEV(info-drawer) / Ransomware-TH · GDELT event stream · ทุกฟีด keyless → Cloudflare Worker relay (?feed=…) → client circuit breaker`
+  };
 })();
 </script>
 <script>
@@ -540,7 +561,7 @@ window.BLOCK_DETAILS = {"p1":{"id":"p1","titleTH":"การจำลองภ�
    {id:'p4',num:'④',c:'#fbbf24',th:'AI ช่วยประเมินผล',en:'AI ASSESSMENT · JP 3-04 · DATA FUSION',
     fx:['<b>Data Fusion</b> สถิต+เรียลไทม์ → หลอมรวมข่าวกรอง R1–R5 → <b>CRIT/WARN/INFO</b>','JP 3-04 · <b>Feed Trust</b> (A2) ถ่วงน้ำหนักแหล่งข่าว · ข้อเท็จจริง/ข้อสมมุติ','เกณฑ์โปร่งใส Suitable/Feasible/Acceptable + Sensor Impact Matrix ๖ โดเมน','แนะนำการวางกำลัง — Own-Force-Aware Deploy','<b>R4 CYBER-PHYS</b> — ตรวจ GNSS spoofing: pseudo-range jitter ≥0.5 → ลายเซ็น 4σ ใน 8 nm']},
    {id:'p_staff',num:'⑤',c:'#a78bfa',th:'ฝ่ายเสนาธิการ AI',en:'AI STAFF PLANNER · IPOE → ECOA → COA',
-    fx:['IPOE ๔ ขั้น (ปมส.) → กำหนด NAI / TAI / CDP ตาม อทร.๘๓๐๗','ECOA (ML/MD) · Decision Support Matrix · คำสั่งยุทธการย่อ ๕ ข้อ','<b>Generate COA</b> (v17.7.12) — LLM ประกอบ World State → COA JSON → referee → deploy','<b>Confirm &amp; Deploy</b> — HITL (2-person) วางกำลังตามแผน · terrain-aware','<b>ชนิดแผน:</b> แผนเผชิญเหตุ (CONPLAN) · แผนยุทธการ (OPLAN) · แผนปฏิบัติการเฉียบพลัน (CAP)']},
+    fx:['IPOE ๔ ขั้น (ปมส.) → กำหนด NAI / TAI / CDP ตาม อทร.๘๓๐๗','ECOA (ML/MD) · Decision Support Matrix · คำสั่งยุทธการย่อ ๕ ข้อ','<b>Generate COA</b> (v17.12.0) — LLM ประกอบ World State → COA JSON → referee → deploy','<b>Force Validator</b> (referee) — ตรวจ domain/terrain/เพดานกำลังทุกการวางกำลัง → repair (snap เลี่ยงบก) / reject','<b>Confirm &amp; Deploy</b> — HITL (2-person) <b>fail-closed</b> · terrain-aware','<b>ชนิดแผน:</b> แผนเผชิญเหตุ (CONPLAN) · แผนยุทธการ (OPLAN) · แผนปฏิบัติการเฉียบพลัน (CAP)']},
    {id:'p5',num:'⑥',c:'#60a5fa',th:'จอ C2 แบบ Network-Centric',en:'C2 DISPLAY · NETWORK-CENTRIC OPERATIONS',
     fx:['<b>RMP</b> — Recognized Maritime Picture (RECOG × DOMAIN)','COP รวมทุกโดเมนบนจอเดียว · WCS FREE / TIGHT / HOLD','<b>Threat Board ๗ โดเมน</b> — AI/Decision = โดเมนที่ ๗ (cross-cutting · HITL)','ศปก.ทร. สั่งการทุกหน่วยบนข่ายเดียวกัน (NCW)']},
    {id:'p7',num:'⑦',c:'#8b5cf6',th:'เขตอำนาจ &amp; กรอบกฎหมาย',en:'JURISDICTION &amp; LEGAL-AUTHORITY · TERMINOLOGY ENGINE',
@@ -567,7 +588,7 @@ window.BLOCK_DETAILS = {"p1":{"id":"p1","titleTH":"การจำลองภ�
    {id:'sn_adsb',g:2,th:'ADS-B โดเมนอากาศ',src:'แหล่งข้อมูล: adsb.lol API (สำรอง OpenSky) · 250 nm · poll 60 s',to:['p4','p5']},
    {id:'sn_kp',g:2,th:'สภาพอวกาศ — ดัชนี Kp',src:'แหล่งข้อมูล: NOAA SWPC · เตือน G-storm Kp ≥ 5',to:['p4']},
    {id:'sn_sat',g:2,th:'ดาวเทียมลาดตระเวน ISR — Space Globe',src:'แหล่งข้อมูล: TLE/SGP4 · ๒๑ ดวง · GISTDA THEOS-2/1, NAPA-1/2 + พันธมิตร/พาณิชย์',to:['p4','p_staff']},
-   {id:'sn_gdelt',g:3,th:'ข่าวสารเปิด OSINT',src:'แหล่งข้อมูล: GDELT 2.0 · คำค้น navy / maritime',to:['p4','p_staff']},
+   {id:'sn_gdelt',g:3,th:'OSINT &amp; ข่าวกรองภัยไซเบอร์',src:'GDELT 2.0 + Threat-Intel: ThreatFox·Feodo·URLhaus·KEV·CVE·Ransomware-TH · via Worker relay',to:['p4','p_staff']},
    {id:'sn_gnss',g:3,th:'GNSS รบกวน/ลวง (Spoof · Jam)',src:'แหล่งข้อมูล: R4 cyber-physical · jitter ≥0.5 → spoof 4σ ใน 8 nm',to:['p1','p4','p8']},
    {id:'sn_woa',g:4,th:'อุณหภูมิ–ความเค็ม → SVP',src:'แหล่งข้อมูล: World Ocean Atlas 2023 (WOA23 / NOAA)',to:['p2']},
    {id:'sn_ctd',g:4,th:'MBES + CTD จากเรือสำรวจ',src:'แหล่งข้อมูล: ร.ล.พฤหัสบดี / จันทร / สุริยะ · SVP จริง + ความลึก',to:['p2','p3']},
