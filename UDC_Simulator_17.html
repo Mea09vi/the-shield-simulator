@@ -1,6 +1,38 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.7.12 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.12.0 · 7-Domain + AI Staff)
+  · [v17.12.0 CIRCUIT-2/PROXY-1] Audit B2+O2 — hardening เส้นทาง fetch ร่วม (fetchViaAnyProxy):
+    - CIRCUIT-2 (B2): แยก circuit breaker เดิม (CIRCUIT-1) เป็น helper _cbCheck/_cbOk/_cbFail
+      (semantics เดิมทุกประการ: threshold 3, cooldown exponential 1 นาที→cap 30 นาที, reset เมื่อสำเร็จ)
+      แล้วครอบ fetchViaAnyProxy ด้วย key 'proxy:'+hostname — เดิม breaker มีเฉพาะใน fetchJSON ทำให้
+      caller ที่เรียก fetchViaAnyProxy ตรง (Espionage geocode ip-api / ransomware.live / GDACS /
+      Seamark mirror / Aviation fallback②) ยิง 4 proxies ซ้ำทุก poll cycle ไม่หยุดเมื่อปลายทางล่ม
+      · ใช้ hostname ไม่ใช่ URL เต็ม เพื่อรวม geocode ต่าง IP เป็น breaker เดียว · namespace 'proxy:'
+      กันชนกับ feed key ของ fetchJSON ใน _cbState ก้อนเดียวกัน · _cbCheck อยู่นอก try — error
+      breaker-เปิดไม่ถูกนับ fail ซ้ำ · call site เดิมทั้ง 5 จุดไม่ต้องแก้ (ทุกจุดมี catch/fallback แล้ว)
+    - PROXY-1 (O2): per-proxy AbortController ใน fetchViaAnyProxy — ตัวที่ parse JSON สำเร็จก่อน
+      abort ผู้แพ้ที่เหลือทันที ลด bandwidth ×4 → ×1 ต่อ request (เดิม Promise.any ปล่อยผู้แพ้
+      วิ่งจนจบ/timeout เสมอ) · abort หลัง body parse สำเร็จเท่านั้น กันกรณี proxy ตอบ 200 แต่
+      body เป็น HTML error · fetchTO เพิ่มการ chain init.signal ของ caller เข้ากับ timeout
+      controller ภายใน (เดิม spread ทับ signal ทิ้ง — abort จากภายนอกไม่ได้เลย) backward compatible
+  · [v17.11.0 VER-1/SEC-1/WORKER-1/AVI-1/CYBER-2] Audit consolidation (Fable audit → Sonnet execution แผน 5 ข้อ):
+    เลข version เดิมกระจัดกระจาย 3 ค่า (v17.7.12 / v17.5.4 / ป้ายเก่ากว่า) ใน ~8 จุดแสดงผล → รวมเป็น
+    const APP_VERSION='17.11.0' จุดเดียว (ประกาศ global ต้นไฟล์ head) แทรกด้วย template literal ใน
+    JS 3 จุด (console.log boot / updateStatus / AI init log) + sync ข้อความ static อีก 5 จุด (title,
+    mda-ai-sub, boot-subtitle, hero title, statusBox) — คงเลข major=17 ตามที่งานวิจัย/pitch.html ยึด
+    "Model 3.0 = v17" (ฟีเจอร์ใหญ่ UNIFIED-PIPELINE นับเป็น patch bump แทนการขึ้น v18) · [SEC-1] แก้บั๊ก
+    HITL fail-open ใน _executeDeploy(): เดิม catch(_){ok=true} เมื่อ window.confirm() ถูก block/throw
+    (เช่น iframe/kiosk mode) จะข้าม human-in-the-loop แล้ว deploy ไปเลยโดยไม่ตั้งใจ → แก้เป็น fail-closed
+    (ok=false) ไม่ deploy ถ้ายืนยันไม่ได้ · [WORKER-1] Redeploy Cloudflare Worker `udc-threatfox` เป็น v3
+    (dispatch ?feed=threatfox|feodo|urlhaus|kev) ที่เขียนไว้แต่ยังไม่เคย deploy จริง (live ค้างที่ v2 ทำให้
+    KEV/Feodo/URLhaus ได้ข้อมูล threatfox ผิดชนิดกลับมา) — ยืนยันครบ 4 endpoint ผ่าน curl แล้ว · [AVI-1]
+    ย้ายเซนเซอร์การบิน (adsb.lol) เข้า Worker v4 (?feed=aviation, adsb.lol ไม่ส่ง ACAO เลย) แทน direct
+    fetch เดิมที่ถูก CORS บล็อกเสมอ · [CYBER-2] ย้าย Ransomware(TH)+geocode และ GDELT เข้า Worker v5
+    (?feed=ransomware|gdelt) — ตรวจ CORS จริงด้วย curl ก่อนตัดสินใจ (ไม่เชื่อ comment เดิมเฉยๆ) พบว่า
+    ransomware.live ไม่ส่ง ACAO เลย (ทั้งที่ comment เดิมอ้างว่าส่งบางกรณี) และ GDELT โดน HTTP 429 เมื่อยิง
+    ตรงถี่ๆ → ย้ายทั้งคู่มา Worker relay (ransomware ตัด direct fallback ทิ้งแบบ Feodo/URLhaus, GDELT เพิ่ม
+    เป็นชั้นแทรกก่อน fallback เดิมไม่ลบ tier ใดออก) ส่วน GDACS/Celestrak/thaiwater(wave) ตรวจแล้วพบ CORS
+    เปิดอยู่แล้วจริง (ACAO:* หรือสะท้อน Origin ถูกต้อง) → "ไม่" ย้าย เพราะไม่ใช่ปัญหาที่ต้องแก้
   · [v17.7.12 COA-PLANNER-1] LLM STAFF Planner: ปุ่ม "🎯 GENERATE COA" → ประกอบ World State JSON
     (own-force + Most-Likely ECOA + ภัย/bearing + เพดานกำลัง) → ส่ง LLM (task:'coa_plan') ให้สร้าง COA
     เป็น JSON (asset actions + คำสั่งการ) → parse/validate → ผ่าน referee ข้อ 2 เดิม (domain/terrain/cap)
@@ -53,6 +85,33 @@
                 + AI Domain ชั้น meta-intelligence สำหรับ situational reasoning (Decision Support Only)
 
   v17 changelog — 7-Domain MDA + AI Staff Planner:
+    · [v17.11.0] Audit consolidation (Fable audit 4 หัวข้อ → Sonnet execution แผนลำดับความสำคัญ 5 ข้อ):
+        - VER-1: รวมเลข version ที่แสดงผล ~8 จุด (title/AI-panel-sub/boot-subtitle/hero/statusBox/
+          console.log boot/updateStatus/AI-init-log) ที่เดิมกระจัดกระจาย (v17.7.12 บางจุด, v17.5.4
+          ค้างที่ MDA boot log จุดอื่น) ให้อ่านจาก const APP_VERSION='17.11.0' จุดเดียว (ประกาศ global
+          ใน <head> ก่อน script อื่นทั้งหมด) — major คงที่ 17 ตามงานวิจัย/pitch.html ("Model 3.0"=v17)
+        - SEC-1: แก้บั๊ก HITL fail-open ใน _executeDeploy() — เดิม window.confirm() ถ้าถูก block/throw
+          exception (เช่น รันใน iframe/kiosk mode) catch(_){ok=true} จะ "ผ่าน" HITL ไปเลยโดยไม่ตั้งใจ
+          (ข้าม 2-person confirm rule) → แก้เป็น fail-closed catch(_){ok=false} ไม่ deploy ถ้ายืนยันไม่ได้
+        - WORKER-1: Redeploy Cloudflare Worker `udc-threatfox.js` v3 (dispatch ?feed=threatfox|feodo|
+          urlhaus|kev, per-feed edge cache) ที่เขียนไว้ตั้งแต่ v17.10 แต่ไม่เคย deploy จริง — live ยังค้าง
+          v2 (ไม่รู้จัก query ?feed=) ทำให้ KEV/Feodo/URLhaus ได้ข้อมูล threatfox ผิดชนิดปนกลับมา แก้แล้ว
+          ยืนยันครบ 4 endpoint (base/feodo/urlhaus/kev) คืนชนิดข้อมูลถูกต้องผ่าน curl
+        - AVI-1: ย้ายเซนเซอร์การบิน adsb.lol เข้า Worker v4 (?feed=aviation) — adsb.lol ไม่ส่ง
+          Access-Control-Allow-Origin เลย ทำให้ direct fetch จาก file:// ถูก CORS บล็อกเสมอ; Worker
+          relay ฝั่ง server-to-server ไม่ติด CORS แทน ตัด field ที่ client ไม่ใช้ทิ้งลด payload
+        - CYBER-2: ตรวจ Item 5 audit (ransomware.live/GDACS/thaiwater-wave/Celestrak/GDELT) ด้วย
+          curl -H Origin จริงทีละตัวก่อนตัดสินใจย้าย (ไม่เชื่อ comment เดิมเฉยๆ):
+            · ransomware.live — ไม่ส่ง ACAO เลย (ไม่ตรงกับ comment เดิมที่อ้างว่า "ส่ง ACAO บางกรณี")
+              → ย้ายเข้า Worker v5 (?feed=ransomware) แบบ Worker-only (ไม่มี direct fallback) เหมือน
+              Feodo/URLhaus เดิม + ตัด client-side geocode(dom)/cachedGeo() ทิ้ง (geocode ทำใน Worker
+              ด้วย ip-api batch แทน) → MDA.RansomwareTH.refresh() เหลือ fetch Worker อย่างเดียว
+            · GDELT — CORS เปิดจริง แต่โดน HTTP 429 เมื่อยิงตรงถี่ๆ (rate-limit) → เพิ่มชั้น Worker relay
+              (?feed=gdelt, แคช edge ร่วมกันทุกผู้ใช้) แทรกก่อนชั้น direct+CORS-proxy เดิมใน
+              MDA.GDELT.refresh() — คง tier เดิมทั้งหมดไว้ (aiProxyUrl bypass + fallback demo-articles)
+            · GDACS, Celestrak (TLE), thaiwater (wave_forecast) — ตรวจแล้วพบ Access-Control-Allow-Origin
+              เปิดอยู่แล้วจริง (`*` หรือสะท้อน Origin ทั้ง http/null ถูกต้อง) → "ไม่ย้าย" เพราะ direct fetch
+              เดิมใช้งานได้จริงอยู่แล้ว ไม่ใช่ปัญหาที่ต้องแก้ (เลี่ยงเพิ่ม Worker relay ที่ไม่จำเป็น)
     · [v17.7.12] COA-PLANNER-1 — LLM STAFF Planner ครบวงจร (World State → COA JSON → referee → deploy):
         - ปุ่มใหม่ "🎯 GENERATE COA" (id=mda-ai-coa-plan, เหนือ CONFIRM&DEPLOY) → generateCOAPlan()
         - _buildWorldState(): ประกอบภาพสถานการณ์เป็น JSON — udc/bounds, threatBearingDeg, taxonomy,
@@ -443,7 +502,13 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.7.12 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.12.0 · 7-Domain + AI Staff</title>
+    <script>
+        // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
+        //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
+        //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
+        const APP_VERSION = '17.12.0';
+    </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
       Leaflet.js คือไลบรารีแผนที่แบบ Open-Source ที่ใช้กันอย่างแพร่หลายใน
@@ -6383,9 +6448,11 @@
         .od-tl-src { background:rgba(57,255,20,.08); color:#86efac; border:1px solid rgba(57,255,20,.18); border-radius:var(--radius-xs); padding:1px 6px; font-size:9.5px; }
         .od-empty { padding:48px 20px; text-align:center; color:rgba(255,255,255,.3); font-size:13px; line-height:2; }
         /* Clickable rows in left panel */.mda-lp-row[data-mda-layer="cve"],
-        .mda-lp-row[data-mda-layer="gdelt"] { cursor: pointer; }
+        .mda-lp-row[data-mda-layer="gdelt"],
+        .mda-lp-row[data-mda-layer="kev"] { cursor: pointer; }
         .mda-lp-row[data-mda-layer="cve"]:hover,
-        .mda-lp-row[data-mda-layer="gdelt"]:hover { background: rgba(139,92,246,.08); }
+        .mda-lp-row[data-mda-layer="gdelt"]:hover,
+        .mda-lp-row[data-mda-layer="kev"]:hover { background: rgba(139,92,246,.08); }
     </style>
 <style data-udc-icons>
 /* [v17.7.0 SVG-ICONS-1] Lucide SVG icon + status-dot system */
@@ -6735,6 +6802,36 @@
                 <span class="label"><span class="swatch" style="background:#39ff14"></span>GDELT Events</span>
                 <span class="count" id="mda-cnt-gdelt-row">--</span>
                 <span class="mda-sw on"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-layer="ransom-th" title="Ransomware victims (TH) — ransomware.live · หมุด geocode จากโดเมนโฮสติ้ง (approx · อาจอยู่นอกไทย) · lazy-load ตอนเปิด">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#f43f5e"></span>Ransomware (TH)</span>
+                <span class="count" id="mda-cnt-ransom-th-row">—</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-layer="espionage" title="Cyber Espionage IOC — ThreatFox (abuse.ch) · C2 / RAT / Infostealer / Phishing · หมุด◇ข้าวหลามตัดแยกสีตามชนิด (แตกต่างจาก layer อื่น) · geocode จาก IP (approx) · keyless · lazy-load ตอนเปิด">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:conic-gradient(#a855f7 0deg 90deg,#22d3ee 90deg 180deg,#f59e0b 180deg 270deg,#e879f9 270deg 360deg)"></span>ภัยจารกรรม (ThreatFox)</span>
+                <span class="count" id="mda-cnt-espionage-row">—</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-layer="feodo" title="Botnet / Banking-trojan C2 — Feodo Tracker (abuse.ch) · QakBot/Emotet/Pikabot/Dridex ฯลฯ · หมุด▲สามเหลี่ยมแยกสีตามตระกูล (ต่างจากวงกลม/ข้าวหลามตัด) · ออนไลน์=สว่าง ออฟไลน์=จาง · geocode จาก IP (approx) · keyless · lazy-load ตอนเปิด">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#ef4444;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>บอตเน็ต C2 (Feodo)</span>
+                <span class="count" id="mda-cnt-feodo-row">—</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-layer="urlhaus" title="Malware distribution URLs — URLhaus (abuse.ch) · payload/มัลแวร์ที่โฮสต์บนเว็บ · หมุด★ดาวแยกจากวงกลม/ข้าวหลามตัด/สามเหลี่ยม · ออนไลน์=สว่าง ออฟไลน์=จาง · geocode จากโฮสต์ (approx) · keyless · lazy-load ตอนเปิด">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#f59e0b;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)"></span>มัลแวร์ URL (URLhaus)</span>
+                <span class="count" id="mda-cnt-urlhaus-row">—</span>
+                <span class="mda-sw"></span>
+            </div>
+            <div class="mda-lp-row" data-mda-layer="kev" title="CISA KEV — CVE ที่ถูกโจมตีจริง (ยืนยันแล้ว) · คลิกเพื่อดูรายการ · ป้าย = เพิ่มใหม่ 30 วัน (crit ถ้าผูกแรนซัมแวร์) · ต้องตั้ง Worker URL (⚙)">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#dc2626"></span>CVE ถูกโจมตีจริง (KEV)</span>
+                <span class="count" id="mda-cnt-kev-row">—</span>
+                <span class="mda-sw"></span>
             </div>
         </div>
     </div>
@@ -7127,7 +7224,7 @@
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.7.12 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.12.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -7588,7 +7685,7 @@
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.7.12 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.12.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -7605,7 +7702,7 @@
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.7.12 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.12.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -8521,7 +8618,7 @@
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.7.12 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.12.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -25464,7 +25561,7 @@ function resetAll() {
     setSensor('uw-uuv','PATROL','s-ok');      setSensor('uw-udc','SECURE','s-ok');
     setSensor('as-patrol','ON PATROL','s-ok');setSensor('as-helo','STANDBY','s-ok');
     setSensor('as-radar','SCANNING','s-ok');  setSensor('as-ad','ARMED','s-ok');
-    updateStatus('[SYSTEM] THE SHIELD 3.0 v17.7.12 · 7-Domain + AI Staff Online...<br>[GIS] Leaflet Map Active · Tide + Sea State Reset<br>[DAS] Fiber Tripwire Armed · SEAHAWK01 standby @ U-Tapao.','#64ffda');
+    updateStatus('[SYSTEM] THE SHIELD 3.0 v' + APP_VERSION + ' · 7-Domain + AI Staff Online...<br>[GIS] Leaflet Map Active · Tide + Sea State Reset<br>[DAS] Fiber Tripwire Armed · SEAHAWK01 standby @ U-Tapao.','#64ffda');
     addLog('--- SYSTEM RESET ---','var(--teal)');
     // V06: รีเซ็ต timeline + outcome
     scenarioStartTime = 0;
@@ -29223,8 +29320,8 @@ window.toggleSat3D = toggleSat3D;
         cfg: {
             // ขอบเขต indochina/อ่าวไทย-อันดามัน สำหรับ OpenSky bbox
             bbox: { lamin: 5.6, lomin: 95.0, lamax: 21.0, lomax: 108.0 },
-            poll: { aviation: 60_000, seismic: 180_000, space: 600_000, gdelt: 300_000, fusion: 30_000, marineWx: 1_800_000, weather: 900_000, storm: 1_800_000, radar: 600_000, metoc: 1_800_000, cve: 600_000 },   // [v16.1.0 METOC-2] [v17.3 CVE 10min]
-            cacheTTL: { aviation: 55_000, seismic: 170_000, space: 590_000, gdelt: 290_000, marineWx: 1_790_000 },
+            poll: { aviation: 60_000, seismic: 180_000, space: 600_000, gdelt: 300_000, fusion: 30_000, marineWx: 1_800_000, weather: 900_000, storm: 1_800_000, radar: 600_000, metoc: 1_800_000, cve: 600_000, ransomTh: 1_800_000, espionage: 1_800_000, feodo: 3_600_000, urlhaus: 900_000, kev: 3_600_000 },   // [v16.1.0 METOC-2] [v17.3 CVE 10min] [v17.8 ransom 30min] [v17.9 espionage 30min] [v17.10 feodo/kev 60min · urlhaus 15min]
+            cacheTTL: { aviation: 55_000, seismic: 170_000, space: 590_000, gdelt: 290_000, marineWx: 1_790_000, 'ransom-th': 1_790_000, 'espionage': 1_790_000 },
             // v12.6-F: TMD (Thai Meteorological Dept) primary, USGS backup
             // Set to your deployed Cloudflare Worker URL (template: see /workers/tmd-proxy.js
             // in repo, or inline at top of MDA.Seismic IIFE) — null = skip TMD, USGS-only
@@ -29233,8 +29330,8 @@ window.toggleSat3D = toggleSat3D;
             verbose: false
         },
         layers: {},       // L.layerGroup() ต่อโดเมน
-        data:   { aviation: [], seismic: [], space: null, gdelt: [], fusion: [], marineWx: null, seamarks: null, weather: null, storm: [], radar: null, metoc: null, cve: null },   // [v16.1.0 METOC-2] [v17.3 CVE]
-        state:  { on: { aviation: true, 'ais-heat': true, 'ais-anomaly': true, seismic: true, space: true, gdelt: true, seamark: false, 'marine-wx': false, weather: false, storm: false, 'rain-radar': false, metoc: false, 'gistda-flood': false, 'ship-density': false } },   // [v16.1.0 METOC-2] metoc ปิด default · [METOC-4] gistda-flood ปิด default
+        data:   { aviation: [], seismic: [], space: null, gdelt: [], fusion: [], marineWx: null, seamarks: null, weather: null, storm: [], radar: null, metoc: null, cve: null, 'ransom-th': [], 'espionage': [], 'feodo': [], 'urlhaus': [], kev: null },   // [v16.1.0 METOC-2] [v17.3 CVE] [v17.8 ransom-th] [v17.9 espionage] [v17.10 feodo/urlhaus/kev]
+        state:  { on: { aviation: true, 'ais-heat': true, 'ais-anomaly': true, seismic: true, space: true, gdelt: true, seamark: false, 'marine-wx': false, weather: false, storm: false, 'rain-radar': false, metoc: false, 'gistda-flood': false, 'ship-density': false, 'ransom-th': false, 'espionage': false, 'feodo': false, 'urlhaus': false, kev: true } },   // [v16.1.0 METOC-2] metoc ปิด default · [METOC-4] gistda-flood ปิด default · [v17.8] ransom-th ปิด default · [v17.9] espionage ปิด default · [v17.10] feodo/urlhaus ปิด · kev เปิด (info row)
         timers: {}
     };
 
@@ -29256,6 +29353,12 @@ window.toggleSat3D = toggleSat3D;
     const fetchTO = (url, ms = 8000, init = {}) => {
         const ctl = new AbortController();
         const t = setTimeout(() => ctl.abort(), ms);
+        // [v17.12.0 PROXY-1] chain signal จาก caller เข้ากับ controller ภายใน
+        // (spread ด้านล่างทับ init.signal — เดิม abort จากภายนอกไม่ได้เลย)
+        if (init.signal) {
+            if (init.signal.aborted) ctl.abort();
+            else init.signal.addEventListener('abort', () => ctl.abort(), { once: true });
+        }
         return fetch(url, { ...init, signal: ctl.signal })
             .finally(() => clearTimeout(t));
     };
@@ -29272,12 +29375,30 @@ window.toggleSat3D = toggleSat3D;
           unwrap: j => (j && typeof j.contents === 'string' ? JSON.parse(j.contents) : j) },
     ];
     const fetchViaAnyProxy = async (targetUrl, ms = 10000) => {
-        const attempts = CORS_PROXIES.map(p => fetchTO(p.make(targetUrl), ms)
+        // [v17.12.0 CIRCUIT-2] breaker ต่อปลายทาง (hostname) — เดิม breaker มีเฉพาะใน fetchJSON
+        // ทำให้ caller ที่เรียกตรง (geocode/ransomware/GDACS/seamark) ยิง 4 proxies ซ้ำทุกรอบเมื่อปลายทางล่ม
+        // ใช้ hostname ไม่ใช่ URL เต็ม — geocode ip-api.com ต่าง IP หลายสิบ request รวมเป็น breaker เดียว
+        let cbKey;
+        try { cbKey = 'proxy:' + new URL(targetUrl).hostname; }
+        catch (_) { cbKey = 'proxy:' + String(targetUrl).slice(0, 80); }
+        _cbCheck(cbKey);  // breaker เปิดอยู่ → โยนทันที ไม่ยิง proxy สักตัว (อยู่นอก try — ไม่นับเป็น fail ซ้ำ)
+        // [v17.12.0 PROXY-1] controller ต่อ proxy — ผู้ชนะ abort ที่เหลือ (ลด bandwidth ×4 → ×1)
+        // abort หลัง body parse สำเร็จเท่านั้น: proxy อาจตอบ 200 แต่ body เป็น HTML error
+        // (ผู้แพ้ reject ด้วย AbortError — Promise.any ผูก handler ครบแล้ว ไม่เกิด unhandledrejection)
+        const ctls = CORS_PROXIES.map(() => new AbortController());
+        const attempts = CORS_PROXIES.map((p, i) => fetchTO(p.make(targetUrl), ms, { signal: ctls[i].signal })
             .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-            .then(j => (p.unwrap ? p.unwrap(j) : j)));
+            .then(j => (p.unwrap ? p.unwrap(j) : j))
+            .then(j => {
+                ctls.forEach((c, k) => { if (k !== i) c.abort(); });
+                return j;
+            }));
         try {
-            return await Promise.any(attempts);  // เอา proxy ที่สำเร็จเร็วที่สุด
+            const j = await Promise.any(attempts);  // เอา proxy ที่สำเร็จเร็วที่สุด
+            _cbOk(cbKey);
+            return j;
         } catch (agg) {
+            _cbFail(cbKey);
             // AggregateError → แทน "All promises were rejected" ด้วยรายละเอียดจริง
             const errs = (agg && Array.isArray(agg.errors))
                 ? agg.errors.map(e => e && e.message).filter(Boolean) : [];
@@ -29287,35 +29408,44 @@ window.toggleSat3D = toggleSat3D;
     };
     // [v17.7.9 CIRCUIT-1] circuit breaker ต่อ key — หลังพัง N ครั้งติดกัน หยุดยิง fetch/proxy
     // ชั่วคราว (cooldown แบบ exponential) แทนที่จะ retry ทุก poll cycle จนกว่า error สะสมไม่จบ
+    // [v17.12.0 CIRCUIT-2] แยกเป็น helper 3 ตัว (semantics เดิมทุกประการ) ให้ fetchViaAnyProxy
+    // ใช้ร่วมด้วย key namespace 'proxy:*' — key ฝั่ง feed (fetchJSON) กับฝั่ง proxy ไม่ชนกัน
     const _cbState = {};
     const _CB_THRESHOLD = 3;          // พังติดกันกี่ครั้งถึงเปิด breaker
     const _CB_BASE_COOLDOWN = 60_000; // เริ่ม 1 นาที แล้ว double ทุกครั้งที่ยังพังต่อ (cap 30 นาที)
     const _CB_MAX_COOLDOWN = 1_800_000;
-    const fetchJSON = async (url, key, ttl) => {
-        const cached = cacheGet(key, ttl);
-        if (cached) return cached;
+    const _cbCheck = (key) => {  // โยนทันทีถ้า breaker เปิดอยู่ — ไม่ยิง network เลย
         const cb = _cbState[key];
         if (cb && cb.fails >= _CB_THRESHOLD && Date.now() < cb.nextTry) {
             throw new Error('[MDA·circuit-breaker] ' + key + ' พังติดกัน ' + cb.fails + ' ครั้ง — พักไว้ถึง ' + new Date(cb.nextTry).toLocaleTimeString());
         }
+    };
+    const _cbOk = (key) => { delete _cbState[key]; };
+    const _cbFail = (key) => {
+        const fails = ((_cbState[key] && _cbState[key].fails) || 0) + 1;
+        const cooldown = Math.min(_CB_BASE_COOLDOWN * Math.pow(2, fails - _CB_THRESHOLD), _CB_MAX_COOLDOWN);
+        _cbState[key] = { fails, nextTry: Date.now() + (fails >= _CB_THRESHOLD ? cooldown : 0) };
+    };
+    const fetchJSON = async (url, key, ttl) => {
+        const cached = cacheGet(key, ttl);
+        if (cached) return cached;
+        _cbCheck(key);
         try {
             const r = await fetchTO(url, 8000, { mode: 'cors' });
             if (!r.ok) throw new Error('HTTP ' + r.status);
             const j = await r.json();
             cacheSet(key, j);
-            delete _cbState[key];
+            _cbOk(key);
             return j;
         } catch (err) {
             console.warn('[MDA·fetchJSON] direct fetch failed, trying CORS proxy fallback:', err.message);
             try {
                 const j = await fetchViaAnyProxy(url);
                 cacheSet(key, j);
-                delete _cbState[key];
+                _cbOk(key);
                 return j;
             } catch (proxyErr) {
-                const fails = (cb ? cb.fails : 0) + 1;
-                const cooldown = Math.min(_CB_BASE_COOLDOWN * Math.pow(2, fails - _CB_THRESHOLD), _CB_MAX_COOLDOWN);
-                _cbState[key] = { fails, nextTry: Date.now() + (fails >= _CB_THRESHOLD ? cooldown : 0) };
+                _cbFail(key);
                 console.error('[MDA·fetchJSON] both direct fetch and CORS proxy failed:', proxyErr.message);
                 throw proxyErr;
             }
@@ -29325,7 +29455,7 @@ window.toggleSat3D = toggleSat3D;
     // ── badge helpers
     // [v16.0.3 W3-Bug19] id="mda-bdg-*" ไม่มีอยู่จริงใน markup — key 4 ตัว (air/seismic/space/gdelt)
     // ชี้ไม่ตรง id count จริง ทำให้ตัวเลข+สถานะ ERR ของ feed เหล่านี้ไม่เคยแสดง (W3-Bug16 ด้วย)
-    const _BDG_ID_MAP = { air: 'aviation', seismic: 'seismic-row', space: 'space-row', gdelt: 'gdelt-row', cve: 'cve-row' };
+    const _BDG_ID_MAP = { air: 'aviation', seismic: 'seismic-row', space: 'space-row', gdelt: 'gdelt-row', cve: 'cve-row', 'ransom-th': 'ransom-th-row', 'espionage': 'espionage-row' };
     const setBadge = (id, txt, lvl) => {
         const c = document.getElementById('mda-cnt-' + (_BDG_ID_MAP[id] || id));
         if (c) {
@@ -29374,6 +29504,36 @@ window.toggleSat3D = toggleSat3D;
                             '<div class="od-tl-meta">' +
                                 (pub ? '<span>' + pub + '</span>' : '') +
                                 (v.id ? '<a class="od-tl-link" href="' + escapeHtml(nvdUrl) + '" target="_blank" rel="noopener noreferrer">NVD ↗</a>' : '') +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                }).join('');
+            }
+        } else if (type === 'kev') {
+            icon.textContent  = '🎯';
+            title.textContent = 'CISA KEV — CVE ถูกโจมตีจริง';
+            const data  = (window.MDA && MDA.data && MDA.data.kev) || null;
+            const items = (data && data.items) || [];
+            countEl.textContent = data ? ('+' + (data.count30d || 0) + ' / 30วัน · รวม ' + (data.total || 0)) : '—';
+            if (!items.length) {
+                body.innerHTML = '<div class="od-empty">ยังไม่มีข้อมูล KEV<br><small>ตรวจสอบ Worker URL ใน <svg class="ico" aria-hidden="true"><use href="#i-settings"/></svg> หรือรอ refresh</small></div>';
+            } else {
+                body.innerHTML = items.map(function (v) {
+                    var sev    = v.ransom ? 'CRITICAL' : 'HIGH';
+                    var added  = v.dateAdded ? String(v.dateAdded).slice(0, 10) : '';
+                    var due    = v.dueDate ? String(v.dueDate).slice(0, 10) : '';
+                    var vp     = [v.vendor, v.product].filter(Boolean).join(' · ');
+                    var nvdUrl = 'https://nvd.nist.gov/vuln/detail/' + encodeURIComponent(v.cveID || '');
+                    return '<div class="od-item">' +
+                        '<div class="od-tl-line"><span class="od-tl-dot ' + sev + '"></span><span class="od-tl-vline"></span></div>' +
+                        '<div class="od-tl-content">' +
+                            '<span class="od-tl-tag ' + sev + '">' + (v.ransom ? '☣ แรนซัมแวร์' : 'KEV') + '</span>' +
+                            '<div class="od-tl-title">' + escapeHtml(v.cveID || '') + (vp ? ' — ' + escapeHtml(vp) : '') + '</div>' +
+                            '<div class="od-tl-desc">' + escapeHtml(v.name || v.desc || '(ไม่มีคำอธิบาย)') + '</div>' +
+                            '<div class="od-tl-meta">' +
+                                (added ? '<span>เพิ่ม ' + added + '</span>' : '') +
+                                (due ? '<span>· กำหนดแก้ ' + due + '</span>' : '') +
+                                (v.cveID ? '<a class="od-tl-link" href="' + escapeHtml(nvdUrl) + '" target="_blank" rel="noopener noreferrer">NVD ↗</a>' : '') +
                             '</div>' +
                         '</div>' +
                     '</div>';
@@ -29430,17 +29590,20 @@ window.toggleSat3D = toggleSat3D;
     setTimeout(function () {
         const cveRow   = document.querySelector('.mda-lp-row[data-mda-layer="cve"]');
         const gdeltRow = document.querySelector('.mda-lp-row[data-mda-layer="gdelt"]');
+        const kevRow   = document.querySelector('.mda-lp-row[data-mda-layer="kev"]');
         // [v17.7.1 BOOT-1] กันลิ้นชัก OSINT เด้งเปิดตอน boot preset ยิง row.click() อัตโนมัติ
         if (cveRow)   cveRow.addEventListener('click',   function () { if (!window._suppressBootPanels) window.openOsintDrawer('cve');   });
         if (gdeltRow) gdeltRow.addEventListener('click', function () { if (!window._suppressBootPanels) window.openOsintDrawer('gdelt'); });
+        if (kevRow)   kevRow.addEventListener('click',   function () { if (!window._suppressBootPanels) window.openOsintDrawer('kev');   });
     }, 800);
 
-    // ── v13.0.3 startup diagnostics ───────────────────────────────────
+    // ── startup diagnostics ───────────────────────────────────
+    //   [v17.11.0 VER-1] แก้ป้ายเวอร์ชันค้าง v13.0.3 (super เก่า จากยุคก่อน MDA แยกโมดูล) → APP_VERSION
     try {
         // เคลียร์ cache key เก่าจาก adsb.fi/opensky (อาจค้างข้อมูลผิด format)
         ['aviation', 'aviation_os'].forEach(k => localStorage.removeItem('mda-cache-' + k));
         const proto = location.protocol;
-        const banner = `%c[MDA v13.0.3] %cprotocol=${proto} ` +
+        const banner = `%c[MDA v${APP_VERSION}] %cprotocol=${proto} ` +
                        (proto === 'file:' ? '⚠ file:// อาจถูก CORS block — แนะนำเปิดผ่าน local server' : '✓');
         console.log(banner, 'color:#22d3ee;font-weight:bold', 'color:#94a3b8');
     } catch (e) {}
@@ -29537,6 +29700,10 @@ window.toggleSat3D = toggleSat3D;
         //   1) adsb.lol  (open CORS, max 250 nm)
         //   2) OpenSky   (bbox-based, CORS support)
         //   response normalize → { ac: [...] }
+        // [v17.11.0 AVI-1] เพิ่ม Cloudflare Worker relay (_worker/udc-threatfox.js ?feed=aviation)
+        //   เป็นทางเลือกแรก — relay server-to-server เลี่ยง CORS ของ adsb.lol ได้เต็มที่ (ไม่ต้องพึ่ง
+        //   proxy สาธารณะที่ไม่เสถียร) ใช้ MDA.cfg.threatfoxProxy จุดเดียวกับ Cyber-EM sensors
+        //   ถ้าไม่ได้ตั้งค่า/ล้มเหลว → ตกไปที่ chain เดิม (direct → proxy → OpenSky) ไม่เปลี่ยนพฤติกรรม
         const centerLat = ((BBOX.lamin + BBOX.lamax) / 2).toFixed(2);
         const centerLon = ((BBOX.lomin + BBOX.lomax) / 2).toFixed(2);
         const RADIUS_NM = 250;  // adsb.lol จำกัดที่ 250 nm
@@ -29579,25 +29746,42 @@ window.toggleSat3D = toggleSat3D;
         async function refresh() {
             try {
                 let j, src;
-                // [v15.5g] ลำดับใหม่: direct → proxy (เส้นทางหลัก file://) → OpenSky (สำรอง)
+                // [v17.11.0 AVI-1] ⓪ Worker relay ก่อน (server-side ไม่ติด CORS เลย — เร็ว/นิ่งสุด)
+                const wBase = (MDA.cfg && MDA.cfg.threatfoxProxy) ? String(MDA.cfg.threatfoxProxy).trim().replace(/\/+$/, '') : '';
+                if (wBase) {
+                    try {
+                        const cached = cacheGet('aviation', MDA.cfg.cacheTTL.aviation);
+                        if (cached) { j = cached; src = 'cache'; }
+                        else {
+                            j = await fetchTO(wBase + '/?feed=aviation', 15_000).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+                            cacheSet('aviation', j);
+                            src = 'Worker relay';
+                        }
+                    } catch (e0) {
+                        console.warn('[MDA·Aviation] Worker relay fail:', e0.message);
+                    }
+                }
+                // [v15.5g] ลำดับเดิม (สำรองเมื่อ Worker ไม่ได้ตั้งค่า/ล้มเหลว): direct → proxy → OpenSky
                 //   adsb.lol ไม่ส่ง ACAO → direct ถูก browser block เสมอ จึงพึ่ง proxy เป็นหลัก
                 //   OpenSky ย้ายไปท้ายสุดเพราะ anonymous โดน HTTP 429 (rate-limit) บ่อย
-                // ① adsb.lol direct (สำเร็จเฉพาะตอน served ผ่าน CORS-friendly host)
-                try {
-                    j = await fetchJSON(URL_ADSB_LOL, 'aviation', MDA.cfg.cacheTTL.aviation);
-                    src = 'adsb.lol';
-                } catch (e1) {
-                    console.warn('[MDA·Aviation] adsb.lol direct fail:', e1.message);
-                    // ② adsb.lol via CORS proxy (เส้นทางหลักเมื่อรันแบบ file://)
+                if (!j) {
+                    // ① adsb.lol direct (สำเร็จเฉพาะตอน served ผ่าน CORS-friendly host)
                     try {
-                        j = await fetchViaProxy(URL_ADSB_LOL);
-                        src = 'adsb.lol (proxied)';
-                    } catch (e2) {
-                        console.warn('[MDA·Aviation] adsb.lol proxy fail:', e2.message);
-                        // ③ OpenSky direct (สำรองสุดท้าย · อาจ 429)
-                        const raw = await fetchJSON(URL_OPENSKY, 'aviation_os', MDA.cfg.cacheTTL.aviation);
-                        j = { ac: normalizeOpenSky(raw) };
-                        src = 'OpenSky';
+                        j = await fetchJSON(URL_ADSB_LOL, 'aviation', MDA.cfg.cacheTTL.aviation);
+                        src = 'adsb.lol';
+                    } catch (e1) {
+                        console.warn('[MDA·Aviation] adsb.lol direct fail:', e1.message);
+                        // ② adsb.lol via CORS proxy (เส้นทางหลักเมื่อรันแบบ file://)
+                        try {
+                            j = await fetchViaProxy(URL_ADSB_LOL);
+                            src = 'adsb.lol (proxied)';
+                        } catch (e2) {
+                            console.warn('[MDA·Aviation] adsb.lol proxy fail:', e2.message);
+                            // ③ OpenSky direct (สำรองสุดท้าย · อาจ 429)
+                            const raw = await fetchJSON(URL_OPENSKY, 'aviation_os', MDA.cfg.cacheTTL.aviation);
+                            j = { ac: normalizeOpenSky(raw) };
+                            src = 'OpenSky';
+                        }
                     }
                 }
                 const ac = (j && Array.isArray(j.ac)) ? j.ac : [];
@@ -30159,6 +30343,10 @@ window.toggleSat3D = toggleSat3D;
 //  หลักการ      : GDELT v2 Doc API · poll 300s · sourcecountry filter
 //  เชื่อมโยง     : Layer Panel (Info) · Status Badge GDELT · Fusion R4
 //  อ้างอิง       : https://blog.gdeltproject.org/gdelt-doc-2-0-api-debuts/
+//  [v17.11.0 CYBER-2] GDELT เปิด CORS จริง แต่โดน HTTP 429 rate-limit เมื่อยิงตรงถี่ๆ (ยืนยันด้วย
+//                 curl) → เพิ่มชั้น Worker relay (MDA.cfg.threatfoxProxy ?feed=gdelt, แคช edge
+//                 ร่วมกันทุกผู้ใช้) แทรกก่อนชั้น direct+CORS-proxy เดิม — คง aiProxyUrl (ถ้าตั้งค่า
+//                 ไว้) และ fallback demo-articles เดิมไว้ทั้งหมด ไม่ลบ tier ใดออก
     /* ══════════════════════════════════════════════════════════════
        ·  หมวด ญ.๔  Information Domain — GDELT 2.0 Events
        ──────────────────────────────────────────────────────────────
@@ -30186,6 +30374,17 @@ window.toggleSat3D = toggleSat3D;
                         const r = await fetchTO(`${wUrl}/gdelt`, 8_000);
                         if (r.ok) { j = await r.json(); cacheSet('gdelt', j); }
                     } catch (_) { /* ตก fallback */ }
+                }
+                // [v17.11.0 CYBER-2] Worker relay หลัก — threatfoxProxy ตั้งค่า default ไว้แล้ว (ต่างจาก
+                // aiProxyUrl ที่ default null) → ช่วยลด 429 ให้ผู้ใช้ส่วนใหญ่โดยไม่ต้องตั้งค่าเพิ่ม
+                if (!j) {
+                    const base = (MDA.cfg && MDA.cfg.threatfoxProxy) ? String(MDA.cfg.threatfoxProxy).trim().replace(/\/+$/, '') : '';
+                    if (base) {
+                        try {
+                            const r = await fetchTO(base + '/?feed=gdelt', 10_000);
+                            if (r.ok) { j = await r.json(); cacheSet('gdelt', j); }
+                        } catch (_) { /* ตก fallback ถัดไป */ }
+                    }
                 }
                 if (!j) j = await fetchJSON(URL, 'gdelt', MDA.cfg.cacheTTL.gdelt);
                 const arts = j.articles || [];
@@ -30220,6 +30419,496 @@ window.toggleSat3D = toggleSat3D;
             }
         }
         return { layer, refresh, name: 'GDELT' };
+    })();
+
+
+//  [ส่วนที่ 11.3-C] กลุ่ม ๖ · Cyber-EM · Ransomware Victims (TH) — v17.8, ย้ายเป็น Worker relay ที่ v17.11.0 CYBER-2
+//  วัตถุประสงค์ : ปักหมุดองค์กรไทยที่ตกเป็นเหยื่อ ransomware (ransomware.live)
+//  หลักการ      : ransomware.live v2 /countryvictims/TH ผ่าน Cloudflare Worker relay
+//                 (MDA.cfg.threatfoxProxy ?feed=ransomware) — geocode โดเมนโฮสติ้งทำใน
+//                 Worker ด้วย ip-api batch (เหมือน Feodo/URLhaus) → circleMarker · poll 30
+//                 นาที · lazy-load ตอน toggle (default off)
+//  [v17.11.0 CYBER-2] เดิม comment อ้างว่า "ransomware.live ส่ง ACAO บางกรณี" — ตรวจด้วย
+//                 curl -H Origin จริงแล้วพบว่า**ไม่ส่ง ACAO เลย** (ไม่ตรงกับ comment เดิม) →
+//                 ตัด direct-fetch/client-geocode ทิ้งทั้งหมด ใช้ Worker-only pattern เหมือน
+//                 Feodo/URLhaus (ไม่มี direct fallback เพราะพิสูจน์แล้วว่าใช้งานไม่ได้จริง)
+//  ข้อจำกัด     : พิกัด = ที่ตั้ง "เซิร์ฟเวอร์โฮสติ้ง" ไม่ใช่ HQ จริง (approx) ·
+//                 หมุดอาจอยู่นอกไทยหากโฮสต์คลาวด์ต่างประเทศ
+//  เชื่อมโยง     : toggle 'ransom-th' หมวด Cyber-EM (ต่อจาก GDELT) · โค้ด Worker: _worker/udc-threatfox.js
+    /* ══════════════════════════════════════════════════════════════
+       ·  หมวด ญ.๔-C  Cyber Domain — Ransomware Victims (TH)
+       ════════════════════════════════════════════════════════════ */
+    MDA.RansomwareTH = (function () {
+        const layer = L.layerGroup();
+        MDA.layers['ransom-th'] = layer;
+        const MAX_PLOT = 40;   // ปักเฉพาะเหยื่อล่าสุด N ราย (ตรงกับ RANSOM_N ฝั่ง Worker)
+
+        // hash โดเมน → jitter คงที่ ±0.03° (กันหมุด datacenter เดียวกันซ้อนทับ)
+        const jit = (s) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return ((h % 1000) / 1000 - 0.5) * 0.06; };
+
+        async function refresh() {
+            try {
+                const base = (MDA.cfg && MDA.cfg.threatfoxProxy) ? String(MDA.cfg.threatfoxProxy).trim().replace(/\/+$/, '') : '';
+                if (!base) {   // ransomware.live ไม่มี ACAO → ต้องมี Worker
+                    setBadge('ransom-th', 'N/A', null); setCount('mda-cnt-ransom-th-row', 'N/A'); return;
+                }
+                const arr = await fetchTO(base + '/?feed=ransomware', 15_000).then(r => r.json());
+                if (!Array.isArray(arr)) throw new Error('bad payload');
+                const recs = arr.slice(0, MAX_PLOT);
+                MDA.data['ransom-th'] = recs;
+                layer.clearLayers();
+                let plotted = 0;
+                for (const v of recs) {
+                    const geo = v.geo;
+                    if (!geo || typeof geo.lat !== 'number') continue;
+                    const dom = String(v.domain || '').trim();
+                    const lat = geo.lat + jit(dom), lon = geo.lon + jit(dom + 'x');
+                    const org  = escapeHtml(v.post_title || dom);
+                    const grp  = escapeHtml(v.group_name || '—');
+                    const act  = escapeHtml(v.activity || '—');
+                    const when = escapeHtml(String(v.published || '').slice(0, 10));
+                    const host = escapeHtml([geo.city, geo.cc].filter(Boolean).join(', '));
+                    const m = L.circleMarker([lat, lon], { radius: 6, color: '#f43f5e', weight: 2, fillColor: '#f43f5e', fillOpacity: .55 });
+                    m.bindPopup(
+                        '<div style="font-family:var(--font-mono),monospace;min-width:184px;">'
+                        + '<div style="color:#fb7185;font-weight:bold;margin-bottom:5px;font-size:12px;letter-spacing:.02em;">&#128274; ' + org + '</div>'
+                        + '<div style="font-size:11px;line-height:1.75;color:#cbd5e1;">'
+                        + '<span style="color:#7c8aa0;">กลุ่ม</span> <b style="color:#f43f5e;">' + grp + '</b><br>'
+                        + '<span style="color:#7c8aa0;">ภาคส่วน</span> ' + act + '<br>'
+                        + '<span style="color:#7c8aa0;">เปิดเผย</span> ' + when + '<br>'
+                        + '<span style="color:#7c8aa0;">เว็บ</span> ' + escapeHtml(dom)
+                        + '<br><span style="color:#f59e0b;">&#127760; โฮสต์ ' + (host || '?') + ' · geo&asymp;hosting</span>'
+                        + '</div></div>',
+                        { className: 'mda-cyber-popup rose', maxWidth: 250, minWidth: 184 }
+                    );
+                    m.addTo(layer);
+                    plotted++;
+                }
+                try { setBadge('ransom-th', plotted, plotted > 10 ? 'warn' : null); } catch (_) {}
+                setCount('mda-cnt-ransom-th-row', plotted);
+                MDA.cfg.verbose && console.log('[MDA·RansomTH]', plotted, 'plotted /', recs.length, 'victims');
+            } catch (e) {
+                console.warn('[MDA·RansomTH] fetch fail:', e && e.message);
+                try { setBadge('ransom-th', 'N/A', 'warn'); } catch (_) {}
+                setCount('mda-cnt-ransom-th-row', 'N/A');
+            }
+        }
+        return { layer, refresh, name: 'RANSOM-TH' };
+    })();
+
+
+//  [ส่วนที่ 11.3b] กลุ่ม ๖ · ญ.ซ  Cyber Espionage IOC — ThreatFox (abuse.ch)  (v17.9)
+//  วัตถุประสงค์ : ปักหมุดโครงสร้างพื้นฐานภัยจารกรรมไซเบอร์ (C2 / RAT / Infostealer / Phishing)
+//  แหล่งข้อมูล  : ThreatFox export (abuse.ch) · keyless — ส่งผ่าน Cloudflare Worker relay (MDA.cfg.threatfoxProxy) ที่ pre-filter ip:port + เปิด CORS
+//                (export 2.6MB ผ่าน CORS proxy ฟรีไม่สำเร็จ 522/403/408 · Worker ไม่เก็บ key/ความลับ) · โค้ด Worker: _worker/udc-threatfox.js
+//  หลักการ      : กรองเฉพาะ ioc_type=ip:port + ตระกูลจารกรรม · [v17.9.2] geocode ทำใน Worker (ip-api batch server-side) → browser ปักทันที (fallback: geocode client cache 30 วัน)
+//  การแสดงผล    : หมุด◇ทรงข้าวหลามตัด แยกสีตามชนิด + อักษรกำกับ + tooltip hover  (ต่างจาก layer วงกลมอื่นชัดเจน)
+//  เชื่อมโยง     : toggle 'espionage' หมวด Cyber-EM (ต่อจาก Ransomware TH) · default OFF · lazy-load
+    MDA.Espionage = (function () {
+        const layer = L.layerGroup();
+        MDA.layers['espionage'] = layer;
+        const URL         = 'https://threatfox.abuse.ch/export/json/recent/';
+        const GEO_TTL     = 30 * 24 * 3600 * 1000;   // cache พิกัด IP 30 วัน
+        const MAX_PLOT    = 60;                        // ปักเฉพาะ IOC ล่าสุด N รายการ
+        const MAX_NEW_GEO = 35;                        // เพดาน geocode ใหม่/รอบ (กัน rate-limit ip-api ~45/นาที)
+        const _failed     = new Set();
+
+        // ── หมวดภัยจารกรรม: สี + อักษรกำกับ + ฉลาก  (ทุกหมวดใช้ "ทรงข้าวหลามตัด" → แยกจากหมุดวงกลม layer อื่น)
+        const CAT = {
+            c2:      { color: '#a855f7', g: 'C', label: 'C2 Framework'     },  // ม่วง — เซิร์ฟเวอร์สั่งการ (Cobalt Strike/Sliver/Havoc)
+            rat:     { color: '#22d3ee', g: 'R', label: 'RAT (สอดแนม)'     },  // ฟ้า — โทรจันควบคุมระยะไกล (Remcos/AsyncRAT)
+            stealer: { color: '#f59e0b', g: 'S', label: 'Infostealer'     },  // เหลืองอำพัน — ขโมยข้อมูล/รหัสผ่าน (Vidar/RedLine)
+            phish:   { color: '#e879f9', g: 'P', label: 'Phishing / AiTM'  }   // ม่วงชมพู — ฟิชชิ่ง/ดักโทเคน (Evilginx/Tycoon)
+        };
+
+        // ── ตระกูลมัลแวร์ → หมวด (คัดเฉพาะ "จารกรรมข้อมูล" · ตัด ransomware/DDoS/loader/spam ทิ้ง)
+        const FAM = {
+            'cobalt strike':'c2','cobaltstrike':'c2','sliver':'c2','havoc':'c2','adaptixc2':'c2','adaptix':'c2',
+            'deimosc2':'c2','mythic':'c2','brute ratel':'c2','bruteratel':'c2','metasploit':'c2','meterpreter':'c2',
+            'viper':'c2','empire':'c2','posh c2':'c2','poshc2':'c2','nighthawk':'c2','villain':'c2','supershell':'c2',
+            'remcos':'rat','asyncrat':'rat','dcrat':'rat','njrat':'rat','nanocore':'rat','quasar':'rat','quasarrat':'rat',
+            'netsupportmanager rat':'rat','netsupport':'rat','warzone':'rat','warzonerat':'rat','venomrat':'rat','xworm':'rat',
+            'orcus':'rat','remoteutilities':'rat','remote utilities':'rat','bitrat':'rat','limerat':'rat','babylon rat':'rat',
+            'gh0st rat':'rat','gh0strat':'rat','sectoprat':'rat','revenge rat':'rat','revengerat':'rat','pandora rat':'rat',
+            'vidar':'stealer','redline':'stealer','redline stealer':'stealer','lumma':'stealer','lummastealer':'stealer','lumma stealer':'stealer',
+            'raccoon':'stealer','stealc':'stealer','meta stealer':'stealer','metastealer':'stealer','rhadamanthys':'stealer',
+            'atomic':'stealer','atomic stealer':'stealer','amos':'stealer','mars stealer':'stealer','azorult':'stealer',
+            'formbook':'stealer','agent tesla':'stealer','agenttesla':'stealer','snake keylogger':'stealer','snakekeylogger':'stealer',
+            'lokibot':'stealer','loki':'stealer','vipersoftx':'stealer','cryptbot':'stealer','risepro':'stealer','strela':'stealer',
+            'strelastealer':'stealer','phemedrone':'stealer','wnc stealer':'stealer','aurora':'stealer',
+            'evilginx':'phish','tycoon':'phish','tycoon 2fa':'phish','evilproxy':'phish','mamba2fa':'phish','mamba 2fa':'phish',
+            'gabagool':'phish','sneaky2fa':'phish','sneaky 2fa':'phish','rockstar2fa':'phish','rockstar 2fa':'phish','naked pages':'phish'
+        };
+
+        // จัดหมวดจากชื่อตระกูล (fallback: keyword ในชื่อ) → คืน null ถ้าไม่เข้าเกณฑ์จารกรรม
+        function classify(mal) {
+            const m = String(mal || '').toLowerCase().trim();
+            if (FAM[m]) return FAM[m];
+            for (const k in FAM) if (m.indexOf(k) !== -1) return FAM[k];
+            if (/keylog|stealer|infostealer|clipper/.test(m)) return 'stealer';
+            if (/\brat\b|remote access/.test(m))               return 'rat';
+            if (/phish|aitm|\b2fa\b/.test(m))                  return 'phish';
+            return null;
+        }
+
+        // ── ฉีด CSS ครั้งเดียว: ลบพื้นหลัง/กรอบขาว default ของ leaflet-div-icon + สไตล์ tooltip (ธีม CIC เข้ม)
+        (function injectCss() {
+            if (document.getElementById('mda-esp-css')) return;
+            const st = document.createElement('style'); st.id = 'mda-esp-css';
+            st.textContent = '.mda-esp-icon{background:transparent!important;border:0!important;}'
+                + '.mda-esp-tip{background:#0b1220;color:#e2e8f0;border:1px solid #334155;border-radius:4px;'
+                + 'font:600 11px/1.3 var(--font-mono,monospace);padding:2px 7px;box-shadow:0 2px 6px rgba(0,0,0,.55);}'
+                + '.mda-esp-tip.leaflet-tooltip-top::before{border-top-color:#334155;}';
+            document.head.appendChild(st);
+        })();
+
+        // divIcon ทรงข้าวหลามตัด (สี่เหลี่ยม rotate 45°) + อักษรหมวด → แยกจากหมุดวงกลมทุก layer
+        function espIcon(cat) {
+            const c = CAT[cat];
+            return L.divIcon({
+                className: 'mda-esp-icon',
+                html: '<div style="width:15px;height:15px;transform:rotate(45deg);background:' + c.color
+                    + ';border:1.5px solid #0b1220;box-shadow:0 0 6px ' + c.color + ',0 0 2px #000;'
+                    + 'display:flex;align-items:center;justify-content:center;border-radius:2px;">'
+                    + '<span style="transform:rotate(-45deg);font:700 9px/1 var(--font-mono,monospace);color:#0b1220;">'
+                    + c.g + '</span></div>',
+                iconSize: [15, 15], iconAnchor: [7, 7], popupAnchor: [0, -9]
+            });
+        }
+
+        const jit = (s) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return ((h % 1000) / 1000 - 0.5) * 0.05; };
+
+        function cachedGeo(ip) {
+            try { const raw = localStorage.getItem('mda-geo-' + ip); if (raw) { const o = JSON.parse(raw); if (o && (Date.now() - o.ts) < GEO_TTL) return o; } } catch (_) {}
+            return undefined;
+        }
+        async function geocode(ip) {
+            const hit = cachedGeo(ip);
+            if (hit !== undefined) return hit.ok ? hit : null;
+            if (_failed.has(ip)) return null;
+            const api = 'http://ip-api.com/json/' + encodeURIComponent(ip) + '?fields=status,lat,lon,city,countryCode,isp';
+            let g = null;
+            try { g = await fetchViaAnyProxy(api, 9_000); }
+            catch (_) { try { g = await fetchTO(api, 7_000).then(r => r.json()); } catch (__) {} }
+            if (g && g.status === 'success' && typeof g.lat === 'number') {
+                const o = { ok: true, lat: g.lat, lon: g.lon, city: g.city || '', cc: g.countryCode || '', isp: g.isp || '', ts: Date.now() };
+                try { localStorage.setItem('mda-geo-' + ip, JSON.stringify(o)); } catch (_) {}
+                return o;
+            }
+            _failed.add(ip);
+            try { localStorage.setItem('mda-geo-' + ip, JSON.stringify({ ok: false, ts: Date.now() })); } catch (_) {}
+            return null;
+        }
+
+        // ThreatFox ส่ง JSON แบบ object-keyed (id → [ioc,...]) → แปลงเป็น array แบน
+        function flatten(j) {
+            if (Array.isArray(j)) return j;
+            const out = [];
+            if (j && typeof j === 'object') {
+                for (const k in j) { const v = j[k]; if (Array.isArray(v)) { for (const it of v) out.push(it); } else if (v) out.push(v); }
+            }
+            return out;
+        }
+
+        async function refresh() {
+            try {
+                let j = null;
+                // [v17.9.1] ThreatFox export 2.6MB ส่งผ่าน CORS proxy ฟรีไม่สำเร็จ (522/403/408) + API เล็กต้องใช้ key (401)
+                //           → ยิงผ่าน Cloudflare Worker relay (MDA.cfg.threatfoxProxy) ที่ pre-filter ip:port + เปิด CORS (keyless)
+                const wUrl = (MDA.cfg && MDA.cfg.threatfoxProxy) ? String(MDA.cfg.threatfoxProxy).trim().replace(/\/+$/, '') : '';
+                if (wUrl) {
+                    j = await fetchTO(wUrl, 15_000).then(r => r.json());
+                } else {
+                    // ยังไม่ได้ตั้ง Worker → ลอง proxy ตรง (best-effort · payload ใหญ่มัก timeout → N/A)
+                    try { j = await fetchViaAnyProxy(URL, 20_000); }
+                    catch (_) { j = await fetchTO(URL, 15_000).then(r => r.json()); }
+                }
+                let arr = flatten(j)
+                    .filter(x => x && x.ioc_type === 'ip:port' && x.ioc_value)
+                    .map(x => { x._cat = classify(x.malware_printable || x.malware); return x; })
+                    .filter(x => x._cat)
+                    .sort((a, b) => String(b.first_seen_utc || b.last_seen_utc || '').localeCompare(String(a.first_seen_utc || a.last_seen_utc || '')))
+                    .slice(0, MAX_PLOT);
+                MDA.data['espionage'] = arr;
+                layer.clearLayers();
+                let plotted = 0, newGeo = 0, th = 0; const tally = { c2: 0, rat: 0, stealer: 0, phish: 0 };   // [v17.9.3] th = หมุดที่ geocode ตกในประเทศไทย
+                for (const x of arr) {
+                    const ip = String(x.ioc_value).split(':')[0].trim();
+                    if (!ip) continue;
+                    let geo;
+                    // [v17.9.2] ใช้พิกัดจาก Worker (batch geocode server-side) ถ้ามี → ปักทันที ไม่ต้อง geocode ทีละตัว (เดิมค้าง ~5 นาที)
+                    if (x.geo && typeof x.geo.lat === 'number') {
+                        geo = x.geo;
+                        try { localStorage.setItem('mda-geo-' + ip, JSON.stringify({ ok: true, lat: geo.lat, lon: geo.lon, city: geo.city || '', cc: geo.cc || '', isp: geo.isp || '', ts: Date.now() })); } catch (_) {}
+                    } else {
+                        geo = cachedGeo(ip);
+                        if (geo === undefined) {
+                            if (newGeo >= MAX_NEW_GEO) continue;   // เกินเพดาน → รอ poll รอบหน้า
+                            newGeo++;
+                            geo = await geocode(ip);
+                            await new Promise(r => setTimeout(r, 250));   // throttle ip-api (fallback เท่านั้น)
+                        }
+                    }
+                    if (!geo || geo.ok === false || typeof geo.lat !== 'number') continue;
+                    const cat = x._cat, c = CAT[cat];
+                    const lat = geo.lat + jit(ip), lon = geo.lon + jit(ip + 'x');
+                    const fam   = escapeHtml(x.malware_printable || x.malware || 'unknown');
+                    const val   = escapeHtml(String(x.ioc_value));
+                    const conf  = escapeHtml(String(x.confidence_level != null ? x.confidence_level + '%' : '—'));
+                    const when  = escapeHtml(String(x.first_seen_utc || '').slice(0, 10));
+                    const where = escapeHtml([geo.city, geo.cc].filter(Boolean).join(', '));
+                    const isp   = escapeHtml(geo.isp || '');
+                    const m = L.marker([lat, lon], { icon: espIcon(cat) });
+                    m.bindTooltip('&#128373; ' + escapeHtml(c.label) + ' &middot; ' + fam, { direction: 'top', offset: [0, -9], className: 'mda-esp-tip', opacity: .95 });
+                    m.bindPopup(
+                        '<div style="font-family:var(--font-mono),monospace;min-width:210px;">'
+                        + '<div style="color:' + c.color + ';font-weight:bold;margin-bottom:3px;">&#9670; ' + escapeHtml(c.label) + '</div>'
+                        + '<div style="font-size:11px;line-height:1.7;color:#cbd5e1;">'
+                        + 'ตระกูล: <b style="color:' + c.color + ';">' + fam + '</b>'
+                        + '<br>IOC (C2): ' + val
+                        + '<br>ความเชื่อมั่น: ' + conf + ' &middot; พบครั้งแรก: ' + when
+                        + '<br>ที่ตั้ง: ' + (where || '?') + (isp ? ' &middot; ' + isp : '')
+                        + '<br><span style="color:#f59e0b;">แหล่ง: ThreatFox (abuse.ch) &middot; geo&asymp;IP</span>'
+                        + '</div></div>',
+                        { className: 'mda-cyber-popup', maxWidth: 264, minWidth: 210 }
+                    );
+                    m.addTo(layer);
+                    plotted++; tally[cat]++;
+                    if ((geo.cc || '').toUpperCase() === 'TH') th++;   // [v17.9.3] นับเฉพาะที่ตกในไทย
+                }
+                // [v17.9.3] ป้ายบอก "ในไทย X / ทั่วโลก Y" — ในไทย>0 ⇒ crit (แดง) เตือนว่ามีโครงสร้าง C2 โฮสต์ในไทย
+                try { setBadge('espionage', plotted, (th > 0 || plotted > 15) ? 'crit' : (plotted > 0 ? 'warn' : null)); } catch (_) {}
+                setCount('mda-cnt-espionage-row', 'TH ' + th + ' / ' + plotted);
+                try { const _pill = document.getElementById('mda-cnt-espionage-row'); if (_pill) _pill.title = 'ในไทย ' + th + ' จุด / ทั่วโลก ' + plotted + ' จุด · ThreatFox (C2 / RAT / Infostealer / Phishing)'; } catch (_) {}
+                MDA.cfg.verbose && console.log('[MDA·Espionage]', plotted, 'plotted /', arr.length, 'IOC · C2', tally.c2, 'RAT', tally.rat, 'Stealer', tally.stealer, 'Phish', tally.phish, '·', newGeo, 'new geocodes');
+            } catch (e) {
+                console.warn('[MDA·Espionage] fetch fail:', e && e.message);
+                try { setBadge('espionage', 'N/A', 'warn'); } catch (_) {}
+                setCount('mda-cnt-espionage-row', 'N/A');
+            }
+        }
+        return { layer, refresh, name: 'ESPIONAGE' };
+    })();
+
+
+//  [ส่วนที่ 11.3.5] กลุ่ม ๖ · ญ.บ  Feodo Tracker — บอตเน็ต / แบงก์กิ้งโทรจัน C2 (v17.10)
+//  วัตถุประสงค์ : ปักหมุดเซิร์ฟเวอร์สั่งการ (C2) ของบอตเน็ต/แบงก์กิ้งโทรจัน
+//                (QakBot/Emotet/Pikabot/Dridex/TrickBot/BumbleBee ฯลฯ) จาก Feodo Tracker
+//  หลักการ     : abuse.ch Feodo ipblocklist_aggressive.csv (keyless) ผ่าน Worker ?feed=feodo
+//                → batch-geocode ฝั่ง server → ปักหมุด "ทรงสามเหลี่ยม ▲" (แยกจากวงกลม/ข้าวหลามตัด)
+//                สีตามตระกูลมัลแวร์ · ออนไลน์=สว่าง+เรืองแสง / ออฟไลน์=จาง
+//  หมายเหตุ     : ปัจจุบันบอตเน็ตพวกนี้ถูกปราบไปมาก → C2 "ออนไลน์" เหลือน้อย (ป้าย ON x/y บอกจริง)
+    MDA.Feodo = (function () {
+        const layer = L.layerGroup();
+        MDA.layers['feodo'] = layer;
+        const GEO_TTL  = 30 * 24 * 3600 * 1000;
+        const MAX_PLOT = 60;
+
+        // ── สีตามตระกูล (โทน "แดง-ส้ม-เหลือง" = บอตเน็ต/โทรจัน → แยกอารมณ์จากข้าวหลามตัดจารกรรม)
+        const FAM_COL = {
+            qakbot:'#ef4444', qbot:'#ef4444', pikabot:'#fb7185', emotet:'#f97316',
+            dridex:'#eab308', trickbot:'#f43f5e', bumblebee:'#fbbf24', bazarloader:'#a3e635',
+            bazar:'#a3e635', icedid:'#fb923c', gozi:'#fca5a5', 'ursnif':'#fca5a5', heodo:'#f97316'
+        };
+        function famColor(mal) {
+            const m = String(mal || '').toLowerCase();
+            for (const k in FAM_COL) if (m.indexOf(k) !== -1) return FAM_COL[k];
+            return '#f87171';   // ตระกูลอื่น → แดงอ่อน (ยังคงโทนบอตเน็ต)
+        }
+
+        (function injectCss() {
+            if (document.getElementById('mda-feodo-css')) return;
+            const st = document.createElement('style'); st.id = 'mda-feodo-css';
+            st.textContent = '.mda-feodo-icon{background:transparent!important;border:0!important;}'
+                + '.mda-feodo-tip{background:#0b1220;color:#e2e8f0;border:1px solid #334155;border-radius:4px;'
+                + 'font:600 11px/1.3 var(--font-mono,monospace);padding:2px 7px;box-shadow:0 2px 6px rgba(0,0,0,.55);}'
+                + '.mda-feodo-tip.leaflet-tooltip-top::before{border-top-color:#334155;}';
+            document.head.appendChild(st);
+        })();
+
+        // divIcon ทรง "สามเหลี่ยม ▲" → แยกจากหมุดวงกลม (layer อื่น) และข้าวหลามตัด (จารกรรม)
+        function feodoIcon(color, online) {
+            const op   = online ? '1' : '0.5';
+            const glow = online ? 'filter:drop-shadow(0 0 6px ' + color + ');' : '';
+            return L.divIcon({
+                className: 'mda-feodo-icon',
+                html: '<div style="width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;'
+                    + 'border-bottom:15px solid ' + color + ';opacity:' + op + ';' + glow + '"></div>',
+                iconSize: [16, 15], iconAnchor: [8, 11], popupAnchor: [0, -11]
+            });
+        }
+
+        const jit = (s) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return ((h % 1000) / 1000 - 0.5) * 0.05; };
+        function cachedGeo(ip) {
+            try { const raw = localStorage.getItem('mda-geo-' + ip); if (raw) { const o = JSON.parse(raw); if (o && (Date.now() - o.ts) < GEO_TTL) return o; } } catch (_) {}
+            return undefined;
+        }
+
+        async function refresh() {
+            try {
+                const base = (MDA.cfg && MDA.cfg.threatfoxProxy) ? String(MDA.cfg.threatfoxProxy).trim().replace(/\/+$/, '') : '';
+                if (!base) {   // Feodo CSV ก็ติด CORS เช่นกัน → ต้องมี Worker
+                    setBadge('feodo', 'N/A', null); setCount('mda-cnt-feodo-row', 'N/A'); return;
+                }
+                const arr = await fetchTO(base + '/?feed=feodo', 15_000).then(r => r.json());
+                if (!Array.isArray(arr)) throw new Error('bad payload');
+                const recs = arr.slice(0, MAX_PLOT);
+                MDA.data['feodo'] = recs;
+                layer.clearLayers();
+                let plotted = 0, online = 0, th = 0;
+                for (const x of recs) {
+                    const geo = x.geo;
+                    if (!geo || typeof geo.lat !== 'number') continue;
+                    const ip = String(x.ip || '').trim();
+                    try { localStorage.setItem('mda-geo-' + ip, JSON.stringify({ ok: true, lat: geo.lat, lon: geo.lon, city: geo.city || '', cc: geo.cc || '', isp: geo.isp || '', ts: Date.now() })); } catch (_) {}
+                    const isOn  = String(x.status || '').toLowerCase() === 'online';
+                    const color = famColor(x.malware);
+                    const lat = geo.lat + jit(ip), lon = geo.lon + jit(ip + 'x');
+                    const fam   = escapeHtml(x.malware || 'unknown');
+                    const val   = escapeHtml(ip + (x.port ? ':' + escapeHtml(String(x.port)) : ''));
+                    const first = escapeHtml(String(x.first_seen || '').slice(0, 10));
+                    const last  = escapeHtml(String(x.last_online || '').slice(0, 10));
+                    const where = escapeHtml([geo.city, geo.cc].filter(Boolean).join(', '));
+                    const isp   = escapeHtml(geo.isp || '');
+                    const stTxt = isOn ? '<span style="color:#4ade80;">&#9679; ออนไลน์ (กำลังใช้งาน)</span>'
+                                       : '<span style="color:#94a3b8;">&#9675; ออฟไลน์ (พบก่อนหน้า)</span>';
+                    const m = L.marker([lat, lon], { icon: feodoIcon(color, isOn) });
+                    m.bindTooltip('&#9650; ' + fam + ' &middot; ' + (isOn ? 'ONLINE' : 'offline'),
+                        { direction: 'top', offset: [0, -11], className: 'mda-feodo-tip', opacity: .95 });
+                    m.bindPopup(
+                        '<div style="font-family:var(--font-mono),monospace;min-width:210px;">'
+                        + '<div style="color:' + color + ';font-weight:bold;margin-bottom:3px;">&#9650; บอตเน็ต C2 &middot; ' + fam + '</div>'
+                        + '<div style="font-size:11px;line-height:1.7;color:#cbd5e1;">'
+                        + 'สถานะ: ' + stTxt
+                        + '<br>C2: ' + val
+                        + '<br>พบครั้งแรก: ' + (first || '?') + ' &middot; ออนไลน์ล่าสุด: ' + (last || '?')
+                        + '<br>ที่ตั้ง: ' + (where || '?') + (isp ? ' &middot; ' + isp : '')
+                        + '<br><span style="color:#f59e0b;">แหล่ง: Feodo Tracker (abuse.ch) &middot; geo&asymp;IP</span>'
+                        + '</div></div>',
+                        { className: 'mda-cyber-popup', maxWidth: 260, minWidth: 210 }
+                    );
+                    m.addTo(layer);
+                    plotted++;
+                    if (isOn) online++;
+                    if ((geo.cc || '').toUpperCase() === 'TH') th++;
+                }
+                // ป้าย "ON x / y" (ออนไลน์ x จากทั้งหมด y) — มี C2 ออนไลน์ ⇒ crit (แดง)
+                try { setBadge('feodo', plotted, online > 0 ? 'crit' : (plotted > 0 ? 'warn' : null)); } catch (_) {}
+                setCount('mda-cnt-feodo-row', 'ON ' + online + ' / ' + plotted);
+                try { const _p = document.getElementById('mda-cnt-feodo-row'); if (_p) _p.title = 'ออนไลน์ ' + online + ' / ทั้งหมด ' + plotted + ' จุด' + (th ? ' · ในไทย ' + th : '') + ' · Feodo Tracker (บอตเน็ต/แบงก์กิ้งโทรจัน C2)'; } catch (_) {}
+                MDA.cfg.verbose && console.log('[MDA·Feodo]', plotted, 'plotted ·', online, 'online ·', th, 'in TH');
+            } catch (e) {
+                console.warn('[MDA·Feodo] fetch fail:', e && e.message);
+                try { setBadge('feodo', 'N/A', 'warn'); } catch (_) {}
+                setCount('mda-cnt-feodo-row', 'N/A');
+            }
+        }
+        return { layer, refresh, name: 'FEODO' };
+    })();
+
+
+//  [ส่วนที่ 11.3.6] กลุ่ม ๖ · ญ.บ  URLhaus — มัลแวร์ URL (payload/distribution) (v17.10)
+//  วัตถุประสงค์ : ปักหมุดเว็บ/เซิร์ฟเวอร์ที่ "โฮสต์มัลแวร์" (payload URL) จาก URLhaus
+//  หลักการ     : abuse.ch URLhaus csv_recent (keyless) ผ่าน Worker ?feed=urlhaus
+//                → batch-geocode ฝั่ง server → ปักหมุด "ทรงดาว ★" (แยกจากวงกลม/ข้าวหลามตัด/สามเหลี่ยม)
+//                ออนไลน์=สว่าง+เรืองแสง / ออฟไลน์=จาง · โทนทอง-อำพัน
+//  หมายเหตุ     : ฟีดนี้ "สด+เยอะ" (ต่างจาก Feodo ที่เกือบหยุดนิ่ง) → หมุดมักออนไลน์จำนวนมาก
+//  ความปลอดภัย : URL เป็น "มัลแวร์จริง" → แสดงเป็นข้อความ escapeHtml เท่านั้น "ไม่ทำเป็นลิงก์คลิกได้"
+    MDA.Urlhaus = (function () {
+        const layer = L.layerGroup();
+        MDA.layers['urlhaus'] = layer;
+        const GEO_TTL  = 30 * 24 * 3600 * 1000;
+        const MAX_PLOT = 80;
+        const COL_ON   = '#fbbf24';   // ออนไลน์ = ทองสว่าง
+        const COL_OFF  = '#b45309';   // ออฟไลน์ = อำพันเข้ม (จาง)
+
+        (function injectCss() {
+            if (document.getElementById('mda-urlhaus-css')) return;
+            const st = document.createElement('style'); st.id = 'mda-urlhaus-css';
+            st.textContent = '.mda-urlhaus-icon{background:transparent!important;border:0!important;}'
+                + '.mda-urlhaus-tip{background:#0b1220;color:#fde68a;border:1px solid #a16207;border-radius:4px;'
+                + 'font:600 11px/1.3 var(--font-mono,monospace);padding:2px 7px;box-shadow:0 2px 6px rgba(0,0,0,.55);}'
+                + '.mda-urlhaus-tip.leaflet-tooltip-top::before{border-top-color:#a16207;}';
+            document.head.appendChild(st);
+        })();
+
+        // divIcon ทรง "ดาว ★" → แยกจากวงกลม (layer อื่น) / ข้าวหลามตัด (จารกรรม) / สามเหลี่ยม (Feodo)
+        function urlhausIcon(online) {
+            const color = online ? COL_ON : COL_OFF;
+            const op    = online ? '1' : '0.5';
+            const glow  = online ? 'filter:drop-shadow(0 0 5px ' + color + ');' : '';
+            return L.divIcon({
+                className: 'mda-urlhaus-icon',
+                html: '<div style="width:16px;height:16px;background:' + color + ';opacity:' + op + ';' + glow
+                    + 'clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);"></div>',
+                iconSize: [16, 16], iconAnchor: [8, 8], popupAnchor: [0, -8]
+            });
+        }
+
+        const jit = (s) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return ((h % 1000) / 1000 - 0.5) * 0.05; };
+
+        async function refresh() {
+            try {
+                const base = (MDA.cfg && MDA.cfg.threatfoxProxy) ? String(MDA.cfg.threatfoxProxy).trim().replace(/\/+$/, '') : '';
+                if (!base) {   // URLhaus CSV ก็ติด CORS + payload ใหญ่ → ต้องมี Worker
+                    setBadge('urlhaus', 'N/A', null); setCount('mda-cnt-urlhaus-row', 'N/A'); return;
+                }
+                const arr = await fetchTO(base + '/?feed=urlhaus', 15_000).then(r => r.json());
+                if (!Array.isArray(arr)) throw new Error('bad payload');
+                const recs = arr.slice(0, MAX_PLOT);
+                MDA.data['urlhaus'] = recs;
+                layer.clearLayers();
+                let plotted = 0, online = 0, th = 0;
+                for (const x of recs) {
+                    const geo = x.geo;
+                    if (!geo || typeof geo.lat !== 'number') continue;
+                    const host = String(x.host || '').trim();
+                    const isOn = String(x.status || '').toLowerCase() === 'online';
+                    const lat = geo.lat + jit(host), lon = geo.lon + jit(host + 'x');
+                    const hostE  = escapeHtml(host || '?');
+                    const rawUrl = String(x.url || '');
+                    const urlE   = escapeHtml(rawUrl.length > 64 ? rawUrl.slice(0, 64) + '…' : rawUrl);   // ข้อความล้วน · ไม่ทำลิงก์
+                    const threat = escapeHtml(String(x.threat || '').replace(/_/g, ' '));
+                    const tags   = escapeHtml(String(x.tags || ''));
+                    const added  = escapeHtml(String(x.dateadded || '').slice(0, 10));
+                    const where  = escapeHtml([geo.city, geo.cc].filter(Boolean).join(', '));
+                    const isp    = escapeHtml(geo.isp || '');
+                    const stTxt  = isOn ? '<span style="color:#4ade80;">&#9679; ออนไลน์ (แจกจ่ายอยู่)</span>'
+                                        : '<span style="color:#94a3b8;">&#9675; ออฟไลน์ (พบก่อนหน้า)</span>';
+                    const m = L.marker([lat, lon], { icon: urlhausIcon(isOn) });
+                    m.bindTooltip('&#9733; ' + hostE + ' &middot; ' + (isOn ? 'ONLINE' : 'offline'),
+                        { direction: 'top', offset: [0, -9], className: 'mda-urlhaus-tip', opacity: .95 });
+                    m.bindPopup(
+                        '<div style="font-family:var(--font-mono),monospace;min-width:210px;max-width:250px;">'
+                        + '<div style="color:#fbbf24;font-weight:bold;margin-bottom:5px;font-size:12px;">&#9733; มัลแวร์ URL &middot; URLhaus</div>'
+                        + '<div style="font-size:11px;line-height:1.7;color:#cbd5e1;">'
+                        + 'สถานะ: ' + stTxt
+                        + '<br><span style="color:#7c8aa0;">โฮสต์</span> ' + hostE
+                        + '<br><span style="color:#7c8aa0;">URL</span> <span style="word-break:break-all;color:#e2e8f0;">' + urlE + '</span>'
+                        + (threat ? '<br><span style="color:#7c8aa0;">ภัย</span> ' + threat : '')
+                        + (tags ? '<br><span style="color:#7c8aa0;">แท็ก</span> ' + tags : '')
+                        + '<br><span style="color:#7c8aa0;">เพิ่มเมื่อ</span> ' + (added || '?')
+                        + '<br><span style="color:#f59e0b;">&#127760; ' + (where || '?') + (isp ? ' &middot; ' + isp : '') + ' &middot; geo&asymp;host</span>'
+                        + '</div></div>',
+                        { className: 'mda-cyber-popup amber', maxWidth: 260, minWidth: 210 }
+                    );
+                    m.addTo(layer);
+                    plotted++;
+                    if (isOn) online++;
+                    if ((geo.cc || '').toUpperCase() === 'TH') th++;
+                }
+                // ป้าย "ON x / y" (ออนไลน์ x จากทั้งหมด y) — ออนไลน์เยอะ ⇒ crit
+                try { setBadge('urlhaus', plotted, online > 40 ? 'crit' : (plotted > 0 ? 'warn' : null)); } catch (_) {}
+                setCount('mda-cnt-urlhaus-row', 'ON ' + online + ' / ' + plotted);
+                try { const _p = document.getElementById('mda-cnt-urlhaus-row'); if (_p) _p.title = 'ออนไลน์ ' + online + ' / ทั้งหมด ' + plotted + ' จุด' + (th ? ' · ในไทย ' + th : '') + ' · URLhaus (เว็บโฮสต์มัลแวร์/payload)'; } catch (_) {}
+                MDA.cfg.verbose && console.log('[MDA·URLhaus]', plotted, 'plotted ·', online, 'online ·', th, 'in TH');
+            } catch (e) {
+                console.warn('[MDA·URLhaus] fetch fail:', e && e.message);
+                try { setBadge('urlhaus', 'N/A', 'warn'); } catch (_) {}
+                setCount('mda-cnt-urlhaus-row', 'N/A');
+            }
+        }
+        return { layer, refresh, name: 'URLHAUS' };
     })();
 
 
@@ -30274,6 +30963,46 @@ window.toggleSat3D = toggleSat3D;
             }
         }
         return { layer, refresh, name: 'CVE' };
+    })();
+
+
+//  [ส่วนที่ 11.4.5] กลุ่ม ๖ · ญ.ค  CISA KEV — CVE ที่ถูกโจมตีจริง (v17.10)
+//  วัตถุประสงค์ : ป้าย + drawer รายการช่องโหว่ที่ "มีการโจมตีจริงยืนยันแล้ว" (KEV catalog)
+//                จาก CISA — ต่างจาก CVE feed (NVD) ที่เป็นช่องโหว่ ICS/SCADA ใหม่ทั่วไป
+//  หลักการ     : known_exploited_vulnerabilities.json (keyless) ผ่าน Worker ?feed=kev
+//                ป้าย = จำนวนที่เพิ่มใหม่ใน 30 วัน · crit ถ้ามีตัวที่ผูกกับแคมเปญแรนซัมแวร์
+//  แสดงผล      : ไม่มีหมุดแผนที่ (ไม่ใช่ข้อมูลเชิงพิกัด) — คลิกแถวเปิด OSINT drawer
+    MDA.KEV = (function () {
+        async function refresh() {
+            const base = (MDA.cfg && MDA.cfg.threatfoxProxy) ? String(MDA.cfg.threatfoxProxy).trim().replace(/\/+$/, '') : '';
+            if (!base) { setBadge('kev', 'N/A', null); setCount('mda-cnt-kev-row', 'N/A'); return; }
+            try {
+                const r = await fetchTO(base + '/?feed=kev', 15_000);
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                if (j.error) throw new Error(j.error);
+                const items = Array.isArray(j.items) ? j.items : [];
+                MDA.data.kev = { count30d: j.count30d || 0, ransomTotal: j.ransomTotal || 0, total: j.total || items.length, catalogVersion: j.catalogVersion || '', items, ts: Date.now() };
+                const recentRansom = items.some(v => v.ransom);
+                setBadge('kev', j.count30d || 0, recentRansom ? 'crit' : ((j.count30d || 0) > 0 ? 'warn' : null));
+                setCount('mda-cnt-kev-row', '+' + (j.count30d || 0));
+                try { const _p = document.getElementById('mda-cnt-kev-row'); if (_p) _p.title = 'เพิ่มใหม่ 30 วัน ' + (j.count30d || 0) + ' รายการ · ผูกแรนซัมแวร์ ' + (j.ransomTotal || 0) + ' · ทั้งหมด ' + (j.total || 0) + ' · CISA KEV (คลิกดูรายการ)'; } catch (_) {}
+                MDA.cfg.verbose && console.log('[MDA·KEV]', j.count30d, 'added/30d ·', j.ransomTotal, 'ransomware-linked ·', items.length, 'recent');
+                // auto-refresh drawer ถ้าเปิดค้างอยู่ที่ KEV
+                try {
+                    const _od = document.getElementById('osint-drawer');
+                    if (_od && _od.classList.contains('open')) {
+                        const _ot = document.getElementById('od-title');
+                        if (_ot && _ot.textContent.indexOf('KEV') >= 0) window.openOsintDrawer('kev');
+                    }
+                } catch (_) {}
+            } catch (e) {
+                console.warn('[MDA·KEV] fetch fail:', e && e.message);
+                setBadge('kev', 'ERR', 'crit');
+                setCount('mda-cnt-kev-row', 'ERR');
+            }
+        }
+        return { refresh, name: 'KEV' };
     })();
 
 
@@ -31514,6 +32243,8 @@ window.toggleSat3D = toggleSat3D;
     MDA.cfg.aiTickMs    = 18_000;   // mock alert tick (~18s)
     MDA.cfg.aiMaxAlerts = 30;       // เก็บ alert ล่าสุดสูงสุด
     MDA.cfg.aiModel     = 'gemini-2.5-flash';  // v14.0.7 — default LLM (2.0 ถูกย้ายไป paid · 2.5 ยังฟรี)
+    // ▼▼▼ [v17.9.1] วาง URL ของ Cloudflare Worker (ThreatFox relay) ตรงนี้จุดเดียว — ว่าง = ยังไม่เปิด (จะขึ้น N/A)
+    MDA.cfg.threatfoxProxy = 'https://udc-threatfox.rey-mysawa.workers.dev';    // v17.9.1 · Cloudflare Worker (ThreatFox relay) → เลเยอร์ ภัยจารกรรม (ThreatFox)
 
     MDA.AI = (function () {
         // ── state ───────────────────────────────────────────
@@ -33031,11 +33762,13 @@ window.toggleSat3D = toggleSat3D;
             }).join('\n');
             const rejNote = rejected.length ? `\n\n⛔ referee ปฏิเสธ ${rejected.length} รายการ (จะไม่ถูกวาง)` : '';
             const header = opts.header || 'ยืนยันวางกำลังตามคำแนะนำ AI ลงแผนที่?\n(HITL · 2-person rule · ผ่าน referee validator)';
-            let ok = true;
+            let ok = false;
+            // [v17.11.0 SEC-1] fail-safe: window.confirm() ถูก block/โยน exception (iframe/kiosk) → ต้อง "ไม่" deploy
+            //   (เดิม catch(_){ok=true} = fail-open ข้าม HITL 2-person rule โดยไม่ตั้งใจ — แก้เป็น fail-closed)
             try {
                 ok = window.confirm(header + '\n\n' + summary + rejNote + '\n\nศูนย์อ้างอิง UDC: ' + UDC_LAT + '°N ' + UDC_LNG + '°E');
-            } catch (_) { ok = true; }
-            if (!ok) { _setDeployStatus('ผู้ใช้ยกเลิกการ deploy', '#fbbf24'); return; }
+            } catch (_) { ok = false; }
+            if (!ok) { _setDeployStatus('ผู้ใช้ยกเลิกการ deploy (หรือยืนยันไม่ได้ · HITL fail-safe)', '#fbbf24'); return; }
 
             let placed = 0, failed = 0, lastGeo = null;
             const done = [];
@@ -33511,7 +34244,7 @@ window.toggleSat3D = toggleSat3D;
             renderTaxonomy();
             renderRuleSynthesis();
             renderForceRecommendations();
-            console.log('[MDA.AI] v17.7.12 initialized · classifier active · multi-domain context→LLM · COA Planner + Confirm&Deploy · multi-provider (Workers AI + Gemini + Z.AI GLM) · default=2.5-flash · model=' + MDA.cfg.aiModel + ' · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
+            console.log('[MDA.AI] v' + APP_VERSION + ' initialized · classifier active · multi-domain context→LLM · COA Planner + Confirm&Deploy · multi-provider (Workers AI + Gemini + Z.AI GLM) · default=2.5-flash · model=' + MDA.cfg.aiModel + ' · proxy=' + (MDA.cfg.aiProxyUrl || 'null') + ' · mock=' + MDA.cfg.aiMockMode);
         }
 
         // expose
@@ -33593,6 +34326,32 @@ window.toggleSat3D = toggleSat3D;
                 color:#94a3b8 !important; top:4px !important; right:6px !important; font-size:16px !important;
             }
             .seamark-popup .leaflet-popup-close-button:hover { color:#f87171 !important; }
+            /* [v17.10] Cyber-EM popups — CIC-dark chrome ใช้ร่วม (ransomware / urlhaus / ฯลฯ) ให้เข้าธีมมืด */
+            .mda-cyber-popup .leaflet-popup-content-wrapper {
+                background: rgba(6,17,32,0.96) !important;
+                border:1px solid rgba(148,163,184,.32) !important;
+                border-radius:var(--radius-md) !important;
+                box-shadow:0 0 16px rgba(0,0,0,.5), 0 4px 14px rgba(0,0,0,.6) !important;
+                color:#e2e8f0 !important;
+                padding:2px !important;
+            }
+            .mda-cyber-popup .leaflet-popup-content { margin:8px 11px !important; line-height:1.5 !important; }
+            .mda-cyber-popup .leaflet-popup-tip {
+                background: rgba(6,17,32,0.96) !important;
+                border:1px solid rgba(148,163,184,.32) !important;
+            }
+            .mda-cyber-popup .leaflet-popup-close-button {
+                color:#94a3b8 !important; top:5px !important; right:7px !important; font-size:16px !important;
+            }
+            .mda-cyber-popup .leaflet-popup-close-button:hover { color:#f87171 !important; }
+            /* accent: ransomware = rose */
+            .mda-cyber-popup.rose .leaflet-popup-content-wrapper,
+            .mda-cyber-popup.rose .leaflet-popup-tip { border-color: rgba(244,63,94,.5) !important; }
+            .mda-cyber-popup.rose .leaflet-popup-content-wrapper { box-shadow:0 0 16px rgba(244,63,94,.22), 0 4px 14px rgba(0,0,0,.6) !important; }
+            /* accent: urlhaus = amber */
+            .mda-cyber-popup.amber .leaflet-popup-content-wrapper,
+            .mda-cyber-popup.amber .leaflet-popup-tip { border-color: rgba(245,158,11,.5) !important; }
+            .mda-cyber-popup.amber .leaflet-popup-content-wrapper { box-shadow:0 0 16px rgba(245,158,11,.22), 0 4px 14px rgba(0,0,0,.6) !important; }
             /* Icon chip — กลม สีดำ มี ring สี-IALA ให้เด่นบน satellite */
             .seamark-icon {
                 display:flex; align-items:center; justify-content:center;
@@ -33643,7 +34402,12 @@ window.toggleSat3D = toggleSat3D;
             // [v16.1.0 METOC-2] Sovereign MDA — แหล่งไทย
             'metoc':        MDA.METOC.layer,        // HII tide + storm surge + SWAN wave markers
             'gistda-flood': MDA.GISTDA.layer,       // [v16.1.0 METOC-4] GISTDA SAR flood WMS overlay
-            'ship-density': MDA.ShipDensity.layer   // [v17.5.5-ShipDensity] ArcGIS Global Ship Density
+            'ship-density': MDA.ShipDensity.layer,  // [v17.5.5-ShipDensity] ArcGIS Global Ship Density
+            'ransom-th':    MDA.RansomwareTH.layer,  // [v17.8 Cyber-EM] ransomware.live TH victims
+            'espionage':    MDA.Espionage.layer,     // [v17.9 Cyber-EM] ThreatFox cyber-espionage IOC
+            'feodo':        MDA.Feodo.layer,         // [v17.10 Cyber-EM] Feodo Tracker botnet C2 (▲ triangles)
+            'urlhaus':      MDA.Urlhaus.layer        // [v17.10 Cyber-EM] URLhaus malware URLs (★ stars)
+            // 'kev' = info-only row (ticker/drawer · ไม่มี layer) — ไม่ใส่ layerMap เหมือน 'cve'
         };
         const labelMap = {
             'aviation':  'OpenSky Flights',
@@ -33660,7 +34424,12 @@ window.toggleSat3D = toggleSat3D;
             'rain-radar': 'Rain Radar (RainViewer)',
             'metoc':        'METOC ไทย (HII·SWAN)',     // [v16.1.0 METOC-2]
             'gistda-flood': 'GISTDA Flood SAR (7d)',    // [v16.1.0 METOC-4]
-            'ship-density': 'Global Ship Density (ArcGIS)' // [v17.5.5-ShipDensity]
+            'ship-density': 'Global Ship Density (ArcGIS)', // [v17.5.5-ShipDensity]
+            'ransom-th':    'Ransomware (TH)',              // [v17.8 Cyber-EM]
+            'espionage':    'ภัยจารกรรม (ThreatFox)',        // [v17.9 Cyber-EM]
+            'feodo':        'บอตเน็ต C2 (Feodo)',            // [v17.10 Cyber-EM]
+            'urlhaus':      'มัลแวร์ URL (URLhaus)',          // [v17.10 Cyber-EM]
+            'kev':          'CVE ถูกโจมตีจริง (KEV)'          // [v17.10 Cyber-EM]
         };
 
         // ── chevron expand/collapse per group
@@ -33709,6 +34478,15 @@ window.toggleSat3D = toggleSat3D;
                 if (key === 'rain-radar' && turningOn && !MDA.data.radar)                            MDA.RainRadar.refresh();
                 // [v16.1.0 METOC-2] boot prefetch แล้ว (ป้อน AI context) — บรรทัดนี้คือ fallback ถ้า boot fetch ล้มเหลว
                 if (key === 'metoc'      && turningOn && !MDA.data.metoc)                            MDA.METOC.refresh();
+                // [v17.8 Cyber-EM] ransomware.live TH — lazy first-fetch ตอนเปิด (default off · geocode หนัก)
+                if (key === 'ransom-th'  && turningOn && (!MDA.data['ransom-th'] || !MDA.data['ransom-th'].length)) MDA.RansomwareTH.refresh();
+                if (key === 'espionage'  && turningOn && (!MDA.data['espionage'] || !MDA.data['espionage'].length)) MDA.Espionage.refresh();
+                // [v17.10 Cyber-EM] Feodo botnet C2 (▲) — lazy first-fetch ตอนเปิด (default off · geocode ผ่าน Worker)
+                if (key === 'feodo'      && turningOn && (!MDA.data['feodo'] || !MDA.data['feodo'].length)) MDA.Feodo.refresh();
+                // [v17.10 Cyber-EM] URLhaus malware URLs (★) — lazy first-fetch ตอนเปิด (default off · geocode host ผ่าน Worker)
+                if (key === 'urlhaus'    && turningOn && (!MDA.data['urlhaus'] || !MDA.data['urlhaus'].length)) MDA.Urlhaus.refresh();
+                // [v17.10 Cyber-EM] CISA KEV — info row (คลิกเปิด drawer); เผื่อ toggle → fetch ถ้ายังไม่มีข้อมูล
+                if (key === 'kev'        && turningOn && !MDA.data.kev) MDA.KEV.refresh();
                 // ais-heat / ais-anomaly = v11 layer (no direct hook here)
                 toast((turningOn ? 'ON · ' : 'OFF · ') + (labelMap[key] || key));
                 console.log('[MDA] toggle', key, '=', turningOn);
@@ -33959,8 +34737,8 @@ window.toggleSat3D = toggleSat3D;
             // ── พื้นท้องทะเล (Seabed) — ทั้งหมด ยกเว้น Elevation + Survey Dashboard + Sediment (เปิดตอนสาธิต)
             'bathy': true, 'elevation': false, 'sediment': false, 'hsv-swath': true, 'hsv-hdgcog': true,
             'hsv-dashboard': false, 'seismic': true,
-            // ── ไซเบอร์-สเปกตรัม (Cyber-EM) — GDELT
-            'gdelt': true, 'cve': true,
+            // ── ไซเบอร์-สเปกตรัม (Cyber-EM) — GDELT · CVE · KEV เปิด (info) · Ransomware(TH)/ภัยจารกรรม/Feodo/URLhaus ปิด default (map layer · geocode หนัก)
+            'gdelt': true, 'cve': true, 'ransom-th': false, 'espionage': false, 'feodo': false, 'urlhaus': false, 'kev': true,
             // ── ฝั่ง-ชายฝั่ง (Littoral) — IALA Seamarks
             'seamark': true, 'marine-wx': false,
         };
@@ -34571,6 +35349,7 @@ window.toggleSat3D = toggleSat3D;
             () => MDA.Aviation.refresh(),
             () => MDA.GDELT.refresh(),
             () => MDA.CVE.refresh(),
+            () => MDA.KEV.refresh(),     // [v17.10 Cyber-EM] CISA KEV — info feed, boot-fetch (แสดงป้าย +N/30วัน แม้ยังไม่คลิก)
             () => MDA.Seismic.refresh(),
             () => MDA.SpaceWx.refresh(),
             () => MDA.MarineWx.refresh(),
@@ -34602,6 +35381,11 @@ window.toggleSat3D = toggleSat3D;
         MDA.timers.space    = setInterval(() => MDA.SpaceWx.refresh().then(()  => MDA.Fusion.render()), MDA.cfg.poll.space);
         MDA.timers.gdelt    = setInterval(() => MDA.GDELT.refresh().then(()    => MDA.Fusion.render()), MDA.cfg.poll.gdelt);
         MDA.timers.cve      = setInterval(() => MDA.CVE.refresh(),                                       MDA.cfg.poll.cve);  // [v17.3] CVE poll 10 min
+        MDA.timers.ransomTh = setInterval(() => { if (MDA.state.on['ransom-th']) MDA.RansomwareTH.refresh(); }, MDA.cfg.poll.ransomTh); // [v17.8 Cyber-EM] gated 30 min
+        MDA.timers.espionage = setInterval(() => { if (MDA.state.on['espionage']) MDA.Espionage.refresh(); }, MDA.cfg.poll.espionage); // [v17.9 Cyber-EM] gated 30 min
+        MDA.timers.feodo    = setInterval(() => { if (MDA.state.on['feodo']) MDA.Feodo.refresh(); },          MDA.cfg.poll.feodo); // [v17.10 Cyber-EM] gated 60 min (map layer)
+        MDA.timers.urlhaus  = setInterval(() => { if (MDA.state.on['urlhaus']) MDA.Urlhaus.refresh(); },      MDA.cfg.poll.urlhaus); // [v17.10 Cyber-EM] gated 15 min (map layer)
+        MDA.timers.kev      = setInterval(() => MDA.KEV.refresh(),                                            MDA.cfg.poll.kev);   // [v17.10 Cyber-EM] 60 min (info feed · ไม่ gate เหมือน CVE)
         MDA.timers.marineWx = setInterval(() => MDA.MarineWx.refresh(),                                 MDA.cfg.poll.marineWx); // [v13] every 30 min
         MDA.timers.weather  = setInterval(() => { if (MDA.state.on.weather)         MDA.Weather.refresh();   }, MDA.cfg.poll.weather); // [v15] 15 min (gated)
         MDA.timers.storm    = setInterval(() => { if (MDA.state.on.storm)           MDA.Storm.refresh();     }, MDA.cfg.poll.storm);   // [v15] 30 min (gated)
@@ -34634,7 +35418,7 @@ window.toggleSat3D = toggleSat3D;
         wireUp();
         refreshAll(false);   // initial pull
         startTimers();
-        console.log('%c[THE SHIELD 3.0 v17.5.4] MDA module booted — OpenSeaMap · MarineWx · GDELT · Seismic · Aviation · SpaceWx','color:var(--cyan);font-weight:bold');
+        console.log('%c[THE SHIELD 3.0 v' + APP_VERSION + '] MDA module booted — OpenSeaMap · MarineWx · GDELT · Seismic · Aviation · SpaceWx','color:var(--cyan);font-weight:bold');
     }
 
     // delay boot ให้ map + v11 systems พร้อม (boot screen ใช้เวลา ~3s)
