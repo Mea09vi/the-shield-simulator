@@ -198,14 +198,31 @@
   [data-kind]:hover .blk-cue{ opacity:.85; }
   .blk-cue::before{ content:'+'; display:block; transform:translateY(-.5px); }
 
-  #dscrim{ position:fixed; inset:0; z-index:200; background:rgba(1,8,18,.55); backdrop-filter:blur(2px);
-    opacity:0; visibility:hidden; transition:opacity .25s, visibility .25s;}
+  /* Reading mode: scrim+drawer ยกเหนือ topnav(z1000) — โฟกัสการอ่านเต็มจอ */
+  #dscrim{ position:fixed; inset:0; z-index:1050; background:rgba(1,8,18,.62);
+    backdrop-filter:blur(6px) saturate(.72); -webkit-backdrop-filter:blur(6px) saturate(.72);
+    opacity:0; visibility:hidden; transition:opacity .3s ease, visibility .3s;}
   #dscrim.open{ opacity:1; visibility:visible;}
-  #drawer{ position:fixed; top:0; right:0; height:100vh; width:min(540px,94vw); z-index:201;
+  body.drawer-open{ overflow:hidden; }
+  body.drawer-open #topnav{ transform:translateY(-105%); opacity:0; pointer-events:none; }
+  #drawer{ position:fixed; top:0; right:0; height:100vh; width:min(540px,94vw); z-index:1060;
     background:linear-gradient(180deg,#06192c 0%,#04101e 100%); border-left:1px solid var(--line);
-    box-shadow:-22px 0 60px rgba(0,0,0,.55); transform:translateX(102%); transition:transform .32s cubic-bezier(.22,1,.36,1);
+    box-shadow:-22px 0 60px rgba(0,0,0,.55), -1px 0 0 rgba(100,255,218,.14);
+    transform:translateX(102%); transition:transform .32s cubic-bezier(.22,1,.36,1);
     display:flex; flex-direction:column; font-family:'Sarabun',sans-serif; color:var(--ink);}
   #drawer.open{ transform:translateX(0);}
+  #drawer .dprog{ position:absolute; left:0; top:0; right:0; height:2.5px; z-index:6;
+    background:rgba(255,255,255,.05); pointer-events:none;}
+  #drawer .dprog i{ display:block; height:100%; width:0;
+    background:linear-gradient(90deg,var(--accent,#64ffda),rgba(100,255,218,.25));
+    box-shadow:0 0 8px var(--accent,#64ffda); transition:width .12s linear;}
+  @media (prefers-reduced-motion: no-preference){
+    #drawer.open .dsec{ animation:dsecIn .5s cubic-bezier(.22,1,.36,1) both;}
+    #drawer.open .dsec:nth-child(1){ animation-delay:.08s;} #drawer.open .dsec:nth-child(2){ animation-delay:.15s;}
+    #drawer.open .dsec:nth-child(3){ animation-delay:.22s;} #drawer.open .dsec:nth-child(4){ animation-delay:.29s;}
+    #drawer.open .dsec:nth-child(n+5){ animation-delay:.36s;}
+    @keyframes dsecIn{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:none;} }
+  }
   #drawer .dhead{ position:relative; padding:20px 54px 16px 22px; border-bottom:1px solid var(--line);
     background:linear-gradient(180deg,rgba(255,255,255,.03),transparent);}
   #drawer .dhead .dkick{ font:700 10.5px/1 var(--mono); letter-spacing:.26em; text-transform:uppercase; color:var(--accent,#64ffda);}
@@ -256,7 +273,8 @@
     position:fixed;inset:0 0 auto 0;z-index:1000;
     display:flex;align-items:center;justify-content:space-between;
     padding:0 30px;height:72px;
-    transition:background .4s ease,border-color .4s ease,height .3s ease;
+    transition:background .4s ease,border-color .4s ease,height .3s ease,
+      transform .45s cubic-bezier(.22,1,.36,1),opacity .35s ease;
     background:rgba(1,13,26,.8);border-bottom:1px solid transparent;
   }
   #topnav.scrolled{
@@ -517,8 +535,8 @@ window.BLOCK_DETAILS = {"p1":{"id":"p1","titleTH":"การจำลองภ�
   window.BLOCK_DETAILS.sn_gdelt = {
     id:'sn_gdelt',
     titleTH:`OSINT & ข่าวกรองภัยไซเบอร์ — GDELT + Threat-Intelligence (Cyber-EM Domain)`,
-    conceptTH:`เซนเซอร์โดเมนไซเบอร์–สเปกตรัม (Cyber-EM) หลอมข่าวสารเปิด ๒ ชั้นเข้าด้วยกัน: (๑) ข่าวภูมิรัฐศาสตร์เรียลไทม์ — GDELT 2.0 (Global Database of Events, Language & Tone) กรองคำค้น navy/maritime เพื่อจับแนวโน้มเหตุการณ์ทางทะเลที่อาจนำสู่ภัยคุกคาม. (๒) ข่าวกรองภัยไซเบอร์ (Threat-Intel) ๖ ฟีด แสดงเป็นหมุดบนแผนที่ด้วย lexicon ๔ รูปทรง: ●(circle)=อื่นๆ / ◆(diamond)=ThreatFox espionage (โครงสร้าง C2 จารกรรม) / ▲(triangle)=Feodo botnet (C2 มัลแวร์ธนาคาร) / ★(star)=URLhaus malware-URL (URL อันตราย แสดงเป็นข้อความ escape เท่านั้น ไม่เคยเป็นลิงก์คลิกได้). เสริมด้วยชั้นข้อมูล CVE (ช่องโหว่ล่าสุด) · CISA KEV (ช่องโหว่ที่ถูกใช้โจมตีจริง — มี info-drawer) · Ransomware-TH (เหยื่อ ransomware ในไทยจาก ransomware.live). ทุกฟีดเป็น keyless (ไม่มี API key ฝังใน client) และไหลผ่าน Cloudflare Worker relay ฝั่ง server-to-server เพื่อเลี่ยง CORS/rate-limit.`,
-    theoryTH:`สถาปัตยกรรม ingestion: OSINT feeds ที่ปลายทางไม่ส่ง Access-Control-Allow-Origin (adsb.lol · ransomware.live) หรือถูก rate-limit เมื่อยิงตรง (GDELT → HTTP 429) จะไม่สามารถ fetch จาก client (file://) ได้ — จึงย้ายเข้า Cloudflare Worker relay 'udc-threatfox.js' ที่ dispatch ตาม query ?feed= (threatfox|feodo|urlhaus|kev|ransomware|gdelt|aviation) พร้อม per-feed edge cache ใช้ร่วมกันทุกผู้ใช้. Worker ทำ geocode IP ด้วย ip-api batch ฝั่ง server (เดิม client-side geocode ถูกตัดทิ้ง). ฝั่ง client มี circuit breaker (threshold 3 · cooldown exponential 1→30 นาที) + per-proxy AbortController กัน retry storm เมื่อปลายทางล่ม. GDELT คงชั้น fallback เดิม (direct + CORS-proxy + demo) โดยแทรก Worker relay เป็นชั้นแรก.`,
+    conceptTH:`เซนเซอร์โดเมนไซเบอร์–สเปกตรัม (Cyber-EM) หลอมข่าวสารเปิด ๒ ชั้นเข้าด้วยกัน: (๑) ข่าวภูมิรัฐศาสตร์เรียลไทม์ — GDELT 2.0 (Global Database of Events, Language & Tone) กรองคำค้น navy/maritime เพื่อจับแนวโน้มเหตุการณ์ทางทะเลที่อาจนำสู่ภัยคุกคาม. (๒) ข่าวกรองภัยไซเบอร์ (Threat-Intel) ๖ ฟีด แสดงเป็นหมุดบนแผนที่ด้วย lexicon ๔ รูปทรง: ●(circle)=อื่นๆ / ◆(diamond)=ThreatFox espionage (โครงสร้าง C2 จารกรรม) / ▲(triangle)=Feodo botnet (C2 มัลแวร์ธนาคาร) / ★(star)=URLhaus malware-URL (URL อันตราย แสดงเป็นข้อความ escape เท่านั้น ไม่เคยเป็นลิงก์คลิกได้). เสริมด้วยชั้นข้อมูล CVE (NVD — ICS/SCADA ระดับ HIGH/CRITICAL) · CISA KEV (ช่องโหว่ที่ถูกใช้โจมตีจริง — มี info-drawer) · Ransomware-TH (เหยื่อ ransomware ในไทยจาก ransomware.live). ทุกฟีดเป็น keyless (ไม่มี API key ฝังใน client) และไหลผ่าน Cloudflare Worker relay ฝั่ง server-to-server เพื่อเลี่ยง CORS/rate-limit.`,
+    theoryTH:`สถาปัตยกรรม ingestion: OSINT feeds ที่ปลายทางไม่ส่ง Access-Control-Allow-Origin (adsb.lol · ransomware.live) หรือถูก rate-limit เมื่อยิงตรง (GDELT → HTTP 429) จะไม่สามารถ fetch จาก client (file://) ได้ — จึงย้ายเข้า Cloudflare Worker relay 'udc-threatfox.js' ที่ dispatch ตาม query ?feed= (threatfox|feodo|urlhaus|kev|ransomware|gdelt|aviation) พร้อม per-feed edge cache ใช้ร่วมกันทุกผู้ใช้; ส่วนชั้น CVE ใช้ AI-proxy Worker เส้นทาง /cve แยกต่างหาก (NVD ไม่ส่ง CORS header). Worker ทำ geocode IP ด้วย ip-api batch ฝั่ง server (เดิม client-side geocode ถูกตัดทิ้ง). ฝั่ง client มี circuit breaker (threshold 3 · cooldown exponential 1→30 นาที) + per-proxy AbortController กัน retry storm เมื่อปลายทางล่ม. GDELT คงชั้น fallback เดิม (direct + CORS-proxy + demo) โดยแทรก Worker relay เป็นชั้นแรก.`,
     references:[
       {label:'GDELT 2.0 — Global Database of Events, Language & Tone',note:'ข่าวเหตุการณ์เรียลไทม์ กรอง navy/maritime · Worker v5 ?feed=gdelt (เลี่ยง HTTP 429)'},
       {label:'ThreatFox (abuse.ch) — espionage C2 IOC',note:'◆ diamond · Worker v3 ?feed=threatfox'},
@@ -561,7 +579,7 @@ window.BLOCK_DETAILS = {"p1":{"id":"p1","titleTH":"การจำลองภ�
    {id:'p4',num:'④',c:'#fbbf24',th:'AI ช่วยประเมินผล',en:'AI ASSESSMENT · JP 3-04 · DATA FUSION',
     fx:['<b>Data Fusion</b> สถิต+เรียลไทม์ → หลอมรวมข่าวกรอง R1–R5 → <b>CRIT/WARN/INFO</b>','JP 3-04 · <b>Feed Trust</b> (A2) ถ่วงน้ำหนักแหล่งข่าว · ข้อเท็จจริง/ข้อสมมุติ','เกณฑ์โปร่งใส Suitable/Feasible/Acceptable + Sensor Impact Matrix ๖ โดเมน','แนะนำการวางกำลัง — Own-Force-Aware Deploy','<b>R4 CYBER-PHYS</b> — ตรวจ GNSS spoofing: pseudo-range jitter ≥0.5 → ลายเซ็น 4σ ใน 8 nm']},
    {id:'p_staff',num:'⑤',c:'#a78bfa',th:'ฝ่ายเสนาธิการ AI',en:'AI STAFF PLANNER · IPOE → ECOA → COA',
-    fx:['IPOE ๔ ขั้น (ปมส.) → กำหนด NAI / TAI / CDP ตาม อทร.๘๓๐๗','ECOA (ML/MD) · Decision Support Matrix · คำสั่งยุทธการย่อ ๕ ข้อ','<b>Generate COA</b> (v17.12.0) — LLM ประกอบ World State → COA JSON → referee → deploy','<b>Force Validator</b> (referee) — ตรวจ domain/terrain/เพดานกำลังทุกการวางกำลัง → repair (snap เลี่ยงบก) / reject','<b>Confirm &amp; Deploy</b> — HITL (2-person) <b>fail-closed</b> · terrain-aware','<b>ชนิดแผน:</b> แผนเผชิญเหตุ (CONPLAN) · แผนยุทธการ (OPLAN) · แผนปฏิบัติการเฉียบพลัน (CAP)']},
+    fx:['IPOE ๔ ขั้น (ปมส.) → กำหนด NAI / TAI / CDP ตาม อทร.๘๓๐๗','ECOA (ML/MD) · Decision Support Matrix · คำสั่งยุทธการย่อ ๕ ข้อ','<b>Generate COA</b> (v17.7.12) — LLM ประกอบ World State → COA JSON → referee → deploy','<b>Force Validator</b> (referee) — ตรวจ domain/terrain/เพดานกำลังทุกการวางกำลัง → repair (snap เลี่ยงบก) / reject','<b>Confirm &amp; Deploy</b> — HITL (2-person) <b>fail-closed</b> · terrain-aware','<b>ชนิดแผน:</b> แผนเผชิญเหตุ (CONPLAN) · แผนยุทธการ (OPLAN) · แผนปฏิบัติการเฉียบพลัน (CAP)']},
    {id:'p5',num:'⑥',c:'#60a5fa',th:'จอ C2 แบบ Network-Centric',en:'C2 DISPLAY · NETWORK-CENTRIC OPERATIONS',
     fx:['<b>RMP</b> — Recognized Maritime Picture (RECOG × DOMAIN)','COP รวมทุกโดเมนบนจอเดียว · WCS FREE / TIGHT / HOLD','<b>Threat Board ๗ โดเมน</b> — AI/Decision = โดเมนที่ ๗ (cross-cutting · HITL)','ศปก.ทร. สั่งการทุกหน่วยบนข่ายเดียวกัน (NCW)']},
    {id:'p7',num:'⑦',c:'#8b5cf6',th:'เขตอำนาจ &amp; กรอบกฎหมาย',en:'JURISDICTION &amp; LEGAL-AUTHORITY · TERMINOLOGY ENGINE',
@@ -1120,18 +1138,25 @@ window.BLOCK_DETAILS = {"p1":{"id":"p1","titleTH":"การจำลองภ�
     var body=drawer.querySelector('.dbody');
     body.innerHTML=b||'<div class="ptext" style="color:var(--dim)">— กำลังรวบรวมรายละเอียดเพิ่มเติมจาก simulator_17 —</div>';
     body.scrollTop=0;
+    var pi=drawer.querySelector('.dprog i'); if(pi) pi.style.width='0%';
   }
   function openDrawer(id){ renderDrawer(id);
-    document.getElementById('drawer').classList.add('open');
-    document.getElementById('dscrim').classList.add('open'); }
+    var dr=document.getElementById('drawer'); dr.classList.add('open');
+    document.getElementById('dscrim').classList.add('open');
+    document.body.classList.add('drawer-open');
+    var cb=dr.querySelector('.dclose'); if(cb&&cb.focus) try{cb.focus({preventScroll:true});}catch(_){cb.focus();} }
   window.__closeDrawer=function(){
     var dr=document.getElementById('drawer'); if(dr)dr.classList.remove('open');
-    var sc=document.getElementById('dscrim'); if(sc)sc.classList.remove('open'); };
+    var sc=document.getElementById('dscrim'); if(sc)sc.classList.remove('open');
+    document.body.classList.remove('drawer-open'); };
 
   function wireDetails(){
     if(!document.getElementById('dscrim')){
       var sc=document.createElement('div'); sc.id='dscrim'; sc.addEventListener('click',window.__closeDrawer); document.body.appendChild(sc);
-      var dr=document.createElement('aside'); dr.id='drawer'; dr.innerHTML='<div class="dhead"></div><div class="dbody"></div>'; document.body.appendChild(dr);
+      var dr=document.createElement('aside'); dr.id='drawer'; dr.innerHTML='<div class="dprog"><i></i></div><div class="dhead"></div><div class="dbody"></div>'; document.body.appendChild(dr);
+      dr.querySelector('.dbody').addEventListener('scroll',function(){
+        var max=this.scrollHeight-this.clientHeight;
+        dr.querySelector('.dprog i').style.width=(max>0?(this.scrollTop/max*100):0)+'%'; });
       document.addEventListener('keydown',function(e){ if(e.key==='Escape') window.__closeDrawer(); });
     }
     Array.prototype.slice.call(document.querySelectorAll('[data-kind]')).forEach(function(n){
