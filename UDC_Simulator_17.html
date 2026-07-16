@@ -1,6 +1,18 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.12.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.13.0 · 7-Domain + AI Staff)
+  · [v17.13.0 CORE-1] UDC COMMAND CORE — JARVIS-style fullscreen status overlay (ปุ่ม ⬡ CORE ที่หัว
+    panel Command & Intelligence → panel กลางจอ backdrop-blur ทับแผนที่): วงแหวน Defense Readiness
+    กลางจอ (คำนวณจาก domain state จริง ok=100/warn=60/crit=25, โทนสีทั้ง HUD เปลี่ยนตามระดับภัย
+    ok→cyan / warn→amber / crit→red), วงในแยก 3 arc = DAS Fiber 3 สาย (สาย 1 เกาะคราม tripwire อ่าน
+    dasTriggered/dasKPnm จริง · สาย 2 กองเรือยุทธการ · สาย 3 ทุ่งโปรง), การ์ด DAS per-line (channels/
+    sample-rate/data-rate/atten คำนวณจากความยาวสายจริง gauge 8 m @ 2 kHz), แถบ DATA CENTER STATUS
+    จำลองตามมาตรฐานอุตสาหกรรม (PUE เทียบค่าเฉลี่ย 1.54 Uptime Institute 2025 · DCiE · IT load ผูกจำนวน
+    contact จริง · ingest Mbps รวมจาก DAS+hydro+radar+EO+AIS · trunk 10GbE util/latency · storage
+    fill-rate/retention · cold-aisle ASHRAE · UPS/GEN N+1 · uptime Tier III), mirror ข้อมูล live ผ่าน
+    wrapper ของ addLog/setDomain/setSensor (อัปเดต DOM เฉพาะตอน overlay เปิด — ปิดแล้ว overhead ~0),
+    boot animation แบบ stagger + radar sweep + วงแหวนหมุน (CSS ล้วน, เคารพ VIS-1 body.mda-bg-tab
+    และ prefers-reduced-motion) · ปิดด้วย ESC / คลิกฉากหลัง / ปุ่ม ✕
   · [v17.12.0 CIRCUIT-2/PROXY-1] Audit B2+O2 — hardening เส้นทาง fetch ร่วม (fetchViaAnyProxy):
     - CIRCUIT-2 (B2): แยก circuit breaker เดิม (CIRCUIT-1) เป็น helper _cbCheck/_cbOk/_cbFail
       (semantics เดิมทุกประการ: threshold 3, cooldown exponential 1 นาที→cap 30 นาที, reset เมื่อสำเร็จ)
@@ -502,12 +514,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.12.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.13.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.12.0';
+        const APP_VERSION = '17.13.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -7224,7 +7236,7 @@
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.12.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.13.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -7685,7 +7697,7 @@
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.12.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.13.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -7702,7 +7714,7 @@
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.12.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.13.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -8613,12 +8625,16 @@
         <div class="panel" style="border-color:#2d3a6f;">
             <div style="display:flex;justify-content:space-between;align-items:center;">
                 <div class="panel-title" style="color:var(--purple);"><svg class="ico" aria-hidden="true"><use href="#i-eye"/></svg> Command &amp; Intelligence</div>
-                <span class="ind ind-ok" id="ind-command" style="background:var(--purple);box-shadow:0 0 6px var(--purple);"></span>
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <!-- [v17.13.0 CORE-1] ปุ่มเปิด UDC COMMAND CORE — JARVIS-style fullscreen overlay -->
+                    <button id="ccOpenBtn" onclick="CommandCore.open()" title="เปิด UDC COMMAND CORE — ภาพรวมสถานะทุกระบบแบบเต็มจอ (ESC เพื่อปิด)">⬡ CORE</button>
+                    <span class="ind ind-ok" id="ind-command" style="background:var(--purple);box-shadow:0 0 6px var(--purple);"></span>
+                </div>
             </div>
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.12.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.13.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -46339,5 +46355,642 @@ body[data-term-mode="ops"] #mda-cop-menu #mda-term-btn {
   color: var(--cyan, #22d3ee) !important;
 }
 </style>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     [v17.13.0 CORE-1] UDC COMMAND CORE — JARVIS-style fullscreen status overlay
+     ────────────────────────────────────────────────────────────────────
+     แนวคิด   : ปุ่ม ⬡ CORE (หัว panel Command & Intelligence) → overlay กลางจอ
+                backdrop-blur ทับแผนที่ · โทนสีทั้ง HUD เปลี่ยนตามระดับภัยรวม
+                (ok→cyan · warn→amber · crit→red) · ปิดด้วย ESC / คลิกฉากหลัง / ✕
+     ข้อมูลจริง: mirror ผ่าน wrapper ของ addLog/setDomain/setSensor (ท้ายไฟล์นี้)
+                + อ่าน dasTriggered/dasKPnm · tideLevel/seaState · threats[] ตรง ๆ
+                → อัปเดต DOM เฉพาะตอน overlay เปิด (ปิดแล้ว overhead ≈ 0)
+     วงแหวนกลาง: arc นอก = Defense Readiness % (เฉลี่ย 7 domain: ok=100/warn=60/crit=25)
+                arc ใน 3 ชิ้น = DAS Fiber 3 สาย (F1 เกาะคราม tripwire จริง · F2 กองเรือฯ ·
+                F3 ทุ่งโปรง) — EVENT แล้ว arc กะพริบแดง + การ์ดล่างแสดง KP จริง
+     DATA CENTER (จำลองตามมาตรฐานอุตสาหกรรม — อ้างอิงในคอมเมนต์ sim ด้านล่าง):
+                PUE/DCiE (เทียบค่าเฉลี่ย 1.54 — Uptime Institute Global Survey 2025) ·
+                IT load ผูกจำนวน contact จริง · ingest Mbps (DAS: gauge 8 m @ 2 kHz 16-bit
+                ต่อ channel ตามความยาวสายจริง) · trunk 10GbE · storage fill/retention ·
+                cold-aisle ตามกรอบ ASHRAE A1 (18–27 °C) · UPS/GEN N+1 · uptime Tier III
+     Performance: animation เป็น CSS ทั้งหมด → หยุดอัตโนมัติเมื่อ tab ซ่อน (VIS-1
+                body.mda-bg-tab) · เคารพ prefers-reduced-motion · tick 1 Hz เฉพาะตอนเปิด
+     ════════════════════════════════════════════════════════════════════ -->
+<style>
+/* ── ปุ่มเปิด (อยู่ใน panel Command & Intelligence) ── */
+#ccOpenBtn {
+    font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:1.5px;
+    color:var(--purple,#a78bfa); background:rgba(139,92,246,.10);
+    border:1px solid rgba(139,92,246,.45); border-radius:4px;
+    padding:2px 8px; cursor:pointer; transition:all .2s; white-space:nowrap;
+}
+#ccOpenBtn:hover { background:rgba(139,92,246,.22); box-shadow:0 0 8px rgba(139,92,246,.35); color:#fff; }
+
+/* ── โทนสีตามระดับภัยรวม — ok(default)→cyan · warn→amber · crit→red ── */
+#commandCore {
+    --cc-accent:#22d3ee;  --cc-accent-rgb:34 211 238;
+    --cc-state:#39ff8c;   --cc-state-rgb:57 255 140;
+    position:fixed; inset:0; z-index:99999; display:none;
+    align-items:center; justify-content:center;
+    background:rgba(2,6,14,.66);
+    backdrop-filter:blur(14px) saturate(1.15);
+    -webkit-backdrop-filter:blur(14px) saturate(1.15);
+    opacity:0; transition:opacity .32s ease;
+    font-family:'Share Tech Mono',monospace;
+}
+#commandCore.cc-warn { --cc-accent:#fbbf24; --cc-accent-rgb:251 191 36; --cc-state:#fbbf24; --cc-state-rgb:251 191 36; }
+#commandCore.cc-crit { --cc-accent:#ff4136; --cc-accent-rgb:255 65 54;  --cc-state:#ff4136; --cc-state-rgb:255 65 54; }
+#commandCore.cc-on { display:flex; }
+#commandCore.cc-in { opacity:1; }
+
+.cc-shell {
+    position:relative; width:min(1180px,95vw); max-height:94vh; overflow-y:auto; overflow-x:hidden;
+    background:linear-gradient(165deg, rgba(7,13,26,.94), rgba(3,7,15,.96));
+    border:1px solid rgb(var(--cc-accent-rgb) / .35); border-radius:10px;
+    box-shadow:0 0 44px rgb(var(--cc-accent-rgb) / .16), inset 0 0 70px rgb(var(--cc-accent-rgb) / .04);
+    transform:scale(.96) translateY(10px); transition:transform .32s cubic-bezier(.22,1,.36,1);
+}
+#commandCore.cc-in .cc-shell { transform:none; }
+/* มุม HUD สองมุมทแยง — เอกลักษณ์กรอบแบบ CIC */
+.cc-shell::before, .cc-shell::after { content:''; position:absolute; width:20px; height:20px; pointer-events:none; z-index:3; }
+.cc-shell::before { top:0; left:0; border-top:2px solid var(--cc-accent); border-left:2px solid var(--cc-accent); border-top-left-radius:9px; }
+.cc-shell::after  { bottom:0; right:0; border-bottom:2px solid var(--cc-accent); border-right:2px solid var(--cc-accent); border-bottom-right-radius:9px; }
+
+/* ── boot stagger — เล่นใหม่ทุกครั้งที่เปิด (toggle class .cc-anim) ── */
+.cc-shell.cc-anim > * { animation:ccBootIn .5s cubic-bezier(.22,1,.36,1) both; }
+.cc-shell.cc-anim > *:nth-child(2) { animation-delay:.07s; }
+.cc-shell.cc-anim > *:nth-child(3) { animation-delay:.14s; }
+.cc-shell.cc-anim > *:nth-child(4) { animation-delay:.21s; }
+.cc-shell.cc-anim > *:nth-child(5) { animation-delay:.28s; }
+.cc-shell.cc-anim > *:nth-child(6) { animation-delay:.35s; }
+@keyframes ccBootIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+
+/* ── top bar ── */
+.cc-topbar {
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    padding:10px 18px; border-bottom:1px solid rgb(var(--cc-accent-rgb) / .25);
+}
+.cc-title { font-family:'Saira','Share Tech Mono',sans-serif; font-size:14px; font-weight:600;
+    letter-spacing:3px; color:var(--cc-accent); white-space:nowrap; }
+.cc-title .cc-ver { font-size:10px; letter-spacing:1px; opacity:.55; margin-left:8px; }
+#ccStateTxt { font-size:11px; letter-spacing:2px; color:var(--cc-state); text-align:center; flex:1; }
+.cc-clockbox { display:flex; align-items:center; gap:10px; font-size:11px; color:#8fa4c0; white-space:nowrap; }
+#ccCloseBtn {
+    font-family:inherit; font-size:10px; letter-spacing:1px; color:#9fb2cc;
+    background:rgba(148,163,184,.08); border:1px solid rgba(148,163,184,.30);
+    border-radius:4px; padding:3px 9px; cursor:pointer; transition:all .2s;
+}
+#ccCloseBtn:hover { color:#fff; border-color:rgba(255,65,54,.6); background:rgba(255,65,54,.12); }
+
+/* ── main grid: sensors | ring | domains ── */
+.cc-main { display:grid; grid-template-columns:1fr 1.15fr 1fr; gap:16px; padding:12px 18px 4px; }
+.cc-sec-title {
+    font-size:10px; letter-spacing:2px; color:rgb(var(--cc-accent-rgb) / .85);
+    border-left:2px solid var(--cc-accent); padding-left:6px; margin:8px 0 5px;
+    text-transform:uppercase;
+}
+.cc-sec-title:first-child { margin-top:0; }
+.cc-row { display:flex; justify-content:space-between; align-items:baseline; gap:8px;
+    font-size:11px; padding:2.5px 0; border-bottom:1px dashed rgba(148,163,184,.08); }
+.cc-row .cc-lbl { color:#b9cbe0; letter-spacing:.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.cc-row .cc-val { white-space:nowrap; letter-spacing:.5px; }
+.cs-ok   { color:#39ff8c; } .cs-warn { color:#fbbf24; }
+.cs-crit { color:#ff4136; animation:ccBlink 1s step-end infinite; }
+.cs-dim  { color:#64748b; }
+@keyframes ccBlink { 50% { opacity:.45; } }
+
+/* ── domain rows + mini readiness bar ── */
+.cc-dom-bar { flex:0 0 54px; height:4px; background:rgba(148,163,184,.12); border-radius:2px; overflow:hidden; }
+.cc-dom-bar > div { height:100%; border-radius:2px; transition:width .6s ease, background .4s; }
+
+/* ── central ring ── */
+.cc-center { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; }
+.cc-ring-wrap { position:relative; width:min(320px,100%); aspect-ratio:1; }
+.cc-sweep {
+    position:absolute; inset:6%; border-radius:50%; pointer-events:none;
+    background:conic-gradient(from 0deg, transparent 0deg 318deg,
+        rgb(var(--cc-accent-rgb) / .02) 330deg, rgb(var(--cc-accent-rgb) / .22) 356deg, transparent 360deg);
+    animation:ccSpin 5.5s linear infinite;
+}
+#ccRingSvg { position:relative; width:100%; height:100%; display:block; }
+#ccRingSvg .cc-rot     { transform-box:view-box; transform-origin:50% 50%; animation:ccSpin 42s linear infinite; }
+#ccRingSvg .cc-rot-rev { transform-box:view-box; transform-origin:50% 50%; animation:ccSpin 70s linear infinite reverse; }
+@keyframes ccSpin { to { transform:rotate(360deg); } }
+#ccArcReady { transition:stroke-dashoffset .9s cubic-bezier(.22,1,.36,1), stroke .4s; }
+.cc-arc-das { transition:stroke .4s; }
+.cc-arc-evt { animation:ccPulse .9s ease-in-out infinite; }
+@keyframes ccPulse { 50% { opacity:.30; } }
+.cc-core-text { position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:2px; pointer-events:none; }
+#ccReadyPct { font-family:'Saira','Share Tech Mono',sans-serif; font-size:46px; font-weight:600;
+    color:#eaf7ff; line-height:1; text-shadow:0 0 18px rgb(var(--cc-state-rgb) / .45); }
+#ccReadyLbl { font-size:12px; letter-spacing:4px; color:var(--cc-state); }
+#ccThreatN  { font-size:10px; letter-spacing:1.5px; color:#8fa4c0; }
+.cc-ring-legend { font-size:9.5px; letter-spacing:1px; color:#64748b; text-align:center; }
+
+/* ── DAS fiber cards ── */
+.cc-das { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:6px 18px; }
+.cc-fib {
+    border:1px solid rgb(var(--cc-accent-rgb) / .20); border-radius:6px;
+    background:rgba(8,16,30,.55); padding:7px 10px;
+}
+.cc-fib-hdr { display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; }
+.cc-fib-name { font-size:10.5px; letter-spacing:1px; color:#d7e6f5; }
+.cc-fib-st { font-size:9.5px; letter-spacing:1.5px; padding:1px 7px; border-radius:3px; border:1px solid; }
+.cc-fib-route { font-size:9px; color:#64748b; letter-spacing:.5px; margin-bottom:4px; }
+.cc-fib-metrics { display:grid; grid-template-columns:1fr 1fr; gap:1px 10px; font-size:9.5px; }
+.cc-fib-metrics span   { color:#7d90ab; }
+.cc-fib-metrics b      { color:#b9cbe0; font-weight:400; float:right; }
+
+/* ── DATA CENTER strip ── */
+.cc-dc { display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:10px; padding:2px 18px 6px; }
+.cc-cell { border:1px solid rgba(148,163,184,.14); border-radius:6px;
+    background:rgba(8,16,30,.45); padding:6px 9px 7px; min-width:0; }
+.cc-cell-lbl { font-size:8.5px; letter-spacing:1.5px; color:#7d90ab; margin-bottom:2px; white-space:nowrap; }
+.cc-cell-val { font-family:'Saira','Share Tech Mono',sans-serif; font-size:19px; font-weight:600;
+    color:#eaf7ff; line-height:1.15; white-space:nowrap; }
+.cc-cell-val small { font-size:10px; font-weight:400; color:#8fa4c0; margin-left:2px; }
+.cc-cell-sub { font-size:9px; color:#64748b; letter-spacing:.4px; margin-top:2px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.cc-pue-track { position:relative; height:5px; margin-top:5px; border-radius:3px;
+    background:rgba(148,163,184,.12); overflow:visible; }
+.cc-pue-fill { height:100%; border-radius:3px; width:0%; transition:width .8s ease, background .4s; }
+.cc-pue-avg { position:absolute; top:-2px; bottom:-2px; left:54%; width:2px;
+    background:#94a3b8; opacity:.75; }  /* 1.54 = ค่าเฉลี่ยอุตสาหกรรม (Uptime Institute 2025) บนสเกล 1.0–2.0 */
+
+/* ── event stream ── */
+.cc-log { border-top:1px solid rgb(var(--cc-accent-rgb) / .18); padding:7px 18px 13px; }
+#ccLog { height:72px; overflow-y:auto; font-size:10.5px; line-height:1.75; margin-top:4px; }
+#ccLog .cc-le { animation:ccLogIn .35s ease both; }
+@keyframes ccLogIn { from { opacity:0; transform:translateX(-8px); } to { opacity:1; transform:none; } }
+
+/* ── responsive + ประหยัดพลังงาน ── */
+@media (max-width:1020px) {
+    .cc-main { grid-template-columns:1fr; }
+    .cc-center { order:-1; }
+    .cc-das { grid-template-columns:1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+    #commandCore, #commandCore * { animation:none !important; transition:none !important; }
+}
+</style>
+
+<div id="commandCore" aria-hidden="true">
+  <div class="cc-shell" role="dialog" aria-modal="true" aria-label="UDC Command Core — ภาพรวมสถานะทุกระบบ">
+    <div class="cc-topbar">
+        <div class="cc-title">⬡ UDC COMMAND CORE<span class="cc-ver" id="ccVer"></span></div>
+        <div id="ccStateTxt">INITIALIZING…</div>
+        <div class="cc-clockbox">
+            <span id="ccClock">--:--:--</span>
+            <button id="ccCloseBtn" onclick="CommandCore.close()" title="ปิด (ESC)">✕ ESC</button>
+        </div>
+    </div>
+    <div class="cc-main">
+        <div>
+            <div class="cc-sec-title">Sensor Grid — เครือข่ายตรวจจับ</div>
+            <div id="ccSensors"></div>
+            <div class="cc-sec-title">Environment — สภาพแวดล้อม</div>
+            <div id="ccEnv"></div>
+        </div>
+        <div class="cc-center">
+            <div class="cc-ring-wrap">
+                <div class="cc-sweep"></div>
+                <svg id="ccRingSvg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg"></svg>
+                <div class="cc-core-text">
+                    <div id="ccReadyPct">--</div>
+                    <div id="ccReadyLbl">STANDBY</div>
+                    <div id="ccThreatN">CONTACTS —</div>
+                </div>
+            </div>
+            <div class="cc-ring-legend">วงใน — DAS FIBER GRID: F1 เกาะคราม · F2 กองเรือยุทธการ · F3 ทุ่งโปรง</div>
+        </div>
+        <div>
+            <div class="cc-sec-title">7-Domain Status — สถานะรายมิติ</div>
+            <div id="ccDomains"></div>
+            <div class="cc-sec-title">Active Contacts — เป้าที่ติดตาม</div>
+            <div id="ccContacts"></div>
+        </div>
+    </div>
+    <div class="cc-das" id="ccDas"></div>
+    <div>
+        <div class="cc-sec-title" style="margin:4px 18px 6px;">Data Center Status — UDC Edge Node <span style="color:#64748b;letter-spacing:.5px;">(SIMULATED · Uptime Institute / ASHRAE benchmark)</span></div>
+        <div class="cc-dc" id="ccDc"></div>
+    </div>
+    <div class="cc-log">
+        <span class="cc-sec-title" style="margin:0;">Event Stream — บันทึกเหตุการณ์ล่าสุด</span>
+        <div id="ccLog"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════ [v17.13.0 CORE-1] UDC COMMAND CORE — logic ════════════ */
+window.CommandCore = (function () {
+    'use strict';
+    const g = id => document.getElementById(id);
+    const esc = (typeof escapeHtml === 'function') ? escapeHtml : (s => String(s == null ? '' : s));
+    let isOpen = false, tickTimer = null, lastDasEvt = false;
+
+    /* ── mirror state (อัปเดตจาก wrapper ตลอดเวลา — ถูกมาก, DOM เขียนเฉพาะตอนเปิด) ── */
+    const dom = { air:'ok', coastal:'ok', underwater:'ok', command:'ok' };
+    const logBuf = [];                       // {t,msg,color} — เก็บ 40 รายการล่าสุด
+    const SENSORS = [
+        ['cs-radar','COASTAL RADAR'], ['cs-optical','EO/IR OPTICAL'],
+        ['cs-hydro','COASTAL HYDRO'], ['cs-guard','GUARD POST'],
+        ['uw-hydro','HYDROPHONE ARRAY'], ['uw-sonar','ACTIVE SONAR'],
+        ['uw-uuv','GUUV PATROL'], ['uw-udc','UDC NODE'],
+        ['as-patrol','PATROL AIRCRAFT'], ['as-helo','MH-60S SEAHAWK'],
+        ['as-radar','AIR RADAR'], ['as-ad','AIR DEFENCE'],
+    ];
+
+    /* ── DAS 3 สาย — ความยาวสายโดยประมาณตามเส้นทางจริงบนแผนที่ ──
+       สูตรมาตรฐาน DAS: channel spacing (gauge) 8 m · interrogation 2 kHz · 16-bit/sample
+       → data rate ต่อสาย = channels × 2000 × 16 bit  (เทียบเคียงระบบจริงที่รายงาน
+       ~2,500 ch @ 250 Hz ≈ 1.2 GB/min — needlanalytics.com / mapyourtech.com) */
+    const FIBERS = [
+        { id:'F1', name:'F1 · เกาะคราม',        route:'UDC → เกาะคราม — TRIPWIRE หลัก (Rayleigh backscatter)', km:15.2 },
+        { id:'F2', name:'F2 · กองเรือยุทธการ',   route:'UDC → กองเรือยุทธการ — เส้นทางสำรอง (Redundancy)',      km:5.8 },
+        { id:'F3', name:'F3 · ทุ่งโปรง',         route:'UDC → ท่าเรือทุ่งโปรง — Recon นย.',                     km:7.4 },
+    ];
+    FIBERS.forEach(f => {
+        f.ch   = Math.round(f.km * 1000 / 8);              // gauge 8 m
+        f.mbps = f.ch * 2000 * 16 / 1e6;                   // 2 kHz × 16-bit
+    });
+    const DAS_TOTAL_MBPS = FIBERS.reduce((s,f) => s + f.mbps, 0);
+
+    /* ── DATA CENTER sim state (คงค่าไว้ข้ามการเปิด/ปิด overlay ให้ตัวเลขต่อเนื่อง) ──
+       อ้างอิง: PUE เฉลี่ยอุตสาหกรรม 1.54 (Uptime Institute Global Data Center Survey 2025) ·
+       rack density ทั่วไป 10–30 kW/rack · cold-aisle ตามกรอบ ASHRAE A1: 18–27 °C */
+    const dc = { usedTB: 293.6, capTB: 480, it: 40, pue: 1.38 };
+    const lerp = (a,b,t) => a + (b - a) * t;
+    const jit  = amp => (Math.random() * 2 - 1) * amp;
+
+    /* ── safe accessors — ตัวแปร sim หลักประกาศเป็น let ใน script ก่อนหน้า ── */
+    function getContacts() {
+        try { return Array.isArray(threats) ? threats.filter(t => t && t.active !== false) : []; }
+        catch (_) { return []; }
+    }
+    function dasEvt()  { try { return !!dasTriggered; } catch (_) { return false; } }
+    function dasKP()   { try { return (typeof dasKPnm === 'number') ? dasKPnm : null; } catch (_) { return null; } }
+    function envTide() { try { return (typeof tideLevel === 'number') ? tideLevel : null; } catch (_) { return null; } }
+    function envSS()   { try { return (typeof seaState === 'number') ? seaState : null; } catch (_) { return null; } }
+    function ssThai(n) { try { return (typeof SS_THAI !== 'undefined' && SS_THAI[n]) ? SS_THAI[n] : ''; } catch (_) { return ''; } }
+    function seismicState() {
+        const el = g('ind-seismic');
+        if (!el) return 'ok';
+        return /ind-crit/.test(el.className) ? 'crit' : /ind-warn/.test(el.className) ? 'warn' : 'ok';
+    }
+
+    /* ── 7 domain: 4 ตัว live จาก setDomain + seabed(DAS)/seismic/cyber อนุมาน ── */
+    const DOM_ROWS = [
+        { key:'air',        lbl:'✈ AIR — อากาศ' },
+        { key:'coastal',    lbl:'🚢 COASTAL/SURFACE — ผิวน้ำ' },
+        { key:'underwater', lbl:'🌊 UNDERWATER — ใต้น้ำ' },
+        { key:'seabed',     lbl:'⚓ SEABED — DAS TRIPWIRE' },
+        { key:'cyber',      lbl:'📡 CYBER/EW — ไซเบอร์' },
+        { key:'seismic',    lbl:'🌐 SEISMIC — แผ่นดินไหว' },
+        { key:'command',    lbl:'👁 COMMAND C2 — บัญชาการ' },
+    ];
+    function domainState(key) {
+        if (key === 'seabed')  return dasEvt() ? 'crit' : 'ok';
+        if (key === 'seismic') return seismicState();
+        if (key === 'cyber')   return 'ok';
+        return dom[key] || 'ok';
+    }
+    const SCORE = { ok:100, warn:60, crit:25 };
+    function readiness() {
+        const v = DOM_ROWS.map(d => SCORE[domainState(d.key)] || 100);
+        return Math.round(v.reduce((s,x) => s + x, 0) / v.length);
+    }
+    function overallState() {
+        const st = DOM_ROWS.map(d => domainState(d.key));
+        return st.includes('crit') ? 'crit' : st.includes('warn') ? 'warn' : 'ok';
+    }
+
+    /* ── ring geometry ── */
+    function polar(r, deg) { const a = (deg - 90) * Math.PI / 180; return [150 + r * Math.cos(a), 150 + r * Math.sin(a)]; }
+    function arcPath(r, a0, a1) {
+        const [x0,y0] = polar(r,a0), [x1,y1] = polar(r,a1);
+        return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r} ${r} 0 ${(a1-a0)>180?1:0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
+    }
+    function buildRing() {
+        const A = 'rgb(var(--cc-accent-rgb) / ';
+        let s = '';
+        s += `<circle cx="150" cy="150" r="146" fill="none" stroke="${A}.20)" stroke-width="1"/>`;
+        s += `<circle class="cc-rot" cx="150" cy="150" r="140" fill="none" stroke="${A}.55)" stroke-width="3" stroke-dasharray="2 6"/>`;
+        s += `<circle cx="150" cy="150" r="126" fill="none" stroke="${A}.28)" stroke-width="1" stroke-dasharray="30 9"/>`;
+        s += `<circle cx="150" cy="150" r="112" fill="none" stroke="rgba(148,163,184,.13)" stroke-width="6"/>`;
+        s += `<circle id="ccArcReady" cx="150" cy="150" r="112" fill="none" stroke="var(--cc-state)" stroke-width="6"
+                stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"
+                transform="rotate(-90 150 150)"/>`;
+        FIBERS.forEach((f,i) => {
+            const a0 = i * 120 + 10, a1 = i * 120 + 110;
+            s += `<path id="ccArc${f.id}" class="cc-arc-das" d="${arcPath(92, a0, a1)}" fill="none"
+                    stroke="#39ff8c" stroke-width="7" stroke-linecap="round" opacity=".8"/>`;
+            const [tx,ty] = polar(76, (a0 + a1) / 2);
+            s += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" dominant-baseline="middle"
+                    font-size="10" letter-spacing="1" fill="#7d90ab" font-family="Share Tech Mono,monospace">${f.id}</text>`;
+        });
+        s += `<circle class="cc-rot-rev" cx="150" cy="150" r="64" fill="none" stroke="${A}.30)" stroke-width="9" stroke-dasharray="1 7"/>`;
+        s += `<circle cx="150" cy="150" r="55" fill="rgba(4,10,22,.78)" stroke="${A}.45)" stroke-width="1"/>`;
+        g('ccRingSvg').innerHTML = s;
+    }
+
+    /* ── renderers ── */
+    const clsOf = st => st === 'crit' ? 'cs-crit' : st === 'warn' ? 'cs-warn' : 'cs-ok';
+    const domTxt = st => st === 'crit' ? 'THREAT' : st === 'warn' ? 'ALERT' : 'READY';
+    const domCol = st => st === 'crit' ? '#ff4136' : st === 'warn' ? '#fbbf24' : '#39ff8c';
+    const domW   = st => st === 'crit' ? '25%' : st === 'warn' ? '60%' : '100%';
+
+    function renderSensors() {
+        g('ccSensors').innerHTML = SENSORS.map(([id, lbl]) => {
+            const src = g(id);
+            const txt = src ? src.textContent : '—';
+            const cls = src && /s-alert/.test(src.className) ? 'cs-crit'
+                      : src && /s-warn/.test(src.className)  ? 'cs-warn'
+                      : src && /s-ok/.test(src.className)    ? 'cs-ok' : 'cs-dim';
+            return `<div class="cc-row"><span class="cc-lbl">${lbl}</span><span class="cc-val ${cls}" id="ccS-${id}">${esc(txt)}</span></div>`;
+        }).join('');
+    }
+    function renderDomains() {
+        g('ccDomains').innerHTML = DOM_ROWS.map(d => {
+            const st = domainState(d.key);
+            return `<div class="cc-row"><span class="cc-lbl">${d.lbl}</span>
+                <span style="display:flex;align-items:center;gap:7px;">
+                  <span class="cc-dom-bar"><div style="width:${domW(st)};background:${domCol(st)};"></div></span>
+                  <span class="cc-val ${clsOf(st)}" style="min-width:52px;text-align:right;">${domTxt(st)}</span>
+                </span></div>`;
+        }).join('');
+    }
+    function renderContacts() {
+        const W_NM = (typeof LNG_RIGHT !== 'undefined') ? (LNG_RIGHT - LNG_LEFT) * 60 * Math.cos(12.7 * Math.PI / 180) : 26;
+        const H_NM = (typeof LAT_TOP !== 'undefined') ? (LAT_TOP - LAT_BOT) * 60 : 27;
+        let u = null; try { u = UDC; } catch (_) {}
+        const list = getContacts().map(t => {
+            let rng = null;
+            if (u && typeof t.nx === 'number') {
+                rng = Math.hypot((t.nx - u.nx) * W_NM, (t.ny - u.ny) * H_NM);
+            }
+            return { t, rng };
+        }).sort((a,b) => (a.rng ?? 99) - (b.rng ?? 99)).slice(0, 6);
+        g('ccContacts').innerHTML = list.length ? list.map(({t, rng}) => {
+            const col = t.classified ? (t.color || '#ff4136') : '#f59e0b';
+            const meta = [(t.type || '').toUpperCase(), (typeof t.dep === 'number' && t.dep > 0) ? `DEP ${t.dep}m` : '',
+                          rng != null ? `${rng.toFixed(1)} nm` : ''].filter(Boolean).join(' · ');
+            return `<div class="cc-row"><span class="cc-lbl" style="color:${col};">▸ ${esc(t.label || 'UNKNOWN')}</span>
+                    <span class="cc-val" style="color:#8fa4c0;">${meta}</span></div>`;
+        }).join('') : `<div class="cc-row"><span class="cc-lbl cs-ok">NO ACTIVE CONTACTS — ALL CLEAR</span></div>`;
+    }
+    function renderEnv() {
+        const tide = envTide(), ss = envSS(), n = getContacts().length;
+        const rows = [
+            ['TIDE — ระดับน้ำ',   tide != null ? `${tide >= 0 ? '+' : ''}${tide.toFixed(2)} m` : '—', 'cs-ok'],
+            ['SEA STATE — คลื่น', ss != null ? `SS${ss} ${ssThai(ss)}` : '—', ss >= 3 ? 'cs-warn' : 'cs-ok'],
+            ['ACTIVE CONTACTS',   String(n), n > 0 ? 'cs-warn' : 'cs-ok'],
+            ['DAS TRIPWIRE',      dasEvt() ? (dasKP() != null ? `EVENT @ KP ${dasKP().toFixed(2)} nm` : 'EVENT') : 'ARMED — SECURE',
+                                  dasEvt() ? 'cs-crit' : 'cs-ok'],
+        ];
+        g('ccEnv').innerHTML = rows.map(([l,v,c]) =>
+            `<div class="cc-row"><span class="cc-lbl">${l}</span><span class="cc-val ${c}">${v}</span></div>`).join('');
+    }
+    function renderFibers() {
+        g('ccDas').innerHTML = FIBERS.map(f => {
+            const evt = (f.id === 'F1') && dasEvt();
+            const kp = dasKP();
+            const st  = evt ? 'EVENT' : 'ARMED';
+            const stc = evt ? '#ff4136' : '#39ff8c';
+            const detail = evt && kp != null ? `⚡ INTRUSION @ KP ${kp.toFixed(2)} nm` : f.route;
+            return `<div class="cc-fib" style="border-color:${evt ? 'rgba(255,65,54,.55)' : ''}">
+                <div class="cc-fib-hdr">
+                    <span class="cc-fib-name">${f.name}</span>
+                    <span class="cc-fib-st ${evt ? 'cs-crit' : ''}" style="color:${stc};border-color:${stc}55;background:${stc}14;">${st}</span>
+                </div>
+                <div class="cc-fib-route" style="color:${evt ? '#ff8a80' : ''}">${detail}</div>
+                <div class="cc-fib-metrics">
+                    <span>LENGTH<b>≈ ${f.km.toFixed(1)} km</b></span>
+                    <span>CHANNELS<b>${f.ch.toLocaleString()}</b></span>
+                    <span>SAMPLE<b>2.0 kHz · 16-bit</b></span>
+                    <span>DATA RATE<b id="ccFbr-${f.id}">${f.mbps.toFixed(1)} Mbps</b></span>
+                    <span>GAUGE<b>8 m</b></span>
+                    <span>ATTEN<b id="ccFba-${f.id}">0.20 dB/km</b></span>
+                </div>
+            </div>`;
+            }).join('');
+        }
+    /* หมายเหตุ: renderFibers ประกอบ innerHTML — arc สีอัปเดตแยกใน tick */
+
+    function buildDcCells() {
+        const cell = (lbl, valId, unit, subId) =>
+            `<div class="cc-cell"><div class="cc-cell-lbl">${lbl}</div>
+             <div class="cc-cell-val"><span id="${valId}">--</span><small>${unit}</small></div>
+             <div class="cc-cell-sub" id="${subId}"></div></div>`;
+        g('ccDc').innerHTML =
+            `<div class="cc-cell"><div class="cc-cell-lbl">PUE — POWER USAGE EFFECTIVENESS</div>
+              <div class="cc-cell-val"><span id="ccPue">--</span><small>· DCiE <span id="ccDcie">--</span>%</small></div>
+              <div class="cc-pue-track"><div class="cc-pue-fill" id="ccPueFill"></div>
+                <div class="cc-pue-avg" title="ค่าเฉลี่ยอุตสาหกรรม 1.54 — Uptime Institute 2025"></div></div>
+              <div class="cc-cell-sub">industry avg 1.54 (Uptime '25)</div></div>` +
+            cell('IT LOAD — ภาระประมวลผล', 'ccIt', 'kW', 'ccItSub') +
+            cell('DATA INGEST — ข้อมูลเข้า', 'ccIngest', 'Mbps', 'ccIngestSub') +
+            cell('TRUNK LINK — 10GbE UPLINK', 'ccTrunk', '%', 'ccTrunkSub') +
+            cell('STORAGE — คลังข้อมูล', 'ccStor', 'TB', 'ccStorSub') +
+            cell('COOLING — COLD AISLE', 'ccCool', '°C', 'ccCoolSub') +
+            cell('POWER & UPTIME', 'ccUps', '%', 'ccUpsSub');
+    }
+
+    /* ── DATA CENTER tick — โมเดลจำลองผูก parameter จริงของ sim ──
+       · IT load = ฐาน 38.4 kW + 2.6 kW/contact (ประมวลผล track) + 4.2 kW เมื่อ DAS event
+       · PUE = 1.31 + 0.13×diurnal(บ่ายร้อน cooling หนัก) + 0.015×seaState (ความชื้น/salt-air)
+       · ingest = DAS 3 สาย (คำนวณจริงด้านบน) + hydro 4×2.3 + radar 2.4 + EO 6.8 + AIS/cyber
+       · trunk util = ingest/10 Gbps + burst เมื่อมี contact · storage เติมตาม ingest หลัง
+         edge-decimation (~35% ของ raw — แนวเดียวกับระบบ DAS จริงที่ decimate ก่อนเก็บ) */
+    function tickDc(nContacts) {
+        const now = new Date();
+        const hr = now.getHours() + now.getMinutes() / 60;
+        const diurnal = Math.max(0, Math.sin((hr - 6) / 12 * Math.PI));
+        const itTarget = 38.4 + 2.6 * nContacts + (dasEvt() ? 4.2 : 0);
+        dc.it  = lerp(dc.it,  itTarget + jit(.4), .25);
+        const pueTarget = 1.31 + 0.13 * diurnal + 0.015 * (envSS() || 1);
+        dc.pue = Math.min(1.95, Math.max(1.18, lerp(dc.pue, pueTarget + jit(.006), .2)));
+
+        const hydro = 4 * 2.3, radar = 2.4, eo = 6.8, aisCy = 0.24 + 0.02 * nContacts;
+        const ingest = DAS_TOTAL_MBPS + hydro + radar + eo + aisCy + jit(.8);
+        const util = ingest / 10000 * 100 + (nContacts > 0 ? 1.8 : 0) + jit(.06);
+        const rtt  = 4.1 + (nContacts > 0 ? .9 : 0) + jit(.5);
+        const loss = nContacts > 0 ? 0.004 : 0.001;
+
+        const writeMBs = ingest / 8 * 0.35;                    // หลัง edge-decimation
+        dc.usedTB = Math.min(dc.capTB, dc.usedTB + writeMBs / 1e6 * 1.0); // ต่อวินาที (tick 1 Hz)
+        const fillTBday = writeMBs * 86400 / 1e6;
+        const retDays = fillTBday > 0 ? (dc.capTB - dc.usedTB) / fillTBday : 999;
+
+        const cool = 21.8 + 1.5 * diurnal + jit(.12);
+        const rh   = 54 + jit(1.5);
+
+        g('ccPue').textContent = dc.pue.toFixed(2);
+        g('ccDcie').textContent = Math.round(100 / dc.pue);
+        const pf = g('ccPueFill');
+        pf.style.width = Math.min(100, Math.max(0, (dc.pue - 1) * 100)) + '%';
+        pf.style.background = dc.pue <= 1.42 ? '#39ff8c' : dc.pue <= 1.6 ? '#fbbf24' : '#ff4136';
+        g('ccIt').textContent = dc.it.toFixed(1);
+        g('ccItSub').textContent = `TOTAL ${(dc.it * dc.pue).toFixed(1)} kW · ${(dc.it / 8).toFixed(1)} kW/rack ×8`;
+        g('ccIngest').textContent = ingest.toFixed(1);
+        g('ccIngestSub').textContent = `DAS ${DAS_TOTAL_MBPS.toFixed(0)} · HYDRO ${hydro.toFixed(1)} · RDR/EO ${(radar+eo).toFixed(1)}`;
+        g('ccTrunk').textContent = util.toFixed(2);
+        g('ccTrunkSub').textContent = `RTT ${rtt.toFixed(1)} ms · LOSS ${loss.toFixed(3)}% · ศปก.ทร.`;
+        g('ccStor').textContent = dc.usedTB.toFixed(1);
+        g('ccStorSub').textContent = `of ${dc.capTB} TB · +${fillTBday.toFixed(2)} TB/day · RET ${Math.round(retDays)} d`;
+        g('ccCool').textContent = cool.toFixed(1);
+        g('ccCoolSub').textContent = `RH ${rh.toFixed(0)}% · ASHRAE A1 (18–27°C) OK`;
+        g('ccUps').textContent = '100.0';
+        g('ccUpsSub').textContent = 'UPS FLOAT · GEN STANDBY · N+1 · 99.982% TIER III';
+    }
+
+    /* ── master tick (1 Hz เฉพาะตอนเปิด) ── */
+    function tick() {
+        const now = new Date();
+        g('ccClock').textContent =
+            [now.getHours(), now.getMinutes(), now.getSeconds()].map(n => String(n).padStart(2,'0')).join(':');
+
+        const n = getContacts().length;
+        const pct = readiness();
+        const st = overallState();
+        const root = g('commandCore');
+        root.classList.toggle('cc-warn', st === 'warn');
+        root.classList.toggle('cc-crit', st === 'crit');
+        g('ccReadyPct').textContent = pct + '%';
+        g('ccReadyLbl').textContent = st === 'crit' ? 'THREAT' : st === 'warn' ? 'ALERT' : 'READY';
+        g('ccThreatN').textContent = `CONTACTS ${n}`;
+        g('ccArcReady').style.strokeDashoffset = String(100 - pct);
+        g('ccStateTxt').textContent = `DEFENSE READINESS ${pct}% · ` +
+            (st === 'crit' ? 'THREAT CONDITION — RED' : st === 'warn' ? 'ELEVATED ALERT — YELLOW' : 'ALL DOMAINS READY');
+
+        /* DAS arcs + การ์ด — re-render การ์ดเมื่อสถานะ event เปลี่ยนระหว่างเปิดอยู่ */
+        if (dasEvt() !== lastDasEvt) { lastDasEvt = dasEvt(); renderFibers(); }
+        FIBERS.forEach(f => {
+            const evt = (f.id === 'F1') && dasEvt();
+            const arc = g('ccArc' + f.id);
+            if (arc) {
+                arc.setAttribute('stroke', evt ? '#ff4136' : '#39ff8c');
+                arc.classList.toggle('cc-arc-evt', evt);
+            }
+            const r = g('ccFbr-' + f.id), a = g('ccFba-' + f.id);
+            if (r) r.textContent = (f.mbps + jit(.25)).toFixed(1) + ' Mbps';
+            if (a) a.textContent = (0.20 + jit(.004)).toFixed(3) + ' dB/km';
+        });
+
+        renderDomains();
+        renderContacts();
+        renderEnv();
+        tickDc(n);
+    }
+
+    /* ── log mirror ── */
+    function pushLogDom(entry) {
+        const box = g('ccLog');
+        if (!box) return;
+        const d = document.createElement('div');
+        d.className = 'cc-le';
+        d.innerHTML = `<span style="color:var(--teal,#14b8a6)">${entry.t}</span> <span style="color:${entry.color}">${esc(entry.msg)}</span>`;
+        box.appendChild(d);
+        while (box.childNodes.length > 40) box.removeChild(box.firstChild);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    /* ── hooks (เรียกจาก wrapper ด้านล่าง) ── */
+    function _onLog(msg, color) {
+        let m = msg;
+        try { if (typeof translateLogMsg === 'function') m = translateLogMsg(msg); } catch (_) {}
+        const now = new Date();
+        const t = [now.getHours(), now.getMinutes(), now.getSeconds()].map(x => String(x).padStart(2,'0')).join(':');
+        const entry = { t, msg: m, color: color || '#8892b0' };
+        logBuf.push(entry);
+        while (logBuf.length > 40) logBuf.shift();
+        if (isOpen) pushLogDom(entry);
+    }
+    function _onDomain(d, s) {
+        if (d in dom) dom[d] = s;
+        if (isOpen) { renderDomains(); }
+    }
+    function _onSensor(id, text, cls) {
+        if (!isOpen) return;
+        const el = g('ccS-' + id);
+        if (!el) return;
+        el.textContent = text;
+        el.className = 'cc-val ' + (cls === 's-alert' ? 'cs-crit' : cls === 's-warn' ? 'cs-warn' : cls === 's-ok' ? 'cs-ok' : 'cs-dim');
+    }
+
+    /* ── sync สถานะ domain จาก DOM จริงตอนเปิด (กันพลาดช่วงก่อน wrapper ทำงาน) ── */
+    function syncFromDom() {
+        Object.keys(dom).forEach(k => {
+            const el = g('ind-' + k);
+            if (el) dom[k] = /ind-crit/.test(el.className) ? 'crit' : /ind-warn/.test(el.className) ? 'warn' : 'ok';
+        });
+    }
+
+    /* ── open / close ── */
+    function open() {
+        if (isOpen) return;
+        isOpen = true;
+        const root = g('commandCore'), shell = root.querySelector('.cc-shell');
+        syncFromDom();
+        lastDasEvt = dasEvt();
+        renderSensors(); renderDomains(); renderContacts(); renderEnv(); renderFibers();
+        g('ccLog').innerHTML = '';
+        logBuf.slice(-12).forEach(pushLogDom);
+        tick();
+        root.classList.add('cc-on');
+        root.setAttribute('aria-hidden', 'false');
+        shell.classList.remove('cc-anim'); void shell.offsetWidth; shell.classList.add('cc-anim');
+        requestAnimationFrame(() => root.classList.add('cc-in'));
+        tickTimer = setInterval(tick, 1000);
+        try { addLog('[CORE] UDC COMMAND CORE — เปิดภาพรวมสถานะเต็มจอ', '#22d3ee'); } catch (_) {}
+    }
+    function close() {
+        if (!isOpen) return;
+        isOpen = false;
+        clearInterval(tickTimer); tickTimer = null;
+        const root = g('commandCore');
+        root.classList.remove('cc-in');
+        root.setAttribute('aria-hidden', 'true');
+        setTimeout(() => { if (!isOpen) root.classList.remove('cc-on'); }, 340);
+    }
+
+    /* ── init ── */
+    function init() {
+        g('ccVer').textContent = 'v' + (typeof APP_VERSION !== 'undefined' ? APP_VERSION : '—') + ' · THE SHIELD 3.0';
+        buildRing();
+        buildDcCells();
+        g('commandCore').addEventListener('mousedown', e => { if (e.target === g('commandCore')) close(); });
+        document.addEventListener('keydown', e => {
+            if (isOpen && e.key === 'Escape') { e.stopPropagation(); close(); }
+        }, true);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+
+    return { open, close, _onLog, _onDomain, _onSensor };
+})();
+
+/* ── wrapper: mirror ข้อมูล live เข้า Command Core โดยไม่แตะฟังก์ชันเดิม ──
+   (function declaration เป็น binding ระดับ global — reassign แล้ว caller ทุกจุดได้ตัวใหม่) */
+(function () {
+    if (typeof addLog === 'function' && !addLog._ccWrapped) {
+        const o = addLog;
+        addLog = function (m, c) { o.apply(this, arguments); try { CommandCore._onLog(m, c); } catch (_) {} };
+        addLog._ccWrapped = true;
+    }
+    if (typeof setDomain === 'function' && !setDomain._ccWrapped) {
+        const o = setDomain;
+        setDomain = function (d, s) { o.apply(this, arguments); try { CommandCore._onDomain(d, s); } catch (_) {} };
+        setDomain._ccWrapped = true;
+    }
+    if (typeof setSensor === 'function' && !setSensor._ccWrapped) {
+        const o = setSensor;
+        setSensor = function (i, t, c) { o.apply(this, arguments); try { CommandCore._onSensor(i, t, c); } catch (_) {} };
+        setSensor._ccWrapped = true;
+    }
+})();
+</script>
 
 </html>
