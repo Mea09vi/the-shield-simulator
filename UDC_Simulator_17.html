@@ -1,15 +1,25 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.13.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.14.0 · 7-Domain + AI Staff)
+  · [v17.14.0 CORE-2] COMMAND CORE ยกระดับ: (1) SCHEMATIC view — ภาพตัดขวางความลึก UDC (ดาดฟ้า 30–44 ม.
+    แคปซูล −38 ม. พื้นทะเล −44 ม. ผิวน้ำ/คลื่นตาม tide+sea state จริง · DAS event ปักหมุด KP จริง)
+    สลับได้จากปุ่ม RING/SCHEMATIC; (2) การ์ด DATA CENTER ใหม่ + sparkline แนวโน้มสด แก้ตัวเลขถูกตัด;
+    (3) รวมโมเดลความร้อนเหลือแหล่งเดียว computeUdcThermal() ใช้ร่วม side panel "UDC CORE HEALTH"
+    (ย้ายมาใต้ Command & Intelligence เหลือ 3 แถว); (4) DAS FIBER GRID เป็น fuel-gauge bar 16 ขีด
+    โซนสีตายตัวแบบหน้าปัดรถ (cyan→เขียว→lime→amber→ส้ม) จำนวนขีดติดตาม data rate สดต่อสาย
+    (fiberRate: ฐานตามความยาวสาย × แกว่งตาม sea state · event surge ×1.32 ไต่เต็มเกจ+กะพริบ);
+    (5) วงแหวนยกเป็น JARVIS-style HUD หลายชั้น — segment ring 7 domain สีสดตาม domainState จริง
+    (AIR·SUR·SUB·DAS·CYB·SEIS·C2 + tooltip) · chevron ring เรืองแสงหมุน · tick ring องศา ·
+    เศษ arc หมุนช้า · reticle กลาง + จุดโคจร · radial glow ตามสีระดับภัย (CSS ล้วน ไม่ใช้ SVG filter)
   · [v17.13.0 CORE-1] UDC COMMAND CORE — JARVIS-style fullscreen status overlay (ปุ่ม ⬡ CORE ที่หัว
     panel Command & Intelligence → panel กลางจอ backdrop-blur ทับแผนที่): วงแหวน Defense Readiness
     กลางจอ (คำนวณจาก domain state จริง ok=100/warn=60/crit=25, โทนสีทั้ง HUD เปลี่ยนตามระดับภัย
     ok→cyan / warn→amber / crit→red), วงในแยก 3 arc = DAS Fiber 3 สาย (สาย 1 เกาะคราม tripwire อ่าน
     dasTriggered/dasKPnm จริง · สาย 2 กองเรือยุทธการ · สาย 3 ทุ่งโปรง), การ์ด DAS per-line (channels/
     sample-rate/data-rate/atten คำนวณจากความยาวสายจริง gauge 8 m @ 2 kHz), แถบ DATA CENTER STATUS
-    จำลองตามมาตรฐานอุตสาหกรรม (PUE เทียบค่าเฉลี่ย 1.54 Uptime Institute 2025 · DCiE · IT load ผูกจำนวน
-    contact จริง · ingest Mbps รวมจาก DAS+hydro+radar+EO+AIS · trunk 10GbE util/latency · storage
-    fill-rate/retention · cold-aisle ASHRAE · UPS/GEN N+1 · uptime Tier III), mirror ข้อมูล live ผ่าน
+    จำลองตามมาตรฐานอุตสาหกรรม (PUE เทียบค่าเฉลี่ย 1.54 Uptime Institute 2025 · DCiE · PUE/load/อุณหภูมิ
+    ใช้โมเดลน้ำทะเลร่วมกับ panel UDC Core Health · ingest Mbps รวมจาก DAS+hydro+radar+EO+AIS · trunk 10GbE
+    util/latency · storage fill-rate/retention · seawater cooling · UPS/GEN N+1 · uptime Tier III), mirror ข้อมูล live ผ่าน
     wrapper ของ addLog/setDomain/setSensor (อัปเดต DOM เฉพาะตอน overlay เปิด — ปิดแล้ว overhead ~0),
     boot animation แบบ stagger + radar sweep + วงแหวนหมุน (CSS ล้วน, เคารพ VIS-1 body.mda-bg-tab
     และ prefers-reduced-motion) · ปิดด้วย ESC / คลิกฉากหลัง / ปุ่ม ✕
@@ -514,12 +524,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.13.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.14.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.13.0';
+        const APP_VERSION = '17.14.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -7236,7 +7246,7 @@
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.13.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.14.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -7697,7 +7707,7 @@
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.13.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.14.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -7714,7 +7724,7 @@
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.13.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.14.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -8634,9 +8644,26 @@
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.13.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.14.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
+            </div>
+        </div>
+
+        <!-- 🌡️ UDC Core Health — สรุปย่อ thermal/PUE 3 แถว วางติดปุ่ม ⬡ CORE
+             (Seawater Inlet / ΔT / Tidal Flush ย้ายไปการ์ด COOLING ใน Command Core) -->
+        <div class="panel therm-panel" style="padding:6px 10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1px;">
+                <div class="panel-title" style="color:#fb923c;"><svg class="ico" aria-hidden="true"><use href="#i-thermometer"/></svg> UDC Core Health</div>
+                <button class="iff-toggle-btn" onclick="toggleTherm()" id="thermToggleBtn">▼ ซ่อน</button>
+            </div>
+            <div id="thermContent">
+                <div class="therm-row"><span>Core Temp</span>  <span id="thermCore" class="therm-val">34.8 °C</span></div>
+                <div class="therm-row"><span>Power Load</span> <span id="thermLoad" class="therm-val">76 %</span></div>
+                <div class="therm-row"><span style="font-weight:bold;color:rgba(255,255,255,.7);">PUE (real-time)</span>
+                                       <span id="thermPUE" class="therm-val pue-good">1.082</span></div>
+                <div class="pue-bar-bg"><div id="thermPUEBar" class="pue-bar" style="width:16%;"></div></div>
+                <div class="pue-labels"><span>1.0</span><span>Optimal</span><span>≥1.5</span></div>
             </div>
         </div>
 
@@ -8712,26 +8739,6 @@
                     style="width:100%;margin-top:1px;padding:4px 8px;background:rgba(251,146,60,.1);border:1px solid #fb923c;border-radius:4px;color:#fb923c;font-family:var(--font-mono), monospace;font-size:10px;cursor:pointer;letter-spacing:1px;transition:background .2s,box-shadow .2s;">
                 <svg class="ico" aria-hidden="true"><use href="#i-trending-up"/></svg> OPEN SEISMIC CHART
             </button>
-        </div>
-
-        <!-- 🌡️ Thermal / PUE Telemetry (collapsible) -->
-        <div class="panel therm-panel" style="padding:6px 10px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1px;">
-                <div class="panel-title" style="color:#fb923c;"><svg class="ico" aria-hidden="true"><use href="#i-thermometer"/></svg> UDC Thermal Telemetry</div>
-                <button class="iff-toggle-btn" onclick="toggleTherm()" id="thermToggleBtn">▼ ซ่อน</button>
-            </div>
-            <div id="thermContent">
-                <div class="therm-row"><span>Seawater Inlet</span><span id="thermSeawater" class="therm-val cool">28.0 °C</span></div>
-                <div class="therm-row"><span>UDC Core Temp</span><span id="thermCore"      class="therm-val">34.8 °C</span></div>
-                <div class="therm-row"><span>ΔT Cooling</span>   <span id="thermDelta"     class="therm-val">6.8 °C</span></div>
-                <div class="therm-sep"></div>
-                <div class="therm-row"><span>Power Load</span>   <span id="thermLoad"      class="therm-val">76 %</span></div>
-                <div class="therm-row"><span>Tidal Flush</span>  <span id="thermTidal"     class="therm-val cool">+0.50</span></div>
-                <div class="therm-row"><span style="font-weight:bold;color:rgba(255,255,255,.7);">PUE (real-time)</span>
-                                       <span id="thermPUE" class="therm-val pue-good">1.082</span></div>
-                <div class="pue-bar-bg"><div id="thermPUEBar" class="pue-bar" style="width:16%;"></div></div>
-                <div class="pue-labels"><span>1.0</span><span>Optimal</span><span>≥1.5</span></div>
-            </div>
         </div>
 
         <!-- 🔴 RED FORCE — Threat Injection -->
@@ -26597,7 +26604,7 @@ function setSeasonPreset(season) {
     }
 }
 
-// ── toggleTherm: ซ่อน/แสดง Thermal Telemetry ────────────────────
+// ── toggleTherm: ซ่อน/แสดง UDC Core Health ─────────────────────
 function toggleTherm() {
     thermCollapsed = !thermCollapsed;
     const content = document.getElementById('thermContent');
@@ -26742,7 +26749,10 @@ function updateUnderwaterPanel() {
     listEl.innerHTML = guuvHTML + hsvHTML;
 }
 
-function updateThermalTelemetry() {
+// ── computeUdcThermal: โมเดลความร้อน/PUE ร่วม (single source of truth) ──
+//    ใช้ทั้ง side panel (UDC Thermal Telemetry) และ Command Core
+//    (DATA CENTER STATUS) เพื่อให้ PUE / load / อุณหภูมิ ตรงกันทุกจุดของ UI
+function computeUdcThermal() {
     const t0 = Date.now() / 1000;
 
     // ── 1. Seawater inlet temp: 27–29 °C slow seasonal drift ──────────────
@@ -26782,28 +26792,21 @@ function updateThermalTelemetry() {
         + (dasTriggered ? 0.018 : 0)                     // DAS emergency spike
         - tidalFlushBonus;                               // tidal flush benefit
 
-    // ── DOM updates ────────────────────────────────────────────────────────
-    const seaEl   = document.getElementById('thermSeawater');
+    return { seaTemp, coreTemp, load, tidalFlushBonus, pue };
+}
+
+function updateThermalTelemetry() {
+    const { coreTemp, load, pue } = computeUdcThermal();
+
+    // ── DOM updates — panel สรุปย่อ 3 แถว (Seawater/ΔT/Tidal ดูใน ⬡ CORE) ──
     const coreEl  = document.getElementById('thermCore');
-    const dltEl   = document.getElementById('thermDelta');
     const loadEl  = document.getElementById('thermLoad');
-    const tidalEl = document.getElementById('thermTidal');
     const pueEl   = document.getElementById('thermPUE');
     const barEl   = document.getElementById('thermPUEBar');
-    if (!seaEl) return;
+    if (!coreEl || !pueEl) return;
 
-    seaEl.textContent  = seaTemp.toFixed(1)  + ' °C';
     coreEl.textContent = coreTemp.toFixed(1) + ' °C';
-    dltEl.textContent  = (coreTemp - seaTemp).toFixed(1) + ' °C';
     loadEl.textContent = Math.round(load * 100) + ' %';
-
-    // Tidal flush display: current strength + PUE impact
-    if (tidalEl) {
-        tidalEl.textContent = tidalCurrent.toFixed(2) + ' (−' + tidalFlushBonus.toFixed(3) + ')';
-        tidalEl.className   = tidalCurrent > 0.6 ? 'therm-val pue-good'
-                            : tidalCurrent > 0.3 ? 'therm-val cool'
-                            :                      'therm-val';
-    }
 
     pueEl.textContent  = pue.toFixed(3);
     pueEl.className    = pue < 1.10 ? 'therm-val pue-good'
@@ -46367,12 +46370,19 @@ body[data-term-mode="ops"] #mda-cop-menu #mda-term-btn {
                 → อัปเดต DOM เฉพาะตอน overlay เปิด (ปิดแล้ว overhead ≈ 0)
      วงแหวนกลาง: arc นอก = Defense Readiness % (เฉลี่ย 7 domain: ok=100/warn=60/crit=25)
                 arc ใน 3 ชิ้น = DAS Fiber 3 สาย (F1 เกาะคราม tripwire จริง · F2 กองเรือฯ ·
-                F3 ทุ่งโปรง) — EVENT แล้ว arc กะพริบแดง + การ์ดล่างแสดง KP จริง
+                F3 ทุ่งโปรง) — fuel-gauge bar 16 ขีดโซนสีตายตัวแบบหน้าปัดรถ
+                (cyan→เขียว→lime→amber→ส้ม) จำนวนขีดติดตาม data rate
+                (nominal ≈ กลางเกจ) + ตัวเลข Mbps สดใต้ label
+                — EVENT แล้ว arc กะพริบแดง (gradient แดง→ส้ม) + การ์ดล่างแสดง KP จริง
+                ชั้น HUD สไตล์ JARVIS: segment ring 7 domain รอบนอกสุด (สีสดตาม
+                domainState — ไม่ใช่แค่ตกแต่ง) + chevron ring เรืองแสงหมุน + tick ring
+                องศา + เศษ arc หมุนช้า + reticle กลาง + radial glow ตามสี state
      DATA CENTER (จำลองตามมาตรฐานอุตสาหกรรม — อ้างอิงในคอมเมนต์ sim ด้านล่าง):
-                PUE/DCiE (เทียบค่าเฉลี่ย 1.54 — Uptime Institute Global Survey 2025) ·
-                IT load ผูกจำนวน contact จริง · ingest Mbps (DAS: gauge 8 m @ 2 kHz 16-bit
-                ต่อ channel ตามความยาวสายจริง) · trunk 10GbE · storage fill/retention ·
-                cold-aisle ตามกรอบ ASHRAE A1 (18–27 °C) · UPS/GEN N+1 · uptime Tier III
+                PUE/DCiE/IT load/อุณหภูมิ ดึงจากโมเดลน้ำทะเลร่วม computeUdcThermal()
+                (ตัวเดียวกับ side panel UDC Core Health — ไม่ให้ตัวเลขขัดกัน) ·
+                PUE เทียบค่าเฉลี่ย 1.54 (Uptime Institute Global Survey 2025) ·
+                ingest Mbps (DAS: gauge 8 m @ 2 kHz 16-bit ต่อ channel ตามความยาวสายจริง) ·
+                trunk 10GbE · storage fill/retention · UPS/GEN N+1 · uptime Tier III
      Performance: animation เป็น CSS ทั้งหมด → หยุดอัตโนมัติเมื่อ tab ซ่อน (VIS-1
                 body.mda-bg-tab) · เคารพ prefers-reduced-motion · tick 1 Hz เฉพาะตอนเปิด
      ════════════════════════════════════════════════════════════════════ -->
@@ -46475,6 +46485,10 @@ body[data-term-mode="ops"] #mda-cop-menu #mda-term-btn {
 #ccRingSvg { position:relative; width:100%; height:100%; display:block; }
 #ccRingSvg .cc-rot     { transform-box:view-box; transform-origin:50% 50%; animation:ccSpin 42s linear infinite; }
 #ccRingSvg .cc-rot-rev { transform-box:view-box; transform-origin:50% 50%; animation:ccSpin 70s linear infinite reverse; }
+/* ชั้นหมุนของ HUD แบบ JARVIS: chevron ring / เศษ arc รอบนอก / จุดโคจรกลาง */
+#ccRingSvg .cc-rot-chev { transform-box:view-box; transform-origin:50% 50%; animation:ccSpin 36s linear infinite; }
+#ccRingSvg .cc-rot-slow { transform-box:view-box; transform-origin:50% 50%; animation:ccSpin 160s linear infinite reverse; }
+#ccRingSvg .cc-rot-core { transform-box:view-box; transform-origin:50% 50%; animation:ccSpin 14s linear infinite reverse; }
 @keyframes ccSpin { to { transform:rotate(360deg); } }
 #ccArcReady { transition:stroke-dashoffset .9s cubic-bezier(.22,1,.36,1), stroke .4s; }
 .cc-arc-das { transition:stroke .4s; }
@@ -46487,6 +46501,36 @@ body[data-term-mode="ops"] #mda-cop-menu #mda-term-btn {
 #ccReadyLbl { font-size:12px; letter-spacing:4px; color:var(--cc-state); }
 #ccThreatN  { font-size:10px; letter-spacing:1.5px; color:#8fa4c0; }
 .cc-ring-legend { font-size:9.5px; letter-spacing:1px; color:#64748b; text-align:center; }
+
+/* ── view toggle: RING ◎ / SCHEMATIC ⛰ ── */
+.cc-view-toggle { display:flex; gap:6px; margin-bottom:4px; }
+.cc-view-toggle button {
+    font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:1.5px; text-transform:uppercase;
+    color:#7d90ab; background:rgba(148,163,184,.06); border:1px solid rgba(148,163,184,.22);
+    border-radius:4px; padding:3px 12px; cursor:pointer; transition:all .2s;
+}
+.cc-view-toggle button:hover { color:#cfe6f5; border-color:rgb(var(--cc-accent-rgb) / .5); }
+.cc-view-toggle button.cc-vt-on {
+    color:var(--cc-accent); border-color:rgb(var(--cc-accent-rgb) / .7);
+    background:rgb(var(--cc-accent-rgb) / .12); box-shadow:inset 0 0 10px rgb(var(--cc-accent-rgb) / .18);
+}
+
+/* ── UDC depth cross-section (schematic view) ── */
+.cc-schem-wrap { position:relative; width:min(340px,100%); aspect-ratio:1 / 0.92; }
+.cc-schem-wrap[hidden] { display:none; }
+.cc-ring-wrap[hidden]  { display:none; }
+#ccSchemSvg { width:100%; height:100%; display:block; }
+#ccSchemSvg text { font-family:'Share Tech Mono',monospace; }
+#ccSchemSurfWave { animation:ccWaveShift 6.5s linear infinite; }
+@keyframes ccWaveShift { to { transform:translateX(-40px); } }
+.cc-fib-pulse { animation:ccFibTravel 3.4s linear infinite; }
+@keyframes ccFibTravel {
+    0%   { transform:translate(0,0); opacity:0; }
+    12%  { opacity:.95; }
+    88%  { opacity:.95; }
+    100% { transform:translate(var(--dx,60px), var(--dy,4px)); opacity:0; }
+}
+.cc-schem-evt { animation:ccPulse 1s ease-in-out infinite; }
 
 /* ── DAS fiber cards ── */
 .cc-das { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:6px 18px; }
@@ -46511,13 +46555,25 @@ body[data-term-mode="ops"] #mda-cop-menu #mda-term-btn {
 .cc-cell-val { font-family:'Saira','Share Tech Mono',sans-serif; font-size:19px; font-weight:600;
     color:#eaf7ff; line-height:1.15; white-space:nowrap; }
 .cc-cell-val small { font-size:10px; font-weight:400; color:#8fa4c0; margin-left:2px; }
-.cc-cell-sub { font-size:9px; color:#64748b; letter-spacing:.4px; margin-top:2px;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.cc-cell-sub { font-size:9px; color:#64748b; letter-spacing:.3px; margin-top:3px;
+    white-space:normal; overflow-wrap:break-word; line-height:1.35; }
 .cc-pue-track { position:relative; height:5px; margin-top:5px; border-radius:3px;
     background:rgba(148,163,184,.12); overflow:visible; }
 .cc-pue-fill { height:100%; border-radius:3px; width:0%; transition:width .8s ease, background .4s; }
 .cc-pue-avg { position:absolute; top:-2px; bottom:-2px; left:54%; width:2px;
     background:#94a3b8; opacity:.75; }  /* 1.54 = ค่าเฉลี่ยอุตสาหกรรม (Uptime Institute 2025) บนสเกล 1.0–2.0 */
+
+/* ── sparkline (กราฟเวลาในการ์ด DATA CENTER) ── */
+.cc-spark { width:100%; height:24px; margin-top:5px; display:block; }
+.cc-spark-line { fill:none; stroke-width:1.4px; vector-effect:non-scaling-stroke;
+    stroke-linejoin:round; stroke-linecap:round; filter:drop-shadow(0 0 2px currentColor); }
+.cc-spark-area { stroke:none; }
+.cc-spark-dot  { animation:ccPulse 1.4s ease-in-out infinite; }
+.cc-cell-trend { font-size:9.5px; margin-left:6px; letter-spacing:0; }
+.cc-cell-cap   { font-family:'Share Tech Mono',monospace; color:#8fa4c0; }
+.cc-tr-up   { color:var(--cc-accent); }
+.cc-tr-dn   { color:#7d90ab; }
+.cc-tr-flat { color:#5b6b82; }
 
 /* ── event stream ── */
 .cc-log { border-top:1px solid rgb(var(--cc-accent-rgb) / .18); padding:7px 18px 13px; }
@@ -46554,7 +46610,11 @@ body[data-term-mode="ops"] #mda-cop-menu #mda-term-btn {
             <div id="ccEnv"></div>
         </div>
         <div class="cc-center">
-            <div class="cc-ring-wrap">
+            <div class="cc-view-toggle">
+                <button id="ccVtRing"  class="cc-vt-on" onclick="CommandCore.setView('ring')">◎ RING</button>
+                <button id="ccVtSchem" onclick="CommandCore.setView('schematic')">⛰ SCHEMATIC</button>
+            </div>
+            <div class="cc-ring-wrap" id="ccViewRing">
                 <div class="cc-sweep"></div>
                 <svg id="ccRingSvg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg"></svg>
                 <div class="cc-core-text">
@@ -46563,7 +46623,10 @@ body[data-term-mode="ops"] #mda-cop-menu #mda-term-btn {
                     <div id="ccThreatN">CONTACTS —</div>
                 </div>
             </div>
-            <div class="cc-ring-legend">วงใน — DAS FIBER GRID: F1 เกาะคราม · F2 กองเรือยุทธการ · F3 ทุ่งโปรง</div>
+            <div class="cc-schem-wrap" id="ccViewSchem" hidden>
+                <svg id="ccSchemSvg" viewBox="0 0 320 300" xmlns="http://www.w3.org/2000/svg"></svg>
+            </div>
+            <div class="cc-ring-legend" id="ccCenterLegend">วงใน — DAS FIBER GRID: F1 เกาะคราม · F2 กองเรือยุทธการ · F3 ทุ่งโปรง — ขีดเกจ = DATA RATE</div>
         </div>
         <div>
             <div class="cc-sec-title">7-Domain Status — สถานะรายมิติ</div>
@@ -46574,7 +46637,7 @@ body[data-term-mode="ops"] #mda-cop-menu #mda-term-btn {
     </div>
     <div class="cc-das" id="ccDas"></div>
     <div>
-        <div class="cc-sec-title" style="margin:4px 18px 6px;">Data Center Status — UDC Edge Node <span style="color:#64748b;letter-spacing:.5px;">(SIMULATED · Uptime Institute / ASHRAE benchmark)</span></div>
+        <div class="cc-sec-title" style="margin:4px 18px 6px;">Data Center Status — UDC Edge Node <span style="color:#64748b;letter-spacing:.5px;">(SIMULATED · SEAWATER-COOLED · Uptime Institute benchmark)</span></div>
         <div class="cc-dc" id="ccDc"></div>
     </div>
     <div class="cc-log">
@@ -46619,10 +46682,40 @@ window.CommandCore = (function () {
     });
     const DAS_TOTAL_MBPS = FIBERS.reduce((s,f) => s + f.mbps, 0);
 
+    /* ── data rate สดต่อสาย — ฐาน = อัตรา interrogator ตามความยาวสาย แล้วแกว่งตาม
+       พลังงานเสียงใต้น้ำ: sea state เพิ่ม noise floor (+2%/SS) · DAS event → F1 surge ×1.32 ── */
+    function fiberRate(f) {
+        const t = Date.now() / 1000, ss = envSS() || 0;
+        const surge  = (f.id === 'F1' && dasEvt()) ? 1.32 : 1;
+        const wobble = 1 + Math.sin(t * 0.23 + f.km) * 0.04
+                         + Math.sin(t * 1.70 + f.km * 3) * 0.015 + ss * 0.02;
+        return f.mbps * wobble * surge;
+    }
+    /* spectrum ตามอัตราส่วน rate/nominal: 0.94 cyan → 1.00 เขียว → 1.10 lime → 1.22 amber → 1.40 ส้ม */
+    const RATE_STOPS = [[0.94,[34,211,238]],[1.00,[57,255,140]],[1.10,[163,230,53]],[1.22,[251,191,36]],[1.40,[255,112,67]]];
+    function rateColor(x) {
+        const s = RATE_STOPS;
+        if (x <= s[0][0]) return `rgb(${s[0][1].join(',')})`;
+        for (let i = 1; i < s.length; i++) if (x <= s[i][0]) {
+            const t = (x - s[i-1][0]) / (s[i][0] - s[i-1][0]), a = s[i-1][1], b = s[i][1];
+            return `rgb(${a.map((v,k) => Math.round(v + (b[k]-v) * t)).join(',')})`;
+        }
+        return `rgb(${s[s.length-1][1].join(',')})`;
+    }
+    /* ── fuel-gauge bar ต่อสาย: BAR_N ขีดโซนสีตายตัวตามสเกล RATE_STOPS
+       nominal (ratio 1.0) ติด ~60% ของเกจ → เห็นแกว่งรอบกลางเกจ · surge event ไต่เข้าโซนส้ม ── */
+    const BAR_N = 16, LIT_NOM = 0.60, LIT_SLOPE = 1.1;
+    const litFrac = ratio => Math.max(.08, Math.min(1, LIT_NOM + (ratio - 1) * LIT_SLOPE));
+    const barZone = k => rateColor(1 + ((k + .5) / BAR_N - LIT_NOM) / LIT_SLOPE);
+
     /* ── DATA CENTER sim state (คงค่าไว้ข้ามการเปิด/ปิด overlay ให้ตัวเลขต่อเนื่อง) ──
        อ้างอิง: PUE เฉลี่ยอุตสาหกรรม 1.54 (Uptime Institute Global Data Center Survey 2025) ·
-       rack density ทั่วไป 10–30 kW/rack · cold-aisle ตามกรอบ ASHRAE A1: 18–27 °C */
-    const dc = { usedTB: 293.6, capTB: 480, it: 40, pue: 1.38 };
+       PUE / load / อุณหภูมิ ดึงจากโมเดลน้ำทะเลร่วม computeUdcThermal() —
+       ตัวเดียวกับ side panel UDC Core Health เพื่อไม่ให้ตัวเลขขัดกัน */
+    const dc = { usedTB: 293.6, capTB: 480, it: 39, pue: 1.09,
+        hist: { it:[], ingest:[], trunk:[], cool:[], freq:[] } };
+    const DC_HIST = 46;   // จำนวน sample ใน sparkline (~46 วิ ที่ tick 1 Hz)
+    const DC_IT_CAP = 52; // kW — ความจุ IT ติดตั้ง (load 74% ฐาน ≈ 38.5 kW)
     const lerp = (a,b,t) => a + (b - a) * t;
     const jit  = amp => (Math.random() * 2 - 1) * amp;
 
@@ -46677,24 +46770,229 @@ window.CommandCore = (function () {
     function buildRing() {
         const A = 'rgb(var(--cc-accent-rgb) / ';
         let s = '';
-        s += `<circle cx="150" cy="150" r="146" fill="none" stroke="${A}.20)" stroke-width="1"/>`;
-        s += `<circle class="cc-rot" cx="150" cy="150" r="140" fill="none" stroke="${A}.55)" stroke-width="3" stroke-dasharray="2 6"/>`;
-        s += `<circle cx="150" cy="150" r="126" fill="none" stroke="${A}.28)" stroke-width="1" stroke-dasharray="30 9"/>`;
+        /* ── JARVIS-style HUD เรียงชั้นนอก→ใน: glow → เศษ arc หมุนช้า → segment 7 domain
+              (สีสดตามสถานะจริงใน tick) → tick ring องศา → chevron ring เรืองแสงหมุน
+              → readiness → DAS arcs → reticle กลาง ── */
+        s += `<defs><radialGradient id="ccCoreGlow">
+                <stop offset="0"   style="stop-color:rgb(var(--cc-accent-rgb) / .15)"/>
+                <stop offset=".62" style="stop-color:rgb(var(--cc-accent-rgb) / .05)"/>
+                <stop offset="1"   style="stop-color:rgb(var(--cc-accent-rgb) / 0)"/></radialGradient></defs>`;
+        s += `<circle cx="150" cy="150" r="150" fill="url(#ccCoreGlow)"/>`;
+        s += `<circle cx="150" cy="150" r="149" fill="none" stroke="${A}.14)" stroke-width="1"/>`;
+        // เศษ arc กระจัดกระจายรอบนอก หมุนถอยหลังช้าๆ
+        const FRAG = [[5,38,1.2,.30],[52,20,2.6,.15],[95,64,0.8,.32],[170,26,2.2,.17],[205,48,1,.26],[262,18,3,.13],[300,42,0.9,.30]];
+        s += `<g class="cc-rot-slow">` + FRAG.map(([fa,sp,w,o]) =>
+            `<path d="${arcPath(147.5, fa, fa + sp)}" fill="none" stroke="rgba(214,230,244,${o})" stroke-width="${w}"/>`).join('') + `</g>`;
+        // segment ring 7 domain — arc ละ ~38° สีอัปเดตสดตาม domainState ใน tick
+        const DOM_ABBR = ['AIR','SUR','SUB','DAS','CYB','SEIS','C2'];
+        DOM_ROWS.forEach((d,i) => {
+            const a0 = i * (360/7) + 6.5, a1 = (i + 1) * (360/7) - 6.5, m = (a0 + a1) / 2;
+            s += `<path id="ccSeg${i}" d="${arcPath(141.5, a0, a1)}" fill="none" stroke="${A}.45)"
+                    stroke-width="6" style="transition:stroke .4s"><title>${d.lbl}</title></path>`;
+            const [lx,ly] = polar(133, m);
+            s += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle"
+                    font-size="6" letter-spacing=".8" fill="#5b768f" font-family="Share Tech Mono,monospace">${DOM_ABBR[i]}</text>`;
+        });
+        // node 12 นาฬิกา (ตรงช่องว่างระหว่าง segment C2 กับ AIR พอดี)
+        s += `<circle cx="150" cy="8.5" r="4.5" fill="rgba(4,10,22,.9)" stroke="${A}.65)" stroke-width="1.2"/>
+              <circle cx="150" cy="8.5" r="1.6" fill="${A}.9)"/>`;
+        // tick ring องศา ทุก 5° (ขีดหลักทุก 30°)
+        for (let i = 0; i < 72; i++) {
+            const a = i * 5, mj = i % 6 === 0;
+            const [x0,y0] = polar(mj ? 125.5 : 127, a), [x1,y1] = polar(129.5, a);
+            s += `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}"
+                    stroke="${A}${mj ? '.55' : '.22'})" stroke-width="${mj ? 1.1 : 0.7}"/>`;
+        }
+        // chevron ring หมุน 30 ตัวทุก 12° — วาดสองชั้น (เส้นกว้างจางเป็น glow + เส้นคมสว่างทับ)
+        let chev = '';
+        for (let i = 0; i < 30; i++) {
+            const a = i * 12;
+            const [x0,y0] = polar(122.5, a - 3.1), [x1,y1] = polar(119.5, a + 2.7), [x2,y2] = polar(116.5, a - 3.1);
+            chev += `M ${x0.toFixed(1)} ${y0.toFixed(1)} L ${x1.toFixed(1)} ${y1.toFixed(1)} L ${x2.toFixed(1)} ${y2.toFixed(1)} `;
+        }
+        s += `<g class="cc-rot-chev">
+                <path d="${chev}" fill="none" stroke="${A}.16)" stroke-width="5.5" stroke-linejoin="round" stroke-linecap="round"/>
+                <path d="${chev}" fill="none" stroke="${A}.85)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></g>`;
         s += `<circle cx="150" cy="150" r="112" fill="none" stroke="rgba(148,163,184,.13)" stroke-width="6"/>`;
         s += `<circle id="ccArcReady" cx="150" cy="150" r="112" fill="none" stroke="var(--cc-state)" stroke-width="6"
                 stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"
                 transform="rotate(-90 150 150)"/>`;
         FIBERS.forEach((f,i) => {
-            const a0 = i * 120 + 10, a1 = i * 120 + 110;
-            s += `<path id="ccArc${f.id}" class="cc-arc-das" d="${arcPath(92, a0, a1)}" fill="none"
-                    stroke="#39ff8c" stroke-width="7" stroke-linecap="round" opacity=".8"/>`;
-            const [tx,ty] = polar(76, (a0 + a1) / 2);
+            const a0 = i * 120 + 10, a1 = i * 120 + 110, mid = (a0 + a1) / 2;
+            // fuel-gauge bar: ขีดโซนสีตายตัวแบบหน้าปัดรถ (cyan→เขียว→lime→amber→ส้ม)
+            // tick แค่ติด/หรี่ขีดตามระดับ data rate — ขีดดับยังเห็นโซนสีจางเหมือนเกจจริง
+            s += `<g id="ccBars${f.id}">`;
+            const span = (a1 - a0) / BAR_N;
+            for (let k = 0; k < BAR_N; k++) {
+                const b0 = a0 + k * span;
+                s += `<path id="ccBar${f.id}-${k}" d="${arcPath(92, b0, b0 + span - 1.7)}" fill="none"
+                        stroke="${barZone(k)}" stroke-width="7" opacity=".15"/>`;
+            }
+            s += `</g>`;
+            const [tx,ty] = polar(76, mid);
             s += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" dominant-baseline="middle"
                     font-size="10" letter-spacing="1" fill="#7d90ab" font-family="Share Tech Mono,monospace">${f.id}</text>`;
+            const [rx,ry] = polar(65, mid);
+            s += `<text id="ccArcRate${f.id}" x="${rx.toFixed(1)}" y="${ry.toFixed(1)}" text-anchor="middle" dominant-baseline="middle"
+                    font-size="6.5" letter-spacing=".5" fill="#5b768f" font-family="Share Tech Mono,monospace">${f.mbps.toFixed(1)} Mbps</text>`;
         });
         s += `<circle class="cc-rot-rev" cx="150" cy="150" r="64" fill="none" stroke="${A}.30)" stroke-width="9" stroke-dasharray="1 7"/>`;
         s += `<circle cx="150" cy="150" r="55" fill="rgba(4,10,22,.78)" stroke="${A}.45)" stroke-width="1"/>`;
+        // reticle กลาง: วงประละเอียด + crosshair 4 ทิศ + จุดโคจรถอยหลัง
+        s += `<circle cx="150" cy="150" r="50" fill="none" stroke="${A}.30)" stroke-width="1" stroke-dasharray="1 5"/>`;
+        [0,90,180,270].forEach(ca => {
+            const [x0,y0] = polar(47, ca), [x1,y1] = polar(52, ca);
+            s += `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="${A}.5)" stroke-width="1"/>`;
+        });
+        s += `<g class="cc-rot-core"><circle cx="150" cy="100" r="1.8" fill="${A}.95)"/>
+                <circle cx="150" cy="100" r="3.6" fill="none" stroke="${A}.35)" stroke-width="1"/></g>`;
         g('ccRingSvg').innerHTML = s;
+    }
+
+    /* ══ UDC DEPTH CROSS-SECTION (schematic view) ══
+       สเกลตามมติ reconcile: ดาดฟ้า 30–44 ม. · แคปซูล −38 ม. · พื้นทะเล −44 ม.
+       ผิวน้ำเลื่อนตาม tideLevel จริง · แอมพลิจูดคลื่นตาม seaState · DAS event ปักหมุด KP จริง */
+    const SCH = { surfY:78, ppm:3.9, udcX:150, udcY:0, seabedY:0 };
+    SCH.udcY    = SCH.surfY + 38 * SCH.ppm;   // −38 ม.
+    SCH.seabedY = SCH.surfY + 44 * SCH.ppm;   // −44 ม.
+    const F1_NM = 15.2 * 1000 / 1852;         // ความยาว F1 เป็น nm — ใช้ map ตำแหน่ง KP
+    const SCH_FIB = [
+        { id:'F1', dest:'เกาะคราม',       km:15.2, x0:150,y0:212, x1:300,y1:242, col:'#39ff8c' },
+        { id:'F3', dest:'ทุ่งโปรง',        km:7.4,  x0:150,y0:214, x1:236,y1:244, col:'#39ff8c' },
+        { id:'F2', dest:'กองเรือยุทธการ',  km:5.8,  x0:150,y0:216, x1:26, y1:246, col:'#39ff8c' },
+    ];
+    const DEPTH_TICKS = [[0,'0'],[10,'−10'],[20,'−20'],[30,'−30 ดาดฟ้าบน'],[38,'−38 แคปซูล'],[44,'−44 พื้นทะเล']];
+    let schView = 'ring', lastSchSS = -1;
+
+    function wavePath(A, y) {
+        let p = `M -40 ${y}`;
+        for (let x = -40; x < 360; x += 40)
+            p += ` Q ${x+10} ${(y-A).toFixed(1)} ${x+20} ${y} Q ${x+30} ${(y+A).toFixed(1)} ${x+40} ${y}`;
+        return p;
+    }
+    function buildSchematic() {
+        const A = 'rgb(var(--cc-accent-rgb) / ';
+        let s = '';
+        s += `<defs>
+            <linearGradient id="ccWaterGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#0c2b45" stop-opacity=".55"/>
+              <stop offset="1" stop-color="#02070f" stop-opacity=".92"/></linearGradient>
+            <linearGradient id="ccBedGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#14202b"/><stop offset="1" stop-color="#0a1016"/></linearGradient>
+          </defs>`;
+        s += `<rect x="0" y="0" width="320" height="${SCH.surfY}" fill="#081420" opacity=".5"/>`;
+        s += `<rect x="0" y="${SCH.surfY-14}" width="320" height="${SCH.seabedY-SCH.surfY+14}" fill="url(#ccWaterGrad)"/>`;
+        s += `<path d="M0 ${SCH.seabedY} Q 80 ${SCH.seabedY-5} 160 ${SCH.seabedY-1} T 320 ${SCH.seabedY-3} L320 300 L0 300 Z"
+                fill="url(#ccBedGrad)" stroke="rgba(120,150,175,.28)" stroke-width="1"/>`;
+        DEPTH_TICKS.forEach(([m,lbl]) => {
+            const y = SCH.surfY + m * SCH.ppm;
+            s += `<line x1="6" y1="${y.toFixed(1)}" x2="14" y2="${y.toFixed(1)}" stroke="rgba(148,163,184,.35)" stroke-width="1"/>`;
+            s += `<text x="17" y="${(y+3).toFixed(1)}" font-size="7.5" fill="#64748b" letter-spacing=".3">${lbl}</text>`;
+        });
+        const deckTop = SCH.surfY + 30*SCH.ppm;
+        s += `<rect x="120" y="${deckTop.toFixed(1)}" width="60" height="${(SCH.seabedY-deckTop).toFixed(1)}" rx="7"
+                fill="rgb(var(--cc-accent-rgb) / .05)" stroke="${A}.30)" stroke-width="1" stroke-dasharray="3 3"/>`;
+        s += `<line x1="150" y1="${SCH.surfY.toFixed(1)}" x2="150" y2="${(SCH.udcY-11).toFixed(1)}" stroke="${A}.35)" stroke-width="1.2" stroke-dasharray="2 4"/>`;
+        SCH_FIB.forEach(f => {
+            s += `<line x1="${f.x0}" y1="${f.y0}" x2="${f.x1}" y2="${f.y1}" stroke="${f.col}" stroke-width="1.6" stroke-linecap="round" opacity=".55"/>`;
+            const ang = Math.atan2(f.y1-f.y0, f.x1-f.x0), ah = 5;
+            const ax1 = (f.x1 - ah*Math.cos(ang-0.5)).toFixed(1), ay1 = (f.y1 - ah*Math.sin(ang-0.5)).toFixed(1);
+            const ax2 = (f.x1 - ah*Math.cos(ang+0.5)).toFixed(1), ay2 = (f.y1 - ah*Math.sin(ang+0.5)).toFixed(1);
+            s += `<path d="M${f.x1} ${f.y1} L${ax1} ${ay1} M${f.x1} ${f.y1} L${ax2} ${ay2}" stroke="${f.col}" stroke-width="1.4" opacity=".7"/>`;
+            const lx = f.x1 > 150 ? f.x1-2 : f.x1+2, anchor = f.x1 > 150 ? 'end' : 'start';
+            s += `<text x="${lx}" y="${(f.y1-6).toFixed(1)}" text-anchor="${anchor}" font-size="7.5" fill="#8fa4c0">${f.id} · ${f.dest} ${f.km} km</text>`;
+        });
+        SCH_FIB.forEach((f,i) => {
+            s += `<circle class="cc-fib-pulse" cx="${f.x0}" cy="${f.y0}" r="2.4" fill="${f.col}"
+                    style="--dx:${(f.x1-f.x0)}px; --dy:${(f.y1-f.y0)}px; animation-delay:${(i*1.1).toFixed(1)}s"/>`;
+        });
+        s += `<g>
+            <ellipse cx="150" cy="${SCH.udcY}" rx="34" ry="11" fill="rgba(6,14,26,.95)" stroke="var(--cc-accent)" stroke-width="1.6"/>
+            <ellipse cx="150" cy="${SCH.udcY}" rx="34" ry="11" fill="none" stroke="${A}.22)" stroke-width="4"/>
+            <circle cx="138" cy="${SCH.udcY}" r="1.6" fill="var(--cc-state)"/><circle cx="150" cy="${SCH.udcY}" r="1.6" fill="var(--cc-state)"/><circle cx="162" cy="${SCH.udcY}" r="1.6" fill="var(--cc-state)"/>
+            <text x="150" y="${(SCH.udcY-16).toFixed(1)}" text-anchor="middle" font-size="8.5" fill="#eaf7ff" letter-spacing="1.5">UDC NODE</text>
+            <text x="150" y="${(SCH.udcY+22).toFixed(1)}" text-anchor="middle" font-size="7.5" fill="var(--cc-accent)">−38 ม. · DECK 30–44 ม.</text>
+          </g>`;
+        s += `<g id="ccSchemSurf"><path id="ccSchemSurfWave" d="${wavePath(2, SCH.surfY)}" fill="none" stroke="${A}.75)" stroke-width="1.6"/>
+              <text id="ccSchemTide" x="314" y="${(SCH.surfY-6).toFixed(1)}" text-anchor="end" font-size="8" fill="#9fd0e6">TIDE —</text></g>`;
+        s += `<g id="ccSchemContacts"></g>`;
+        s += `<g id="ccSchemEvt" style="display:none"></g>`;
+        s += `<text id="ccSchemHdr" x="6" y="14" font-size="9" fill="var(--cc-state)" letter-spacing="1">READY —</text>`;
+        g('ccSchemSvg').innerHTML = s;
+        lastSchSS = -1;
+    }
+
+    function tickSchematic() {
+        if (!g('ccSchemSvg')) return;
+        const tide = envTide() || 0, ss = envSS();
+        const tideClamped = Math.max(-3, Math.min(3, tide));
+        const surf = g('ccSchemSurf');
+        if (surf) {
+            surf.setAttribute('transform', `translate(0 ${(-tideClamped * SCH.ppm).toFixed(1)})`);
+            if (ss !== lastSchSS) { lastSchSS = ss;
+                const wp = g('ccSchemSurfWave'); if (wp) wp.setAttribute('d', wavePath(1 + (ss || 0) * 0.9, SCH.surfY)); }
+            const tl = g('ccSchemTide');
+            if (tl) tl.textContent = `TIDE ${tide>=0?'+':''}${tide.toFixed(2)} ม.` + (ss!=null?` · SS${ss}`:'');
+        }
+        const hdr = g('ccSchemHdr'), pct = readiness(), st = overallState();
+        if (hdr) { hdr.textContent = `READY ${pct}% · ${st==='crit'?'THREAT':st==='warn'?'ALERT':'ALL CLEAR'}`;
+            hdr.setAttribute('fill', st==='crit'?'#ff4136':st==='warn'?'#fbbf24':'var(--cc-state)'); }
+        const evt = g('ccSchemEvt');
+        if (evt) {
+            if (dasEvt()) {
+                const kp = dasKP(), frac = Math.max(0, Math.min(1, (kp||0) / F1_NM)), f1 = SCH_FIB[0];
+                const ex = (f1.x0 + (f1.x1-f1.x0)*frac).toFixed(1), ey = (f1.y0 + (f1.y1-f1.y0)*frac).toFixed(1);
+                evt.innerHTML = `<circle class="cc-schem-evt" cx="${ex}" cy="${ey}" r="6" fill="none" stroke="#ff4136" stroke-width="1.6"/>
+                    <circle cx="${ex}" cy="${ey}" r="2.4" fill="#ff4136"/>
+                    <text x="${ex}" y="${(+ey-10).toFixed(1)}" text-anchor="middle" font-size="7.5" fill="#ff8a80">⚡ KP ${kp!=null?kp.toFixed(2):'—'} nm</text>`;
+                evt.style.display = '';
+            } else { evt.style.display = 'none'; evt.innerHTML = ''; }
+        }
+        renderSchemContacts(tideClamped);
+    }
+
+    function renderSchemContacts(tideClamped) {
+        const grp = g('ccSchemContacts'); if (!grp) return;
+        const W_NM = (typeof LNG_RIGHT !== 'undefined') ? (LNG_RIGHT - LNG_LEFT) * 60 * Math.cos(12.7 * Math.PI / 180) : 26;
+        const H_NM = (typeof LAT_TOP !== 'undefined') ? (LAT_TOP - LAT_BOT) * 60 : 27;
+        let u = null; try { u = UDC; } catch (_) {}
+        const surfY = SCH.surfY - tideClamped * SCH.ppm;
+        const list = getContacts().map(t => {
+            let rng = null, side = 1;
+            if (u && typeof t.nx === 'number') {
+                rng = Math.hypot((t.nx - u.nx) * W_NM, (t.ny - u.ny) * H_NM);
+                side = (t.nx >= u.nx) ? 1 : -1;
+            }
+            return { t, rng, side };
+        }).sort((a,b) => (a.rng ?? 99) - (b.rng ?? 99)).slice(0, 5);
+        grp.innerHTML = list.map(({t, rng, side}) => {
+            const fx = (150 + side * Math.min(1, (rng ?? 4) / 9) * 132).toFixed(1);
+            const col = t.classified ? (t.color || '#ff4136') : '#f59e0b';
+            const type = (t.type || '').toLowerCase();
+            const dep = (typeof t.dep === 'number') ? t.dep : 0;
+            if (/air|aircraft|helo|uav|patrol/.test(type)) {
+                return `<text x="${fx}" y="${(surfY-20).toFixed(1)}" text-anchor="middle" font-size="10" fill="${col}">✈</text>`;
+            }
+            if (dep > 0) {
+                const y = Math.min(SCH.seabedY - 4, surfY + dep * SCH.ppm);
+                return `<path d="M${fx} ${(y-4).toFixed(1)} l4 4 l-4 4 l-4 -4 z" fill="${col}" opacity=".9"/>
+                    <line x1="${fx}" y1="${surfY.toFixed(1)}" x2="${fx}" y2="${(y-5).toFixed(1)}" stroke="${col}" stroke-width=".6" stroke-dasharray="1 3" opacity=".5"/>`;
+            }
+            return `<path d="M${(+fx-4).toFixed(1)} ${surfY.toFixed(1)} l8 0 l-2 4 l-4 0 z" fill="${col}" opacity=".95"/>`;
+        }).join('');
+    }
+
+    function setView(v) {
+        schView = v;
+        const ring = v === 'ring';
+        g('ccViewRing').hidden = !ring;
+        g('ccViewSchem').hidden = ring;
+        g('ccVtRing').classList.toggle('cc-vt-on', ring);
+        g('ccVtSchem').classList.toggle('cc-vt-on', !ring);
+        g('ccCenterLegend').textContent = ring
+            ? 'วงใน — DAS FIBER GRID: F1 เกาะคราม · F2 กองเรือยุทธการ · F3 ทุ่งโปรง — ขีดเกจ = DATA RATE'
+            : 'ภาพตัดขวางแนวดิ่ง — ผิวน้ำตาม TIDE · แคปซูล −38 ม. · DAS 3 สายเลาะพื้นทะเล (จุด = เป้าที่ติดตาม)';
+        if (!ring) tickSchematic();
     }
 
     /* ── renderers ── */
@@ -46781,38 +47079,87 @@ window.CommandCore = (function () {
     /* หมายเหตุ: renderFibers ประกอบ innerHTML — arc สีอัปเดตแยกใน tick */
 
     function buildDcCells() {
-        const cell = (lbl, valId, unit, subId) =>
+        // sparkline SVG — สีทั้งหมดวิ่งตาม currentColor (ตั้งจาก style color=col)
+        const spark = (id, col) => {
+            const gid = id + 'G';
+            return `<svg class="cc-spark" id="${id}" viewBox="0 0 100 26" preserveAspectRatio="none" style="color:${col}">
+                <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="currentColor" stop-opacity=".40"/>
+                  <stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs>
+                <path class="cc-spark-area" fill="url(#${gid})"></path>
+                <polyline class="cc-spark-line" stroke="currentColor" points=""></polyline>
+                <circle class="cc-spark-dot" r="1.6" fill="currentColor" cx="0" cy="13"></circle></svg>`;
+        };
+        // การ์ดที่มี sparkline: label · ค่า+หน่วย+ลูกศรเทรนด์ · กราฟ · บรรทัดย่อ
+        const cellSpark = (lbl, valId, unit, trId, sparkId, subId, col) =>
             `<div class="cc-cell"><div class="cc-cell-lbl">${lbl}</div>
-             <div class="cc-cell-val"><span id="${valId}">--</span><small>${unit}</small></div>
+             <div class="cc-cell-val"><span id="${valId}">--</span><small>${unit}</small>
+               <span class="cc-cell-trend" id="${trId}"></span></div>
+             ${spark(sparkId, col)}
              <div class="cc-cell-sub" id="${subId}"></div></div>`;
         g('ccDc').innerHTML =
             `<div class="cc-cell"><div class="cc-cell-lbl">PUE — POWER USAGE EFFECTIVENESS</div>
               <div class="cc-cell-val"><span id="ccPue">--</span><small>· DCiE <span id="ccDcie">--</span>%</small></div>
               <div class="cc-pue-track"><div class="cc-pue-fill" id="ccPueFill"></div>
                 <div class="cc-pue-avg" title="ค่าเฉลี่ยอุตสาหกรรม 1.54 — Uptime Institute 2025"></div></div>
-              <div class="cc-cell-sub">industry avg 1.54 (Uptime '25)</div></div>` +
-            cell('IT LOAD — ภาระประมวลผล', 'ccIt', 'kW', 'ccItSub') +
-            cell('DATA INGEST — ข้อมูลเข้า', 'ccIngest', 'Mbps', 'ccIngestSub') +
-            cell('TRUNK LINK — 10GbE UPLINK', 'ccTrunk', '%', 'ccTrunkSub') +
-            cell('STORAGE — คลังข้อมูล', 'ccStor', 'TB', 'ccStorSub') +
-            cell('COOLING — COLD AISLE', 'ccCool', '°C', 'ccCoolSub') +
-            cell('POWER & UPTIME', 'ccUps', '%', 'ccUpsSub');
+              <div class="cc-cell-sub">vs. industry avg 1.54 (Uptime '25)</div></div>` +
+            cellSpark('IT LOAD — ภาระประมวลผล',   'ccIt',     'kW',   'ccItTr',    'ccItSpark',    'ccItSub',     'var(--cc-accent)') +
+            cellSpark('DATA INGEST — ข้อมูลเข้า',  'ccIngest', 'Mbps', 'ccIngestTr','ccIngSpark',   'ccIngestSub', 'var(--cc-accent)') +
+            cellSpark('TRUNK LINK — 10GbE UPLINK', 'ccTrunk',  '%',    'ccTrunkTr', 'ccTrunkSpark', 'ccTrunkSub',  'var(--cc-accent)') +
+            `<div class="cc-cell"><div class="cc-cell-lbl">STORAGE — คลังข้อมูล</div>
+              <div class="cc-cell-val"><span id="ccStor">--</span><small>TB</small>
+                <span class="cc-cell-trend cc-cell-cap" id="ccStorPct"></span></div>
+              <div class="cc-pue-track"><div class="cc-pue-fill" id="ccStorFill" style="background:var(--cc-accent);"></div></div>
+              <div class="cc-cell-sub" id="ccStorSub"></div></div>` +
+            cellSpark('COOLING — SEAWATER LOOP',   'ccCool',   '°C',   'ccCoolTr',  'ccCoolSpark',  'ccCoolSub',   'var(--cc-state)') +
+            cellSpark('POWER & UPTIME',            'ccUps',    '%',    'ccUpsTr',   'ccFreqSpark',  'ccUpsSub',    'var(--cc-state)');
     }
 
-    /* ── DATA CENTER tick — โมเดลจำลองผูก parameter จริงของ sim ──
-       · IT load = ฐาน 38.4 kW + 2.6 kW/contact (ประมวลผล track) + 4.2 kW เมื่อ DAS event
-       · PUE = 1.31 + 0.13×diurnal(บ่ายร้อน cooling หนัก) + 0.015×seaState (ความชื้น/salt-air)
+    /* ── sparkline helpers ── */
+    function pushHist(k, v) { const a = dc.hist[k]; a.push(v); if (a.length > DC_HIST) a.shift(); }
+    function drawSpark(id, arr) {
+        const svg = g(id); if (!svg || arr.length < 2) return;
+        let lo = Math.min(...arr), hi = Math.max(...arr);
+        if (hi - lo < 1e-6) hi = lo + 1;
+        const pad = (hi - lo) * 0.18; lo -= pad; hi += pad;
+        const n = arr.length, W = 100, top = 3, bot = 23;
+        const xs = i => (i / (n - 1)) * W;
+        const ys = v => bot - ((v - lo) / (hi - lo)) * (bot - top);
+        let pts = '';
+        for (let i = 0; i < n; i++) pts += `${xs(i).toFixed(1)},${ys(arr[i]).toFixed(1)} `;
+        pts = pts.trim();
+        svg.querySelector('.cc-spark-line').setAttribute('points', pts);
+        svg.querySelector('.cc-spark-area').setAttribute('d',
+            `M0,${bot} L${pts.split(' ').join(' L')} L${W},${bot} Z`);
+        const dot = svg.querySelector('.cc-spark-dot');
+        dot.setAttribute('cx', xs(n - 1).toFixed(1));
+        dot.setAttribute('cy', ys(arr[n - 1]).toFixed(1));
+    }
+    function setTrend(id, arr) {
+        const el = g(id); if (!el || arr.length < 6) return;
+        const cur = arr[arr.length - 1], prev = arr[arr.length - 6];
+        const eps = Math.max(1e-6, Math.abs(cur) * 0.003);
+        if (cur - prev > eps)      { el.textContent = '▲'; el.className = 'cc-cell-trend cc-tr-up'; }
+        else if (cur - prev < -eps){ el.textContent = '▼'; el.className = 'cc-cell-trend cc-tr-dn'; }
+        else                       { el.textContent = '▬'; el.className = 'cc-cell-trend cc-tr-flat'; }
+    }
+
+    /* ── DATA CENTER tick — PUE/load/อุณหภูมิ ดึงจาก computeUdcThermal()
+       (โมเดลน้ำทะเล 6 ปัจจัย ตัวเดียวกับ side panel UDC Core Health) ──
+       · IT load (kW) = load fraction × DC_IT_CAP — LOAD % จึงตรงกับ Power Load ของ panel
+       · PUE ≈ 1.05–1.15 (seawater cooling — จุดขายหลักของ UDC เทียบ land DC 1.4–1.6)
+       · COOLING = อุณหภูมิ core capsule + seawater inlet / ΔT (แทน cold-aisle แบบ DC บก)
        · ingest = DAS 3 สาย (คำนวณจริงด้านบน) + hydro 4×2.3 + radar 2.4 + EO 6.8 + AIS/cyber
        · trunk util = ingest/10 Gbps + burst เมื่อมี contact · storage เติมตาม ingest หลัง
          edge-decimation (~35% ของ raw — แนวเดียวกับระบบ DAS จริงที่ decimate ก่อนเก็บ) */
     function tickDc(nContacts) {
         const now = new Date();
-        const hr = now.getHours() + now.getMinutes() / 60;
-        const diurnal = Math.max(0, Math.sin((hr - 6) / 12 * Math.PI));
-        const itTarget = 38.4 + 2.6 * nContacts + (dasEvt() ? 4.2 : 0);
-        dc.it  = lerp(dc.it,  itTarget + jit(.4), .25);
-        const pueTarget = 1.31 + 0.13 * diurnal + 0.015 * (envSS() || 1);
-        dc.pue = Math.min(1.95, Math.max(1.18, lerp(dc.pue, pueTarget + jit(.006), .2)));
+        const th = (typeof computeUdcThermal === 'function') ? computeUdcThermal() : null;
+        const itTarget = th ? th.load * DC_IT_CAP
+                            : 38.4 + 2.6 * nContacts + (dasEvt() ? 4.2 : 0);
+        dc.it  = lerp(dc.it,  itTarget + jit(.3), .25);
+        dc.pue = th ? lerp(dc.pue, th.pue, .3)
+                    : Math.min(1.95, Math.max(1.18, lerp(dc.pue, 1.31 + jit(.006), .2)));
 
         const hydro = 4 * 2.3, radar = 2.4, eo = 6.8, aisCy = 0.24 + 0.02 * nContacts;
         const ingest = DAS_TOTAL_MBPS + hydro + radar + eo + aisCy + jit(.8);
@@ -46825,26 +47172,53 @@ window.CommandCore = (function () {
         const fillTBday = writeMBs * 86400 / 1e6;
         const retDays = fillTBday > 0 ? (dc.capTB - dc.usedTB) / fillTBday : 999;
 
-        const cool = 21.8 + 1.5 * diurnal + jit(.12);
-        const rh   = 54 + jit(1.5);
+        const cool = th ? th.coreTemp : 34.5 + jit(.15);   // อุณหภูมิ core capsule (seawater loop)
+        const freq = 50 + Math.sin(now.getTime() / 7000) * 0.012 + jit(.006);   // ความถี่กริด ~50 Hz
 
+        // ── เก็บประวัติสำหรับ sparkline ──
+        pushHist('it', dc.it); pushHist('ingest', ingest);
+        pushHist('trunk', util); pushHist('cool', cool); pushHist('freq', freq);
+
+        // PUE — คงแถบเทียบค่าเฉลี่ยอุตสาหกรรม (เป็น "กราฟ" อยู่แล้ว)
         g('ccPue').textContent = dc.pue.toFixed(2);
         g('ccDcie').textContent = Math.round(100 / dc.pue);
         const pf = g('ccPueFill');
         pf.style.width = Math.min(100, Math.max(0, (dc.pue - 1) * 100)) + '%';
-        pf.style.background = dc.pue <= 1.42 ? '#39ff8c' : dc.pue <= 1.6 ? '#fbbf24' : '#ff4136';
+        // เกณฑ์สีตรงกับ side panel UDC Core Health: <1.10 ดี · <1.20 เฝ้าระวัง
+        pf.style.background = dc.pue < 1.10 ? '#39ff8c' : dc.pue < 1.20 ? '#fbbf24' : '#ff4136';
+
+        // IT LOAD — LOAD % สอดคล้องกับ Power Load ใน side panel (ฐานเดียวกัน)
         g('ccIt').textContent = dc.it.toFixed(1);
-        g('ccItSub').textContent = `TOTAL ${(dc.it * dc.pue).toFixed(1)} kW · ${(dc.it / 8).toFixed(1)} kW/rack ×8`;
+        g('ccItSub').textContent = `LOAD ${Math.round(dc.it / DC_IT_CAP * 100)}% · TOTAL ${(dc.it * dc.pue).toFixed(1)} kW · ${(dc.it / 8).toFixed(1)} kW/rack`;
+        drawSpark('ccItSpark', dc.hist.it); setTrend('ccItTr', dc.hist.it);
+
+        // DATA INGEST
         g('ccIngest').textContent = ingest.toFixed(1);
         g('ccIngestSub').textContent = `DAS ${DAS_TOTAL_MBPS.toFixed(0)} · HYDRO ${hydro.toFixed(1)} · RDR/EO ${(radar+eo).toFixed(1)}`;
+        drawSpark('ccIngSpark', dc.hist.ingest); setTrend('ccIngestTr', dc.hist.ingest);
+
+        // TRUNK LINK
         g('ccTrunk').textContent = util.toFixed(2);
-        g('ccTrunkSub').textContent = `RTT ${rtt.toFixed(1)} ms · LOSS ${loss.toFixed(3)}% · ศปก.ทร.`;
+        g('ccTrunkSub').textContent = `RTT ${rtt.toFixed(1)} ms · LOSS ${loss.toFixed(3)}%`;
+        drawSpark('ccTrunkSpark', dc.hist.trunk); setTrend('ccTrunkTr', dc.hist.trunk);
+
+        // STORAGE — แถบความจุ (used/cap) + วันคงเหลือ
         g('ccStor').textContent = dc.usedTB.toFixed(1);
-        g('ccStorSub').textContent = `of ${dc.capTB} TB · +${fillTBday.toFixed(2)} TB/day · RET ${Math.round(retDays)} d`;
+        g('ccStorPct').textContent = Math.round(dc.usedTB / dc.capTB * 100) + '%';
+        g('ccStorFill').style.width = (dc.usedTB / dc.capTB * 100).toFixed(1) + '%';
+        g('ccStorSub').textContent = `${dc.capTB} TB cap · +${fillTBday.toFixed(2)}/day · RET ${Math.round(retDays)}d`;
+
+        // COOLING — core capsule + seawater inlet (ตรงกับ side panel UDC Core Health)
         g('ccCool').textContent = cool.toFixed(1);
-        g('ccCoolSub').textContent = `RH ${rh.toFixed(0)}% · ASHRAE A1 (18–27°C) OK`;
+        g('ccCoolSub').textContent = th
+            ? `SW INLET ${th.seaTemp.toFixed(1)}°C · ΔT ${(th.coreTemp - th.seaTemp).toFixed(1)}°C · TIDAL FLUSH −${th.tidalFlushBonus.toFixed(3)} PUE`
+            : 'SEAWATER LOOP';
+        drawSpark('ccCoolSpark', dc.hist.cool); setTrend('ccCoolTr', dc.hist.cool);
+
+        // POWER & UPTIME — ค่า = uptime 100%, กราฟ = ความถี่กริด
         g('ccUps').textContent = '100.0';
-        g('ccUpsSub').textContent = 'UPS FLOAT · GEN STANDBY · N+1 · 99.982% TIER III';
+        g('ccUpsSub').textContent = `${freq.toFixed(2)} Hz · UPS FLOAT · N+1 · TIER III`;
+        drawSpark('ccFreqSpark', dc.hist.freq);
     }
 
     /* ── master tick (1 Hz เฉพาะตอนเปิด) ── */
@@ -46869,17 +47243,32 @@ window.CommandCore = (function () {
         /* DAS arcs + การ์ด — re-render การ์ดเมื่อสถานะ event เปลี่ยนระหว่างเปิดอยู่ */
         if (dasEvt() !== lastDasEvt) { lastDasEvt = dasEvt(); renderFibers(); }
         FIBERS.forEach(f => {
-            const evt = (f.id === 'F1') && dasEvt();
-            const arc = g('ccArc' + f.id);
-            if (arc) {
-                arc.setAttribute('stroke', evt ? '#ff4136' : '#39ff8c');
-                arc.classList.toggle('cc-arc-evt', evt);
+            const evt  = (f.id === 'F1') && dasEvt();
+            const rate = fiberRate(f), ratio = rate / f.mbps;
+            // fuel-gauge: ติดขีดจากหัวเกจถึงระดับ rate ปัจจุบัน (nominal ≈ กลางเกจ)
+            const cMid = evt ? '#ff4136' : rateColor(ratio);
+            const lit = Math.round(litFrac(ratio) * BAR_N);
+            for (let k = 0; k < BAR_N; k++) {
+                const b = g(`ccBar${f.id}-${k}`);
+                if (b) b.setAttribute('opacity', k < lit ? '.95' : '.15');
             }
+            const grp = g('ccBars' + f.id);
+            if (grp) grp.classList.toggle('cc-arc-evt', evt);
+            const rt = g('ccArcRate' + f.id);
+            if (rt) { rt.textContent = rate.toFixed(1) + ' Mbps'; rt.setAttribute('fill', cMid); }
             const r = g('ccFbr-' + f.id), a = g('ccFba-' + f.id);
-            if (r) r.textContent = (f.mbps + jit(.25)).toFixed(1) + ' Mbps';
+            if (r) r.textContent = rate.toFixed(1) + ' Mbps';
             if (a) a.textContent = (0.20 + jit(.004)).toFixed(3) + ' dB/km';
         });
 
+        if (schView === 'schematic') tickSchematic();
+        // segment ring 7 domain รอบนอกสุด — สีตามสถานะจริง (crit กะพริบด้วย cc-arc-evt)
+        DOM_ROWS.forEach((d,i) => {
+            const el = g('ccSeg' + i); if (!el) return;
+            const st = domainState(d.key);
+            el.style.stroke = st === 'crit' ? '#ff4136' : st === 'warn' ? '#fbbf24' : 'rgb(var(--cc-accent-rgb) / .50)';
+            el.classList.toggle('cc-arc-evt', st === 'crit');
+        });
         renderDomains();
         renderContacts();
         renderEnv();
@@ -46961,6 +47350,7 @@ window.CommandCore = (function () {
     function init() {
         g('ccVer').textContent = 'v' + (typeof APP_VERSION !== 'undefined' ? APP_VERSION : '—') + ' · THE SHIELD 3.0';
         buildRing();
+        buildSchematic();
         buildDcCells();
         g('commandCore').addEventListener('mousedown', e => { if (e.target === g('commandCore')) close(); });
         document.addEventListener('keydown', e => {
@@ -46970,7 +47360,7 @@ window.CommandCore = (function () {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
     else init();
 
-    return { open, close, _onLog, _onDomain, _onSensor };
+    return { open, close, setView, _onLog, _onDomain, _onSensor };
 })();
 
 /* ── wrapper: mirror ข้อมูล live เข้า Command Core โดยไม่แตะฟังก์ชันเดิม ──
