@@ -1,6 +1,14 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.17.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.18.0 · 7-Domain + AI Staff)
+  · [v17.18.0 Option A] มติ taxonomy — ควบรวม DAS+SEIS → SEA (Seabed) เดียว และยก LITTORAL เป็นโดเมนเต็มขั้น:
+      canonical 7 = AIR·SUR·SUB·SEA·CYB·LIT·C2 (ตรงกับกลุ่มแผง LAYERS · Seabed/Littoral)
+      - วงแหวน CommandCore: ป้าย DAS→SEA, SEIS→LIT (7 ช่องเท่าเดิม ไม่ต้องคำนวณ layout ใหม่)
+      - สถานะ SEABED = worst-of สองแหล่ง (เหตุ DAS ชนะ → crit, ไม่งั้นตามชั้น SEIS ok/warn/crit)
+      - LITTORAL ยังไม่มีช่องสถานะสดเฉพาะ → baseline 'ok' (แนวเดียวกับ CYBER — SIM ซื่อสัตย์ ไม่แต่งสัญญาณ)
+      - ทะเบียน MDA.DOMAINS: เพิ่ม SEA เต็มโดเมน, DAS/SEIS เป็น partOf:'SEA' (tooltip ระบุโดเมนแม่),
+        LIT ถอด facet → เต็มโดเมน + alias 'littoral', เพิ่ม canon (7 โดเมน) ใน API/status()
+      - setDomain keys เดิม (air/coastal/underwater/command) และ 51 layer toggles ไม่แตะ — zero behavior change นอกวงแหวน
   · [v17.17.0 UX] ข้อเสนอปรับปรุง UX สามข้อ (โมดูล additive แยกอิสระ ท้ายไฟล์ ไม่รื้อ handler เดิม fault-isolated):
     (A) CANONICAL DOMAIN TAXONOMY — รวมคำศัพท์โดเมนที่เดิมขัดกัน 4 ชุด (ริง CommandCore AIR·SUR·SUB·DAS·CYB·
     SEIS·C2 / กลุ่มพาเนล LAYERS / ตัวชี้สถานะ ind-* / threat-classifier) ให้เป็นทะเบียนกลางเดียว window.MDA.DOMAINS
@@ -547,12 +555,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.17.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.18.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.17.0';
+        const APP_VERSION = '17.18.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -7374,7 +7382,7 @@
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.17.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.18.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -7835,7 +7843,7 @@
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.17.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.18.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -7852,7 +7860,7 @@
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.17.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.18.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -8772,7 +8780,7 @@
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.17.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.18.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -47371,20 +47379,23 @@ window.CommandCore = (function () {
         return /ind-crit/.test(el.className) ? 'crit' : /ind-warn/.test(el.className) ? 'warn' : 'ok';
     }
 
-    /* ── 7 domain: 4 ตัว live จาก setDomain + seabed(DAS)/seismic/cyber อนุมาน ── */
+    /* ── 7 domain canonical (มติ Option A v17.18): ควบรวม DAS+SEIS → SEABED เดียว (สถานะ = แย่สุดของสองแหล่ง)
+          และยก LITTORAL ขึ้นเป็นโดเมนเต็มแทนช่อง SEIS เดิม — ให้ตรงกับกลุ่มแผง LAYERS (Seabed·Littoral)
+          · SUR ยังฟังช่อง 'coastal' ตามเดิม (ช่องภัยผิวน้ำโดยพฤตินัยจากเซนเซอร์ สอ.รฝ. — ไม่มี ind-surface แยก)
+          · LITTORAL ยังไม่มีช่องสถานะสดเฉพาะ → baseline 'ok' แบบเดียวกับ CYBER (SIM ซื่อสัตย์ ไม่แต่งสัญญาณ) ── */
     const DOM_ROWS = [
-        { key:'air',        lbl:'✈ AIR — อากาศ' },
-        { key:'coastal',    lbl:'🚢 COASTAL/SURFACE — ผิวน้ำ' },
-        { key:'underwater', lbl:'🌊 UNDERWATER — ใต้น้ำ' },
-        { key:'seabed',     lbl:'⚓ SEABED — DAS TRIPWIRE' },
-        { key:'cyber',      lbl:'📡 CYBER/EW — ไซเบอร์' },
-        { key:'seismic',    lbl:'🌐 SEISMIC — แผ่นดินไหว' },
+        { key:'air',        lbl:'✈ AIR — อากาศ-อวกาศ' },
+        { key:'coastal',    lbl:'🚢 SURFACE — ผิวน้ำ' },
+        { key:'underwater', lbl:'🌊 SUBSURFACE — ใต้ผิวน้ำ' },
+        { key:'seabed',     lbl:'⚓ SEABED — ก้นทะเล (DAS + SEIS)' },
+        { key:'cyber',      lbl:'📡 CYBER-EM — ไซเบอร์-สเปกตรัม' },
+        { key:'littoral',   lbl:'🏖 LITTORAL — ฝั่ง-ชายฝั่ง' },
         { key:'command',    lbl:'👁 COMMAND C2 — บัญชาการ' },
     ];
     function domainState(key) {
-        if (key === 'seabed')  return dasEvt() ? 'crit' : 'ok';
-        if (key === 'seismic') return seismicState();
-        if (key === 'cyber')   return 'ok';
+        if (key === 'seabed')   return dasEvt() ? 'crit' : seismicState(); /* worst-of: เหตุ DAS ชนะ, ไม่งั้นตาม SEIS */
+        if (key === 'littoral') return 'ok'; /* baseline SIM — รอช่องสดเฉพาะชายฝั่งในอนาคต */
+        if (key === 'cyber')    return 'ok';
         return dom[key] || 'ok';
     }
     const SCORE = { ok:100, warn:60, crit:25 };
@@ -47420,7 +47431,7 @@ window.CommandCore = (function () {
         s += `<g class="cc-rot-slow">` + FRAG.map(([fa,sp,w,o]) =>
             `<path d="${arcPath(147.5, fa, fa + sp)}" fill="none" stroke="rgba(214,230,244,${o})" stroke-width="${w}"/>`).join('') + `</g>`;
         // segment ring 7 domain — arc ละ ~38° สีอัปเดตสดตาม domainState ใน tick
-        const DOM_ABBR = ['AIR','SUR','SUB','DAS','CYB','SEIS','C2'];
+        const DOM_ABBR = ['AIR','SUR','SUB','SEA','CYB','LIT','C2']; /* มติ Option A v17.18: DAS+SEIS→SEA · LIT เต็มขั้น */
         DOM_ROWS.forEach((d,i) => {
             const a0 = i * (360/7) + 6.5, a1 = (i + 1) * (360/7) - 6.5, m = (a0 + a1) / 2;
             s += `<path id="ccSeg${i}" d="${arcPath(141.5, a0, a1)}" fill="none" stroke="${A}.45)"
@@ -48776,16 +48787,20 @@ window.MDA.SeaUse = (function () {
        (โค้ด·ไทย·อังกฤษ·คำอธิบาย·สี·และ alias ของทุกฝั่ง) + resolve(term) แปลง alias→โดเมน canonical
        แล้ว "ผูกที่จุดสัมผัสผู้ใช้": tooltip สองภาษาบนป้ายโดเมนของวงแหวน (SVG <title>)
        และไฟสถานะแผงซ้าย (ind-*) — โดยไม่แตะ toggle/ID/handler เดิมเลย
-     หมายเหตุ: ไม่ rewire คำเรียกทั้ง 4 ชุด (จะเป็น refactor ใหญ่/เสี่ยงสูง แตะ ring SVG + ~51 layer toggle
-       + ~8 จุดเรียก setDomain + ตัวจำแนกภัย) — ทะเบียนนี้คือ "รากฐานชุดเดียว" ที่ทำให้ทุกฝั่งพูดภาษาเดียวกัน
-       ณ จุดที่ผู้ใช้เห็น · การเปลี่ยน "ตัวอักษรบนวงแหวน" จริงเป็นการตัดสินใจเชิงหลักนิยม (ค้างไว้ให้ผู้ใช้ชี้ขาด)
+     [v17.18 · มติ Option A — ผู้ใช้ชี้ขาดแล้ว] ชุด canonical 7 = AIR·SUR·SUB·SEA·CYB·LIT·C2
+       · ควบรวม DAS+SEIS เป็นโดเมน SEA (ก้นทะเล) เดียว — DAS/SEIS ลดขั้นเป็น "องค์ประกอบ" (partOf:'SEA')
+       · ยก LITTORAL (LIT) จาก facet ขึ้นเป็นโดเมนเต็มขั้น ตรงกับกลุ่มแผง LAYERS
+       · ป้ายวงแหวน CommandCore เปลี่ยนจริงแล้ว (DOM_ABBR: DAS→SEA, SEIS→LIT) พร้อมตรรกะสถานะ
+         seabed = worst-of(เหตุ DAS, สถานะ SEIS) · littoral = baseline SIM (ยังไม่มีช่องสดเฉพาะ)
+       · setDomain key เดิม (~8 จุดเรียก) และ ~51 layer toggle ไม่แตะ — resolve() แปลงให้เอง
      ════════════════════════════════════════════════════════════════ -->
 <script>
 (function(){
  'use strict';
  try {
-  /* ── แหล่งความจริงเดียว: 7 โดเมนหลัก (ตามชุด "7-Domain" ของวงแหวน) + LIT เป็น facet ชายฝั่ง ──
-     layerGroup = ชื่อกลุ่มในแผง LAYERS ที่โดเมนนี้สังกัด (DAS/SEIS รวมกลุ่ม Seabed) */
+  /* ── แหล่งความจริงเดียว (มติ Option A): canonical 7 = AIR·SUR·SUB·SEA·CYB·LIT·C2 ──
+     · SEA (ก้นทะเล) = โดเมนควบรวม — DAS/SEIS เป็น "องค์ประกอบ" ของ SEA (partOf:'SEA' ไม่นับใน 7)
+     · layerGroup = ชื่อกลุ่มในแผง LAYERS ที่โดเมนนี้สังกัด */
   var LIST = [
     { code:'AIR',  th:'อากาศ-อวกาศ',        en:'Air & Space',      col:'#22d3ee', layerGroup:'Air & Space',
       gloss:'ภัยทางอากาศ/อวกาศ · UAV · ขีปนาวุธ · ดาวเทียม',
@@ -48796,22 +48811,25 @@ window.MDA.SeaUse = (function () {
     { code:'SUB',  th:'ใต้ผิวน้ำ',           en:'Subsurface',       col:'#14b8a6', layerGroup:'Subsurface',
       gloss:'เรือดำน้ำ · UUV · นักประดาน้ำ',
       alias:['SUB','underwater','Subsurface','Underwater Domain','ใต้ผิวน้ำ','ใต้น้ำ'] },
-    { code:'DAS',  th:'สายเคเบิลก้นทะเล',    en:'Seabed · DAS',     col:'#f59e0b', layerGroup:'Seabed',
+    { code:'SEA',  th:'ก้นทะเล',             en:'Seabed',           col:'#f59e0b', layerGroup:'Seabed',
+      gloss:'โดเมนก้นทะเลรวม — DAS (เฝ้าสายเคเบิล) + SEIS (ธรณีสมุทร-แผ่นดินไหว)',
+      alias:['SEA','SEABED','Seabed','พื้นท้องทะเล','ท้องทะเล','ก้นทะเล'] },
+    { code:'DAS',  th:'สายเคเบิลก้นทะเล',    en:'Seabed · DAS',     col:'#f59e0b', layerGroup:'Seabed', partOf:'SEA',
       gloss:'Distributed Acoustic Sensing · เฝ้าระวังสายเคเบิล/ทุ่นระเบิดใต้ทะเล',
-      alias:['DAS','SEABED','Seabed','พื้นท้องทะเล','ท้องทะเล'] },
+      alias:['DAS'] },
     { code:'CYB',  th:'ไซเบอร์-สเปกตรัม',    en:'Cyber-EM',         col:'#8b5cf6', layerGroup:'Cyber-EM',
       gloss:'ไซเบอร์ · สงครามอิเล็กทรอนิกส์ (EW) · สเปกตรัมคลื่น',
       alias:['CYB','CYBER','Cyber-EM','ไซเบอร์-สเปกตรัม','ไซเบอร์/EW'] },
-    { code:'SEIS', th:'ธรณีสมุทร-แผ่นดินไหว', en:'Seismic',         col:'#fb923c', layerGroup:'Seabed',
+    { code:'SEIS', th:'ธรณีสมุทร-แผ่นดินไหว', en:'Seismic',         col:'#fb923c', layerGroup:'Seabed', partOf:'SEA',
       gloss:'เฝ้าระวังแผ่นดินไหว/ธรณีพิบัติใต้ทะเล',
       alias:['SEIS','seismic','Seismic','Seismic Monitor','แผ่นดินไหว'] },
     { code:'C2',   th:'บัญชาการ-ควบคุม',     en:'Command & Control', col:'#64ffda', layerGroup:'TOOLS · SYSTEM',
       gloss:'ศูนย์บัญชาการ · การข่าวกรอง · ระบบสนับสนุน',
       alias:['C2','command','Command & Control','Command & Intelligence','TOOLS','TOOLS · SYSTEM','บัญชาการ'] },
-    /* facet ชายฝั่ง — ปรากฏในแผง LAYERS + ไฟสถานะ (coastal) แต่ไม่ใช่ sector บนวงแหวน */
-    { code:'LIT',  th:'ฝั่ง-ชายฝั่ง',        en:'Littoral',         col:'#a3e635', layerGroup:'Littoral', facet:true,
+    /* โดเมนเต็มขั้นตามมติ Option A — มี sector บนวงแหวน (ช่องเดิมของ SEIS) + กลุ่มแผง LAYERS */
+    { code:'LIT',  th:'ฝั่ง-ชายฝั่ง',        en:'Littoral',         col:'#a3e635', layerGroup:'Littoral',
       gloss:'ชายฝั่ง · การยกพลขึ้นบก · พื้นที่ปกครองท้องถิ่น',
-      alias:['LIT','coastal','Littoral','Coastal & Landing Domain','ฝั่ง-ชายฝั่ง'] }
+      alias:['LIT','littoral','coastal','Littoral','Coastal & Landing Domain','ฝั่ง-ชายฝั่ง'] }
   ];
   var BYCODE={}, BYALIAS={};
   LIST.forEach(function(d){
@@ -48827,7 +48845,12 @@ window.MDA.SeaUse = (function () {
     for(var i=0;i<FUZZY.length;i++){ if(k.indexOf(FUZZY[i])>=0) return BYALIAS[FUZZY[i]]; }
     return null;
   }
-  function tip(d){ return d.code+' · '+d.th+' '+d.en+' — '+d.gloss; }
+  function tip(d){
+    var s=d.code+' · '+d.th+' '+d.en+' — '+d.gloss;
+    /* มติ Option A: แหล่งข้อมูลที่ควบรวม (DAS/SEIS) ระบุโดเมนแม่ให้ชัดใน tooltip */
+    if(d.partOf){ var p=BYCODE[d.partOf]; if(p) s+=' · องค์ประกอบของ '+p.code+' ('+p.en+')'; }
+    return s;
+  }
 
   var SVGNS='http://www.w3.org/2000/svg';
   function ensureSvgTitle(el, text){
@@ -48894,9 +48917,12 @@ window.MDA.SeaUse = (function () {
       mo.observe(cc, {childList:true, subtree:true});
     }
     window.MDA = window.MDA || {};
+    /* canon = 7 โดเมน canonical ตามมติ Option A (ตัดรายการ partOf ซึ่งเป็นแหล่งย่อยของ SEA ออก) */
+    var CANON = LIST.filter(function(d){ return !d.partOf; });
     window.MDA.DOMAINS = {
-      list:LIST, byCode:BYCODE, resolve:resolve, tip:tip, apply:applyAll,
-      status:function(){ return { domains:LIST.length, applied:res, codes:LIST.map(function(d){return d.code;}) }; }
+      list:LIST, canon:CANON, byCode:BYCODE, resolve:resolve, tip:tip, apply:applyAll,
+      status:function(){ return { domains:LIST.length, canon:CANON.length, applied:res,
+        codes:LIST.map(function(d){return d.code;}), canonCodes:CANON.map(function(d){return d.code;}) }; }
     };
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
