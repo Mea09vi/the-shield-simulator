@@ -1,6 +1,25 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.14.1 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.17.0 · 7-Domain + AI Staff)
+  · [v17.17.0 UX] ข้อเสนอปรับปรุง UX สามข้อ (โมดูล additive แยกอิสระ ท้ายไฟล์ ไม่รื้อ handler เดิม fault-isolated):
+    (A) CANONICAL DOMAIN TAXONOMY — รวมคำศัพท์โดเมนที่เดิมขัดกัน 4 ชุด (ริง CommandCore AIR·SUR·SUB·DAS·CYB·
+    SEIS·C2 / กลุ่มพาเนล LAYERS / ตัวชี้สถานะ ind-* / threat-classifier) ให้เป็นทะเบียนกลางเดียว window.MDA.DOMAINS
+    8 โดเมน + resolve() จับ alias ครบทุกชุด (fuzzy longest-first กันชน "ผิวน้ำ" ↔ "ใต้ผิวน้ำ" / surface ↔ subsurface)
+    · ติด tooltip สองภาษาให้ป้ายริง 7 จุด (คงอยู่ผ่าน open/close/reopen ด้วย MutationObserver) + ตัวชี้สถานะข้าง 6 จุด
+    · zero visual regression (ownLabel อ่านเฉพาะ text node ตรง กัน <title> ปน) — ยังไม่รวม/ไม่เปลี่ยนป้ายริงที่แสดงจริง
+    (เป็นการตัดสินใจเชิงหลักนิยม รอผู้ใช้ชี้ขาด DAS+SEIS→Seabed หรือคงแยก + Littoral เป็น facet)
+    (B) FLOATING PANEL MANAGER — ตัวจัดการพาเนลลอยกลาง (z-index/focus/close-all/ตำแหน่งจำ) window.MDA.PanelMgr
+    + ปุ่ม #pm-closeall-btn
+    (G) UNIFIED i18n — ปุ่มสลับภาษา TH/EN คุมชื่อพาเนล docked 11 หัวข้อที่เดิม hardcode อังกฤษ (data-en-label/
+    data-th-label เก็บทั้งสองภาษา คงไอคอน <svg> ไม่โดน innerHTML ทับ) idempotent · window.MDA.i18n
+  · [v17.16.0 EMSO] เพิ่มการมองเห็น EMSO (Electromagnetic Spectrum Operations) ในโดเมน Cyber-EM — องค์ประกอบ ①④:
+    (1) GNSS Denial Bubble (MDA.EmsoGnss) — วงบับเบิลรบกวน GNSS รอบ UDC [12.712°N 100.820°E] แบ่ง 3 ระดับตาม
+    gnssJitter จริงในซิม (≥0.5 Denied แดง+แกนกลาง / ≥0.2 Degraded อำพัน / <0.2 Nominal เขียว dashed) รัศมี
+    3–16 กม. อัปเดตทุก 1.5 วิ · popup รายงานค่า GPSJam baseline อย่างซื่อสัตย์ ("n/a — needs Worker relay/CORS");
+    (2) EM Spectrum Awareness ribbon (MDA.EmsoSpectrum) — พาเนลลอยมุมซ้ายล่าง 4 แถบคลื่น (VHF/L-band/X-band/SATCOM)
+    แสดงสถานะ CLEAR→CONGESTED→CONTESTED→JAMMED พร้อมป้ายแหล่งที่มาซื่อสัตย์: L-band = LIVE (ผูกกับ gnssJitter จริง)
+    ส่วน VHF/X-band/SATCOM = SIM (baseline) · ผูกเข้าเลเยอร์ toggle กลุ่ม Cyber-EM (แถว "GNSS Denial (EMSO)" +
+    "EM Spectrum (EMSO)") · counts/badge ผ่าน MDA.util.setCount/setBadge (ข้อมูลต้องใช้ keyless เท่านั้น)
   · [v17.14.1 DOC] ปรับคอมเมนต์ทั้งไฟล์ให้เป็นภาษาไทยกึ่งทางการที่ผู้บังคับบัญชาอ่านเข้าใจได้ (~1,836 บรรทัด
     ตั้งแต่หัวข้อหลัก/หัวข้อรองจนถึงคอมเมนต์อธิบายการทำงาน) — คงไว้ตามต้นฉบับเฉพาะสูตรคณิตศาสตร์ ป้ายเวอร์ชัน
     [vNN] ข้อความลิขสิทธิ์แหล่งข้อมูล พิกัด DMS/bbox สเปคจาก Jane's URL โค้ดที่คอมเมนต์ปิดไว้ และลายเซ็นโค้ด
@@ -528,12 +547,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.14.1 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.17.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.14.1';
+        const APP_VERSION = '17.17.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -1892,6 +1911,49 @@
             border-top: 1px solid rgba(96,165,250,0.15);
             letter-spacing: .03em;
         }
+        /* ════════ [v17.16 EMSO] EM Spectrum Awareness ribbon — โดเมน Cyber-EM ════════
+           แถบครองคลื่นความถี่ (VHF/L/X/Ku-Ka) · L-band ← gnssJitter (LIVE) ที่เหลือ SIM baseline */
+        #mda-spectrum-panel {
+            position: fixed;
+            bottom: 92px;
+            left: 12px;
+            width: 246px;
+            background: rgb(var(--bg-panel-rgb) / 0.94);
+            border: 1px solid rgb(var(--purple-rgb, 139 92 246) / 0.5);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 0 22px rgba(139,92,246,0.20);
+            z-index: 1200;
+            font-family: var(--font-mono), monospace;
+            font-size: 11px;
+            color: #ece7ff;
+            overflow: hidden;
+        }
+        .mspec-hdr {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 7px 10px 6px;
+            background: rgba(139,92,246,0.12);
+            border-bottom: 1px solid rgba(139,92,246,0.30);
+            cursor: move; user-select: none;
+            font-size: 11px; font-weight: 600; color: #c4b5fd; letter-spacing: .04em;
+        }
+        .mspec-close { background:none; border:none; color:rgba(255,255,255,.4); cursor:pointer; font-size:12px; padding:0 3px; line-height:1; }
+        .mspec-close:hover { color:#fff; }
+        .mspec-body { padding: 9px 10px 6px; }
+        .mspec-row { margin-bottom: 8px; }
+        .mspec-row:last-child { margin-bottom: 2px; }
+        .mspec-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:3px; }
+        .mspec-band { color: rgba(255,255,255,.72); font-size: 10px; font-weight:600; letter-spacing:.02em; }
+        .mspec-band small { color: rgba(255,255,255,.4); font-weight:400; }
+        .mspec-state { font-size: 9px; font-weight: 700; letter-spacing:.05em; }
+        .mspec-bar { height: 8px; border-radius: 3px; background: rgba(255,255,255,.07); overflow:hidden; position:relative; }
+        .mspec-fill { height: 100%; width: 0%; border-radius: 3px; transition: width .5s ease, background .4s ease; }
+        /* ป้ายกำกับแหล่งข้อมูล — LIVE (จากเซ็นเซอร์จริง) vs SIM (สาธิตตามหลักนิยม) */
+        .mspec-src { font-size: 7.5px; font-weight:700; letter-spacing:.1em; padding:0 4px; border-radius:2px; margin-left:5px; vertical-align:1px; }
+        .mspec-src.live { color:#4ade80; border:1px solid rgba(74,222,128,.5); background:rgba(74,222,128,.10); }
+        .mspec-src.sim  { color: var(--brass, #c9a876); border:1px solid rgb(var(--brass-rgb) / 0.5); background:rgb(var(--brass-rgb) / 0.10); }
+        .mspec-foot { padding: 5px 10px 7px; font-size: 8.5px; color: rgba(255,255,255,.3); border-top: 1px solid rgba(139,92,246,0.15); letter-spacing:.02em; line-height:1.5; }
+        /* GNSS bubble popup honesty note */
+        .mda-gnss-popup .lp-note { color: var(--brass,#c9a876); font-size:10px; margin-top:4px; display:block; }
         /* ── คำอธิบายเขตพัฒนาพิเศษภาคตะวันออก (EEC) ── */
         .eec-tooltip {
             background: rgba(8,15,30,0.93) !important;
@@ -5351,6 +5413,25 @@
             color: var(--brass);
             letter-spacing: 0.08em;
         }
+        /*  [v17.15] ป้ายกำกับข้อความสาธิต — ต้องเห็นชัดว่าไม่ได้มาจากเซ็นเซอร์
+            ใช้ลายทางเฉียงจาง ๆ เป็นสัญญาณสายตาเพิ่ม เพื่อไม่ให้ปะปนกับ alert จริงเมื่อดูเร็ว ๆ */
+        #mda-ai-modal .mda-ai-alert.demo {
+            background-image: repeating-linear-gradient(135deg,
+                rgb(var(--brass-rgb) / 0.05) 0 6px, transparent 6px 12px);
+            opacity: 0.88;
+        }
+        #mda-ai-modal .mda-ai-alert-demo {
+            display: inline-block;
+            margin: 3px 0 0 4px;
+            padding: 1px 5px;
+            font-size: 8.5px;
+            font-weight: 700;
+            border-radius: 2px;
+            border: 1px solid rgb(var(--brass-rgb) / 0.55);
+            background: rgb(var(--brass-rgb) / 0.10);
+            color: var(--brass);
+            letter-spacing: 0.12em;
+        }
         #mda-ai-modal .mda-ai-tax-grid {
             display: grid;
             grid-template-columns: 1fr auto;
@@ -6859,6 +6940,20 @@
                 <span class="count" id="mda-cnt-kev-row">—</span>
                 <span class="mda-sw"></span>
             </div>
+            <!-- [v17.16 EMSO] GNSS-denial bubble — spatialize gnssJitter (R4) เป็นวง PNT รอบ UDC/เกาะคราม · baseline GPSJam (keyless) -->
+            <div class="mda-lp-row" data-mda-layer="gnss-jam" title="EMSO · GNSS Denial Bubble — ยกค่า gnssJitter (กฎ R4) เป็นวงปฏิเสธพิกัด (PNT) รอบ UDC/เกาะคราม · สี เขียว→เหลือง→แดง ตามระดับรบกวน · baseline อ้างอิง GPSJam (keyless CC-BY)">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:radial-gradient(circle,#ef4444 0 40%,transparent 55%)"></span><svg class="ico" aria-hidden="true"><use href="#i-satellite-dish"/></svg> GNSS Denial (EMSO)</span>
+                <span class="count" id="mda-cnt-gnss-jam">--</span>
+                <span class="mda-sw"></span>
+            </div>
+            <!-- [v17.16 EMSO] EM Spectrum ribbon — แถบครองคลื่น VHF/L/X/Ku-Ka (HUD ไม่ใช่ map layer) -->
+            <div class="mda-lp-row" data-mda-layer="spectrum" title="EMSO · EM Spectrum Awareness — แถบครองคลื่น VHF(AIS)/L-band(GNSS)/X-band(เรดาร์)/Ku-Ka(SATCOM) · L-band มาจาก gnssJitter จริง (LIVE) ที่เหลือเป็น SIM baseline ตามหลักนิยม">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444)"></span><svg class="ico" aria-hidden="true"><use href="#i-radio"/></svg> EM Spectrum (EMSO)</span>
+                <span class="count" id="mda-cnt-spectrum">--</span>
+                <span class="mda-sw"></span>
+            </div>
         </div>
     </div>
 
@@ -6949,6 +7044,35 @@
     </div>
     <div class="marine-wx-foot">
         <span>Open-Meteo Marine API · CC-BY 4.0 · อัปเดตทุก 30 นาที</span>
+    </div>
+</div>
+
+<!-- ════════ [v17.16 EMSO] EM Spectrum Awareness ribbon (โดเมน Cyber-EM) ════════ -->
+<div id="mda-spectrum-panel" style="display:none;">
+    <div class="mspec-hdr" id="mda-spectrum-hdr">
+        <span><svg class="ico" aria-hidden="true"><use href="#i-radio"/></svg> EM SPECTRUM · EMSO</span>
+        <button class="mspec-close" id="mda-spectrum-close" title="ซ่อน panel"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="mspec-body" id="mda-spectrum-body">
+        <div class="mspec-row" data-band="vhf">
+            <div class="mspec-top"><span class="mspec-band">VHF <small>AIS/comms</small><span class="mspec-src sim">SIM</span></span><span class="mspec-state"></span></div>
+            <div class="mspec-bar"><div class="mspec-fill"></div></div>
+        </div>
+        <div class="mspec-row" data-band="lband">
+            <div class="mspec-top"><span class="mspec-band">L-band <small>GNSS</small><span class="mspec-src live">LIVE</span></span><span class="mspec-state"></span></div>
+            <div class="mspec-bar"><div class="mspec-fill"></div></div>
+        </div>
+        <div class="mspec-row" data-band="xband">
+            <div class="mspec-top"><span class="mspec-band">X-band <small>เรดาร์เดินเรือ</small><span class="mspec-src sim">SIM</span></span><span class="mspec-state"></span></div>
+            <div class="mspec-bar"><div class="mspec-fill"></div></div>
+        </div>
+        <div class="mspec-row" data-band="satcom">
+            <div class="mspec-top"><span class="mspec-band">Ku/Ka <small>SATCOM</small><span class="mspec-src sim">SIM</span></span><span class="mspec-state"></span></div>
+            <div class="mspec-bar"><div class="mspec-fill"></div></div>
+        </div>
+    </div>
+    <div class="mspec-foot">
+        <span>● LIVE = L-band ← gnssJitter (R4) · SIM = baseline ตามหลักนิยม (EOB/SIGINT จริงเป็นชั้นความลับ) · JEMSMO</span>
     </div>
 </div>
 
@@ -7250,7 +7374,7 @@
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.14.1 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.17.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -7305,7 +7429,7 @@
             <!-- alerts -->
             <div class="mda-ai-section">
                 <div class="mda-ai-sec-head">
-                    <span>▾ ALERTS · live stream</span>
+                    <span>▾ <span id="mda-ai-alert-head-label">ALERTS · standby</span></span>
                     <span class="mda-ai-sec-count" id="mda-ai-alert-count">0</span>
                 </div>
                 <div id="mda-ai-alerts" style="max-height:320px;overflow-y:auto;">
@@ -7711,7 +7835,7 @@
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.14.1 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.17.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -7728,7 +7852,7 @@
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.14.1 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.17.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -7845,7 +7969,7 @@
             <hr class="divider" style="margin:2px 0;">
 
             <!-- ── MI-5: Sea Conditions accordion (Sea State + Season Preset) ── -->
-            <details class="mi5-accordion" open>
+            <details class="mi5-accordion">
                 <summary class="mi5-accordion-summary" style="color:#38bdf8;"><svg class="ico" aria-hidden="true"><use href="#i-waves"/></svg> Sea Conditions</summary>
                 <div class="mi5-accordion-body">
                     <div class="panel-sub" style="color:#38bdf8;margin-bottom:1px;letter-spacing:1px;"><svg class="ico" aria-hidden="true"><use href="#i-waves"/></svg> SEA STATE (Douglas)</div>
@@ -7885,7 +8009,7 @@
             </details>
 
             <!-- ── MI-5: Sonar Modifiers accordion (DET.MOD A+B + SVP) ── -->
-            <details class="mi5-accordion" open>
+            <details class="mi5-accordion">
                 <summary class="mi5-accordion-summary" style="color:var(--purple-dim);"><svg class="ico" aria-hidden="true"><use href="#i-target"/></svg> Sonar Modifiers</summary>
                 <div class="mi5-accordion-body">
                     <!-- ── Detection Modifier Panel (A+B combined into one step) ── -->
@@ -8648,7 +8772,7 @@
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.14.1 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.17.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -29353,7 +29477,11 @@ window.toggleSat3D = toggleSat3D;
             verbose: false
         },
         layers: {},       // L.layerGroup() ต่อโดเมน
-        data:   { aviation: [], seismic: [], space: null, gdelt: [], fusion: [], marineWx: null, seamarks: null, weather: null, storm: [], radar: null, metoc: null, cve: null, 'ransom-th': [], 'espionage': [], 'feodo': [], 'urlhaus': [], kev: null },   // [v16.1.0 METOC-2] [v17.3 CVE] [v17.8 ransom-th] [v17.9 espionage] [v17.10 feodo/urlhaus/kev]
+        data:   { aviation: [], seismic: [], space: null, gdelt: [], fusion: [], marineWx: null, seamarks: null, weather: null, storm: [], radar: null, metoc: null, cve: null, 'ransom-th': [], 'espionage': [], 'feodo': [], 'urlhaus': [], kev: null,   // [v16.1.0 METOC-2] [v17.3 CVE] [v17.8 ransom-th] [v17.9 espionage] [v17.10 feodo/urlhaus/kev]
+                    /*  [v17.15] ตราประทับ "ดึงสำเร็จเมื่อใด" ต่อฟีด — ฟีดข้างบนถูกตั้งต้นเป็น []
+                        ตั้งแต่บูต จึงดูจากอาร์เรย์ว่างไม่ได้ว่าเคยตรวจแล้วหรือยัง ตัวนี้เขียนเมื่อ
+                        refresh สำเร็จเท่านั้น ใช้แยก "ตรวจแล้วไม่พบ" ออกจาก "ยังไม่ได้ตรวจ"      */
+                    _probed: {} },
         state:  { on: { aviation: true, 'ais-heat': true, 'ais-anomaly': true, seismic: true, space: true, gdelt: true, seamark: false, 'marine-wx': false, weather: false, storm: false, 'rain-radar': false, metoc: false, 'gistda-flood': false, 'ship-density': false, 'ransom-th': false, 'espionage': false, 'feodo': false, 'urlhaus': false, kev: true } },   // [v16.1.0 METOC-2] metoc ปิด default · [METOC-4] gistda-flood ปิด default · [v17.8] ransom-th ปิด default · [v17.9] espionage ปิด default · [v17.10] feodo/urlhaus ปิด · kev เปิด (info row)
         timers: {}
     };
@@ -30478,7 +30606,7 @@ window.toggleSat3D = toggleSat3D;
                 const arr = await fetchTO(base + '/?feed=ransomware', 15_000).then(r => r.json());
                 if (!Array.isArray(arr)) throw new Error('bad payload');
                 const recs = arr.slice(0, MAX_PLOT);
-                MDA.data['ransom-th'] = recs;
+                MDA.data['ransom-th'] = recs;   MDA.data._probed['ransom-th'] = Date.now();
                 layer.clearLayers();
                 let plotted = 0;
                 for (const v of recs) {
@@ -30652,7 +30780,7 @@ window.toggleSat3D = toggleSat3D;
                     .filter(x => x._cat)
                     .sort((a, b) => String(b.first_seen_utc || b.last_seen_utc || '').localeCompare(String(a.first_seen_utc || a.last_seen_utc || '')))
                     .slice(0, MAX_PLOT);
-                MDA.data['espionage'] = arr;
+                MDA.data['espionage'] = arr;   MDA.data._probed['espionage'] = Date.now();
                 layer.clearLayers();
                 let plotted = 0, newGeo = 0, th = 0; const tally = { c2: 0, rat: 0, stealer: 0, phish: 0 };   // [v17.9.3] th = หมุดที่ geocode ตกในประเทศไทย
                 for (const x of arr) {
@@ -30776,7 +30904,7 @@ window.toggleSat3D = toggleSat3D;
                 const arr = await fetchTO(base + '/?feed=feodo', 15_000).then(r => r.json());
                 if (!Array.isArray(arr)) throw new Error('bad payload');
                 const recs = arr.slice(0, MAX_PLOT);
-                MDA.data['feodo'] = recs;
+                MDA.data['feodo'] = recs;   MDA.data._probed['feodo'] = Date.now();
                 layer.clearLayers();
                 let plotted = 0, online = 0, th = 0;
                 for (const x of recs) {
@@ -30879,7 +31007,7 @@ window.toggleSat3D = toggleSat3D;
                 const arr = await fetchTO(base + '/?feed=urlhaus', 15_000).then(r => r.json());
                 if (!Array.isArray(arr)) throw new Error('bad payload');
                 const recs = arr.slice(0, MAX_PLOT);
-                MDA.data['urlhaus'] = recs;
+                MDA.data['urlhaus'] = recs;   MDA.data._probed['urlhaus'] = Date.now();
                 layer.clearLayers();
                 let plotted = 0, online = 0, th = 0;
                 for (const x of recs) {
@@ -32516,6 +32644,75 @@ window.toggleSat3D = toggleSat3D;
                     };
                 } catch (_) { return null; }
             },
+            /*  [v17.15] ปิดช่องว่าง context — เดิม LLM ได้รับเพียง ๙ หัวข้อ ทำให้เซ็นเซอร์ที่มีจริง
+                อีกหลายตัว (ฟีดไซเบอร์ · สึนามิ · ลม-ฝน-เรดาร์ · เครื่องหมายเดินเรือ · โมดูลภายใน)
+                ไม่เคยถูกส่งไปให้วิเคราะห์ — สามหมวดข้างล่างจึงเก็บค่าย่อ (ตัวเลขล้วน ไม่ส่งรายการดิบ)
+                เพื่อให้บทสรุปอ้างอิงได้ครบ โดยไม่ทำให้ payload บวม                                */
+            //  ฟีดภัยไซเบอร์ทั้งหมด (ผ่าน Worker ที่ไม่ใช้คีย์) → สรุปเป็นจำนวนนับต่อฟีด
+            _gatherCyberFeeds() {
+                try {
+                    const D = (window.MDA && MDA.data) || {};
+                    const n = (k) => Array.isArray(D[k]) ? D[k].length : 0;
+                    const esp = Array.isArray(D.espionage) ? D.espionage : [];
+                    const tally = { c2: 0, rat: 0, stealer: 0, phish: 0 };
+                    esp.forEach(x => { if (x && x._cat && tally[x._cat] != null) tally[x._cat]++; });
+                    const kev = D.kev || null;
+                    /*  [v17.15] "ตรวจแล้ว" ต่างจาก "ไม่พบ" — refresh() จะเขียนอาร์เรย์ลง MDA.data เสมอ
+                        แม้ผลเป็นศูนย์ ดังนั้นถ้ายังไม่มีอาร์เรย์ = ยังไม่เคยดึงฟีดนั้นเลย
+                        สองกรณีนี้นำไปสู่การตัดสินใจคนละแบบ จึงต้องแยกให้ผู้บังคับบัญชาเห็น           */
+                    const probed = (k) => !!(D._probed && D._probed[k]);
+                    return {
+                        espionage: { count: esp.length, byCat: tally, probed: probed('espionage') },
+                        feodo:     { count: n('feodo'),   probed: probed('feodo')   },
+                        urlhaus:   { count: n('urlhaus'), probed: probed('urlhaus') },
+                        ransomTH:  { count: n('ransom-th'), probed: probed('ransom-th') },
+                        kev: kev ? { total: kev.total || 0, last30d: kev.count30d || 0,
+                                     ransomware: kev.ransomTotal || 0, catalog: kev.catalogVersion || null } : null
+                    };
+                } catch (_) { return null; }
+            },
+            //  เลเยอร์สภาพแวดล้อม/ภัยธรรมชาติ ที่เดิมมีเฉพาะในตาราง แต่ไม่เคยส่งให้ LLM
+            _gatherEnvLayers() {
+                try {
+                    const D = (window.MDA && MDA.data) || {};
+                    const w = D.weather || null;
+                    const ts = D.tsunamiEvent || null;
+                    return {
+                        weather: w ? { windKn: w.wind != null ? +w.wind : null, gustKn: w.gust != null ? +w.gust : null,
+                                       visM: w.vis != null ? +w.vis : null, rainMmH: w.rain != null ? +w.rain : null } : null,
+                        storms:  Array.isArray(D.storm) ? D.storm.map(s => ({ name: s.name || null, alert: s.alert || null })) : [],
+                        rainRadar: !!D.radar,
+                        seamarks:  Array.isArray(D.seamarks) ? D.seamarks.length : 0,
+                        tsunami: ts ? { potential: (ts.impact && ts.impact.tsunamiPotential) || null,
+                                        mag: ts.mag != null ? +ts.mag : null, place: ts.place || null } : null,
+                        fusion: Array.isArray(D.fusion)
+                            ? { total: D.fusion.length, critical: D.fusion.filter(x => x.lvl === 'crit').length }
+                            : null
+                    };
+                } catch (_) { return null; }
+            },
+            //  โมดูลเซ็นเซอร์ภายใน (จำลอง/วางแผน) — ดึงจาก status() ของแต่ละโมดูลโดยตรง จึงไม่มีวันค้างเก่า
+            _gatherModules() {
+                try {
+                    const out = {};
+                    const ask = (key, mod) => {
+                        try {
+                            if (mod && typeof mod.status === 'function') {
+                                const s = mod.status() || {};
+                                out[key] = { state: s.state || null, score: s.score != null ? s.score : null, detail: s.detail || null };
+                            }
+                        } catch (_) { /* โมดูลใดพัง ไม่ให้ล้มทั้งชุด */ }
+                    };
+                    const M = window.MDA || {};
+                    ask('sonarGrid',   M.SonarGrid);
+                    ask('underwater',  M.UnderwaterMDA);
+                    ask('seaUse',      M.SeaUse);
+                    ask('shipDensity', M.ShipDensity);
+                    ask('counterUAS',  M.CounterUAS);
+                    ask('fisherMSP',   M.FisherMSP);
+                    return Object.keys(out).length ? out : null;
+                } catch (_) { return null; }
+            },
             _buildContext(base) {
                 const ctx = {
                     aviation: this._gatherAviation(),
@@ -32526,14 +32723,22 @@ window.toggleSat3D = toggleSat3D;
                     marineWx: this._gatherMarineWx(),
                     metoc:    this._gatherMetoc(),   // [v16.1.0 METOC-2] tide/surge/SWAN จากแหล่งไทย
                     ais:      { ships: (base && base.ships ? base.ships.length : 0), anomalies: (base ? (base.aisViz || 0) : 0) },
-                    env:      { seaState: (base ? base.seaState : null), gnssJitter: (base ? base.gnssJitter : null) }
+                    env:      { seaState: (base ? base.seaState : null), gnssJitter: (base ? base.gnssJitter : null) },
+                    cyber:    this._gatherCyberFeeds(),   // [v17.15] ThreatFox · Feodo · URLhaus · RANSOM-TH · CISA KEV
+                    layers:   this._gatherEnvLayers(),    // [v17.15] ลม-ฝน · พายุ · เรดาร์ · ทุ่นไฟ · สึนามิ · fusion
+                    modules:  this._gatherModules()       // [v17.15] SonarGrid · UnderwaterMDA · SeaUse · ShipDensity · C-UAS · FisherMSP
                 };
                 // dataMode: 'real' ถ้ามี source สดอย่างน้อย 1 ตัว — มิฉะนั้น 'demo' (จะ fallback DEMO_SEEDS)
                 const hasReal =
                     ctx.ais.ships > 0 || ctx.ais.anomalies > 0 ||
                     ctx.aviation.count > 0 || ctx.seismic.count > 0 ||
                     ctx.spaceWx.kp != null || ctx.gdelt.count > 0 || ctx.cve.count > 0 ||
-                    ctx.marineWx != null || ctx.metoc != null || ctx.env.seaState != null || ctx.env.gnssJitter != null;   // [v16.1.0 METOC-2] metoc นับเป็น live source
+                    ctx.marineWx != null || ctx.metoc != null || ctx.env.seaState != null || ctx.env.gnssJitter != null ||   // [v16.1.0 METOC-2] metoc นับเป็น live source
+                    // [v17.15] ฟีดไซเบอร์และเลเยอร์สภาพแวดล้อมก็เป็นแหล่งสดเช่นกัน — เดิมไม่ถูกนับ ทำให้ระบบขึ้น DEMO ทั้งที่มีข้อมูลจริง
+                    (!!ctx.cyber && (ctx.cyber.espionage.count > 0 || ctx.cyber.feodo.count > 0 ||
+                                     ctx.cyber.urlhaus.count > 0 || ctx.cyber.ransomTH.count > 0 || ctx.cyber.kev != null)) ||
+                    (!!ctx.layers && (ctx.layers.weather != null || ctx.layers.storms.length > 0 ||
+                                      ctx.layers.rainRadar || ctx.layers.seamarks > 0 || ctx.layers.tsunami != null));
                 ctx.dataMode = hasReal ? 'real' : 'demo';
                 // [v15.2] own-force disposition (PV/GUUV ที่ user วาง) → ให้ LLM/narrative รู้จักกำลังที่มี
                 // (ไม่กระทบ hasReal/dataMode — กำลังฝ่ายเราไม่ใช่ live external source)
@@ -32736,7 +32941,9 @@ window.toggleSat3D = toggleSat3D;
         }
 
         function pushAlert(a) {
-            const stamp = { ts: _now(), severity: a.sev, tag: a.tag, msg: a.msg, conf: a.conf, tax: a.tax };
+            //  [v17.15] ต้องพา _demo ติดมาด้วย — เดิมประกอบอ็อบเจกต์ใหม่ทีละช่องแล้วทิ้งธงนี้ไป
+            //           ทำให้หน้าจอแยกไม่ออกว่าเป็นเหตุการณ์จริงหรือข้อความสาธิต ทั้งที่ประทับเวลาสด
+            const stamp = { ts: _now(), severity: a.sev, tag: a.tag, msg: a.msg, conf: a.conf, tax: a.tax, demo: !!a._demo };
             state.alerts.unshift(stamp);
             if (state.alerts.length > MDA.cfg.aiMaxAlerts) {
                 state.alerts.length = MDA.cfg.aiMaxAlerts;
@@ -32799,16 +33006,30 @@ window.toggleSat3D = toggleSat3D;
                     </div>`;
             } else {
                 alertList.innerHTML = items.map(a => `
-                    <div class="mda-ai-alert ${a.severity}">
+                    <div class="mda-ai-alert ${a.severity}${a.demo ? ' demo' : ''}">
                         <div class="mda-ai-alert-head">
                             <span class="mda-ai-alert-tag">${_escape(a.tag)}</span>
                             <span>${_escape(a.ts)}</span>
                         </div>
                         <div class="mda-ai-alert-body">${_escape(a.msg)}</div>
                         <span class="mda-ai-alert-conf">conf ${(a.conf*100).toFixed(0)}%</span>
+                        ${a.demo ? '<span class="mda-ai-alert-demo" title="ข้อความสาธิต ไม่ได้มาจากเซ็นเซอร์ — ห้ามใช้ประกอบการตัดสินใจ">DEMO</span>' : ''}
                     </div>`).join('');
             }
             if (alertCount) alertCount.textContent = state.alerts.length;
+            /*  [v17.15] หัวข้อต้องบอกความจริง — ถ้ารายการที่แสดงเป็นข้อความสาธิตทั้งหมด
+                จะเขียนว่า "live stream" ไม่ได้ เพราะผู้บังคับบัญชาจะเข้าใจว่าเป็นข้อมูลจากเซ็นเซอร์ */
+            try {
+                const hd = document.getElementById('mda-ai-alert-head-label');
+                if (hd) {
+                    const nDemo = items.filter(a => a.demo).length;
+                    hd.textContent = !items.length ? 'ALERTS · standby'
+                        : (nDemo === items.length) ? 'ALERTS · DEMO STREAM (ไม่ใช่เซ็นเซอร์)'
+                        : (nDemo > 0) ? ('ALERTS · live + demo ' + nDemo + '/' + items.length)
+                        : 'ALERTS · live stream';
+                    hd.style.color = nDemo ? 'var(--brass)' : '';
+                }
+            } catch (_) {}
         }
 
         function renderTaxonomy() {
@@ -33116,6 +33337,36 @@ window.toggleSat3D = toggleSat3D;
             const D   = (window.MDA && MDA.data) || {};
             const ss  = env.seaState;
             const row = (name, en, reading, status, level, reason) => ({ name, en, reading, status, level, reason });
+            //  [v17.15] เลเยอร์นั้นถูกเปิดอยู่บนแผนที่หรือไม่ — ใช้กับเซ็นเซอร์ที่ไม่มี MDA.data ของตัวเอง (WMS/overlay)
+            const _layerOn = (key) => {
+                try {
+                    const L2 = (window.MDA && MDA.layers) ? MDA.layers[key] : null;
+                    return !!(L2 && typeof map !== 'undefined' && map.hasLayer(L2));
+                } catch (_) { return false; }
+            };
+            //  สถานะโมดูลภายใน — อ่านจาก ctx.modules ที่ _gatherModules() เก็บมา (ถ้าไม่มี ให้ถามโมดูลตรง ๆ)
+            const _mod = (key, modName) => {
+                const m1 = (C.modules && C.modules[key]) || null;
+                if (m1) return m1;
+                try {
+                    const mm = window.MDA && MDA[modName];
+                    if (mm && typeof mm.status === 'function') {
+                        const s = mm.status() || {};
+                        return { state: s.state || null, score: s.score != null ? s.score : null, detail: s.detail || null };
+                    }
+                } catch (_) {}
+                return null;
+            };
+            const cy = C.cyber || null;   // ฟีดไซเบอร์ (ThreatFox · Feodo · URLhaus · RANSOM-TH · KEV)
+            const ly = C.layers || null;  // เลเยอร์สภาพแวดล้อม/ภัยธรรมชาติ
+
+            /*  [v17.15] แถวที่ได้ผลเป็นศูนย์ ต้องบอกให้ชัดว่าเป็น "ตรวจแล้วไม่พบ" หรือ "ยังไม่ได้ตรวจ"
+                เพราะสองกรณีนี้สั่งการต่างกัน — อย่างแรกคือความมั่นใจ อย่างหลังคือช่องว่างข่าวกรอง
+                ที่ต้องปิดก่อนตัดสินใจ จึงยกระดับเป็น "น้อย" ไม่ใช่ "ไม่มี" เพื่อไม่ให้ถูกมองข้าม   */
+            const _nil = (probed, name, src, clearReason) => probed
+                ? row(name, src, '0', 'live', 'none', clearReason)
+                : row(name, src, 'ยังไม่ได้ตรวจ', 'off', 'low',
+                      'ยังไม่ได้ดึงข้อมูลจากแหล่งนี้ — ค่าศูนย์จึงไม่ใช่ผลตรวจ ห้ามตีความว่าปลอดภัย ถือเป็นช่องว่างข่าวกรองที่ต้องปิดก่อนสรุป');
 
             // ── โดเมน 1 · อากาศ-อวกาศ (Air & Space) ──
             const dAir = [];
@@ -33163,6 +33414,15 @@ window.toggleSat3D = toggleSat3D;
             if (D.radar) dAir.push(row('Rain Radar', 'RainViewer', 'on', 'live', 'low', 'เรดาร์ฝน nowcast — ช่วยมองกลุ่มฝน/ทัศนวิสัยรอบ AOI'));
             else         dAir.push(row('Rain Radar', 'RainViewer', 'overlay', 'off', 'none', 'เรดาร์ฝน nowcast (tile overlay) — ปิดอยู่'));
 
+            // [v17.15] ภาพดาวเทียม SAR น้ำท่วม (GISTDA) — เดิมมีเลเยอร์แต่ไม่เคยอยู่ในตาราง
+            {
+                const on = _layerOn('gistdaFlood');
+                if (on) dAir.push(row('Flood SAR', 'GISTDA WMS · 7 วัน', 'on', 'live', 'low',
+                    'ภาพเรดาร์ดาวเทียมน้ำท่วมย้อนหลัง ๗ วัน — ใช้ประเมินน้ำหลาก/ตะกอนจากฝั่งที่ทำให้ทัศนวิสัยใต้น้ำรอบ UDC ลดลง'));
+                else    dAir.push(row('Flood SAR', 'GISTDA WMS · 7 วัน', 'overlay', 'off', 'none',
+                    'เลเยอร์ภาพดาวเทียมน้ำท่วมปิดอยู่ — ไม่มีภาพผลกระทบน้ำหลากจากฝั่งประกอบการตัดสินใจ'));
+            }
+
             // ── โดเมน 2 · ผิวน้ำ (Surface) ──
             const dSurf = [];
             if (ais && ais.ships) {
@@ -33177,6 +33437,15 @@ window.toggleSat3D = toggleSat3D;
                 dSurf.push(row('AISViz Anomaly', 'spoof/dark/loiter', `${n} เรือ`, 'live', n >= 3 ? 'high' : 'med', `พบ ${n} เรือ trajectory ผิดปกติ (MMSI swap/dark/loiter) — ตรวจสอบเจตนา`));
             } else dSurf.push(row('AISViz Anomaly', 'spoof/dark/loiter', '0', 'live', 'none', 'ไม่พบ trajectory ผิดปกติในกรอบ'));
 
+            // [v17.15] ความหนาแน่นทางเรือย้อนหลัง (IMF/World Bank ๒๐๑๕–๒๐๒๑) — ใช้เป็นเส้นฐานเปรียบเทียบ
+            {
+                const sd = _mod('shipDensity', 'ShipDensity'), on = _layerOn('shipDensity') || _layerOn('ship-density');
+                if (on || sd) dSurf.push(row('Ship Density', 'IMF/WB · ค่าย้อนหลัง', on ? 'on' : 'ready', on ? 'live' : 'plan', 'low',
+                    'แผนที่ความหนาแน่นทางเรือย้อนหลัง — เป็นเส้นฐาน (baseline) ให้เทียบว่าเรือที่พบวันนี้อยู่ในร่องปกติหรือออกนอกแบบแผน จึงช่วยคัดกรองเป้าน่าสงสัยรอบ UDC'));
+                else dSurf.push(row('Ship Density', 'IMF/WB · ค่าย้อนหลัง', '—', 'off', 'none',
+                    'ยังไม่เปิดชั้นความหนาแน่นย้อนหลัง — ไม่มีเส้นฐานเทียบว่าการสัญจรวันนี้ผิดปกติเพียงใด'));
+            }
+
             // ── โดเมน 3 · ใต้ผิวน้ำ (Subsurface) — modeled ──
             const dSub = [];
             {
@@ -33189,6 +33458,33 @@ window.toggleSat3D = toggleSat3D;
             dSub.push(row('FLS', 'Forward-Looking Sonar', '60°×200m', 'model', 'med', 'ตรวจจับวัตถุ/นักประดาน้ำระยะใกล้ — ป้องกันภัยประชิด UDC'));
             dSub.push(row('ADCP', 'Current Profiler', 'modeled', 'model', 'low', 'โปรไฟล์กระแสน้ำ — กระทบการปฏิบัติการ UUV/นักประดาน้ำ'));
             dSub.push(row('SVP / XBT', 'Sound-Speed Cast', 'modeled', 'model', 'low', 'โปรไฟล์ความเร็วเสียง — ปรับความแม่นยำของสมการโซนาร์'));
+
+            // [v17.15] โครงข่ายโซนาร์/ไฮโดรโฟน และภาพรวมใต้น้ำ — สองโมดูลนี้เป็นแกนหลักของการป้องกัน UDC แต่เดิมไม่อยู่ในตาราง
+            {
+                const sg = _mod('sonarGrid', 'SonarGrid');
+                if (sg) {
+                    //  sonarNm/hydroNm เป็นฟังก์ชัน (คำนวณสดตาม sea state + SVP) ต้องเรียกก่อน ไม่ใช่ค่าคงที่
+                    const num = (f) => { try { const v = (typeof f === 'function') ? f() : f; return isFinite(v) ? (+v).toFixed(1) : null; } catch (_) { return null; } };
+                    const nm = (window.MDA && MDA.SonarGrid) ? MDA.SonarGrid : null;
+                    const a = nm ? num(nm.sonarNm) : null, hh = nm ? num(nm.hydroNm) : null;
+                    const rd = (a != null) ? `active ${a} nm · hydrophone ${hh != null ? hh : '?'} nm` : (sg.state || 'ready');
+                    dSub.push(row('Sonar Grid', 'โครงข่ายตรวจจับใต้น้ำ', rd, 'model', 'high',
+                        'ระยะครอบคลุมของโซนาร์/ไฮโดรโฟนคือสิ่งที่กำหนดว่า UDC จะรู้ตัวก่อนภัยประชิดกี่นาที — ช่องว่างของโครงข่ายนี้แปลตรงเป็นเวลาที่เหลือให้ตอบโต้'));
+                } else dSub.push(row('Sonar Grid', 'โครงข่ายตรวจจับใต้น้ำ', '—', 'off', 'none',
+                    'ไม่มีสถานะโครงข่ายโซนาร์ — ประเมินระยะเตือนล่วงหน้ารอบ UDC ไม่ได้'));
+            }
+            {
+                const uw = _mod('underwater', 'UnderwaterMDA');
+                if (uw) {
+                    const sc = uw.score != null ? uw.score : null;
+                    const lvl = sc == null ? 'med' : (sc < 60 ? 'high' : (sc < 85 ? 'med' : 'low'));
+                    dSub.push(row('Underwater MDA', 'ไฮโดรโฟน·DAS·GUUV·MCM', sc != null ? `ความเชื่อมั่น ${sc}%` : (uw.state || 'partial'), 'model', lvl,
+                        (sc != null && sc < 85)
+                            ? `ภาพใต้น้ำยังไม่ครบ (ความเชื่อมั่น ${sc}%) — แหล่งข้อมูลสดไม่ครบทุกช่อง ทำให้การชี้ตัวภัยใต้น้ำต้องอาศัยการอนุมาน จึงควรเสริมด้วยการลาดตระเวนจริงก่อนสรุป`
+                            : 'ภาพรวมใต้น้ำครบถ้วน — รวมไฮโดรโฟน สายใยแก้ว DAS ยาน GUUV และงานต้านทุ่นระเบิดเข้าด้วยกัน'));
+                } else dSub.push(row('Underwater MDA', 'ไฮโดรโฟน·DAS·GUUV·MCM', '—', 'off', 'none',
+                    'ไม่มีสถานะภาพรวมใต้น้ำ — ไม่ทราบว่าช่องตรวจจับใดใช้งานได้บ้าง'));
+            }
 
             // ── โดเมน 4 · พื้นท้องทะเล (Seabed) ──
             const dBed = [];
@@ -33205,6 +33501,22 @@ window.toggleSat3D = toggleSat3D;
             } else dBed.push(row('Seismic', 'USGS/TMD', '0', 'off', 'none', 'ไม่มีเหตุการณ์แผ่นดินไหวในห้วงนี้'));
             dBed.push(row('Bathymetry', 'Isobath/DEM', 'modeled', 'model', 'low', 'ข้อมูลความลึก/ภูมิประเทศท้องทะเล — วางแผน sonar·เส้นทางดำน้ำ'));
             dBed.push(row('Multibeam', 'Swath Survey', 'modeled', 'model', 'low', 'สำรวจพื้นท้องทะเล — ตรวจวัตถุ/การรบกวนใกล้แนว cable'));
+
+            // [v17.15] สถานะสึนามิ — แยกจากแถวแผ่นดินไหว เพราะเป็นผลสืบเนื่องที่มีมาตรการรับมือคนละชุด
+            {
+                const ts = (ly && ly.tsunami) || (D.tsunamiEvent
+                    ? { potential: (D.tsunamiEvent.impact && D.tsunamiEvent.impact.tsunamiPotential) || null,
+                        mag: D.tsunamiEvent.mag, place: D.tsunamiEvent.place } : null);
+                if (ts && ts.potential === 'WARNING')
+                    dBed.push(row('Tsunami', 'ประเมินจากแผ่นดินไหว', `WARNING · M${ts.mag}`, 'live', 'high',
+                        `ประกาศเตือนสึนามิจากเหตุ M${ts.mag} ${ts.place || ''} — ต้องอพยพผิวน้ำ ถอนนักประดาน้ำ และตรวจแนวเคเบิลหลังคลื่นผ่านทันที`));
+                else if (ts && ts.potential === 'WATCH')
+                    dBed.push(row('Tsunami', 'ประเมินจากแผ่นดินไหว', `WATCH · M${ts.mag}`, 'live', 'med',
+                        `เฝ้าระวังสึนามิจากเหตุ M${ts.mag} ${ts.place || ''} — เตรียมแผนถอนกำลังผิวน้ำ ยังไม่ต้องสั่งอพยพ`));
+                else
+                    dBed.push(row('Tsunami', 'ประเมินจากแผ่นดินไหว', 'CLEAR', 'model', 'none',
+                        'ไม่มีเหตุที่เข้าเกณฑ์สึนามิในห้วงนี้ — ไม่กระทบการปฏิบัติที่ UDC'));
+            }
 
             // ── โดเมน 5 · ไซเบอร์-สเปกตรัม (Cyber-EM) ──
             const dCyber = [];
@@ -33228,6 +33540,46 @@ window.toggleSat3D = toggleSat3D;
                     noWrk ? 'ต้องตั้ง Worker URL (⚙) — NVD ไม่มี CORS header' : 'ยังไม่มีข้อมูล — รอดึง CVE'));
             }
 
+            /*  [v17.15] ฟีดภัยไซเบอร์ทั้ง ๕ รายการ — ทุกตัวมีเลเยอร์บนแผนที่อยู่แล้วแต่ไม่เคยถูกประเมินในตาราง
+                ทำให้ผู้บังคับบัญชาเห็นหมวดไซเบอร์เพียง ๓ แถว ทั้งที่ระบบเฝ้าอยู่ ๘ แหล่ง
+                เกณฑ์: จำนวนตัวชี้วัด (IOC) ที่พบ + ความใกล้ตัวต่อโครงสร้างพื้นฐานที่ควบคุม UDC        */
+            {
+                const esp = (cy && cy.espionage) ? cy.espionage : { count: (Array.isArray(D.espionage) ? D.espionage.length : 0), byCat: {} };
+                if (esp.count) {
+                    const c2 = (esp.byCat && esp.byCat.c2) || 0;
+                    const lv = c2 >= 5 ? 'high' : (esp.count >= 10 ? 'med' : 'low');
+                    dCyber.push(row('Espionage IOC', 'ThreatFox · จารกรรม', `${esp.count} IOC · C2 ${c2}`, 'live', lv,
+                        `พบตัวชี้วัดกลุ่มจารกรรม ${esp.count} รายการ (เซิร์ฟเวอร์สั่งการ ${c2}) — กลุ่มเหล่านี้มุ่งขโมยข้อมูลแบบผังโครงสร้างและตารางเดินเรือ ซึ่งเป็นข้อมูลตั้งต้นของการวางแผนโจมตี UDC มากกว่าจะก่อกวนทันที`));
+                } else dCyber.push(_nil(esp.probed, 'Espionage IOC', 'ThreatFox · จารกรรม',
+                    'ตรวจแล้วไม่พบตัวชี้วัดกลุ่มจารกรรม — ไม่ได้แปลว่าปลอดภัย เพียงแต่ยังไม่มีสิ่งบ่งชี้ที่เปิดเผยต่อสาธารณะ'));
+
+                const fd = (cy && cy.feodo) ? cy.feodo.count : (Array.isArray(D.feodo) ? D.feodo.length : 0);
+                if (fd) dCyber.push(row('Botnet C2', 'Feodo Tracker', `${fd} C2`, 'live', fd >= 30 ? 'med' : 'low',
+                    `เซิร์ฟเวอร์สั่งการบอตเน็ตที่ยังทำงาน ${fd} จุด — เป็นทางเข้าที่ใช้ปล่อยแรนซัมแวร์ต่อ หากเครื่องในเครือข่ายควบคุม UDC ติดต่อไปยังจุดเหล่านี้ ถือเป็นสัญญาณเตือนขั้นต้น`));
+                else dCyber.push(_nil(cy && cy.feodo && cy.feodo.probed, 'Botnet C2', 'Feodo Tracker',
+                    'ตรวจแล้วไม่พบเซิร์ฟเวอร์สั่งการบอตเน็ตที่ยังทำงาน — ห้วงนี้ไม่มีชุดเปรียบเทียบใหม่สำหรับตรวจการติดต่อออกที่ผิดปกติ'));
+
+                const uh = (cy && cy.urlhaus) ? cy.urlhaus.count : (Array.isArray(D.urlhaus) ? D.urlhaus.length : 0);
+                if (uh) dCyber.push(row('Malware URL', 'URLhaus', `${uh} URL`, 'live', uh >= 30 ? 'med' : 'low',
+                    `ที่อยู่แจกจ่ายมัลแวร์ ${uh} รายการ — ใช้คัดกรองอีเมล/ลิงก์ที่ส่งถึงกำลังพลสายเทคนิค ซึ่งเป็นช่องทางบุกรุกที่พบบ่อยที่สุดต่อระบบควบคุมท่าเรือ`));
+                else dCyber.push(_nil(cy && cy.urlhaus && cy.urlhaus.probed, 'Malware URL', 'URLhaus',
+                    'ตรวจแล้วไม่พบที่อยู่แจกจ่ายมัลแวร์รายการใหม่ — ยังคัดกรองลิงก์ด้วยชุดข้อมูลเดิมได้'));
+
+                const rth = (cy && cy.ransomTH) ? cy.ransomTH.count : (Array.isArray(D['ransom-th']) ? D['ransom-th'].length : 0);
+                if (rth) dCyber.push(row('Ransomware TH', 'ransomware.live', `${rth} ราย`, 'live', rth >= 10 ? 'high' : 'med',
+                    `องค์กรในไทยถูกเรียกค่าไถ่ข้อมูล ${rth} ราย — บ่งชี้ว่ากลุ่มโจมตีกำลังเคลื่อนไหวในประเทศ หากลามถึงผู้รับเหมาหรือผู้ให้บริการสื่อสารของ UDC จะกระทบการควบคุมโดยตรง`));
+                else dCyber.push(_nil(cy && cy.ransomTH && cy.ransomTH.probed, 'Ransomware TH', 'ransomware.live',
+                    'ตรวจแล้วไม่พบเหยื่อเรียกค่าไถ่รายใหม่ในไทยห้วงนี้'));
+
+                const kv = (cy && cy.kev) ? cy.kev : ((D.kev) ? { total: D.kev.total, last30d: D.kev.count30d, ransomware: D.kev.ransomTotal } : null);
+                if (kv) {
+                    const n30 = kv.last30d || 0;
+                    dCyber.push(row('KEV Catalog', 'CISA · ช่องโหว่ถูกใช้จริง', `${n30} ใหม่/30 วัน · รวม ${kv.total || 0}`, 'live', n30 >= 10 ? 'high' : (n30 > 0 ? 'med' : 'low'),
+                        `ช่องโหว่ที่ยืนยันแล้วว่ามีการใช้โจมตีจริง ${n30} รายการในรอบเดือน (สะสม ${kv.total || 0} · ใช้กับแรนซัมแวร์ ${kv.ransomware || 0}) — รายการนี้ต่างจาก CVE ทั่วไป เพราะบังคับให้ต้องปิดช่องโหว่ตามกำหนด ไม่ใช่แค่เฝ้าดู`));
+                } else dCyber.push(_nil(false, 'KEV Catalog', 'CISA · ช่องโหว่ถูกใช้จริง', ''));
+                //  KEV เก็บผลเป็นอ็อบเจกต์เมื่อสำเร็จเท่านั้น ถ้าไม่มี = ยังไม่ได้ตรวจ/ดึงไม่สำเร็จเสมอ
+            }
+
             // ── โดเมน 6 · ฝั่ง-ชายฝั่ง (Littoral) ──
             const dLit = [];
             {
@@ -33243,6 +33595,64 @@ window.toggleSat3D = toggleSat3D;
             if (Array.isArray(D.seamarks) && D.seamarks.length) dLit.push(row('IALA Seamarks', 'OSM/Overpass', `${D.seamarks.length} ทุ่น/ไฟ`, 'live', 'low', 'ทุ่น·ไฟ·ซากเรือ — บริบทการเดินเรือ/อ้างอิงเขตชายฝั่ง'));
             else dLit.push(row('IALA Seamarks', 'OSM/Overpass', 'off', 'off', 'none', 'เลเยอร์เครื่องหมายการเดินเรือยังไม่โหลด'));
 
+            /*  [v17.15] METOC จากแหล่งไทย — เดิมตารางมีเพียงแถว "Tide / Detection" ที่เป็นค่าจำลอง
+                ทั้งที่ระบบดึงระดับน้ำ/คลื่น/น้ำล้นตลิ่งจาก สอน./thaiwater.net ของจริงอยู่แล้ว          */
+            {
+                const mt = C.metoc || null;
+                if (mt && (mt.tide || mt.wave || mt.stormSurge)) {
+                    const p = [];
+                    if (mt.tide && mt.tide.nowM != null) p.push(`น้ำ ${mt.tide.nowM.toFixed(2)} ม.${mt.tide.trend ? ' ' + mt.tide.trend : ''}`);
+                    if (mt.wave && mt.wave.hsM != null)  p.push(`Hs ${(+mt.wave.hsM).toFixed(1)} ม.`);
+                    const warn = (mt.stormSurge && mt.stormSurge.warnings) || 0;
+                    if (warn) p.push(`เตือนน้ำล้น ${warn}`);
+                    dLit.push(row('METOC ไทย', 'สอน./thaiwater.net', p.join(' · ') || 'on', 'live', warn > 0 ? 'high' : 'med',
+                        warn > 0
+                            ? `มีสถานีประกาศเตือนน้ำล้นตลิ่ง ${warn} แห่ง — กระทบท่าเทียบ ฐานส่งกำลัง และการเข้า-ออกของเรือสนับสนุน UDC โดยตรง`
+                            : 'ค่าระดับน้ำ-คลื่นจากแหล่งอธิปไตยไทย ใช้เป็นค่าอ้างอิงหลักเหนือแบบจำลองต่างประเทศ — กำหนดหน้าต่างเวลาที่นักประดาน้ำและเรือเล็กทำงานได้'));
+                } else dLit.push(row('METOC ไทย', 'สอน./thaiwater.net', '—', 'off', 'none',
+                    'ไม่มีค่าระดับน้ำ/คลื่นจากแหล่งไทย — ต้องพึ่งแบบจำลองต่างประเทศซึ่งความละเอียดชายฝั่งต่ำกว่า'));
+            }
+            //  การใช้ประโยชน์พื้นที่ทะเล — ชั้นข้อมูลบริบท บอกว่ากิจกรรมใดเป็นเรื่องปกติของพื้นที่
+            {
+                const su = _mod('seaUse', 'SeaUse');
+                if (su) dLit.push(row('Sea-Use Hexbin', 'การใช้ประโยชน์พื้นที่ทะเล', su.score != null ? `พร้อม ${su.score}%` : 'ready', 'model', 'low',
+                    'ผังกิจกรรมทางทะเลรอบเกาะครามถึงฝั่ง — ใช้แยกว่าเรือที่พบเป็นประมง/ท่องเที่ยวตามปกติของพื้นที่ หรือเป็นการเข้าพื้นที่ที่ไม่มีเหตุผลรองรับ'));
+                else dLit.push(row('Sea-Use Hexbin', 'การใช้ประโยชน์พื้นที่ทะเล', '—', 'off', 'none',
+                    'ไม่มีผังการใช้ประโยชน์พื้นที่ — ขาดบริบทว่ากิจกรรมใดผิดปกติสำหรับพื้นที่นั้น'));
+            }
+            //  แหล่งประมง/ร่องเดินเรือ — เกี่ยวข้องกับผลกระทบต่อประชาชนและค่าชดเชยเมื่อประกาศเขตหวงห้าม
+            {
+                const fm = _mod('fisherMSP', 'FisherMSP');
+                if (fm) dLit.push(row('แหล่งประมง·ร่องเรือ', 'FisherMSP', fm.score != null ? `พร้อม ${fm.score}%` : 'ready', 'plan', 'low',
+                    'ที่ตั้งแหล่งประมงและร่องเดินเรือพาณิชย์ — ถ้าต้องประกาศเขตหวงห้าม ๕๐๐ ม. ตาม UNCLOS ม.๖๐(๕) ชั้นนี้บอกว่าใครได้รับผลกระทบและต้องชดเชยเท่าใด'));
+                else dLit.push(row('แหล่งประมง·ร่องเรือ', 'FisherMSP', '—', 'off', 'none',
+                    'ไม่มีข้อมูลแหล่งประมง/ร่องเดินเรือ — ประเมินผลกระทบต่อประชาชนจากการประกาศเขตหวงห้ามไม่ได้'));
+            }
+            //  ต้านอากาศยานไร้คนขับ — เป็นทั้งเซ็นเซอร์ (ตรวจจับ) และมาตรการตอบโต้ จึงอยู่ในหมวดชายฝั่ง
+            {
+                const cu = _mod('counterUAS', 'CounterUAS');
+                if (cu) dLit.push(row('Counter-UAS', 'ตรวจจับ·ต้านโดรน', cu.detail ? String(cu.detail).split(' · ')[0] : 'ready', 'plan', 'med',
+                    'ชุดตรวจจับและต้านโดรนรอบพื้นที่ — โดรนเป็นภัยที่เข้าถึง UDC ได้เร็วที่สุดและตรวจด้วยเรดาร์เดินเรือทั่วไปได้ยาก จึงต้องอาศัยชุดเฉพาะนี้ชี้เป้าล่วงหน้า'));
+                else dLit.push(row('Counter-UAS', 'ตรวจจับ·ต้านโดรน', '—', 'off', 'none',
+                    'ไม่มีชุดต้านโดรนในระบบ — ช่องว่างการป้องกันภัยทางอากาศระยะประชิดเหนือ UDC'));
+            }
+
+            /*  [v17.15] หมวดข้ามโดเมน — Fusion ไม่ใช่เซ็นเซอร์ของโดเมนใดโดยเฉพาะ แต่เป็นตัวรวมสัญญาณ
+                จากทุกโดเมนเข้าด้วยกัน จึงแยกเป็นหมวดของตัวเองแทนที่จะยัดลงหมวดใดหมวดหนึ่งให้ดูผิดที่   */
+            const dFus = [];
+            {
+                const fu = (ly && ly.fusion) || (Array.isArray(D.fusion)
+                    ? { total: D.fusion.length, critical: D.fusion.filter(x => x.lvl === 'crit').length } : null);
+                if (fu && fu.total) {
+                    const cr = fu.critical || 0;
+                    dFus.push(row('Fusion Alerts', 'รวมสัญญาณข้ามโดเมน', `${fu.total} รายการ · วิกฤต ${cr}`, 'live', cr > 0 ? 'high' : (fu.total >= 6 ? 'med' : 'low'),
+                        cr > 0
+                            ? `มีสัญญาณระดับวิกฤต ${cr} รายการที่ผ่านการรวมข้อมูลหลายโดเมนแล้ว — ระดับนี้ผ่านการกรองสัญญาณรบกวนมาแล้ว จึงควรถือเป็นลำดับความสำคัญสูงสุดในการตัดสินใจ`
+                            : `รวมสัญญาณจากทุกโดเมนได้ ${fu.total} รายการ ยังไม่มีระดับวิกฤต — ภาพรวมสอดคล้องกัน ไม่มีสัญญาณขัดแย้งที่ต้องคลี่คลาย`));
+                } else dFus.push(row('Fusion Alerts', 'รวมสัญญาณข้ามโดเมน', '0', 'off', 'none',
+                    'ยังไม่มีการรวมสัญญาณข้ามโดเมน — ผู้ตัดสินใจต้องอ่านทีละโดเมนเอง เสี่ยงมองข้ามความเชื่อมโยง'));
+            }
+
             const domains = [
                 { key: 'air',   icon: '🛰', label: 'อากาศ-อวกาศ',     en: 'Air & Space', org: 'ทอ./ทร. · บวท.',   color: '#38bdf8', rows: dAir },
                 { key: 'surf',  icon: '🚢', label: 'ผิวน้ำ',            en: 'Surface',     org: 'ทรภ.1/ศรชล.',      color: '#06b6d4', rows: dSurf },
@@ -33250,6 +33660,7 @@ window.toggleSat3D = toggleSat3D;
                 { key: 'bed',   icon: '⚓', label: 'พื้นท้องทะเล',      en: 'Seabed',      org: 'อศ./UDC',          color: '#f59e0b', rows: dBed },
                 { key: 'cyber', icon: '📡', label: 'ไซเบอร์-สเปกตรัม',  en: 'Cyber-EM',    org: 'สกมช./ทร.(EW)',    color: '#8b5cf6', rows: dCyber },
                 { key: 'lit',   icon: '🏝', label: 'ฝั่ง-ชายฝั่ง',       en: 'Littoral',    org: 'นย./ฐท.สส.',       color: '#22c55e', rows: dLit },
+                { key: 'fus',   icon: '🧩', label: 'ข้ามโดเมน',         en: 'Cross-Domain', org: 'ศรชล./ศูนย์ฯ',    color: '#e879f9', rows: dFus },
             ];
             const counts = { high: 0, med: 0, low: 0, none: 0 };
             let total = 0;
@@ -33265,7 +33676,7 @@ window.toggleSat3D = toggleSat3D;
             let h = '';
             h += '<div class="mda-im-wrap">';
             h += '<div class="mda-im-head"><span><svg class="ico" aria-hidden="true"><use href="#i-satellite"/></svg> SENSOR IMPACT MATRIX · ผลกระทบต่อ UDC รายเซ็นเซอร์</span>'
-               + `<span class="mda-im-sub">${m.total} เซ็นเซอร์ · 6 โดเมน · ${m.dataMode === 'real' ? '<span class="dot dot--ok"></span> REAL' : '<span class="dot dot--warn"></span> DEMO'}</span></div>`;
+               + `<span class="mda-im-sub">${m.total} เซ็นเซอร์ · ${m.domains.length} โดเมน · ${m.dataMode === 'real' ? '<span class="dot dot--ok"></span> REAL' : '<span class="dot dot--warn"></span> DEMO'}</span></div>`;
             h += '<div class="mda-im-legend">'
                + `<span class="mda-im-chip high">มาก ${m.counts.high}</span>`
                + `<span class="mda-im-chip med">ปานกลาง ${m.counts.med}</span>`
@@ -33288,6 +33699,44 @@ window.toggleSat3D = toggleSat3D;
             });
             h += '</tbody></table></div>';
             return h;
+        }
+
+        /*  [v17.15] ตรวจความพร้อมเซ็นเซอร์ก่อนวิเคราะห์ (pre-flight)
+            ปัญหาเดิม : ฟีดไซเบอร์ถูกดึงเมื่อผู้ใช้กดเปิดเลเยอร์บนแผนที่เท่านั้น ถ้าไม่เคยเปิด
+                        ตารางจะรายงาน "ไม่มี" ทั้งที่ยังไม่เคยตรวจ ทำให้ข้อประเมินภัยขึ้นกับว่า
+                        ผู้ปฏิบัติงานเผลอกดชั้นใดไว้ ไม่ใช่สถานการณ์จริง — นายทหารสองคนรัน
+                        คำสั่งเดียวกันจึงอาจได้คำตอบต่างกันสุดขั้ว
+            วิธีแก้   : สั่งดึงเฉพาะฟีดที่ "ยังไม่เคยตรวจ" ให้ครบก่อนเสมอ ฟีดที่มีข้อมูลแล้ว
+                        ไม่ดึงซ้ำ (ไม่ถล่มต้นทาง) แล้วจึง build Fusion ปิดท้ายเพราะเป็นตัวรวม
+                        สัญญาณข้ามโดเมน ต้องรอฟีดต้นทางมาครบก่อน                                */
+        const AI_PREFLIGHT = [
+            { key: 'espionage',  mod: 'Espionage',    label: 'ThreatFox'      },
+            { key: 'feodo',      mod: 'Feodo',        label: 'Feodo Tracker'  },
+            { key: 'urlhaus',    mod: 'Urlhaus',      label: 'URLhaus'        },
+            { key: 'ransom-th',  mod: 'RansomwareTH', label: 'Ransomware TH'  },
+            { key: 'kev',        mod: 'KEV',          label: 'CISA KEV'       }
+        ];
+        async function _preflightSensors(onStart) {
+            const D = (window.MDA && MDA.data) || {};
+            //  ยังไม่เคยตรวจ = ไม่มีตราประทับใน _probed (อาร์เรย์ว่างใช้ตัดสินไม่ได้ เพราะตั้งต้นเป็น [] มาแต่บูต)
+            //  KEV ต่างจากตัวอื่น เพราะดึงอัตโนมัติตอนบูตอยู่แล้ว จึงดูจากผลลัพธ์จริง
+            const todo = AI_PREFLIGHT.filter(f => f.key === 'kev' ? !D.kev
+                                                                 : !(D._probed && D._probed[f.key]));
+            const failed = [];
+            if (todo.length) {
+                if (onStart) { try { onStart(todo); } catch (_) {} }
+                await Promise.all(todo.map(async (f) => {
+                    try {
+                        const m = window.MDA && MDA[f.mod];
+                        if (m && typeof m.refresh === 'function') await m.refresh();
+                    } catch (e) {
+                        failed.push(f.label);
+                        console.warn('[MDA.AI] pre-flight fail:', f.label, e && e.message);
+                    }
+                }));
+            }
+            try { if (MDA.Fusion && MDA.Fusion.build) await MDA.Fusion.build(); } catch (_) {}
+            return { fetched: todo.map(f => f.label), failed };
         }
 
         async function generateOpusAnalysis() {
@@ -33332,6 +33781,17 @@ window.toggleSat3D = toggleSat3D;
 
             // v14.0.9 — รวบรวมบริบทหลายโดเมน (Aviation/Seismic/SpaceWx/GDELT/MarineWx + AIS/env)
             //           ส่งให้ AI แม้ source เหล่านี้ไม่ได้ถูก render บนแผนที่
+            //  [v17.15] ต้องดึงฟีดที่ยังไม่เคยตรวจให้ครบ "ก่อน" เก็บบริบท มิฉะนั้นภาพที่ส่งให้
+            //           วิเคราะห์จะเป็นเพียงชั้นข้อมูลที่ผู้ใช้บังเอิญเปิดไว้ ไม่ใช่ของที่มีจริง
+            let preflight = null;
+            try {
+                preflight = await _preflightSensors((todo) => {
+                    const st = opusNarr.querySelector('.mda-ai-opus-loading > div:nth-child(2)');
+                    if (st) st.textContent = 'กำลังรวบรวมเซ็นเซอร์ ' + todo.length + ' แหล่ง ('
+                                           + todo.map(f => f.label).join(' · ') + ') …';
+                });
+            } catch (_) { preflight = null; }
+
             let ctx = null;
             try { ctx = classifier.gather().context; } catch (_) { ctx = null; }
             const dataMode = (ctx && ctx.dataMode) || 'demo';
@@ -34452,7 +34912,9 @@ window.toggleSat3D = toggleSat3D;
             'espionage':    'ภัยจารกรรม (ThreatFox)',        // [v17.9 Cyber-EM]
             'feodo':        'บอตเน็ต C2 (Feodo)',            // [v17.10 Cyber-EM]
             'urlhaus':      'มัลแวร์ URL (URLhaus)',          // [v17.10 Cyber-EM]
-            'kev':          'CVE ถูกโจมตีจริง (KEV)'          // [v17.10 Cyber-EM]
+            'kev':          'CVE ถูกโจมตีจริง (KEV)',         // [v17.10 Cyber-EM]
+            'gnss-jam':     'GNSS Denial Bubble (EMSO)',      // [v17.16 EMSO]
+            'spectrum':     'EM Spectrum Ribbon (EMSO)'       // [v17.16 EMSO]
         };
 
         // ── ปุ่มลูกศรกางและพับแต่ละหมวด
@@ -34510,6 +34972,10 @@ window.toggleSat3D = toggleSat3D;
                 if (key === 'urlhaus'    && turningOn && (!MDA.data['urlhaus'] || !MDA.data['urlhaus'].length)) MDA.Urlhaus.refresh();
                 // [v17.10 Cyber-EM] CISA KEV — info row (คลิกเปิด drawer); เผื่อ toggle → fetch ถ้ายังไม่มีข้อมูล
                 if (key === 'kev'        && turningOn && !MDA.data.kev) MDA.KEV.refresh();
+                // [v17.16 EMSO] GNSS Denial Bubble — วง PNT รอบเกาะคราม (custom on/off · ticker) ไม่ผูก layerMap
+                if (key === 'gnss-jam') { try{ turningOn ? MDA.EmsoGnss.on() : MDA.EmsoGnss.off(); }catch(_){} }
+                // [v17.16 EMSO] EM Spectrum ribbon — HUD panel (custom on/off · ticker) ไม่ผูก layerMap
+                if (key === 'spectrum') { try{ turningOn ? MDA.EmsoSpectrum.on() : MDA.EmsoSpectrum.off(); }catch(_){} }
                 // ชั้นความหนาแน่นและความผิดปกติของ AIS = ชั้นข้อมูลของ v11 (ไม่ได้ผูกไว้ตรงนี้)
                 toast((turningOn ? 'ON · ' : 'OFF · ') + (labelMap[key] || key));
                 console.log('[MDA] toggle', key, '=', turningOn);
@@ -42597,6 +43063,167 @@ window.MDA.CyberScenarios = (function(){
 </script>
 
 <!-- ════════════════════════════════════════════════════════════════════════
+     MODULE 2b · MDA.EmsoGnss + MDA.EmsoSpectrum — EMSO ในโดเมน Cyber-EM (v17.16)
+     ────────────────────────────────────────────────────────────────────────
+     ① EmsoSpectrum — แถบครองคลื่น (HUD) VHF/L-band/X-band/Ku-Ka
+                       L-band ← gnssJitter จริง (LIVE) · ที่เหลือ SIM baseline
+     ④ EmsoGnss     — ยกค่าสเกลาร์ gnssJitter (กฎ R4) เป็น "วงปฏิเสธ PNT" เชิงพื้นที่
+                       รอบ UDC/เกาะคราม · เขียว→เหลือง→แดง · baseline อ้างอิง GPSJam (keyless)
+     ทั้งคู่ผูก toggle หมวด Cyber-EM: 'gnss-jam' (map layer) · 'spectrum' (HUD panel)
+     ════════════════════════════════════════════════════════════════════════ -->
+<script>
+window.MDA = window.MDA || {};
+
+// ค่าความแกว่งสัญญาณดาวเทียม (0..1) — อ่านจาก R4 live state เดียวกับตัวจำแนก
+function _emsoJitter(){
+  try{ if(window.MDA&&window.MDA.cyber&&window.MDA.cyber.gnssJitter!=null) return +window.MDA.cyber.gnssJitter; }catch(_){}
+  try{ if(window.gnssJitter!=null) return +window.gnssJitter; }catch(_){}
+  return 0;
+}
+
+// ─────────────── ④ GNSS DENIAL BUBBLE ───────────────
+window.MDA.EmsoGnss = (function(){
+  'use strict';
+  const CENTER = [12.712, 100.820];          // UDC / ทิศตะวันออกเกาะคราม (WGS-84)
+  const layer  = L.layerGroup();
+  try{ MDA.layers = MDA.layers || {}; MDA.layers['gnss-jam'] = layer; }catch(_){}
+  let _timer = null, _gpsjam = null, _probed = false;
+
+  function _tier(j){
+    if(j>=0.5) return { k:'denied',   col:'#ef4444', th:'ถูกปฏิเสธ (Denied/Spoofing)', r4:'กฎ R4 กำลังยิง' };
+    if(j>=0.2) return { k:'degraded', col:'#f59e0b', th:'เสื่อมสภาพ (Degraded)',       r4:'ต่ำกว่าเกณฑ์ R4 (0.5)' };
+    return          { k:'nominal',  col:'#22c55e', th:'ปกติ (Nominal)',            r4:'สัญญาณ PNT ปกติ' };
+  }
+  function _popup(j,t){
+    const pct = Math.round(j*100);
+    const gp = (_gpsjam==null)
+      ? 'GPSJam baseline: n/a (ต้องผ่าน Worker relay — CORS)'
+      : ('GPSJam baseline: ~'+_gpsjam+' เซลล์รบกวนใกล้เคียง (H3 · CC-BY)');
+    return '<div class="mda-gnss-popup" style="font-family:var(--font-mono),monospace;min-width:222px;">'
+      + '<div style="color:'+t.col+';font-weight:bold;margin-bottom:3px;">&#128752; GNSS DENIAL BUBBLE &middot; EMSO</div>'
+      + '<div style="font-size:11px;line-height:1.7;color:#cbd5e1;">'
+      + 'สถานะ PNT: <b style="color:'+t.col+'">'+t.th+'</b>'
+      + '<br>gnssJitter: '+pct+'% &middot; '+t.r4
+      + '<br>ศูนย์กลาง: UDC/เกาะคราม 12.712&deg;N 100.820&deg;E'
+      + '<br>Asset ต้าน: CRPA anti-jam &middot; INS/alt-PNT &middot; M-code'
+      + '<span class="lp-note">'+gp+'</span>'
+      + '<span class="lp-note">แหล่ง: sim R4 (live) &middot; baseline GPSJam.org (keyless)</span>'
+      + '</div></div>';
+  }
+  function draw(){
+    layer.clearLayers();
+    const j=_emsoJitter(), t=_tier(j);
+    const rOuter = 3000 + j*13000;              // 3–16 กม. (วง PNT รอบเกาะคราม)
+    const outer = L.circle(CENTER, { radius:rOuter, color:t.col, weight:1.4, opacity:.85,
+        fillColor:t.col, fillOpacity:(j>=0.5?0.14:(j>=0.2?0.08:0.05)), dashArray:(j<0.2?'4 5':null) });
+    outer.bindPopup(_popup(j,t), { className:'mda-cyber-popup', maxWidth:290, minWidth:222 });
+    outer.addTo(layer);
+    if(j>=0.5){                                  // แกนปฏิเสธชั้นใน (denial core)
+      L.circle(CENTER, { radius:rOuter*0.42, color:'#ef4444', weight:1, opacity:.9,
+        fillColor:'#ef4444', fillOpacity:.22, dashArray:'2 4' }).addTo(layer);
+    }
+    const lbl = L.divIcon({ className:'mda-gnss-lbl',
+      html:'<div style="font:700 9px/1 var(--font-mono),monospace;color:'+t.col+';white-space:nowrap;text-shadow:0 0 4px #000;">&#128752; GNSS '+Math.round(j*100)+'%</div>',
+      iconSize:[70,10], iconAnchor:[35,-8] });
+    L.marker(CENTER, { icon:lbl, interactive:false }).addTo(layer);
+    try{ MDA.util.setCount('mda-cnt-gnss-jam', t.k==='nominal'?'OK':(Math.round(j*100)+'%')); }catch(_){}
+    try{ MDA.util.setBadge('gnss-jam', Math.round(j*100)+'%', j>=0.5?'crit':(j>=0.2?'warn':null)); }catch(_){}
+  }
+  async function _probeGpsjam(){
+    if(_probed) return; _probed = true;         // best-effort ครั้งเดียว (keyless · CC-BY)
+    try{
+      const d = new Date(Date.now()-864e5).toISOString().slice(0,10);   // เมื่อวาน (วันนี้อาจยังไม่ publish)
+      const r = await fetch('https://gpsjam.org/data/'+d+'-h3-4.json', { mode:'cors' });
+      if(!r.ok) throw 0;
+      const js = await r.json();
+      const feats = (js && js.features) || [];
+      if(!feats.length){ _gpsjam = null; return; }
+      let n=0;
+      for(const f of feats){ const p=f.properties||{};
+        if((p.count_bad|0)>0 || (+p.bad_frac||0)>0.1) n++; }
+      _gpsjam = n;
+    }catch(_){ _gpsjam = null; }                 // CORS/404 → n/a (ตรงตามหลักนิยม: ต้องมี Worker relay)
+  }
+  function on(){
+    try{ layer.addTo(map); }catch(_){}
+    draw(); _probeGpsjam();
+    if(_timer) clearInterval(_timer);
+    _timer = setInterval(()=>{ try{ if(MDA.state && MDA.state.on && MDA.state.on['gnss-jam']) draw(); }catch(_){} }, 1500);
+  }
+  function off(){
+    if(_timer){ clearInterval(_timer); _timer=null; }
+    try{ map.removeLayer(layer); }catch(_){}
+    try{ MDA.util.setCount('mda-cnt-gnss-jam','--'); }catch(_){}
+  }
+  return { layer, draw, on, off, name:'EMSO-GNSS' };
+})();
+
+// ─────────────── ① EM SPECTRUM AWARENESS RIBBON ───────────────
+window.MDA.EmsoSpectrum = (function(){
+  'use strict';
+  let _timer=null, _wired=false;
+
+  function _aisAnom(){                            // จำนวน AIS anomaly (ถ้ามี) — best-effort
+    try{ if(typeof aisAnomalies!=='undefined' && aisAnomalies && aisAnomalies.length!=null) return aisAnomalies.length; }catch(_){}
+    try{ if(MDA.data && MDA.data.ais && MDA.data.ais.anomalies!=null) return +MDA.data.ais.anomalies; }catch(_){}
+    return 0;
+  }
+  function _state(pct){
+    if(pct>=75) return { k:'JAMMED',    col:'#ef4444' };
+    if(pct>=50) return { k:'CONTESTED', col:'#f59e0b' };
+    if(pct>=25) return { k:'CONGESTED', col:'#eab308' };
+    return          { k:'CLEAR',     col:'#22c55e' };
+  }
+  function _vals(){
+    const j=_emsoJitter(), anom=_aisAnom();
+    return {
+      vhf:    Math.min(100, 15 + Math.min(45, anom*8)),   // AIS/comms (baseline + live nudge)
+      lband:  Math.min(100, Math.round(18 + j*82)),       // GNSS ← gnssJitter (LIVE)
+      xband:  (j>=0.5 ? 55 : 18),                         // เรดาร์ (proxy จาก EW activity)
+      satcom: 22                                          // SATCOM baseline
+    };
+  }
+  function render(){
+    const panel=document.getElementById('mda-spectrum-panel'); if(!panel) return;
+    const v=_vals();
+    panel.querySelectorAll('.mspec-row').forEach(row=>{
+      const pct = v[row.dataset.band]||0, st=_state(pct);
+      const fill=row.querySelector('.mspec-fill'), stx=row.querySelector('.mspec-state');
+      if(fill){ fill.style.width=pct+'%'; fill.style.background=st.col; }
+      if(stx){ stx.textContent=st.k; stx.style.color=st.col; }
+    });
+    try{ MDA.util.setCount('mda-cnt-spectrum', _state(v.lband).k==='CLEAR'?'OK':'ACT'); }catch(_){}
+  }
+  function _wire(){
+    if(_wired) return; _wired=true;
+    const close=document.getElementById('mda-spectrum-close');
+    if(close) close.addEventListener('click', ()=>{
+      const row=document.querySelector('#mda-layerpanel .mda-lp-row[data-mda-layer="spectrum"]');
+      if(row && row.classList.contains('on')) row.click();   // sync กับ toggle row
+      else off();
+    });
+    // ลากหัว panel ได้ (เหมือน marine-wx)
+    const hdr=document.getElementById('mda-spectrum-hdr'), panel=document.getElementById('mda-spectrum-panel');
+    if(hdr && panel){
+      let sx,sy,ox,oy,drag=false;
+      hdr.addEventListener('mousedown',e=>{ if(e.target.closest('.mspec-close'))return;
+        drag=true; sx=e.clientX; sy=e.clientY; const r=panel.getBoundingClientRect(); ox=r.left; oy=r.top;
+        panel.style.right='auto'; panel.style.bottom='auto'; panel.style.left=ox+'px'; panel.style.top=oy+'px'; e.preventDefault(); });
+      document.addEventListener('mousemove',e=>{ if(!drag)return; panel.style.left=(ox+e.clientX-sx)+'px'; panel.style.top=(oy+e.clientY-sy)+'px'; });
+      document.addEventListener('mouseup',()=>{ drag=false; });
+    }
+  }
+  function on(){ _wire(); const p=document.getElementById('mda-spectrum-panel'); if(p)p.style.display=''; render();
+    if(_timer)clearInterval(_timer); _timer=setInterval(()=>{ try{ if(MDA.state&&MDA.state.on&&MDA.state.on['spectrum']) render(); }catch(_){} },1500); }
+  function off(){ if(_timer){clearInterval(_timer);_timer=null;} const p=document.getElementById('mda-spectrum-panel'); if(p)p.style.display='none';
+    try{ MDA.util.setCount('mda-cnt-spectrum','--'); }catch(_){} }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', _wire); else _wire();
+  return { render, on, off, name:'EMSO-SPECTRUM' };
+})();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════════════════
      MODULE 3 · MDA.CounterUAS — 4-sensor detect model (RF / EO-IR / acoustic / radar)
      Detection rings around shore AA teams that CROSS-CUE (>=2 rings ⇒ escalate).
      ════════════════════════════════════════════════════════════════════════ -->
@@ -44300,8 +44927,10 @@ window.MDA.StrategicAnalysis = (function () {
   #udc-ai-btn:hover .uab-icon { transform: none !important; }
 
   /* ── เส้นแบ่งโซน: เส้นบางคั่นระหว่างกลุ่มปุ่มตามหน้าที่ ──
-     กลุ่ม: [gudc|mda-cop] | [สถานะ] | [pitch|ai|reset|theme|layers] | [นาฬิกาซูลู] | [demo|Σphysics] | [ภาษา|เต็มจอ] */
-  #udc-pitch-btn::before, #demoBtn::before, #langToggleBtn::before {
+     [v17.16 E] เติมเส้นคั่นก่อน [สถานะ] ที่แผนผังเดิมระบุไว้ แต่ยังไม่เคยลง CSS จริง · และอัปเดตแผนผัง
+     ให้ตรงกับ header หลัง PHASE-HEADERFIX (theme ถูกซ่อน→rail, demo/legal→เมนู MDA-COP, +ปุ่ม su SEA-USE)
+     กลุ่มจริง: [gudc|mda-cop|su] ┃ [สถานะ] ┃ [pitch|ai|reset|layers] ┃ [ซูลู] ┃ [ภาษา|เต็มจอ] */
+  #udc-pitch-btn::before, #demoBtn::before, #langToggleBtn::before, .sys-status-pill::before {
     content: '';
     position: absolute;
     left: -8px;
@@ -44315,6 +44944,8 @@ window.MDA.StrategicAnalysis = (function () {
   #udc-pitch-btn { margin-left: 6px !important; }
   #demoBtn       { margin-left: 6px !important; }
   #langToggleBtn { margin-left: 6px !important; }
+  /* [v17.16 E] ป้ายสถานะต้อง position:relative เพื่อยึดเส้นคั่น ::before ที่เพิ่งเพิ่ม */
+  .sys-status-pill { margin-left: 6px !important; position: relative !important; }
 
   /* เส้นแบ่งก่อนโซนนาฬิกาซูลู */
   #zulu-clock { margin-left: 6px !important; position: relative !important; }
@@ -47545,28 +48176,38 @@ window.MDA.SeaUse = (function () {
   /* ── การไล่เฉดสีตามระดับความหนาแน่น (อ่อน → เข้ม) ───────────────────── */
   function lerp(a, b, t){ return Math.round(a + (b - a) * t); }
   function hex2rgb(h){ return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)]; }
-  var SEQ = [[0,[236,238,232]],[.30,[232,211,176]],[.55,[224,138,107]],[.78,[214,88,74]],[1,[150,29,23]]];
+  /*   ปรับสเกลให้อิ่มตัวขึ้น (vivid) — ปลายอ่อนเดิมเป็นขาวอมเทาซึ่งจมหายไปกับแผนที่มืด
+       จึงเปลี่ยนเป็นเหลืองสว่าง แล้วไล่ไปส้ม–แดง–ชาด ที่มีความอิ่มตัวสูงตลอดช่วง
+       GAMMA < 1 = ดันค่าช่วงกลางให้ถึงเฉดเข้มเร็วขึ้น ภาพรวมจึงเห็นความเข้มชัดกว่าเดิม */
+  var GAMMA = 0.72;
+  var SEQ = [[0,[255,246,168]],[.30,[254,199,60]],[.55,[252,133,32]],[.78,[240,60,38]],[1,[190,12,60]]];
   function seqColor(v){
-    v = Math.max(0, Math.min(1, v));
+    v = Math.pow(Math.max(0, Math.min(1, v)), GAMMA);
     for (var i=1;i<SEQ.length;i++){
       if (v <= SEQ[i][0]){
         var t = (v - SEQ[i-1][0])/(SEQ[i][0] - SEQ[i-1][0]), a = SEQ[i-1][1], b = SEQ[i][1];
         return 'rgb('+lerp(a[0],b[0],t)+','+lerp(a[1],b[1],t)+','+lerp(a[2],b[2],t)+')';
       }
     }
-    return 'rgb(150,29,23)';
+    return 'rgb(190,12,60)';
   }
   function catColor(cat, v){
-    v = Math.max(0, Math.min(1, v)); var a = [235,238,240], b = hex2rgb(cat.col);
+    v = Math.pow(Math.max(0, Math.min(1, v)), GAMMA);
+    var b = hex2rgb(cat.col);                          // สีเต็มที่ของหมวด = ปลายเข้ม
+    var a = [lerp(b[0],255,.70), lerp(b[1],255,.70), lerp(b[2],255,.70)];   // ปลายอ่อน = สีเดิมผสมขาว (คงเนื้อสีไว้ ไม่จางเป็นเทา)
     return 'rgb('+lerp(a[0],b[0],v)+','+lerp(a[1],b[1],v)+','+lerp(a[2],b[2],v)+')';
   }
 
   /* ── สร้างตารางหกเหลี่ยม เฉพาะแนวพื้นที่ทะเลรอบ UDC และแนวสายเคเบิล ──────
         เก็บเฉพาะช่องที่อยู่ในทะเล และเข้าเงื่อนไขข้อใดข้อหนึ่งต่อไปนี้
+        · อยู่ในกรอบพื้นที่เกาะคราม–ฝั่งสัตหีบ (ช่องน้ำระหว่างเกาะกับแผ่นดิน — ครอบคลุมทั้งผืน)
         · ห่างจาก UDC ไม่เกิน ๒.๒ กม.        · ห่างจากสายเคเบิลเส้นใดเส้นหนึ่ง ไม่เกิน ๙๐๐ ม.
         · ห่างจากหาดยาว (เขตฝึกยกพลขึ้นบก) ไม่เกิน ๑ กม.
         · ห่างจากหาดวางไข่เต่า ด้านตะวันตกเฉียงเหนือของเกาะคราม ไม่เกิน ๑.๒ กม. */
   var HATYAO = [12.6960, 100.8440], TBEACH = [12.7215, 100.7900];   // หาดยาว · หาดวางไข่เต่า
+  /*  กรอบเกาะคราม–ฝั่ง : ทิศตะวันตกเลยเกาะครามออกไปเล็กน้อย ถึงแนวชายฝั่งสัตหีบทางตะวันออก
+      ทิศเหนือคลุมเกาะอีร้าและหาดวางไข่เต่า ทิศใต้คลุมเกาะครามน้อย — ส่วนที่เป็นแผ่นดินถูก isSea() ตัดออกอยู่แล้ว */
+  var KSBOX = { lat0:12.664, lat1:12.742, lng0:100.750, lng1:100.848 };
   function hexVerts(lat, lng, R){                    // มุมทั้ง ๖ ของช่องหกเหลี่ยม (ปลายแหลมขึ้นบน)
     var v = [];
     for (var k=0;k<6;k++){
@@ -47578,7 +48219,7 @@ window.MDA.SeaUse = (function () {
   function buildHexes(){
     if (_hexes.length) return;
     var R = 170, dLng = Math.sqrt(3)*R/MLNG, dLat = 1.5*R/MLAT;
-    var LAT0 = 12.628, LAT1 = 12.736, LNG0 = 100.756, LNG1 = 100.928;
+    var LAT0 = 12.628, LAT1 = 12.746, LNG0 = 100.748, LNG1 = 100.928;
     var rows = Math.ceil((LAT1-LAT0)/dLat), cols = Math.ceil((LNG1-LNG0)/dLng);
     for (var j=0;j<=rows;j++){
       var lat = LAT0 + j*dLat, xo = (j & 1) ? dLng/2 : 0;
@@ -47587,7 +48228,9 @@ window.MDA.SeaUse = (function () {
         if (!isSea(lat, lng)) continue;                              // ตัดพื้นที่บนฝั่งออก
         var dU = Math.sqrt(mDist2(lat, lng, UDC[0], UDC[1]));
         var dC = distToCablesM(lat, lng);
-        if (dU >= 2200 && dC >= 900 &&
+        var inKS = (lat >= KSBOX.lat0 && lat <= KSBOX.lat1 &&
+                    lng >= KSBOX.lng0 && lng <= KSBOX.lng1);          // อยู่ในช่องน้ำเกาะคราม–ฝั่ง
+        if (!inKS && dU >= 2200 && dC >= 900 &&
             mDist2(lat, lng, HATYAO[0], HATYAO[1]) >= 1000*1000 &&
             mDist2(lat, lng, TBEACH[0], TBEACH[1]) >= 1200*1200) continue;
         var h = { lat:lat, lng:lng, ix:i, iy:j, dShore:distToShoreM(lat, lng), dCable:dC,
@@ -47613,8 +48256,8 @@ window.MDA.SeaUse = (function () {
     for (i=0;i<_hexes.length;i++){
       var h = _hexes[i]; h.v *= inv; if (!h.poly) continue;
       var fill = single ? catColor(single, h.v) : seqColor(h.v);
-      h.poly.setStyle({ fillColor:fill, fillOpacity: 0.10 + 0.66*h.v,
-        color:'rgba(255,255,255,'+(0.04+0.10*h.v).toFixed(2)+')' });
+      h.poly.setStyle({ fillColor:fill, fillOpacity: 0.21 + 0.61*h.v,   // ความทึบกึ่งกลางระหว่างค่าเดิมกับค่าที่เพิ่มไว้
+        color:'rgba(255,255,255,'+(0.10+0.17*h.v).toFixed(2)+')', weight:0.75 });
     }
     _syncStats();
   }
@@ -47625,9 +48268,8 @@ window.MDA.SeaUse = (function () {
     { name:'เขตอนุรักษ์เต่าทะเล (คราม·อีร้า)', col:'#34d399',
       ring:[[12.7135,100.7755],[12.7135,100.8045],[12.7320,100.8045],[12.7320,100.7755]] },
     { name:'เขตฝึกยกพลขึ้นบก (หาดยาว)', col:'#f59e0b',
-      ring:[[12.6890,100.8330],[12.6890,100.8460],[12.7000,100.8460],[12.7000,100.8330]] },
-    { name:'เขตหวงห้ามเด็ดขาด (UDC)', col:'#ef4444',
-      ring:[[12.7070,100.8145],[12.7070,100.8255],[12.7170,100.8255],[12.7170,100.8145]] }
+      ring:[[12.6890,100.8330],[12.6890,100.8460],[12.7000,100.8460],[12.7000,100.8330]] }
+    // เขตหวงห้ามรอบ UDC วาดเป็นวงกลมตามค่าจริง (500 ม. UNCLOS + MEZ 5 nm) — ดูใน _ensureLayer()
   ];
 
   /* ── เตรียมชั้นแผนที่ (สร้างครั้งเดียว แล้วนำกลับมาใช้ซ้ำ) ─────────────── */
@@ -47643,8 +48285,8 @@ window.MDA.SeaUse = (function () {
       // วาดช่องหกเหลี่ยมทั้งหมดลงบนแผนที่
       for (var i=0;i<_hexes.length;i++){
         var h = _hexes[i];
-        h.poly = L.polygon(h.verts, { pane:'seaUsePane', stroke:true, weight:0.6,
-          color:'rgba(255,255,255,.08)', fillColor:'#ccc', fillOpacity:.2, interactive:false });
+        h.poly = L.polygon(h.verts, { pane:'seaUsePane', stroke:true, weight:0.75,
+          color:'rgba(255,255,255,.12)', fillColor:'#ccc', fillOpacity:.28, interactive:false });
         h.poly.addTo(_layer);
       }
       // วาดกรอบเขตสำคัญ พร้อมชื่อเขตกำกับ
@@ -47658,6 +48300,19 @@ window.MDA.SeaUse = (function () {
           icon: L.divIcon({ className:'su-zlbl', html:'<span style="color:'+z.col+'">'+z.name+'</span>', iconSize:[0,0] }) });
         lbl.addTo(_layer); _zoneLbls.push(lbl);
       });
+      // ── เขตหวงห้ามรอบ UDC — วงกลมตามค่าจริง ──────────────────────────────
+      //   วงนอก : เขตใช้อาวุธได้ (MEZ) รัศมี ๕ ไมล์ทะเล — ค่าเดียวกับวง MEZ ในระบบหลัก (MEZ_NM = 5.0)
+      //   วงใน  : เขตปลอดภัย UNCLOS มาตรา 60(5) รัศมี ๕๐๐ ม. รอบสิ่งติดตั้งกลางทะเล
+      var MEZ_NM = 5.0;                                            // ตรงกับ MEZ_NM ในลูป animate
+      L.circle(UDC, { pane:'seaUsePane', radius: MEZ_NM*1852, color:'#ef4444',
+        weight:1.5, opacity:.85, dashArray:'9 6', fill:false, interactive:false })
+        .bindTooltip('เขตใช้อาวุธได้ (MEZ) · 5 ไมล์ทะเล', { sticky:true }).addTo(_layer);
+      L.circle(UDC, { pane:'seaUsePane', radius: 500, color:'#ef4444',
+        weight:2.2, opacity:.95, fillColor:'#ef4444', fillOpacity:.12, interactive:false })
+        .bindTooltip('เขตปลอดภัย UNCLOS 60(5) · 500 ม.', { sticky:true }).addTo(_layer);
+      var _udcLbl = L.marker([UDC[0] + (MEZ_NM*1852)/MLAT, UDC[1]], { pane:'seaUsePane', interactive:false,
+        icon: L.divIcon({ className:'su-zlbl', html:'<span style="color:#ef4444">เขตหวงห้าม UDC · 500 ม. (UNCLOS 60(5)) + MEZ 5 nm</span>', iconSize:[0,0] }) });
+      _udcLbl.addTo(_layer); _zoneLbls.push(_udcLbl);
       recolor();
     }catch(e){ console.warn('[MDA.SeaUse] layer error', e); }
     return _layer;
@@ -47849,12 +48504,404 @@ window.MDA.SeaUse = (function () {
   /* ── รายงานสถานะให้แผงสรุปของระบบหลัก ───────────────────────────────── */
   function status(){
     return { key:'sea-use', label:'การใช้ประโยชน์พื้นที่ทะเล (Coastal Sea-Use)', state:'embodied', score:100,
-      detail:'ตารางหกเหลี่ยม ๑๗๐ ม. เฉพาะพื้นที่ทะเลรอบ UDC และแนวเคเบิล ๓ เส้น · '+CATS.length+' หมวดกิจกรรมอิงพื้นที่จริง · เลือกดูรายชั่วโมงได้ ๒๔ ชม. · แสดงเขตอนุรักษ์เต่า/หาดยาว/หวงห้าม' };
+      detail:'ตารางหกเหลี่ยม ๑๗๐ ม. เฉพาะพื้นที่ทะเล — รอบ UDC · แนวเคเบิล ๓ เส้น · ช่องน้ำเกาะคราม–ฝั่งสัตหีบ · '+CATS.length+' หมวดกิจกรรมอิงพื้นที่จริง · เลือกดูรายชั่วโมงได้ ๒๔ ชม. · แสดงเขตอนุรักษ์เต่า/หาดยาว/หวงห้าม' };
   }
 
   function init(){ build(); }                        // เริ่มทำงานเมื่อหน้าจอพร้อม
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
   return { toggle:toggle, setOpen:setOpen, status:status };
+})();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════════
+     [v17.17 · ข้อเสนอ B] FLOATING PANEL MANAGER — ตัวจัดการแผงลอยกลาง
+     รวมการจัดการ ~14 แผงลอย (non-modal) ที่เดิมต่างคนต่างอยู่ ไม่มีศูนย์กลาง:
+       • คลิกแผงไหน = ยกขึ้นหน้าสุด (z-index focus) ในย่านปลอดภัย 7370–7900 · ต่ำกว่า modal (7998+) เสมอ
+       • ปุ่ม "✕ ปิดแผงทั้งหมด / CLOSE ALL" มุมขวาล่าง · ป้ายตัวเลข = จำนวนแผงที่เปิด · ซ่อนเองเมื่อไม่มีแผงเปิด
+       • ESC = ปิดแผงลอยทั้งหมด (กันชน: ทำงานเฉพาะเมื่อไม่มี modal เปิด)
+       • จำตำแหน่ง (localStorage) + สแนปขอบจอเมื่อลากเสร็จ
+     Additive · fault-isolated · ไม่รื้อ toggle เดิม — ปิดแต่ละแผงผ่าน "ปุ่ม header ของแผงนั้นเอง"
+     เพื่อให้สถานะ .on ภายในแต่ละโมดูลซิงก์ถูกต้อง (ไม่เกิดอาการต้องคลิกสองที)
+     ════════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+ 'use strict';
+ try {
+  /* panelId → toggle-button id · คลิกปุ่มจริงเพื่อปิด = สถานะภายในโมดูลซิงก์ถูกต้อง */
+  var MAP = {
+    'gudc-panel':'gudc-btn', 'juris-panel':'jur-btn', 'sbf-panel':'sbf-btn',
+    'smda-panel':'smda-btn', 'iac-panel':'iac-btn', 'att-panel':'att-btn',
+    'cuas-panel':'cuas-btn', 'fmsp-panel':'fmsp-btn', 'strat-panel':'strat-hbtn',
+    'su-panel':'su-btn', 'mda-layerpanel':'layersToolsBtn'
+  };
+  /* แผงที่ปิดผ่าน global fn เฉพาะทาง (ไม่มีปุ่ม header 1:1) */
+  var FN = {
+    'osint-drawer': function(){ if (typeof window.closeOsintDrawer==='function') window.closeOsintDrawer(); }
+  };
+  /* CLOSABLE = เป้าหมายของ "ปิดทั้งหมด"/ESC/ป้ายนับ (เฉพาะแผงที่ปิดได้ชัวร์) */
+  var CLOSABLE = Object.keys(MAP).concat(Object.keys(FN));
+  /* ZIDS = แผงทั้งหมดที่อยู่ใต้การจัดการ z-focus/snap/จำตำแหน่ง (รวมแผงเสริมด้วย) */
+  var ZIDS = CLOSABLE.concat(['bf-deploy-panel','marine-wx-panel','mda-spectrum-panel','lpPanel','demoStepper']);
+  var ZSET = {}; ZIDS.forEach(function(id){ ZSET[id]=1; });
+  /* แผง modal/3D/ring — กันไม่ให้ปิด/ยก และใช้ตรวจว่ามี modal เปิดอยู่ไหม */
+  var MODALS = ['mda-ai-modal','pvShipModal','pvPatternModal','commandCore','spaceGlobe','dive3d','trapmine-panel'];
+
+  function el(id){ return document.getElementById(id); }
+  function isOpen(p){
+    if (!p) return false;
+    var cs = getComputedStyle(p);
+    if (cs.display==='none' || cs.visibility==='hidden' || parseFloat(cs.opacity)===0) return false;
+    var r = p.getBoundingClientRect();
+    return r.width>4 && r.height>4;
+  }
+  function modalOpen(){ return MODALS.some(function(id){ var e=el(id); return e && isOpen(e); }); }
+  function openClosable(){ return CLOSABLE.map(el).filter(isOpen); }
+
+  /* ── ปิดแผงเดียว (เคารพ toggle ของแผงนั้น) ── */
+  function closePanel(p){
+    var id = p.id;
+    if (MAP[id]){ var b = el(MAP[id]); if (b){ b.click(); return; } }
+    if (FN[id]){ try{ FN[id](); return; }catch(_){ } }
+    ['on','open','show','ds-show','active','visible'].forEach(function(c){ p.classList.remove(c); });
+  }
+  /* ── ปิดทั้งหมด ── */
+  function closeAll(){
+    openClosable().forEach(closePanel);
+    setTimeout(refreshBtn, 70);
+  }
+
+  /* ── z-index focus: คลิกแผง = ยกขึ้นหน้าสุด (ย่าน 7370–7900) ── */
+  var topZ = 7370;
+  function focus(p){
+    if (!p) return;
+    if (topZ >= 7900){ /* renormalize เมื่อชนเพดาน */
+      var list = ZIDS.map(el).filter(Boolean).sort(function(a,b){
+        return (parseInt(getComputedStyle(a).zIndex,10)||0) - (parseInt(getComputedStyle(b).zIndex,10)||0);
+      });
+      topZ = 7370; list.forEach(function(e){ e.style.zIndex = (++topZ); });
+    }
+    p.style.zIndex = (++topZ);
+  }
+  document.addEventListener('mousedown', function(ev){
+    var node = ev.target, hop = 0;
+    while (node && node !== document.body && hop < 14){
+      if (node.id && ZSET[node.id]){ focus(node); return; }
+      node = node.parentElement; hop++;
+    }
+  }, true);
+
+  /* ── จำตำแหน่ง (เฉพาะแผงที่ผู้ใช้ลากแล้ว = มี inline left+top) + สแนปขอบ ── */
+  var LS = 'udc_panelpos_v1';
+  function loadPos(){ try{ return JSON.parse(localStorage.getItem(LS)||'{}'); }catch(_){ return {}; } }
+  function savePos(m){ try{ localStorage.setItem(LS, JSON.stringify(m)); }catch(_){ } }
+  function persist(){
+    var m = loadPos();
+    ZIDS.map(el).filter(Boolean).forEach(function(e){
+      if (e.style.left && e.style.top){ m[e.id] = { l:e.style.left, t:e.style.top }; }
+    });
+    savePos(m);
+  }
+  function restore(){
+    var m = loadPos();
+    Object.keys(m).forEach(function(id){
+      var e = el(id); if (!e) return;
+      var l = parseFloat(m[id].l), t = parseFloat(m[id].t);
+      if (isNaN(l) || isNaN(t)) return;
+      l = Math.max(0,  Math.min(l, window.innerWidth  - 80)); /* clamp: กันแผงหลุดจอ */
+      t = Math.max(40, Math.min(t, window.innerHeight - 40));
+      e.style.left = l+'px'; e.style.top = t+'px';
+    });
+  }
+  var snapT = null;
+  document.addEventListener('mouseup', function(){
+    clearTimeout(snapT);
+    snapT = setTimeout(function(){
+      var SNAP = 14;
+      ZIDS.map(el).filter(function(e){ return e && isOpen(e) && e.style.left; }).forEach(function(e){
+        var r = e.getBoundingClientRect();
+        if (r.left <= SNAP) e.style.left = '0px';
+        else if (window.innerWidth - r.right <= SNAP) e.style.left = (window.innerWidth - r.width) + 'px';
+        if (r.top > 40 && r.top <= 40 + SNAP) e.style.top = '40px';
+      });
+      persist(); refreshBtn();
+    }, 130);
+  }, true);
+
+  /* ── ปุ่ม "ปิดแผงทั้งหมด" มุมขวาล่าง (ซ่อนเองเมื่อไม่มีแผงเปิด) ── */
+  var LANG = (typeof currentLang !== 'undefined') ? currentLang : 'th';
+  var btn;
+  function buildBtn(){
+    btn = document.createElement('button');
+    btn.id = 'pm-closeall-btn';
+    btn.type = 'button';
+    btn.setAttribute('data-th','✕ ปิดแผงทั้งหมด');
+    btn.setAttribute('data-en','✕ Close all panels');
+    btn.style.cssText = [
+      'position:fixed','right:12px','bottom:12px','z-index:7905',
+      'display:none','align-items:center','gap:7px',
+      'padding:7px 12px','border-radius:8px',
+      'background:rgba(9,14,24,0.92)',
+      'border:1px solid rgb(var(--teal-rgb, 34 211 238) / .55)',
+      'color:rgb(var(--teal-rgb, 34 211 238) / 1)',
+      "font:600 11px/1 'Saira','Share Tech Mono',system-ui,sans-serif",
+      'letter-spacing:.04em','cursor:pointer','user-select:none',
+      'box-shadow:0 3px 16px rgba(0,0,0,.5), 0 0 12px rgb(var(--teal-rgb, 34 211 238) / .18)',
+      'backdrop-filter:blur(3px)','-webkit-backdrop-filter:blur(3px)',
+      'transition:opacity .15s, transform .12s'
+    ].join(';');
+    var label = document.createElement('span');
+    label.textContent = (LANG==='en') ? '✕ Close all panels' : '✕ ปิดแผงทั้งหมด';
+    var badge = document.createElement('span');
+    badge.id = 'pm-closeall-count';
+    badge.style.cssText = [
+      'display:inline-flex','align-items:center','justify-content:center',
+      'min-width:17px','height:17px','padding:0 4px','border-radius:9px',
+      'background:rgb(var(--teal-rgb, 34 211 238) / 1)','color:#04121c',
+      'font:700 10px/1 "Share Tech Mono",monospace'
+    ].join(';');
+    btn.appendChild(label); btn.appendChild(badge);
+    btn.addEventListener('mouseenter', function(){ btn.style.transform='translateY(-1px)'; });
+    btn.addEventListener('mouseleave', function(){ btn.style.transform='translateY(0)'; });
+    btn.addEventListener('click', function(e){ e.preventDefault(); closeAll(); });
+    document.body.appendChild(btn);
+  }
+  function refreshBtn(){
+    if (!btn) return;
+    var n = openClosable().length;
+    var badge = el('pm-closeall-count');
+    if (badge) badge.textContent = n;
+    btn.style.display = n > 0 ? 'inline-flex' : 'none';
+  }
+
+  /* ── ESC = ปิดแผงลอยทั้งหมด (เฉพาะเมื่อไม่มี modal เปิด และมีแผงเปิดอยู่) ── */
+  document.addEventListener('keydown', function(ev){
+    if (ev.key !== 'Escape') return;
+    if (modalOpen()) return;                 /* ปล่อยให้ modal จัดการ ESC ของตัวเอง */
+    if (openClosable().length){ closeAll(); }
+  });
+
+  /* ── init ── */
+  function init(){
+    buildBtn();
+    restore();
+    setInterval(refreshBtn, 600);            /* จับการเปิดแผงจากปุ่มอื่นทั่วแอป */
+    refreshBtn();
+    window.MDA = window.MDA || {};
+    window.MDA.PanelMgr = { closeAll:closeAll, focus:function(id){ focus(el(id)); }, open:openClosable, status:function(){ return { managed:ZIDS.length, closable:CLOSABLE.length, open:openClosable().map(function(p){return p.id;}) }; } };
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+ } catch(e){ try{ console.warn('[MDA.PanelMgr] init error', e); }catch(_){ } }
+})();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════════
+     [v17.17 · ข้อเสนอ G] UNIFIED i18n — ให้ปุ่ม TH คุม "ชื่อแผงทุกฝั่ง" ได้จริง
+     ปัญหาเดิม: ชื่อแผง docked ซ้าย/ขวา ฮาร์ดโค้ดอังกฤษล้วน ไม่มี data-en/data-th
+       → ปุ่มสลับภาษาคุมไม่ถึง (เลือกไทยแล้วหัวแผงยังเป็นอังกฤษ) = ความไม่สอดคล้องที่ audit ชี้
+     วิธี: ลงทะเบียนชื่อแผงเชิงโครงสร้าง (ไทย↔อังกฤษ) แล้ว "แทนที่เฉพาะ text node สุดท้าย"
+       เพื่อคงไอคอน <svg> ไว้ · applyLanguage() เดิมใช้ innerHTML=data-en ซึ่งจะลบไอคอน จึงเลี่ยง
+       ไม่ใช้ data-en กับหัวแผงเหล่านี้ (ใช้ data-*-label ของเราเอง) · toggleLanguage() reload อยู่แล้ว
+       โมดูลจึง render ภาษาถูกต้องทุกครั้งที่โหลด · idempotent (รันซ้ำได้ทั้งสองทิศ)
+     ใช้คำศัพท์โดเมนชุดเดียวกับ LAYERS/ring (ผิวน้ำ/ใต้ผิวน้ำ/ฝั่ง-ชายฝั่ง) → เชื่อมกับข้อเสนอ A
+     ════════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+ 'use strict';
+ try {
+  var LANG = (typeof currentLang !== 'undefined') ? currentLang : 'th';
+  /* ป้ายอังกฤษ (ตรงกับ DOM ปัจจุบัน) → คำแปลไทย · เชิงโครงสร้าง: หัวแผง docked + หัว LAYERS */
+  var REG = {
+    'Coastal & Landing Domain':'โดเมนฝั่ง-ชายฝั่ง (ยกพลขึ้นบก)',
+    'Underwater Domain':'โดเมนใต้ผิวน้ำ',
+    'Tidal Monitor':'จอเฝ้าระวังน้ำขึ้น-น้ำลง',
+    'Surface Domain':'โดเมนผิวน้ำ',
+    'Command & Intelligence':'การบัญชาการและการข่าวกรอง',
+    'UDC Core Health':'สถานะแกนกลาง UDC',
+    'IFF Legend':'คำอธิบายสัญลักษณ์ IFF',
+    'Event Log':'บันทึกเหตุการณ์',
+    'Seismic Monitor':'จอเฝ้าระวังแผ่นดินไหว',
+    'Threat Injection':'การจำลองภัยคุกคาม',
+    'Multi-Domain Sensing':'การตรวจจับหลายโดเมน'
+  };
+  /* หา text node ป้าย (ตัวสุดท้ายที่มีเนื้อหา) — คงไอคอน svg ไว้ */
+  function labelNode(el){
+    for (var i=el.childNodes.length-1; i>=0; i--){
+      var n=el.childNodes[i];
+      if (n.nodeType===3 && n.textContent.trim()) return n;
+    }
+    return null;
+  }
+  function labelText(el){ var n=labelNode(el); return n? n.textContent.trim() : el.textContent.trim(); }
+  function setLabel(el, str){
+    var n=labelNode(el);
+    if (n) n.textContent=' '+str; else el.appendChild(document.createTextNode(' '+str));
+  }
+  function apply(lang){
+    var els=[].slice.call(document.querySelectorAll('.panel-title, .mda-lp-title'));
+    var n=0;
+    els.forEach(function(el){
+      var cur=labelText(el), en=null;
+      if (REG[cur]!=null) en=cur;                              /* ตอนนี้เป็นอังกฤษ */
+      else { for (var k in REG){ if (REG[k]===cur){ en=k; break; } } }  /* หรือเป็นไทยอยู่แล้ว */
+      if (en==null) return;
+      el.setAttribute('data-en-label', en);
+      el.setAttribute('data-th-label', REG[en]);
+      setLabel(el, lang==='th' ? REG[en] : en);
+      n++;
+    });
+    return n;
+  }
+  function init(){
+    var n=apply(LANG);
+    window.MDA = window.MDA || {};
+    window.MDA.i18n = { apply:apply, reg:REG, lang:LANG, applied:n,
+      status:function(){ return { lang:LANG, entries:Object.keys(REG).length, applied:n }; } };
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+ } catch(e){ try{ console.warn('[MDA.i18n] error', e); }catch(_){ } }
+})();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════════
+     [v17.17 · ข้อเสนอ A] CANONICAL DOMAIN TAXONOMY — "ชุดโดเมนเดียว" ที่ทุกฝั่งอ้างถึง
+     ปัญหาเดิม: มี "คำเรียกโดเมน" ปนกัน 4 ชุดที่ไม่ตรงกัน —
+       ① วงแหวน CommandCore (SVG): AIR·SUR·SUB·DAS·CYB·SEIS·C2  (ชุด "7-Domain" ที่แบรนด์ไว้)
+       ② แผง LAYERS: Air&Space·Surface·Subsurface·Seabed·Cyber-EM·Littoral·TOOLS (รวม DAS+SEIS=Seabed, มี Littoral)
+       ③ setDomain(key) → ind-<key>: air·underwater·surface·command·seismic·coastal·tide
+       ④ ตัวจำแนกภัย (IIFE) DOMAINS: AIR·SURF·SUB·SEABED·CYBER
+     ผู้ใช้เห็นชื่อโดเมนไม่ตรงกันในแต่ละมุมจอ → สับสน
+     วิธี (Additive/ปลอดภัย): สร้าง "ทะเบียนกลาง" MDA.DOMAINS เป็นแหล่งความจริงเดียว
+       (โค้ด·ไทย·อังกฤษ·คำอธิบาย·สี·และ alias ของทุกฝั่ง) + resolve(term) แปลง alias→โดเมน canonical
+       แล้ว "ผูกที่จุดสัมผัสผู้ใช้": tooltip สองภาษาบนป้ายโดเมนของวงแหวน (SVG <title>)
+       และไฟสถานะแผงซ้าย (ind-*) — โดยไม่แตะ toggle/ID/handler เดิมเลย
+     หมายเหตุ: ไม่ rewire คำเรียกทั้ง 4 ชุด (จะเป็น refactor ใหญ่/เสี่ยงสูง แตะ ring SVG + ~51 layer toggle
+       + ~8 จุดเรียก setDomain + ตัวจำแนกภัย) — ทะเบียนนี้คือ "รากฐานชุดเดียว" ที่ทำให้ทุกฝั่งพูดภาษาเดียวกัน
+       ณ จุดที่ผู้ใช้เห็น · การเปลี่ยน "ตัวอักษรบนวงแหวน" จริงเป็นการตัดสินใจเชิงหลักนิยม (ค้างไว้ให้ผู้ใช้ชี้ขาด)
+     ════════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+ 'use strict';
+ try {
+  /* ── แหล่งความจริงเดียว: 7 โดเมนหลัก (ตามชุด "7-Domain" ของวงแหวน) + LIT เป็น facet ชายฝั่ง ──
+     layerGroup = ชื่อกลุ่มในแผง LAYERS ที่โดเมนนี้สังกัด (DAS/SEIS รวมกลุ่ม Seabed) */
+  var LIST = [
+    { code:'AIR',  th:'อากาศ-อวกาศ',        en:'Air & Space',      col:'#22d3ee', layerGroup:'Air & Space',
+      gloss:'ภัยทางอากาศ/อวกาศ · UAV · ขีปนาวุธ · ดาวเทียม',
+      alias:['AIR','air','Air & Space','อากาศ-อวกาศ','อากาศ'] },
+    { code:'SUR',  th:'ผิวน้ำ',              en:'Surface',          col:'#06b6d4', layerGroup:'Surface',
+      gloss:'เรือผิวน้ำ · USV · การจราจรทางทะเล',
+      alias:['SUR','SURF','surface','Surface','Surface Domain','ผิวน้ำ'] },
+    { code:'SUB',  th:'ใต้ผิวน้ำ',           en:'Subsurface',       col:'#14b8a6', layerGroup:'Subsurface',
+      gloss:'เรือดำน้ำ · UUV · นักประดาน้ำ',
+      alias:['SUB','underwater','Subsurface','Underwater Domain','ใต้ผิวน้ำ','ใต้น้ำ'] },
+    { code:'DAS',  th:'สายเคเบิลก้นทะเล',    en:'Seabed · DAS',     col:'#f59e0b', layerGroup:'Seabed',
+      gloss:'Distributed Acoustic Sensing · เฝ้าระวังสายเคเบิล/ทุ่นระเบิดใต้ทะเล',
+      alias:['DAS','SEABED','Seabed','พื้นท้องทะเล','ท้องทะเล'] },
+    { code:'CYB',  th:'ไซเบอร์-สเปกตรัม',    en:'Cyber-EM',         col:'#8b5cf6', layerGroup:'Cyber-EM',
+      gloss:'ไซเบอร์ · สงครามอิเล็กทรอนิกส์ (EW) · สเปกตรัมคลื่น',
+      alias:['CYB','CYBER','Cyber-EM','ไซเบอร์-สเปกตรัม','ไซเบอร์/EW'] },
+    { code:'SEIS', th:'ธรณีสมุทร-แผ่นดินไหว', en:'Seismic',         col:'#fb923c', layerGroup:'Seabed',
+      gloss:'เฝ้าระวังแผ่นดินไหว/ธรณีพิบัติใต้ทะเล',
+      alias:['SEIS','seismic','Seismic','Seismic Monitor','แผ่นดินไหว'] },
+    { code:'C2',   th:'บัญชาการ-ควบคุม',     en:'Command & Control', col:'#64ffda', layerGroup:'TOOLS · SYSTEM',
+      gloss:'ศูนย์บัญชาการ · การข่าวกรอง · ระบบสนับสนุน',
+      alias:['C2','command','Command & Control','Command & Intelligence','TOOLS','TOOLS · SYSTEM','บัญชาการ'] },
+    /* facet ชายฝั่ง — ปรากฏในแผง LAYERS + ไฟสถานะ (coastal) แต่ไม่ใช่ sector บนวงแหวน */
+    { code:'LIT',  th:'ฝั่ง-ชายฝั่ง',        en:'Littoral',         col:'#a3e635', layerGroup:'Littoral', facet:true,
+      gloss:'ชายฝั่ง · การยกพลขึ้นบก · พื้นที่ปกครองท้องถิ่น',
+      alias:['LIT','coastal','Littoral','Coastal & Landing Domain','ฝั่ง-ชายฝั่ง'] }
+  ];
+  var BYCODE={}, BYALIAS={};
+  LIST.forEach(function(d){
+    BYCODE[d.code]=d;
+    d.alias.forEach(function(a){ BYALIAS[String(a).toLowerCase()]=d; });
+  });
+  /* fuzzy: ลอง alias "ยาวสุดก่อน" — กัน "ใต้ผิวน้ำ" ชนกับ "ผิวน้ำ" และ "subsurface" ชนกับ "surface" */
+  var FUZZY=Object.keys(BYALIAS).filter(function(a){return a.length>=3;}).sort(function(a,b){return b.length-a.length;});
+  function resolve(term){
+    if(term==null) return null;
+    var k=String(term).trim().toLowerCase();
+    if(BYALIAS[k]) return BYALIAS[k];
+    for(var i=0;i<FUZZY.length;i++){ if(k.indexOf(FUZZY[i])>=0) return BYALIAS[FUZZY[i]]; }
+    return null;
+  }
+  function tip(d){ return d.code+' · '+d.th+' '+d.en+' — '+d.gloss; }
+
+  var SVGNS='http://www.w3.org/2000/svg';
+  function ensureSvgTitle(el, text){
+    var t=el.querySelector(':scope > title');
+    if(!t){ t=document.createElementNS(SVGNS,'title'); el.insertBefore(t, el.firstChild); }
+    t.textContent=text;
+  }
+  /* อ่าน "ป้ายของตัวเอง" เฉพาะ text node ตรง — ไม่รวมข้อความใน <title> ที่เราเพิ่ง insert
+     (textContent ของ <text> จะรวม title child ด้วย จึงต้องอ่านแบบนี้ กัน pollution ตอน re-decorate) */
+  function ownLabel(t){
+    var s='';
+    for(var i=0;i<t.childNodes.length;i++){ var nd=t.childNodes[i]; if(nd.nodeType===3) s+=nd.textContent; }
+    return s.trim();
+  }
+  /* ผูก tooltip กับป้ายโดเมนบนวงแหวน (SVG <text>) — จาก resolve() ทะเบียนเดียว · idempotent */
+  function decorateRing(){
+    var cc=document.getElementById('commandCore'); if(!cc) return 0;
+    var n=0;
+    [].slice.call(cc.querySelectorAll('text')).forEach(function(t){
+      var code=t.getAttribute('data-dom') || ownLabel(t);
+      var d=resolve(code);
+      if(d){
+        if(!t.getAttribute('data-dom')) t.setAttribute('data-dom', d.code); /* code สะอาดไว้อ่านซ้ำ */
+        ensureSvgTitle(t, tip(d));
+        t.style.cursor='help';
+        n++;
+      }
+    });
+    return n;
+  }
+  /* ผูก title กับไฟสถานะแผงซ้าย ind-<key> (+ แถวหัวข้อของมันถ้ามี) */
+  var TIDE={ th:'น้ำขึ้น-น้ำลง', en:'Tidal', gloss:'ระดับน้ำ · กระแสน้ำ' };
+  function decorateSideIndicators(){
+    var n=0;
+    [].slice.call(document.querySelectorAll('[id^="ind-"]')).forEach(function(el){
+      if(/-b$/.test(el.id)) return;
+      var key=el.id.replace(/^ind-/,'');
+      var d=resolve(key), txt;
+      if(d) txt=tip(d);
+      else if(key==='tide') txt='TIDE · '+TIDE.th+' '+TIDE.en+' — '+TIDE.gloss;
+      else return;
+      el.setAttribute('title', txt);
+      var row=el.closest('.dom-row,.panel-row,li,tr,div');
+      if(row && !row.getAttribute('title')) row.setAttribute('title', txt);
+      n++;
+    });
+    return n;
+  }
+  function applyAll(){
+    var r=decorateRing(), s=decorateSideIndicators();
+    return {ring:r, side:s};
+  }
+  function init(){
+    var res=applyAll();
+    /* วงแหวน CommandCore ถูกสร้าง/รื้อแบบ lazy ตอนเปิด-ปิด → เฝ้าดู #commandCore
+       แล้วเติม tooltip ทุกครั้งที่ SVG (ป้ายโดเมน) ปรากฏใหม่ · debounce กัน churn · ensureSvgTitle idempotent */
+    var cc=document.getElementById('commandCore');
+    if(cc && 'MutationObserver' in window){
+      var pend=null;
+      var mo=new MutationObserver(function(){
+        if(pend) return;
+        pend=setTimeout(function(){ pend=null; var n=decorateRing(); if(n) res.ring=n; }, 120);
+      });
+      mo.observe(cc, {childList:true, subtree:true});
+    }
+    window.MDA = window.MDA || {};
+    window.MDA.DOMAINS = {
+      list:LIST, byCode:BYCODE, resolve:resolve, tip:tip, apply:applyAll,
+      status:function(){ return { domains:LIST.length, applied:res, codes:LIST.map(function(d){return d.code;}) }; }
+    };
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+ } catch(e){ try{ console.warn('[MDA.DOMAINS] error', e); }catch(_){ } }
 })();
 </script>
 
