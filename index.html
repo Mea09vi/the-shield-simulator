@@ -1,6 +1,14 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.18.1 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.18.2 · 7-Domain + AI Staff)
+  · [v17.18.2 UX] Blue Force Operations panel — auto-expand เมื่อ deploy สำเร็จ:
+      - เดิม panel เป็น default-collapsed (FIX-8) และสาย deploy (AI Staff _executeDeploy /
+        rule-based confirmDeploy) วางกำลังตรงๆ ผ่าน deployPVAt/deployGUUVAt/manualCAPHelo + flyTo
+        โดยไม่เคยเปิด panel → ผบ. ต้องกดหูจับขวา (#bf-handle-right) ขยายเองทุกครั้งหลัง deploy
+      - แยก logic เปิดหน้าต่างหลักเป็น openBfPanel() (reuse ปุ่มขยายเดิม + พับ sub-window) →
+        expose เป็น window.openBfDeployPanel; ท้าย _executeDeploy เรียกเมื่อ placed>0
+        (ครอบทั้ง AI Staff + rule-based เพราะ confirmDeploy/COA pipeline ลงที่ _executeDeploy)
+      - คง default-collapsed ตอนบูตไว้ (เปิดเฉพาะจังหวะ deploy จริง — ไม่รก C2 ตอนเฝ้าระวังปกติ)
   · [v17.18.1 FIX] ปุ่ม "ปิดแผงทั้งหมด" (Close all panels) — แก้ MAP ของ PanelMgr:
       - mda-layerpanel (Multi-Domain Sensing) เดิมชี้ผิดไปที่ #layersToolsBtn ซึ่ง toggle Leaflet
         control (.rr-master) คนละแผง → "ปิดแผงทั้งหมด" กลายเป็นเปิด/ปิด Layers & Tools บนแผนที่แทน
@@ -561,12 +569,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.18.1 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.18.2 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.18.1';
+        const APP_VERSION = '17.18.2';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -7388,7 +7396,7 @@
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.18.1 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.18.2 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -7849,7 +7857,7 @@
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.18.1 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.18.2 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -7866,7 +7874,7 @@
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.18.1 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.18.2 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -8786,7 +8794,7 @@
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.18.1 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.18.2 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -34300,6 +34308,10 @@ window.toggleSat3D = toggleSat3D;
             _setDeployStatus(`✅ Deploy แล้ว ${placed} กำลัง${failed ? ' · ❌ พลาด ' + failed : ''}${rejected.length ? ' · ⛔ referee ปฏิเสธ ' + rejected.length : ''}${done.length ? ' [' + done.join(', ') + ']' : ''} · ${stamp}`, placed ? '#86efac' : '#fbbf24');
             try { if (typeof toast === 'function') toast(`✅ AI Deploy: วาง ${placed} กำลัง${failed ? ' · พลาด ' + failed : ''}`); } catch (_) {}
             try { if (typeof addLog === 'function') addLog(`[AI] CONFIRM & DEPLOY → วาง ${placed} กำลัง${failed ? ', พลาด ' + failed : ''}`, '#86efac'); } catch (_) {}
+            // [v17.18.2] deploy สำเร็จ → เปิด Blue Force Operations panel อัตโนมัติ
+            //   เดิม panel เป็น default-collapsed และสาย deploy ไม่เคยเปิดให้ → ผบ.ต้องกดหูจับขวาเองทุกครั้ง
+            //   เปิดเฉพาะเมื่อวางได้จริง (placed>0) เพื่อให้เห็น Threat Board / Exec Summary / หมู่กำลังที่เพิ่ง deploy ทันที
+            if (placed) { try { if (typeof window.openBfDeployPanel === 'function') window.openBfDeployPanel(); } catch (_) {} }
         }
 
         // rule-based deploy (ปุ่ม CONFIRM & DEPLOY เดิม) — สร้าง recs → actions → _executeDeploy
@@ -35670,9 +35682,12 @@ window.toggleSat3D = toggleSat3D;
                 bp.classList.add('collapsed');
                 bh && bh.classList.add('visible');
             });
-            bh && bh.addEventListener('click', () => {
+            // [v17.18.2] แยก logic การเปิดหน้าต่างหลักออกมาเป็นฟังก์ชัน เพื่อให้สาย deploy
+            //            (AI Staff _executeDeploy / rule-based confirmDeploy) เรียก auto-expand ได้
+            function openBfPanel() {
+                if (!bp) return;
                 bp.classList.remove('collapsed');
-                bh.classList.remove('visible');
+                bh && bh.classList.remove('visible');
                 // [v17.5.4] พับหน้าต่างย่อยทั้งหมดทุกครั้งที่เปิดหน้าต่างหลัก
                 ['bf-es', 'bf-tb'].forEach(pfx => {
                     const hd   = document.getElementById(pfx + '-hd');
@@ -35685,7 +35700,10 @@ window.toggleSat3D = toggleSat3D;
                     const grp = bp.querySelector('[data-bf-group="' + g + '"]');
                     if (grp) grp.classList.add('collapsed');
                 });
-            });
+            }
+            bh && bh.addEventListener('click', openBfPanel);
+            // [v17.18.2] เปิดให้สาย deploy เรียก auto-expand ได้จากภายนอก closure
+            window.openBfDeployPanel = openBfPanel;
 
             // [v17.3.0 FIX-8] เริ่มต้นแบบย่อ (default collapsed) — Blue Forces Operation เปิดเมื่อต้องการจัดกำลัง; กดที่ handle ขวาเพื่อเปิด
             if (bp) bp.classList.add('collapsed'); if (bh) bh.classList.add('visible');
