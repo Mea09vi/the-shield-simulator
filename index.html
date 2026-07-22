@@ -1,6 +1,19 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.18.2 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.18.3 · 7-Domain + AI Staff)
+  · [v17.18.3 LIVE-WIRE] ต่อฟีดสดที่มีอยู่แล้วเข้า "สถานะ" โดเมนจริง (เดิมวงแหวน 7 โดเมนขับด้วย setDomain จาก sim ล้วน — ฟีดสดวาดแค่เลเยอร์ ไม่เคยเลื่อนสถานะ):
+      (a) LITTORAL ← Open-Meteo Marine (สภาพคลื่นชายฝั่ง) — littoralState() อ่าน window.WAVE_STATE.ss:
+          SS≤2 (Hs<1.25ม.)→ok · SS3 (1.25–2.5ม.)→warn · SS≥4 (≥2.5ม.)→crit  (เหตุผล: ปฏิบัติการฝั่ง/ยกพล/เรือเล็ก ไวต่อทะเล)
+          ค่าเก่ากว่า 1 ชม. หรือเลเยอร์ Wave Field ปิด (ไม่มี WAVE_STATE) → คืน baseline 'ok' (SIM ซื่อสัตย์ ไม่แต่งสัญญาณ)
+          → เดิม LITTORAL hardcoded 'ok' คงที่ (v17.18.0) ตอนนี้ไหลตามทะเลจริงเมื่อเปิดเลเยอร์คลื่น
+      (b) SEABED ← USGS Seismic — แก้ "สายตาย": seismicState() อ่าน /ind-crit|ind-warn/ จาก className ของ #ind-seismic
+          แต่ updateUDCPanel เดิมตั้งแค่ inline style (background/boxShadow) ไม่เคยตั้ง className → USGS ไม่เคยไหลเข้าโดเมน SEA
+          เพิ่มการตั้ง ind.className='ind ind-{lvl}' ทั้งสองสาขา (มีเหตุ = worst-of ความรุนแรง·สึนามิ·เคเบิล / ไม่มีเหตุ = ok)
+      (c) AIR ← ADS-B (OpenSky): พิจารณาแล้ว "ไม่ต่อ" โดยเจตนา — จราจรพลเรือนหนาแน่นรอบอู่ตะเภาจะตรึง AIR ค้าง 'warn'
+          และให้ความมั่นใจลวง (ภัยคุกคามทางทหารมัก ไม่ ส่ง ADS-B) → คง AIR ขับด้วยสถานการณ์ (scenario-driven) ตามเดิม
+      (d) NGA Navigational Warnings (MSI): ประเมินเป็นฟีดใหม่แล้ว "ติดบล็อก" — Akamai bot-manager ปิดทุกทาง
+          (browser fetch = CORS fail · server curl = HTTP 503 JS-challenge · Cloudflare Worker relay = 503 ตาม IP ดาต้าเซนเตอร์)
+          ส่งเป็น keyless feed ไม่ได้โดยไม่เหลือ dead code → ไม่ implement (บันทึกเป็นมติชัดเจน ไม่ใช่ข้ามเงียบ)
   · [v17.18.2 UX] Blue Force Operations panel — auto-expand เมื่อ deploy สำเร็จ:
       - เดิม panel เป็น default-collapsed (FIX-8) และสาย deploy (AI Staff _executeDeploy /
         rule-based confirmDeploy) วางกำลังตรงๆ ผ่าน deployPVAt/deployGUUVAt/manualCAPHelo + flyTo
@@ -569,12 +582,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.18.2 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.18.3 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.18.2';
+        const APP_VERSION = '17.18.3';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -7396,7 +7409,7 @@
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.18.2 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.18.3 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -7857,7 +7870,7 @@
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.18.2 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.18.3 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -7874,7 +7887,7 @@
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.18.2 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.18.3 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -8794,7 +8807,7 @@
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.18.2 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.18.3 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -30303,6 +30316,7 @@ window.toggleSat3D = toggleSat3D;
                 if (ind) {
                     ind.style.background = '#fb923c';
                     ind.style.boxShadow  = '0 0 6px #fb923c';
+                    ind.className = 'ind ind-ok'; // [v17.18.3] ไม่มีเหตุนัยสำคัญ → SEABED baseline 'ok' (ให้ seismicState() อ่านตรง)
                 }
                 return;
             }
@@ -30358,6 +30372,13 @@ window.toggleSat3D = toggleSat3D;
                 const col = riskColor(pga);
                 ind.style.background = col;
                 ind.style.boxShadow  = '0 0 6px ' + col;
+                // [v17.18.3] ตั้ง className ให้ seismicState() (วงแหวน SEABED) อ่านได้จริง
+                //   เดิมตั้งแต่ inline style เท่านั้น → seismicState() ที่อ่าน /ind-warn|ind-crit/ ไม่เคย match
+                //   → USGS ไม่เคยไหลเข้าโดเมน SEA (สายตาย). worst-of: ความรุนแรง · สึนามิ · สายเคเบิล
+                //   (inline background ยังคุมสีจริงตาม PGA; class เพิ่มไว้ให้อ่านสถานะ + blink ตอน crit)
+                const sev = riskEl.className + ' ' + tsuEl.className + ' ' + cabEl.className;
+                const lvl = /s-alert/.test(sev) ? 'crit' : /s-warn/.test(sev) ? 'warn' : 'ok';
+                ind.className = 'ind ind-' + lvl;
             }
         }
 
@@ -47402,11 +47423,29 @@ window.CommandCore = (function () {
         if (!el) return 'ok';
         return /ind-crit/.test(el.className) ? 'crit' : /ind-warn/.test(el.className) ? 'warn' : 'ok';
     }
+    /* [v17.18.3] LITTORAL ← Open-Meteo Marine (สภาพคลื่นชายฝั่ง) แทน baseline 'ok' คงที่เดิม
+       เหตุผลด้านหลักนิยม: ปฏิบัติการฝั่ง/ยกพลขึ้นบก/เรือเล็ก ไวต่อสภาพทะเล
+         · SS ≤2 (Hs <1.25 ม.) → ok   (สงบ–ปานกลาง ปฏิบัติได้)
+         · SS 3 (Hs 1.25–2.5 ม.) → warn (เฝ้าระวัง เรือเล็ก/ยกพลลำบาก)
+         · SS ≥4 (Hs ≥2.5 ม.) → crit  (ทะเลแรง ปฏิบัติการฝั่งเสี่ยงสูง)
+       ไม่มีข้อมูลสด (เลเยอร์ Wave Field ปิด / ค่าหมดอายุ >1 ชม.) → คืน 'ok' baseline
+       ── SIM ซื่อสัตย์: ไม่แต่งสัญญาณเมื่อไม่มีเซนเซอร์จริง (หลักเดียวกับ CYBER) */
+    function littoralState() {
+        try {
+            const w = window.WAVE_STATE;
+            if (!w || typeof w.ss !== 'number') return 'ok';
+            if (typeof w.at === 'number' && (Date.now() - w.at) > 3_600_000) return 'ok'; // ค่าเก่ากว่า 1 ชม. → ไม่ถือว่าสด
+            if (w.ss >= 4) return 'crit';
+            if (w.ss >= 3) return 'warn';
+            return 'ok';
+        } catch (_) { return 'ok'; }
+    }
 
     /* ── 7 domain canonical (มติ Option A v17.18): ควบรวม DAS+SEIS → SEABED เดียว (สถานะ = แย่สุดของสองแหล่ง)
           และยก LITTORAL ขึ้นเป็นโดเมนเต็มแทนช่อง SEIS เดิม — ให้ตรงกับกลุ่มแผง LAYERS (Seabed·Littoral)
           · SUR ยังฟังช่อง 'coastal' ตามเดิม (ช่องภัยผิวน้ำโดยพฤตินัยจากเซนเซอร์ สอ.รฝ. — ไม่มี ind-surface แยก)
-          · LITTORAL ยังไม่มีช่องสถานะสดเฉพาะ → baseline 'ok' แบบเดียวกับ CYBER (SIM ซื่อสัตย์ ไม่แต่งสัญญาณ) ── */
+          · [v17.18.3] LITTORAL ต่อช่องสดแล้ว → littoralState() อ่าน Open-Meteo Marine (sea state); ไม่มีข้อมูล = 'ok' baseline
+          · CYBER ยังคง baseline 'ok' (ยังไม่มีช่องสดเข้าโดเมนโดยตรง — SIM ซื่อสัตย์) ── */
     const DOM_ROWS = [
         { key:'air',        lbl:'✈ AIR — อากาศ-อวกาศ' },
         { key:'coastal',    lbl:'🚢 SURFACE — ผิวน้ำ' },
@@ -47418,7 +47457,7 @@ window.CommandCore = (function () {
     ];
     function domainState(key) {
         if (key === 'seabed')   return dasEvt() ? 'crit' : seismicState(); /* worst-of: เหตุ DAS ชนะ, ไม่งั้นตาม SEIS */
-        if (key === 'littoral') return 'ok'; /* baseline SIM — รอช่องสดเฉพาะชายฝั่งในอนาคต */
+        if (key === 'littoral') return littoralState(); /* [v17.18.3] ← Open-Meteo Marine (sea state ชายฝั่ง) */
         if (key === 'cyber')    return 'ok';
         return dom[key] || 'ok';
     }
