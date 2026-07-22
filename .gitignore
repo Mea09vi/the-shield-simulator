@@ -50,3 +50,23 @@ RTN*Account*.pdf
 
 # --- Cloudflare Wrangler local cache (account info — NEVER commit) ---
 .wrangler/
+
+# --- Folder reorg (2026-07): local dev-server scripts moved out of repo root ---
+#     (proxy_server.py / ocean4d_live_server.js / start-*.bat / *-static.js — LOCAL dev only)
+scripts/server/
+
+# --- UI backups & graph build output (NEVER commit — large / WIP) ---
+_backup_ui/
+graphify-out/
+
+# --- Pitch / presentation / workshop docs (kept local, not part of the simulator repo) ---
+presentation.html
+rtn_emblem.png
+THE_SHIELD_Pitch_Script.md
+THE_SHIELD_Pitch_Script_v2.md
+THE_SHIELD_Defense_Script_15min.md
+THE_SHIELD_Workshop_ClaudeCode.html
+
+# --- Folder-organization meta notes (local) ---
+FOLDER_ORGANIZATION.md
+ORGANIZATION_ASSESSMENT.md
