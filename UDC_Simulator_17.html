@@ -1,6 +1,39 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.20.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.21.0 · 7-Domain + AI Staff)
+  · [v17.21.0 FIRES-1/2/3] แผนที่ ผบ. อนุมัติ มีผลถึงไกปืน + จัดลำดับเป้าด้วยคะแนนรวม (sensors-to-shooters ขั้น ๒)
+      ที่มา: ขั้น ๑ ทำให้การยิงมีต้นทุน แต่ "การตกลงใจ" ยังไม่มีผลกับการยิงอยู่ดี —
+             approvePlan() เปลี่ยนได้แค่ "วางกำลังที่ไหน" · เจตนา/คำสั่งการจาก LLM ถูกล้างค่าแล้วเอาไป
+             ต่อเป็นข้อความ addLog() เฉย ๆ เอนจินไม่เคยอ่าน · การเลือกเป้าเป็น "ใกล้เรือเราที่สุดชนะ"
+             ล้วน ๆ เรือประมงที่ลอยเฉย ๆ จึงแย่งคิวเป้า RED ที่วิ่งเข้าหา UDC ได้เสมอ
+      - [FIRES-1] pvPickTarget() — คะแนนรวมแทนระยะทางอย่างเดียว ทุกปัจจัยปรับเป็นสเกล ๐–๑๐๐
+          score = 0.45×ระดับภัย + 0.20×เจตนา + 0.35×ความเร่งด่วน
+            ระดับภัย    RED 100 · WHITE 0 · GREY 70 ถ้าเจตนา ≥55 มิฉะนั้น 40
+            ความเร่งด่วน = "เวลาถึง UDC" ไม่ใช่ "ระยะถึงเรือเรา"
+                          closingKt = sogKt × องค์ประกอบความเร็วตามแนวเข้าหา UDC
+                          ≤๒ นาที = 100 · ≥๒๐ นาที = 0 · ไม่ได้มุ่งเข้า UDC = 0
+          แล้วปรับด้วยคำสั่งการยิง: ระบุตัวเป้า +25 · เน้นโดเมนตรงกัน ×1.25
+          · ยิงไม่ถึงตอนนี้ ×0.55 (ถ่วงลง ไม่ตัดทิ้ง) · เป้าที่จับอยู่ ×1.10 กันเรือแกว่งสลับเป้า
+          · ระยะทางเหลือเป็นตัวตัดสินเมื่อคะแนนเท่ากันเท่านั้น
+          จงใจไม่ใช้สูตรของกระดานภัยคุกคาม (s×1000+intent) เพราะพจน์ ×1000 ทำให้ความเร่งด่วน
+          ไม่มีวันพลิกลำดับได้เลย — สองกระดานจึงต่างกันโดยตั้งใจ (กระดาน = "ร้ายแค่ไหน"
+          เรือ = "ต้องจัดการอะไรก่อน") และอธิบายไว้ในทูลทิปแถว "คำสั่งการยิง"
+          ตัวกรองสิทธิ์เข้าปะทะเดิม (ROE · MEZ · ขีดความสามารถ ปด. · ควบคุมตัวแล้ว) คงไว้ครบทุกข้อ
+          ประสิทธิภาพ: แคชส่วนที่ไม่ขึ้นกับเรือไว้ที่ตัวเป้า ๑ เฟรม · ผลจำแนก (analyzeTrack) ๑๕ เฟรม
+      - [FIRES-2] นโยบายใช้อาวุธเปลี่ยนกระบอกที่เลือกจริงใน pickBestWeapon()
+          CONSERVE ปืนก่อน ใช้อาวุธนำวิถีเมื่อไม่มีกระบอกปืนยิงถึง · NORMAL เดิม · SURGE นำวิถีก่อน
+          ต่อตรงกับกลไกกระสุนของขั้น ๑ → เป็นการแลก Harpoon ๘ นัด กับกระสุนปืน ๕ นิ้ว ๒๐ นัด จริง ๆ
+      - [FIRES-3] approvePlan() → คำสั่งการยิง {โดเมนที่เน้น · นโยบายอาวุธ · เป้าที่ระบุตัว}
+          หป. ก/ข/ค → NORMAL/SURGE/CONSERVE · โดเมนที่เน้นมาจากการ "นับเป้าจริงในภาพ"
+          ขณะอนุมัติ ไม่ใช่ตีความจากถ้อยคำ · ถ้ามี หป. จาก LLM ให้ทับด้วยคำสำคัญจาก intent/commandActions
+          และรับชื่อเป้าเฉพาะที่มีอยู่จริงในภาพเท่านั้น
+          ⚠ แมปคำไม่ได้ = คงค่าจากกลไกกฎไว้ แล้วบันทึกตามจริงว่าแปลไม่ได้ — ไม่เดาแทน LLM
+      - ตรวจสอบย้อนหลังได้: บันทึกการปะทะบอกเหตุผลที่เลือกเป้านั้น (ระดับภัย · เจตนา · เวลาถึง UDC)
+        · วงประชี้เป้าพร้อมป้าย T-นาที บนแผนที่ · ป้ายคำสั่งการยิงในแผงฝ่ายอำนวยการ
+        · แถว "คำสั่งการยิง" ใน EXECUTIVE SUMMARY · บันทึกเมื่อนโยบายเปลี่ยนกระบอกที่ยิงจริง
+      - resetAll() / launchScenario() ล้างคำสั่งการยิงของรอบก่อน (ผูกกับแผนรอบนั้น)
+      - ยังไม่อยู่ในขั้นนี้ (ตั้งใจ): การเลือกเป้าของ updateAirDefense() · ประตูการตรวจจับ/ระดับ track
+        · การจ่ายเป้าแบบรวมศูนย์ — อยู่ในขั้น ๓/๔
   · [v17.20.0 AMMO-1 + KC-1] กระสุนมีวันหมด + นาฬิกาห่วงโซ่การทำลาย (sensors-to-shooters ขั้น ๑)
       ที่มา: ก่อนหน้านี้เรือทุกลำมีกระสุนไม่จำกัด — ผบ. จึงไม่เคยต้องเลือกว่า "ยิงหรือเก็บไว้"
              การตัดสินใจไม่มีต้นทุน = ไม่ใช่การตัดสินใจ  ขั้นนี้ใส่ต้นทุนกลับเข้าไป
@@ -657,12 +690,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.20.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.21.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.20.0';
+        const APP_VERSION = '17.21.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -7366,6 +7399,8 @@
             <div class="bf-es-row"><span class="bf-es-k">ขั้น ROE</span><span class="bf-es-v" id="bf-es-roe">TIGHT</span></div>
             <!-- [v17.20.0 KC-1] นาฬิกา kill chain — ตัวชี้วัดจริงของ sensor-to-shooter คือ "เวลา" -->
             <div class="bf-es-row"><span class="bf-es-k">KILL CHAIN</span><span class="bf-es-v" id="bf-es-kc" title="เวลาสะสมจากจังหวะที่ track เข้าภาพ จนถึงผลการปะทะ">— ยังไม่มีการปะทะสำเร็จ —</span></div>
+            <!-- [v17.21.0 FIRES-1] คำสั่งการยิงที่มีผลกับเอนจินปะทะอยู่ขณะนี้ -->
+            <div class="bf-es-row"><span class="bf-es-k">คำสั่งการยิง</span><span class="bf-es-v" id="bf-es-fires" title="มาจากแผนที่ผู้บังคับบัญชาอนุมัติ — กำหนดโดเมนที่เน้นและนโยบายการใช้อาวุธของเรือทุกลำ&#10;หมายเหตุ: ลำดับบนกระดานภัยคุกคามจัดตาม &quot;ระดับภัย&quot; ส่วนเรือจัดตาม &quot;สิ่งที่ต้องจัดการก่อน&quot; (รวมเวลาถึง UDC และระยะยิง) สองอย่างนี้ไม่จำเป็นต้องตรงกัน">— ยังไม่ได้อนุมัติแผน —</span></div>
             <div class="bf-es-row"><span class="bf-es-k">ฐานกฎหมาย</span><span class="bf-es-v" id="bf-es-law">UNCLOS 60(5) · เขตปลอดภัย 500 ม. + MEZ 5 nm</span></div>
         </div>
     </div>
@@ -7641,7 +7676,7 @@
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.20.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.21.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -8063,6 +8098,9 @@
                 <button class="mda-ai-btn staffgo" id="mda-staff-approve" disabled><svg class="ico" aria-hidden="true"><use href="#i-anchor"/></svg> ขั้น ๔ · ตกลงใจ &amp; วางกำลัง</button>
             </div>
             <div style="font-size:9.5px;color:var(--text-muted);margin-top:6px;" id="mda-staff-status"><svg class="ico" aria-hidden="true"><use href="#i-scale"/></svg> Human-in-the-loop: AI เสนอแผน — ผู้บังคับบัญชาเป็นผู้ตกลงใจอนุมัติก่อนวางกำลังจริงเสมอ</div>
+            <!-- [v17.21.0 FIRES-3] ผลของแผนที่มีต่อการยิงจริง — แสดงหลังอนุมัติเท่านั้น -->
+            <div id="mda-staff-fires" style="display:none;font-size:9.5px;color:#a78bfa;margin-top:6px;padding:5px 7px;border-left:2px solid #a78bfa;background:rgba(167,139,250,.07);line-height:1.5;"
+                 title="คำสั่งการยิงที่ได้จากแผนนี้ — กำหนดโดเมนที่เอนจินปะทะเน้น และนโยบายการใช้อาวุธของเรือทุกลำ"></div>
         </div>
 
     </div>
@@ -8102,7 +8140,7 @@
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.20.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.21.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -8119,7 +8157,7 @@
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.20.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.21.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -9039,7 +9077,7 @@
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.20.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.21.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -11018,6 +11056,9 @@ let placePatrolMode = false;
 // (ขอบเขตแผนที่ประกาศไว้ด้านล่าง จึงใส่ค่าตัวเลขตรงนี้โดยตรง)
 // ช่วงละติจูด 0.450° · ช่วงลองจิจูด 0.444°  →  ๑ ไมล์ทะเล = 1/27 หน่วยแนวตั้ง ≈ 1/26.64 หน่วยแนวนอน
 const NM_NY = 0.037037;   // 1/(0.450×60)  ny per nm
+// [v17.21.0 FIRES-1] เดิมประกาศไว้ภายใน animate() — ยกขึ้นมาระดับบนสุดเพราะ pvPickTarget()
+// ต้องใช้เกณฑ์เดียวกัน ค่าคงเดิม 5.0 nm และตรงกับวง MEZ ที่วาดบนแผนที่
+const MEZ_NM = 5.0;       // Maritime Exclusion Zone radius — เขตห้ามเข้าทางทะเล 5 ไมล์ทะเล
 const NM_NX = 0.037538;   // 1/(0.444×60)  nx per nm
 
 // ── ค่าตั้งรูปแบบการค้นหาที่ใช้อยู่ ──
@@ -11484,21 +11525,37 @@ function pvAmmoLine(v) {
          + parts.join('<span style="color:#334155;"> · </span>') + `</div>`;
 }
 
-/** เลือกอาวุธที่ให้โอกาสทำลายเป้าสูงสุด ณ ระยะที่กำหนด สำหรับภัยคุกคามในโดเมนนั้น */
+/** เลือกอาวุธที่ให้โอกาสทำลายเป้าสูงสุด ณ ระยะที่กำหนด สำหรับภัยคุกคามในโดเมนนั้น
+ *  [v17.21.0 FIRES-2] เคารพนโยบายใช้อาวุธจากแผนที่ ผบ. อนุมัติ:
+ *    CONSERVE — ปืนก่อน ใช้อาวุธนำวิถีเมื่อไม่มีกระบอกปืนที่ยิงถึงเท่านั้น (สงวนของที่เติมกลางทะเลไม่ได้)
+ *    NORMAL   — เลือกจากโอกาสทำลายสูงสุดล้วน (พฤติกรรมเดิมก่อน v17.21.0)
+ *    SURGE    — อาวุธนำวิถีก่อน จบเร็ว/ยิงไกล แลกกับกระสุนที่หมดแล้วหมดเลย
+ *  นโยบายจึงเป็น "คันบังคับการใช้กระสุน" ที่ต่อตรงกับกลไกกระสุนของขั้น ๑ */
 function pickBestWeapon(v, threat, distNm) {
     const domain = threat.type;   // 'surface' | 'uuv' | 'drone'
-    let bestWep = null, bestName = '', bestEffPk = -1;
     const ssFactor = (typeof SS_MODS !== 'undefined' && SS_MODS.pvSpeedMod)
                    ? (SS_MODS.pvSpeedMod[seaState] || 1) : 1;
-    Object.entries(v.weapons).forEach(([, wep]) => {
-        if (!wep.domain || !wep.domain.includes(domain)) return;
-        if (distNm > wep.rangeNm) return;
-        if (!wepReady(wep)) return;   // [v17.20.0 AMMO-1] ข้ามกระบอกที่แห้ง/กำลังเติมดรัม
-        const rf     = 1 - Math.min(0.7, distNm / wep.rangeNm);
-        const effPk  = wep.pk * rf * ssFactor;
-        if (effPk > bestEffPk) { bestEffPk = effPk; bestWep = wep; bestName = wep.label; }
-    });
-    return bestWep ? {wep: bestWep, wepName: bestName} : null;
+    const pol = (firesGuidance && firesGuidance.active) ? firesGuidance.weaponsPolicy : 'NORMAL';
+    // null = ไม่คัดกลุ่ม (พิจารณาทุกกระบอกพร้อมกัน) · true = อาวุธนำวิถี · false = ปืน
+    const groups = pol === 'CONSERVE' ? [false, true]
+                 : pol === 'SURGE'    ? [true, false]
+                 : [null];
+    for (let gi = 0; gi < groups.length; gi++) {
+        const wantMag = groups[gi];
+        let bestWep = null, bestName = '', bestEffPk = -1;
+        Object.entries(v.weapons).forEach(([, wep]) => {
+            if (wantMag !== null && !!wep.magazine !== wantMag) return;
+            if (!wep.domain || !wep.domain.includes(domain)) return;
+            if (distNm > wep.rangeNm) return;
+            if (!wepReady(wep)) return;   // [v17.20.0 AMMO-1] ข้ามกระบอกที่แห้ง/กำลังเติมดรัม
+            const rf     = 1 - Math.min(0.7, distNm / wep.rangeNm);
+            const effPk  = wep.pk * rf * ssFactor;
+            if (effPk > bestEffPk) { bestEffPk = effPk; bestWep = wep; bestName = wep.label; }
+        });
+        // gi>0 = ต้องถอยไปกลุ่มสำรอง แปลว่านโยบายไม่ได้เปลี่ยนผลลัพธ์จริงในนัดนี้
+        if (bestWep) return { wep: bestWep, wepName: bestName, policy: pol, byPolicy: pol !== 'NORMAL' && gi === 0 };
+    }
+    return null;
 }
 
 /** ระยะยิงไกลสุดที่มีต่อภัยคุกคามในโดเมนนั้น (ใช้เป็นเกณฑ์ตัดสินใจเข้าปะทะ)
@@ -11511,6 +11568,133 @@ function getMaxWeaponRange(v, threatType) {
             maxR = wep.rangeNm;
     });
     return maxR;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// [v17.21.0 FIRES-1] คำสั่งการยิง — จากแผนที่ ผบ. อนุมัติ ถึงไกปืน
+// ───────────────────────────────────────────────────────────────
+//  ปัญหาที่แก้: ก่อนหน้านี้แผนที่อนุมัติแล้วมีผลแค่ "วางกำลังที่ไหน"
+//  ส่วนการเลือกเป้าใช้เกณฑ์ "ใกล้เรือเราที่สุดชนะ" ล้วน ๆ เรือประมงที่ลอยเฉย
+//  จึงแย่งคิวเป้า RED ที่มีเจตนาชัดและกำลังวิ่งเข้าหา UDC ได้เสมอ
+//  ขั้นนี้ทำให้ (๑) การตกลงใจของ ผบ. เปลี่ยนพฤติกรรมการยิงจริง
+//  และ (๒) ลำดับเป้ามาจาก "ระดับภัย · เจตนา · เวลาถึง UDC" ไม่ใช่ระยะอย่างเดียว
+// ═══════════════════════════════════════════════════════════════
+const FG_NEUTRAL = { active:false, coaId:'', coaName:'', priorityDomain:'', weaponsPolicy:'NORMAL', namedTargets:[], src:'', ts:0 };
+let firesGuidance = Object.assign({}, FG_NEUTRAL);
+
+/** รับคำสั่งการยิงจากฝ่ายอำนวยการ (อยู่คนละ IIFE จึงต้องผ่าน window) */
+window.setFiresGuidance = function (fg) {
+    if (!fg) return null;
+    const POL = { CONSERVE:1, NORMAL:1, SURGE:1 };
+    firesGuidance = {
+        active:         true,
+        coaId:          String(fg.coaId || ''),
+        coaName:        String(fg.coaName || ''),
+        priorityDomain: String(fg.priorityDomain || ''),
+        weaponsPolicy:  POL[fg.weaponsPolicy] ? fg.weaponsPolicy : 'NORMAL',
+        namedTargets:   Array.isArray(fg.namedTargets) ? fg.namedTargets.slice(0, 8).map(x => String(x).toUpperCase()) : [],
+        src:            String(fg.src || ''),
+        ts:             Date.now()
+    };
+    return firesGuidance;
+};
+window.clearFiresGuidance = function () { firesGuidance = Object.assign({}, FG_NEUTRAL); };
+window.getFiresGuidance   = function () { return firesGuidance; };
+
+/** ข้อมูลจัดลำดับเป้าที่ "ไม่ขึ้นกับเรือลำใด" — คำนวณครั้งเดียวต่อเป้าต่อเฟรม
+ *  classifyThreat() เรียก analyzeTrack() ซึ่งไล่ trail ย้อนหลัง จึงแคชยาวกว่า (๑๕ เฟรม)
+ *  ส่วนเรขาคณิต (ระยะ/ทิศเข้าหา UDC) ถูกทุกเฟรมเพราะเป้าเคลื่อนที่ตลอด */
+function pvTargetInfo(t) {
+    if (t._fgInfo && t._fgFrame === frame) return t._fgInfo;
+
+    let tx = t._fgTax;
+    if (!tx || t._fgTaxFrame == null || (frame - t._fgTaxFrame) >= 15) {
+        try { tx = (typeof window.classifyThreat === 'function') ? window.classifyThreat(t) : null; } catch (_) { tx = null; }
+        t._fgTax = tx; t._fgTaxFrame = frame;
+    }
+
+    const distUDC = haversineNm(nyToLat(t.ny), nxToLng(t.nx), UDC_LAT, UDC_LNG);
+
+    // ── ปัจจัยที่ ๑ · ระดับภัยจากการจำแนก (ใช้สเกลเดียวกับกระดานภัยคุกคาม) ──
+    let threatW = 40, intentW = 0, recog = 'GREY';
+    if (tx) {
+        recog   = tx.recog || 'GREY';
+        intentW = (typeof tx.intentScore === 'number') ? Math.max(0, Math.min(100, tx.intentScore)) : 0;
+        threatW = recog === 'RED'   ? 100        // จำแนกแล้วว่าเป็นฝ่ายตรงข้าม
+                : recog === 'WHITE' ? 0          // ยืนยันแล้วว่าเป็นฝ่ายเรา/พลเรือน
+                : (intentW >= 55    ? 70 : 40);  // ยังไม่จำแนก — แยกด้วยเจตนาที่วัดได้
+    }
+
+    // ── ปัจจัยที่ ๒ · ความเร่งด่วน = "เวลาถึง UDC" ไม่ใช่ "ระยะถึงเรือเรา" ──
+    //    อัตราเข้าใกล้ = ความเร็วเหนือพื้น × องค์ประกอบตามแนวรัศมีเข้าหา UDC
+    //    ใช้ sogKt ของ analyzeTrack ตรง ๆ เพื่อไม่ตั้งคาลิเบรชันเวลาซ้อนขึ้นมาอีกชุด
+    let closingKt = 0, ttuMin = Infinity;
+    const tr  = t.trail || [];
+    const sog = (tx && typeof tx.sogKt === 'number') ? tx.sogKt : 0;
+    if (sog > 0.2 && tr.length >= 3) {
+        const p0 = tr[tr.length - 3], p1 = tr[tr.length - 1];
+        const vx = p1.nx - p0.nx, vy = p1.ny - p0.ny, vm = Math.hypot(vx, vy);
+        const ux = UDC.nx  - t.nx, uy = UDC.ny  - t.ny, um = Math.hypot(ux, uy);
+        if (vm > 1e-9 && um > 1e-9) {
+            const dot = (vx * ux + vy * uy) / (vm * um);   // −1..1 · มากกว่า 0 = กำลังเข้าหา
+            closingKt = sog * dot;
+            if (closingKt > 0.2) ttuMin = (distUDC / closingKt) * 60;
+        }
+    }
+    // ≤๒ นาที = 100 · ≥๒๐ นาที = 0 · ไม่ได้เข้าหา UDC = 0
+    const urgencyW = !isFinite(ttuMin) ? 0 : Math.max(0, Math.min(100, (20 - ttuMin) / 18 * 100));
+
+    // ── รวมคะแนน · ถ่วงน้ำหนักให้ "ภัยที่จะถึงก่อน" แซง "ภัยที่ร้ายกว่าแต่ยังไกล" ได้จริง ──
+    //    ตรวจสอบด้วยตัวเลข: GREY เจตนาสูงเข้าถึงใน ๑ นาที (≈61) ชนะ RED ที่ยังห่าง ๒๐ นาที (≈57)
+    //    ตั้งใจไม่ใช้สูตรของกระดานภัยคุกคาม (s×1000) เพราะพจน์ ×1000 ทำให้ความเร่งด่วนไม่มีวันพลิกได้
+    let score = 0.45 * threatW + 0.20 * intentW + 0.35 * urgencyW;
+
+    // ── ปัจจัยที่ ๓ · คำสั่งการยิงจากแผน — ระบุตัวเป้าชนะการเน้นโดเมน ──
+    let planHit = '';
+    if (firesGuidance.active) {
+        const dom = (tx && tx.domain) || '';
+        const lbl = String(t.label || t.id || '').toUpperCase();
+        if (firesGuidance.namedTargets.length && firesGuidance.namedTargets.some(n => n && lbl.indexOf(n) >= 0)) {
+            score += 25; planHit = 'แผนระบุตัว';
+        } else if (firesGuidance.priorityDomain && firesGuidance.priorityDomain === dom) {
+            score *= 1.25; planHit = 'แผนเน้น ' + dom;
+        }
+    }
+
+    const info = {
+        tx, recog, distUDC, closingKt, ttuMin, threatW, intentW, urgencyW, score, planHit,
+        why: recog + ' · เจตนา ' + Math.round(intentW) + ' · '
+           + (isFinite(ttuMin) ? ('ถึง UDC ~' + (ttuMin < 1 ? '<1' : Math.round(ttuMin)) + ' นาที')
+                               : 'ไม่ได้มุ่งเข้า UDC')
+           + (planHit ? ' · ' + planHit : '')
+    };
+    t._fgInfo = info; t._fgFrame = frame;
+    return info;
+}
+
+/** เลือกเป้าที่ควรจัดการก่อนของเรือลำหนึ่ง — แทนเกณฑ์ "ใกล้สุดชนะ" เดิม
+ *  ตัวกรอง "สิทธิ์เข้าปะทะ" (ROE · MEZ · ขีดความสามารถ ปด. · ควบคุมตัวแล้ว) คงไว้ครบทุกข้อ
+ *  ขั้นนี้เปลี่ยนเฉพาะ "ลำดับ" ของเป้าที่มีสิทธิ์อยู่แล้วเท่านั้น */
+function pvPickTarget(v) {
+    let best = null, bestScore = -1, bestDist = Infinity, bestInfo = null;
+    threats.forEach(t => {
+        if (!t.active || t.frozen) return;
+        if (t.detained) return;                          // [v16.0.2 M4]
+        if (t.type === 'drone') return;                  // [AD] โดรน — จัดการโดย updateAirDefense
+        if (roeLevel === 'TIGHT' && !t.classified) return;
+        if (t.type === 'uuv' && !v.hasASW) return;
+        const info = pvTargetInfo(t);
+        if (info.distUDC > MEZ_NM) return;
+        const distNm = haversineNm(nyToLat(t.ny), nxToLng(t.nx), nyToLat(v.ny), nxToLng(v.nx));
+        // ยิงไม่ถึง "ตอนนี้" ไม่ตัดทิ้ง แค่ถ่วงลง — ไม่งั้นเรือจะละเป้าที่จัดการได้ไปไล่เป้าที่ไล่ไม่ทัน
+        const reach = distNm <= getMaxWeaponRange(v, t.type) ? 1 : 0.55;
+        // ความเฉื่อยของเป้าที่จับอยู่ — กันเรือแกว่งสลับเป้าที่คะแนนไล่เลี่ยกันจนไม่ได้ยิงสักนัด
+        const sc = info.score * reach * (t === v.engTarget ? 1.10 : 1);
+        if (sc > bestScore + 1e-9 || (Math.abs(sc - bestScore) <= 1e-9 && distNm < bestDist)) {
+            bestScore = sc; best = t; bestDist = distNm; bestInfo = info;
+        }
+    });
+    return best ? { t: best, distNm: bestDist, score: bestScore, info: bestInfo } : null;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -20370,6 +20554,29 @@ function drawPatrolVessels() {
             ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(tp.x,tp.y); ctx.stroke();
             ctx.setLineDash([]); ctx.restore();
         }
+        // ── [v17.21.0 FIRES-1] วงชี้เป้าที่ถูกจัดลำดับให้จัดการก่อน ──
+        // ผู้ใช้ต้องมองออกทันทีว่าเรือเลือกเป้าไหน และเห็นเหตุผลย่อ (เจตนา · เวลาถึง UDC)
+        if ((v.state==='ENGAGE'||v.state==='INTERCEPT') && v.engTarget && v.engTarget.active) {
+            const et=v.engTarget, tp=pn(et.nx,et.ny);
+            const inf=et._fgInfo;
+            const col = (inf && inf.recog==='RED') ? 'rgba(239,68,68,'
+                      : (inf && inf.urgencyW>=60) ? 'rgba(245,158,11,'
+                      : 'rgba(56,189,248,';
+            const pulse = 12 + Math.sin(frame*0.08)*2.5;
+            ctx.save();
+            ctx.lineWidth=1.4; ctx.setLineDash([5,4]);
+            ctx.strokeStyle=col+'0.85)';
+            ctx.beginPath(); ctx.arc(tp.x,tp.y,pulse,0,Math.PI*2); ctx.stroke();
+            ctx.setLineDash([]);
+            if (inf) {
+                const tag = (isFinite(inf.ttuMin) ? ('T-'+(inf.ttuMin<1?'<1':Math.round(inf.ttuMin))+'′') : 'ไม่เข้าหา')
+                          + (inf.planHit ? ' ⚔' : '');
+                ctx.font='700 8px "Share Tech Mono",monospace';
+                ctx.textAlign='center'; ctx.fillStyle=col+'0.95)';
+                ctx.fillText(tag, tp.x, tp.y-pulse-4);
+            }
+            ctx.restore();
+        }
     });
 }
 
@@ -25368,7 +25575,6 @@ function animate() {
     // ── การเคลื่อนที่ของเรือตรวจการณ์ + กลไกตอบโต้การรุกล้ำเขตใช้อาวุธ ──
     //    (เมื่อ contact ละเมิด Maritime Exclusion Zone → PV เข้าสกัด)
     const pvSpdFactor = SS_MODS.pvSpeedMod[seaState];
-    const MEZ_NM = 5.0;   // Maritime Exclusion Zone radius — เขตห้ามเข้าทางทะเล 5 nm
 
     patrolVessels.forEach(v=>{
 
@@ -25405,24 +25611,24 @@ function animate() {
         // ไม่ engage ถ้า: HOLD, RTB, หรือ simPaused
         if (roeLevel !== 'HOLD' && v.state !== 'RTB' && !simPaused && !missionEnded) {
             // หา threat ที่ active, classified (ยืนยันแล้ว), และละเมิด MEZ
-            let bestThreat = null, bestDist = Infinity;
-            threats.forEach(t => {
-                if (!t.active || t.frozen) return;
-                if (t.detained) return;           // [v16.0.2 M4] เป้าที่ถูกควบคุมตัว/จับกุมแล้ว — ไม่ engage ซ้ำ
-                if (t.type === 'drone') return;   // [AD] โดรน — จัดการโดย updateAirDefense
-                // TIGHT = classified only; FREE = ทุก contact
-                if (roeLevel === 'TIGHT' && !t.classified) return;
-                // UUV (underwater): ยิงได้เฉพาะเรือที่มีอาวุธ ASW (Naresuan / Khamronsin)
-                if (t.type === 'uuv' && !v.hasASW) return;
-                const distNm = haversineNm(nyToLat(t.ny),nxToLng(t.nx),nyToLat(v.ny),nxToLng(v.nx));
-                const distUDC = haversineNm(nyToLat(t.ny),nxToLng(t.nx),UDC_LAT,UDC_LNG);
-                if (distUDC <= MEZ_NM && distNm < bestDist) { bestDist=distNm; bestThreat=t; }
-            });
+            // [v17.21.0 FIRES-1] จัดลำดับด้วยคะแนนรวม (ระดับภัย · เจตนา · เวลาถึง UDC · คำสั่งการยิง)
+            // แทนเกณฑ์เดิม "ใกล้เรือเราที่สุดชนะ" — ตัวกรองสิทธิ์เข้าปะทะย้ายไปอยู่ใน pvPickTarget() ครบทุกข้อ
+            const pick = pvPickTarget(v);
+            const bestThreat = pick ? pick.t : null;
+            const bestDist   = pick ? pick.distNm : Infinity;
 
             if (bestThreat) {
                 // เกณฑ์เข้าปะทะ = 95% ของระยะยิงไกลสุดของอาวุธที่เหมาะกับภัยประเภทนั้น
                 const engageThresh = getMaxWeaponRange(v, bestThreat.type) * 0.95;
                 v.state = bestDist <= engageThresh ? 'ENGAGE' : 'INTERCEPT';
+                // [v17.21.0 FIRES-1] เปลี่ยนเป้า → แจ้งเหตุผล ให้ตรวจสอบย้อนหลังได้ว่าทำไมไม่จัดการลำที่ใกล้กว่า
+                if (v.engTarget !== bestThreat) {
+                    try {
+                        addEngLog(`<span style="color:#38bdf8;">◎ ${escapeHtml(v.label || 'PV')} จัดลำดับเป้า → `
+                                + `${escapeHtml(bestThreat.label || bestThreat.id || 'CONTACT')} `
+                                + `<span style="color:#64748b;">(${escapeHtml(pick.info.why)})</span></span>`);
+                    } catch (_) {}
+                }
                 v.engTarget = bestThreat;
                 v.redirected = true;
                 v.redirectTarget = { nx: bestThreat.nx, ny: bestThreat.ny };
@@ -25450,6 +25656,13 @@ function animate() {
 
                         wepFire(wep);   // [v17.20.0 AMMO-1] ตัดกระสุน — ยิงพลาดก็เสียกระสุน
                         kcStamp(t, 'Engage');
+
+                        // [v17.21.0 FIRES-2] นโยบายใช้อาวุธเปลี่ยนกระบอกที่เลือกจริง — แจ้งครั้งเดียวต่อลำต่อนโยบาย
+                        if (sel.byPolicy && v._fgPolLogged !== sel.policy + '|' + wepName) {
+                            v._fgPolLogged = sel.policy + '|' + wepName;
+                            const polTh = sel.policy === 'CONSERVE' ? 'ประหยัดอาวุธนำวิถี' : 'ระดมยิง';
+                            addEngLog(`<span style="color:#a78bfa;">⚔ ${escapeHtml(v.label)} ใช้ [${escapeHtml(wepName)}] ตามคำสั่งการยิง — ${polTh}</span>`);
+                        }
 
                         if (Math.random() < pk) {
                             // เข้าเป้า — ทำลายภัยคุกคาม
@@ -26468,6 +26681,8 @@ function resetAll() {
     threats=[]; effects=[]; cablePhotons=[];
     // [v17.20.0] ตั้งต้นใหม่: กระสุนเต็มลำ + ล้างสถิติ kill chain ของรอบก่อน
     pvRearmAll();
+    // [v17.21.0 FIRES-1] คำสั่งการยิงผูกกับแผนของรอบก่อน — รอบใหม่ต้องเริ่มจากค่ากลาง
+    try { window.clearFiresGuidance(); } catch (_) {}
     killChain.last = null; killChain.done = [];
     dasTriggered=false; dasPrevState=false; dasKPnm=null; dasKPsegIdx=-1;
     dasFAUntilFrame=-1; // [v16.0.4 W34V-B11] ล้าง false-alarm window ค้างจากรอบก่อน
@@ -26572,6 +26787,8 @@ function launchScenario(type) {
     threats=[]; effects=[]; cablePhotons=[];
     // [v17.20.0] ฉากใหม่เริ่มด้วยกระสุนเต็มลำ + สถิติ kill chain เฉพาะฉากนี้
     pvRearmAll();
+    // [v17.21.0 FIRES-1] คำสั่งการยิงผูกกับแผนของรอบก่อน — รอบใหม่ต้องเริ่มจากค่ากลาง
+    try { window.clearFiresGuidance(); } catch (_) {}
     killChain.last = null; killChain.done = [];
     dasTriggered=false; dasPrevState=false; dasKPnm=null; dasKPsegIdx=-1;
     dasFAUntilFrame=-1; // [v16.0.4 W34V-B11] ล้าง false-alarm window ค้างจากรอบก่อน
@@ -36506,6 +36723,27 @@ window.toggleSat3D = toggleSat3D;
                         if (esKc.textContent !== s) esKc.textContent = s;
                         esKc.style.color = (s !== NOKC) ? '#00d4ff' : '';
                     }
+                    // [v17.21.0 FIRES-1] คำสั่งการยิงที่บังคับใช้อยู่ — ผลของการตกลงใจของ ผบ. ที่มีต่อไกปืน
+                    const esFg = document.getElementById('bf-es-fires');
+                    if (esFg) {
+                        const NOFG = '— ยังไม่ได้อนุมัติแผน —';
+                        let s = NOFG, col = '';
+                        try {
+                            const fg = (typeof window.getFiresGuidance === 'function') ? window.getFiresGuidance() : null;
+                            if (fg && fg.active) {
+                                const POL = { CONSERVE: ['ประหยัดอาวุธนำวิถี', '#fbbf24'],
+                                              NORMAL:   ['ตามปกติ',            '#00d4ff'],
+                                              SURGE:    ['ระดมยิง',            '#ef4444'] };
+                                const p = POL[fg.weaponsPolicy] || POL.NORMAL;
+                                s = (fg.coaId || 'PLAN') + ' · เน้น ' + (fg.priorityDomain || 'ทุกโดเมน')
+                                  + ' · อาวุธ: ' + p[0]
+                                  + (fg.namedTargets.length ? ' · ระบุตัว ' + fg.namedTargets.length : '');
+                                col = p[1];
+                            }
+                        } catch(_) {}
+                        if (esFg.textContent !== s) esFg.textContent = s;
+                        esFg.style.color = col;
+                    }
                     const esLaw = document.getElementById('bf-es-law');
                     if (esLaw) {
                         const s = (nRed > 0)
@@ -37687,6 +37925,67 @@ function selectCOA(coaId) {
     } catch (e) {}
 }
 
+/* ── [v17.21.0 FIRES-3] แปลแผนที่อนุมัติแล้ว → คำสั่งการยิงที่เอนจินปะทะอ่านได้จริง ──
+   ก่อนหน้านี้แผนมีผลแค่ "วางกำลังที่ไหน" การเลือกเป้าและการเลือกอาวุธไม่รับรู้แผนเลย
+   ที่มาสองทาง เรียงตามความน่าเชื่อถือ:
+     ๑) หนทางปฏิบัติจากกลไกกฎ — แมปตรงจากตัวตนของ หป. (ก ป้องกันเป็นชั้น / ข เชิงรุก / ค หลายแกน)
+        และ "โดเมนที่เน้น" มาจากการนับเป้าจริงในภาพขณะอนุมัติ ไม่ใช่ตีความจากถ้อยคำ
+     ๒) หนทางปฏิบัติจาก LLM — ถ้ามี ให้ทับด้วยคำสำคัญจาก intent/commandActions
+        แมปคำไม่ได้ = คงค่าจากข้อ ๑ ไว้ แล้วบันทึกตามจริงว่าแปลไม่ได้ (ไม่เดาแทน LLM) */
+const _FG_POL_BY_COA = { 'COA-A': 'NORMAL', 'COA-B': 'SURGE', 'COA-C': 'CONSERVE' };
+const _FG_KW_POL = [
+    [/ประหยัด|สงวน(กระสุน|อาวุธ)?|ถนอมกระสุน|จำกัดการใช้อาวุธ|ยับยั้งชั่งใจ|conserve|weapons\s*tight/i, 'CONSERVE'],
+    [/ระดมยิง|เต็มกำลัง|ทุ่มกำลัง|ชิงลงมือ|ทำลายให้สิ้น|เด็ดขาดโดยเร็ว|surge|weapons\s*free/i,        'SURGE'],
+];
+const _FG_KW_DOM = [
+    [/ใต้น้ำ|ใต้ทะเล|เรือดำน้ำ|ดำน้ำ|ปราบเรือดำน้ำ|ยานใต้น้ำ|uuv|sdv|\basw\b|subsurface|submarine/i, 'SUB'],
+    [/พื้นท้องทะเล|ท้องทะเล|ทุ่นระเบิด|สายเคเบิล|เคเบิล|seabed|\bmine\b|cable/i,                      'SEABED'],
+    [/ทางอากาศ|อากาศยาน|โดรน|ไร้คนขับทางอากาศ|ต่อสู้อากาศยาน|\buav\b|suas|drone|air\s*defen/i,        'AIR'],
+    [/ผิวน้ำ|เรือเร็ว|เรือประมง|เรือผิวน้ำ|\busv\b|surface/i,                                          'SURF'],
+];
+function _firesFromPlan(plan) {
+    const coa = (plan && plan.coa) || {};
+
+    // โดเมนที่เน้น = โดเมนที่มีเป้าจริงมากที่สุดในภาพขณะอนุมัติ (นับจริง ไม่ใช่ตีความถ้อยคำ)
+    const live = (plan && plan.tp && Array.isArray(plan.tp.live)) ? plan.tp.live : [];
+    const cnt = {};
+    live.forEach(t => {
+        let d = null;
+        try { d = window.classifyThreat(t).domain; } catch (_) {}
+        if (d) cnt[d] = (cnt[d] || 0) + 1;
+    });
+    let dom = '';
+    Object.keys(cnt).forEach(d => { if (!dom || cnt[d] > cnt[dom]) dom = d; });
+
+    let pol = _FG_POL_BY_COA[coa.id] || 'NORMAL';
+    let src = 'หป. ' + (coa.id || '—');
+    const named = [];
+
+    const llm = plan && plan.llmCoa;
+    if (llm) {
+        const txt = [llm.intent || '', (llm.commandActions || []).join(' · '), llm.counteredEcoa || ''].join(' · ');
+        let kp = '', kd = '';
+        _FG_KW_POL.forEach(k => { if (!kp && k[0].test(txt)) kp = k[1]; });
+        _FG_KW_DOM.forEach(k => { if (!kd && k[0].test(txt)) kd = k[1]; });
+        // ระบุตัวเป้า: รับเฉพาะชื่อที่มีอยู่จริงในภาพ — ไม่สร้างชื่อเป้าขึ้นเอง
+        const TXT = txt.toUpperCase();
+        live.forEach(t => {
+            const L = String(t.label || '').toUpperCase();
+            if (L.length >= 4 && TXT.indexOf(L) >= 0 && named.indexOf(L) < 0) named.push(L);
+        });
+        if (kp || kd || named.length) {
+            if (kp) pol = kp;
+            if (kd) dom = kd;
+            src = 'LLM «' + (llm.coaName || '—') + '»';
+        } else {
+            try { addLog('[FIRES] ⚠ แปลเจตนา/คำสั่งการของ LLM เป็นคำสั่งการยิงไม่ได้ — คงค่าจาก ' + src + ' (ไม่เดาแทน LLM)', '#fbbf24'); } catch (_) {}
+        }
+    }
+    return { coaId: coa.id || '', coaName: coa.name || '', priorityDomain: dom,
+             weaponsPolicy: pol, namedTargets: named, src: src };
+}
+const _FG_POL_TH = { CONSERVE: 'ประหยัดอาวุธนำวิถี', NORMAL: 'ตามปกติ', SURGE: 'ระดมยิง' };
+
 /* ── [STAFF-4] Human-in-the-loop: อนุมัติ → วางกำลังจริง ─────── */
 function approvePlan() {
     const plan = state.plan;
@@ -37712,14 +38011,33 @@ function approvePlan() {
     });
     state.deployed = true;
     try { _pipeSetStage(4, 4); } catch (_) {}   // [v18.0.0] สันหลัง: ขั้น ๔ ตกลงใจ & วางกำลังเสร็จสมบูรณ์
+
+    // [v17.21.0 FIRES-3] การตกลงใจของ ผบ. ต้องไปถึงไกปืน ไม่ใช่จบที่การวางกำลัง
+    let fg = null;
+    try {
+        fg = _firesFromPlan(plan);
+        if (typeof window.setFiresGuidance === 'function') window.setFiresGuidance(fg);
+    } catch (e) { fg = null; }
+    const fgTxt = fg ? ('⚔ คำสั่งการยิง: เน้น ' + (fg.priorityDomain || 'ทุกโดเมน')
+                      + ' · อาวุธ ' + (_FG_POL_TH[fg.weaponsPolicy] || fg.weaponsPolicy)
+                      + (fg.namedTargets.length ? ' · ระบุตัว ' + fg.namedTargets.join(', ') : '')
+                      + ' (ที่มา: ' + fg.src + ')') : '';
+
     const ap = $id('mda-staff-approve');
     if (ap) { ap.disabled = true; ap.textContent = '✓ วางกำลังแล้ว (' + ok + ' หน่วย)'; }
     const st = $id('mda-staff-status');
     if (st) st.textContent = '⚓ วางกำลังตามแผน ' + plan.coa.id + ' แล้ว ' + ok + ' หน่วย' +
         (fail ? ' · ติดขัด ' + fail + ' (เพดานกำลัง/ข้อจำกัดพื้นที่)' : '') + ' — ตรวจสอบบนแผนที่หลัก';
+    const fb = $id('mda-staff-fires');
+    if (fb) {
+        if (fgTxt) { fb.style.display = 'block'; fb.textContent = fgTxt; }
+        else       { fb.style.display = 'none';  fb.textContent = ''; }
+    }
     try {
-        if (typeof addLog === 'function')
+        if (typeof addLog === 'function') {
             addLog('[STAFF] ⚓ ผบ. อนุมัติแผน ' + plan.coa.id + ' «' + plan.coa.name + '» — วางกำลัง ' + ok + ' หน่วย' + (fail ? ' · ติดขัด ' + fail : ''), '#34d399');
+            if (fgTxt) addLog('[FIRES] ' + fgTxt + ' — เอนจินปะทะเริ่มจัดลำดับเป้าตามแผนนี้', '#a78bfa');
+        }
     } catch (e) {}
 }
 
@@ -37799,6 +38117,9 @@ async function pipelineGenerateCOA() {
         if (engineLLM && typeof window._llmGenerateCOA === 'function') {
             const res = await window._llmGenerateCOA({ advisoryOnly: true });
             // merge เฉพาะเมื่อ LLM สร้าง COA จริง (res.coa != null) — ถ้า offline/fallback คงแผน rule ที่ครบกว่าไว้
+            // [v17.21.0 FIRES-3] เดิม res.coa ถูกทิ้ง เหลือแต่ res.actions — เจตนา/คำสั่งการของ LLM
+            // จึงไปไม่ถึงเอนจินปะทะ เก็บไว้กับแผนเพื่อให้ approvePlan() แปลเป็นคำสั่งการยิงได้
+            if (res && res.coa && state.plan) { try { state.plan.llmCoa = res.coa; } catch (_) {} }
             if (res && res.coa && Array.isArray(res.coa.actions) && res.coa.actions.length && state.plan) {
                 const assets = _coaActionsToAssets(res.actions);
                 if (assets.length) {
