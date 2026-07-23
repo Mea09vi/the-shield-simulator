@@ -1,6 +1,6 @@
 /* ════════════════════════════════════════════════════════════════════════
    UDC_Simulator — Cyber-EM + Aviation + OSINT multi-feed relay + geocode
-   (Cloudflare Worker · keyless · v6 — ?feed=threatfox | feodo | urlhaus | kev
+   (Cloudflare Worker · keyless · v7 — ?feed=threatfox | feodo | urlhaus | kev
     | aviation | ransomware | gdelt)
    ────────────────────────────────────────────────────────────────────────
    วัตถุประสงค์ : relay ฟีดสาธารณะ (keyless) ฝั่ง server ให้ UDC_Simulator
@@ -14,8 +14,8 @@
                    • ransomware (v17.11.0 CYBER-2) — ransomware.live TH victims + geo (วงกลมกุหลาบ)
                    • gdelt      (v17.11.0 CYBER-2) — GDELT DOC 2.0 ข่าวความมั่นคงทางทะเล (ไม่ geo)
    ความปลอดภัย : Worker "ไม่มี" API key/ความลับ — ThreatFox / Feodo / URLhaus /
-                 CISA KEV / ip-api / adsb.lol / ransomware.live / GDELT เป็น endpoint สาธารณะ keyless
-                 ทั้งหมด. ปลอด deploy สาธารณะ
+                 CISA KEV / ip-api / adsb.lol / ransomware.live / GDELT / Cloudflare DoH
+                 (cloudflare-dns.com · v7) เป็น endpoint สาธารณะ keyless ทั้งหมด. ปลอด deploy สาธารณะ
    แคช         : edge cache แยกต่อ feed (caches.default) → browser poll ซ้ำไม่ยิง upstream ใหม่
    เชื่อมโยง    : ตั้ง MDA.cfg.threatfoxProxy = '<worker-url>' ใน UDC_Simulator_17.html
                  (feodo/urlhaus/kev/aviation/ransomware/gdelt ต่อ ?feed= เองจาก base เดียวกัน —
@@ -87,6 +87,29 @@ async function geocodeAll(ips) {
         }
       }
     } catch (_) { /* ก้อนนี้พลาด → ข้าม */ }
+  }
+  return map;
+}
+
+// [v17.19.1 CYBER-3] แปลงชื่อโฮสต์ → IPv4 ด้วย DNS-over-HTTPS ของ Cloudflare (keyless ไม่มี API key)
+//   เหตุผล : ip-api /batch "รับเฉพาะ IP" ไม่รับชื่อโดเมน — ของเดิมยิงชื่อโดเมนเข้า /batch ตรง ๆ
+//            ทำให้ทุกระเบียนได้ status:"fail" → geo ว่าง → buildRansomware ตัดทิ้งหมด → คืน []
+//            ทั้งที่ต้นทางมีเหยื่อไทยจริง 179 ราย (ตรวจ 23 ก.ค. 69 · ล่าสุด 2026-07-01)
+//   คืนค่า  : { host → ip } เฉพาะที่ resolve สำเร็จ (พลาด = ไม่ใส่คีย์ ให้ผู้เรียกตัดสินใจเอง)
+async function resolveHosts(hosts) {
+  const map = {};
+  const one = async (h) => {
+    try {
+      const r = await fetch('https://cloudflare-dns.com/dns-query?type=A&name=' + encodeURIComponent(h),
+        { headers: { 'Accept': 'application/dns-json' } });
+      if (!r.ok) return;
+      const j = await r.json();
+      const a = (j && Array.isArray(j.Answer)) ? j.Answer.find(x => x && x.type === 1 && x.data) : null;
+      if (a) map[h] = String(a.data).trim();
+    } catch (_) { /* โฮสต์นี้ resolve ไม่ได้ (โดเมนถูกถอด/NXDOMAIN) → ข้าม */ }
+  };
+  for (let i = 0; i < hosts.length; i += 10) {          // ยิงทีละ 10 กัน subrequest burst
+    await Promise.all(hosts.slice(i, i + 10).map(one));
   }
   return map;
 }
@@ -383,13 +406,17 @@ async function buildRansomware() {
     r.domain = String(r.website || '').replace(/^https?:\/\//, '').replace(/\/.*$/, '').trim().toLowerCase();
   }
 
+  // [v17.19.1 CYBER-3] resolve ชื่อโดเมน → IP ก่อน แล้วค่อย geocode ด้วย IP (ip-api /batch ไม่รับชื่อโฮสต์)
   const doms = [...new Set(recs.map(r => r.domain).filter(Boolean))];
-  const geo = await geocodeAll(doms);
+  const ipOf = await resolveHosts(doms);
+  const geo  = await geocodeAll([...new Set(Object.values(ipOf))]);
 
   const out = [];
   for (const r of recs) {
-    const g = geo[r.domain];
-    if (!g) continue;
+    // [v17.19.1 CYBER-3] geocode พลาด → ส่งระเบียนต่อพร้อม geo:null (เดิม `continue` ทิ้งทั้งชุด
+    //   ทำให้ "จำนวนเหยื่อไทย" เป็นศูนย์เท็จ) — ฝั่ง client ข้ามการปักหมุดเองอยู่แล้วถ้าไม่มีพิกัด
+    const ip = ipOf[r.domain] || null;
+    const g  = (ip && geo[ip]) ? geo[ip] : null;
     out.push({
       domain:    r.domain,
       post_title: r.post_title || '',
@@ -449,8 +476,9 @@ export default {
     // edge cache ต่อ feed (คีย์คงที่ · ไม่สน query อื่น)
     // v6: bump จาก v3 → บังคับ cache miss รอบเดียวหลัง deploy (แก้บั๊ก stale cache ค้าง [] จากดราฟต์ก่อนหน้า
     //     ที่ ransomware/gdelt geocode ชน rate-limit ตอนทดสอบ แล้วผล [] ถูกแคชด้วย Cache-Control เดิม)
+    // v7 [v17.19.1 CYBER-3]: bump v6→v7 บังคับล้างแคช [] ของ ransomware ที่ค้างจากบั๊ก geocode ชื่อโฮสต์
     const cache = caches.default;
-    const cacheKey = new Request(url.origin + '/__cache/cyberem-v6-' + feed, { method: 'GET' });
+    const cacheKey = new Request(url.origin + '/__cache/cyberem-v7-' + feed, { method: 'GET' });
     const hit = await cache.match(cacheKey);
     if (hit) return hit;
 
@@ -464,8 +492,13 @@ export default {
 };
 
 /* ════════════════════════════════════════════════════════════════════════
-   อัปเดต Worker (v5 → v6) — วางทับทั้งไฟล์:
-   ⚠️ v6 บังคับ deploy ใหม่: cache key เปลี่ยน v3→v6 (บั๊ก stale-cache ค้าง [] ที่ ransomware/
+   อัปเดต Worker (v6 → v7) — วางทับทั้งไฟล์:
+   ⚠️ v7 บังคับ deploy ใหม่ [v17.19.1 CYBER-3]: cache key เปลี่ยน v6→v7 พร้อมแก้บั๊ก ?feed=ransomware
+      คืน [] ถาวร — ต้นเหตุคือส่ง "ชื่อโดเมน" เข้า ip-api /batch ซึ่งรับเฉพาะ IP ทุกระเบียนจึง
+      status:"fail" แล้วถูก `if (!g) continue` ตัดทิ้งหมด (ต้นทางมีเหยื่อไทยจริง 179 ราย ตรวจ
+      23 ก.ค. 69) → v7 เพิ่ม resolveHosts() ใช้ Cloudflare DoH (keyless) แปลงโฮสต์เป็น IP ก่อน
+      geocode และส่งระเบียนต่อพร้อม geo:null เมื่อ geocode พลาด (ไม่ตัดทิ้ง = ไม่รายงานศูนย์เท็จ)
+   ⚠️ ก่อนหน้า v6: cache key เปลี่ยน v3→v6 (บั๊ก stale-cache ค้าง [] ที่ ransomware/
       gdelt เพราะดราฟต์ก่อนหน้าตอนทดสอบ geocode ชน rate-limit แล้วผล [] ถูกแคชค้างข้าม deploy) —
    1. dash.cloudflare.com → Workers & Pages → เปิด worker  udc-threatfox
    2. Edit code → Ctrl+A ลบทั้งหมด → วางไฟล์นี้ทั้งไฟล์ → Save and deploy

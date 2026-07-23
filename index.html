@@ -1,6 +1,31 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.19.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.19.1 · 7-Domain + AI Staff)
+  · [v17.19.1 CYBER-3] ต่อโดเมน CYBER-EM เข้าฟีดสด — เลิก baseline 'ok' ที่ฮาร์ดโค้ดไว้ใน domainState()
+      ที่มา: หลัง v17.18 (Option A, 7 โดเมน) เหลือ CYB โดเมนเดียวที่ยังคืนค่าคงที่ 'ok' ตลอดกาล
+             = วงแหวนหลอกตา และ readiness() ถูกดันขึ้นด้วยคะแนนเต็มปลอม ๆ ทุกครั้ง
+      - cyberState() (worst-of ๓ ทาง — เอาเฉพาะสัญญาณที่ "ผูกกับไทย/ผูกกับกำลังฝ่ายเรา"):
+          ① GNSS jitter ≥0.30 → ALERT · ≥0.50 → THREAT  (ช่อง SIM จาก MDA.CyberScenarios;
+             เกณฑ์ชุดเดียวกับบล็อก dCyber ในสรุปข่าวกรอง AI — ก่อนหน้านี้ค่านี้ถูกทิ้ง
+             เปล่า ๆ คือรันฉาก gnss-spoof/ew แล้ววงแหวน CYB ไม่ขยับเลย)
+          ② เหยื่อ ransomware องค์กรไทย "รายใหม่ในรอบ ๗ วัน" ≥4 → ALERT · ≥8 → THREAT
+             (อัตราพื้นหลังวัดจริง ๒๓ ก.ค. ๖๙ ≈ ๐.๗–๒ ราย/สัปดาห์ — ต้องนับแบบหน้าต่างเลื่อน
+              ไม่ใช่ความยาวอาร์เรย์ ซึ่งเป็นรายชื่อสะสมและจะค้างแดงถาวร)
+          ③ C2/โฮสต์มัลแวร์ที่ geocode ตกในไทย (espionage+feodo+urlhaus) ≥3 → ALERT · ≥8 → THREAT
+             (ค่าพื้นหลังวัดจริง = ๑ จุด)
+        ประตูความสด ๒ ชม. ต่อฟีด · ยังไม่เคยตรวจ/ค่าค้าง/ไม่มี Worker → ทางนั้นไม่ออกเสียง → 'ok'
+      - จงใจ "ไม่" ใช้ยอดรวมทั่วโลก/สถิติ KEV เป็นตัวขับ: วัดจริงแล้วตันเพดานทุกตัว
+        (espionage 60/60 · feodo 20/20 · urlhaus online 80/80 · KEV 30 วัน 26 รายการ)
+        เอามาตั้งเกณฑ์เมื่อไร CYB แดงค้างตลอด = เสียงรบกวน ซื่อสัตย์น้อยกว่า 'ok' เดิมเสียอีก
+        ฟีดเหล่านี้ยังแสดงบนแผนที่/ป้ายตามเดิมทุกประการ
+      - MDA.data._tally: เลเยอร์บันทึกยอด th/online/d7 ตอนปักหมุด ให้ cyberState() อ่านต่อ
+        (นับใหม่ทีหลังไม่ได้ — ระเบียนที่ geocode จากแคช localStorage ไม่มี x.geo กลับมาในตัวมัน
+         จะได้ th ต่ำกว่าจริง แล้ววงแหวนกับป้ายบนแผงจะไม่ตรงกัน)
+      - แถว RANSOM-TH: ป้ายเปลี่ยนจาก "จำนวนหมุด" → "7d X / สะสม Y" และความรุนแรงตามหน้าต่าง ๗ วัน
+        (ของเดิม plotted>10 → warn นับเฉพาะรายที่ปักหมุดได้ ทำให้เหยื่อที่โดเมนถูกถอดแล้ว
+         ซึ่งคือรายที่โดนหนักที่สุด หายไปจากการนับทั้งหมด)
+      - ⚠ ฝั่ง Worker: แก้บั๊ก /?feed=ransomware คืน [] เปล่ามาตลอด (ดู _worker/udc-threatfox.js v7)
+        ต้อง redeploy Worker ด้วยมือก่อน สัญญาณ ② จึงจะมีข้อมูลจริง — ก่อนหน้านั้นถือเป็น baseline
   · [v17.19.0 COASTCAM] กล้องชายฝั่งอ่าวไทย — "ตาที่สอง" ไว้สอบทานสถานะโดเมน LITTORAL ด้วยภาพจริง:
       เหตุผล: v17.18.3 ทำให้ LITTORAL ไหลตาม Hs ของ Open-Meteo — แต่นั่นคือค่าจาก "โมเดล" แหล่งเดียว ไม่มีอะไรมาสอบทาน
               ถ้าโมเดลว่า SS3 (warn) แต่ภาพกล้องเห็นทะเลเรียบ ผู้ใช้ต้องมีทางตั้งคำถามกับโมเดลได้ — นี่คือสิ่งที่เลเยอร์นี้ให้
@@ -605,12 +630,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.19.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.19.1 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.19.0';
+        const APP_VERSION = '17.19.1';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -7587,7 +7612,7 @@
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.19.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.19.1 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -8048,7 +8073,7 @@
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.19.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.19.1 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -8065,7 +8090,7 @@
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.19.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.19.1 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -8985,7 +9010,7 @@
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.19.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.19.1 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -29969,7 +29994,11 @@ window.toggleSat3D = toggleSat3D;
                     /*  [v17.15] ตราประทับ "ดึงสำเร็จเมื่อใด" ต่อฟีด — ฟีดข้างบนถูกตั้งต้นเป็น []
                         ตั้งแต่บูต จึงดูจากอาร์เรย์ว่างไม่ได้ว่าเคยตรวจแล้วหรือยัง ตัวนี้เขียนเมื่อ
                         refresh สำเร็จเท่านั้น ใช้แยก "ตรวจแล้วไม่พบ" ออกจาก "ยังไม่ได้ตรวจ"      */
-                    _probed: {} },
+                    _probed: {},
+                    /*  [v17.19.1 CYBER-3] ยอดสรุปที่เลเยอร์คำนวณไว้แล้วตอนปักหมุด (th = หมุดที่ตกในไทย,
+                        online = C2/URL ที่ยัง active) — เก็บไว้ให้ cyberState() ใน Command Core อ่านต่อ
+                        โดยไม่ต้องคำนวณซ้ำจาก localStorage (กันตัวเลขบนป้ายกับบนวงแหวนเพี้ยนจากกัน) */
+                    _tally: {} },
         state:  { on: { aviation: true, 'ais-heat': true, 'ais-anomaly': true, seismic: true, space: true, gdelt: true, seamark: false, 'marine-wx': false, weather: false, storm: false, 'rain-radar': false, metoc: false, 'gistda-flood': false, 'ship-density': false, 'ransom-th': false, 'espionage': false, 'feodo': false, 'urlhaus': false, kev: true } },   // [v16.1.0 METOC-2] metoc ปิด default · [METOC-4] gistda-flood ปิด default · [v17.8] ransom-th ปิด default · [v17.9] espionage ปิด default · [v17.10] feodo/urlhaus ปิด · kev เปิด (info row)
         timers: {}
     };
@@ -31131,9 +31160,22 @@ window.toggleSat3D = toggleSat3D;
                     m.addTo(layer);
                     plotted++;
                 }
-                try { setBadge('ransom-th', plotted, plotted > 10 ? 'warn' : null); } catch (_) {}
-                setCount('mda-cnt-ransom-th-row', plotted);
-                MDA.cfg.verbose && console.log('[MDA·RansomTH]', plotted, 'plotted /', recs.length, 'victims');
+                /*  [v17.19.1 CYBER-3] นับ "รายใหม่ในรอบ ๗ วัน" แยกจากจำนวนหมุด
+                    เหตุผล ๑ : recs เป็นรายชื่อสะสมย้อนหลัง (ตัดที่ MAX_PLOT=40) ถ้าเอาความยาวมาตัดสิน
+                               ความรุนแรง ป้ายจะค้างเหลือง/แดงถาวรทั้งที่ไม่มีเหตุใหม่เลย
+                    เหตุผล ๒ : plotted นับเฉพาะรายที่ geocode โฮสต์สำเร็จ — เหยื่อที่โดเมนถูกถอดแล้ว
+                               (ซึ่งคือรายที่โดนหนักที่สุด) จะปักหมุดไม่ได้ แต่ต้องนับเป็นเหตุ    */
+                const _now = Date.now();
+                let d7 = 0;
+                for (const v of recs) {
+                    const t = Date.parse(String(v.published || '').replace(' ', 'T') + 'Z');
+                    if (isFinite(t) && (_now - t) <= 7 * 86400_000) d7++;
+                }
+                try { MDA.data._tally['ransom-th'] = { d7, total: recs.length, plotted, at: _now }; } catch (_) {}
+                try { setBadge('ransom-th', recs.length, d7 >= 8 ? 'crit' : (d7 >= 4 ? 'warn' : null)); } catch (_) {}
+                setCount('mda-cnt-ransom-th-row', recs.length ? ('7d ' + d7 + ' / ' + recs.length) : 0);
+                try { const _p = document.getElementById('mda-cnt-ransom-th-row'); if (_p) _p.title = 'เหยื่อรายใหม่ใน ๗ วัน ' + d7 + ' ราย · สะสม ' + recs.length + ' ราย · ปักหมุดได้ ' + plotted + ' ราย (ที่เหลือโดเมนถูกถอด/หาพิกัดโฮสต์ไม่ได้) · ransomware.live'; } catch (_) {}
+                MDA.cfg.verbose && console.log('[MDA·RansomTH]', plotted, 'plotted /', recs.length, 'victims ·', d7, 'in last 7d');
             } catch (e) {
                 console.warn('[MDA·RansomTH] fetch fail:', e && e.message);
                 try { setBadge('ransom-th', 'N/A', 'warn'); } catch (_) {}
@@ -31323,6 +31365,10 @@ window.toggleSat3D = toggleSat3D;
                     plotted++; tally[cat]++;
                     if ((geo.cc || '').toUpperCase() === 'TH') th++;   // [v17.9.3] นับเฉพาะที่ตกในไทย
                 }
+                // [v17.19.1 CYBER-3] ส่งยอด "ในไทย/ทั่วโลก" ให้ cyberState() ใช้ต่อ — ต้องเก็บตรงนี้เพราะ
+                //   เรคคอร์ดที่ geocode มาจากแคช localStorage ไม่ได้เขียน x.geo กลับลงระเบียน
+                //   ถ้าไปนับใหม่จาก MDA.data ทีหลังจะได้ th ต่ำกว่าความจริง (วงแหวนกับป้ายจะไม่ตรงกัน)
+                try { MDA.data._tally['espionage'] = { th, total: plotted, at: Date.now() }; } catch (_) {}
                 // [v17.9.3] ป้ายบอก "ในไทย X / ทั่วโลก Y" — ในไทย>0 ⇒ crit (แดง) เตือนว่ามีโครงสร้าง C2 โฮสต์ในไทย
                 try { setBadge('espionage', plotted, (th > 0 || plotted > 15) ? 'crit' : (plotted > 0 ? 'warn' : null)); } catch (_) {}
                 setCount('mda-cnt-espionage-row', 'TH ' + th + ' / ' + plotted);
@@ -31439,6 +31485,7 @@ window.toggleSat3D = toggleSat3D;
                     if (isOn) online++;
                     if ((geo.cc || '').toUpperCase() === 'TH') th++;
                 }
+                try { MDA.data._tally['feodo'] = { th, online, total: plotted, at: Date.now() }; } catch (_) {}   // [v17.19.1 CYBER-3] ป้อน cyberState()
                 // ป้าย "ON x / y" (ออนไลน์ x จากทั้งหมด y) — มี C2 ออนไลน์ ⇒ crit (แดง)
                 try { setBadge('feodo', plotted, online > 0 ? 'crit' : (plotted > 0 ? 'warn' : null)); } catch (_) {}
                 setCount('mda-cnt-feodo-row', 'ON ' + online + ' / ' + plotted);
@@ -31544,6 +31591,7 @@ window.toggleSat3D = toggleSat3D;
                     if (isOn) online++;
                     if ((geo.cc || '').toUpperCase() === 'TH') th++;
                 }
+                try { MDA.data._tally['urlhaus'] = { th, online, total: plotted, at: Date.now() }; } catch (_) {}   // [v17.19.1 CYBER-3] ป้อน cyberState()
                 // ป้าย "ON x / y" (ออนไลน์ x จากทั้งหมด y) — ออนไลน์เยอะ ⇒ crit
                 try { setBadge('urlhaus', plotted, online > 40 ? 'crit' : (plotted > 0 ? 'warn' : null)); } catch (_) {}
                 setCount('mda-cnt-urlhaus-row', 'ON ' + online + ' / ' + plotted);
@@ -47908,11 +47956,63 @@ window.CommandCore = (function () {
         } catch (_) { return 'ok'; }
     }
 
+    /* [v17.19.1] CYBER-EM ← ฟีดสด (เลิก baseline 'ok' คงที่ที่ฝังไว้ตั้งแต่ v17.18)
+       ─ ใช้เฉพาะสัญญาณ "ผูกกับไทย / ผูกกับกำลังฝ่ายเรา" เท่านั้น ๓ ทาง (worst-of) :
+         ① GNSS jitter  ≥0.30 → warn · ≥0.50 → crit   (PNT ของฝ่ายเรา — ช่อง SIM จาก MDA.CyberScenarios
+                                                        ฉาก gnss-spoof / cyber / ew / cyber-physical
+                                                        ใช้เกณฑ์ชุดเดียวกับบล็อก dCyber ในสรุปข่าวกรอง AI)
+         ② เหยื่อ ransomware ในไทย รายใหม่รอบ ๗ วัน ≥4 → warn · ≥8 → crit
+                                                       (อัตราพื้นหลังที่วัดได้ ๒๓ ก.ค. ๖๙ ≈ ๐.๗–๒ ราย/สัปดาห์)
+         ③ โครงสร้างพื้นฐานมุ่งร้ายที่ geocode ตกในไทย (espionage + feodo + urlhaus)
+                                     ≥3 → warn · ≥8 → crit   (ค่าพื้นหลังที่วัดได้ = ๑ จุด)
+       ─ จงใจ "ไม่" ใช้ยอดรวมทั่วโลกและสถิติแคตตาล็อก KEV เป็นตัวขับ เพราะวัดจริงแล้วมันตันเพดาน :
+           espionage 60/60 (c2 42) · feodo 20/20 · urlhaus online 80/80 · KEV 30 วัน 26 รายการ
+         ถ้าเอามาตั้งเกณฑ์ วงแหวน CYB จะแดงค้างตลอดเวลา = เป็น "เสียงรบกวน" ไม่ใช่ "สัญญาณ"
+         ซึ่งซื่อสัตย์น้อยกว่าการคง 'ok' เดิมเสียอีก — ฟีดพวกนี้ยังแสดงบนแผนที่/ป้ายตามปกติ
+       ─ ประตูความสด ๒ ชม. (ฟีดที่ถี่สุดคือ urlhaus 15 นาที, ช้าสุดคือ feodo/kev 60 นาที)
+         ยังไม่เคยตรวจ / ค่าค้างเกิน ๒ ชม. / ไม่มี Worker → ทางนั้นไม่ออกเสียง → ตกไป 'ok'
+       ── SIM ซื่อสัตย์: ไม่มีข้อมูล ≠ ปลอดภัย แต่ก็ไม่แต่งสัญญาณขึ้นมาเอง (หลักเดียวกับ LITTORAL) */
+    function cyberState() {
+        try {
+            const D = (window.MDA && MDA.data) || {};
+            const T = D._tally || {};
+            const FRESH = 7_200_000;                                   // ๒ ชม.
+            const now = Date.now();
+            const t = (k) => { const v = T[k]; return (v && typeof v.at === 'number' && (now - v.at) < FRESH) ? v : null; };
+
+            let st = 'ok';
+            const raise = (s) => { if (s === 'crit' || (s === 'warn' && st === 'ok')) st = s; };
+
+            // ① GNSS jitter (ช่อง SIM — ไม่มีประตูความสด เพราะฉากเขียนค่าสด ๆ ทุกเฟรม)
+            let j = null;
+            try {
+                j = (MDA.cyber && MDA.cyber.gnssJitter != null) ? +MDA.cyber.gnssJitter
+                  : (window.gnssJitter != null ? +window.gnssJitter : null);
+            } catch (_) {}
+            if (typeof j === 'number' && isFinite(j)) raise(j >= 0.5 ? 'crit' : (j >= 0.3 ? 'warn' : 'ok'));
+
+            // ② ransomware ที่โจมตีองค์กรไทย — นับรายใหม่ในรอบ ๗ วัน (ไม่ใช่ยอดสะสม)
+            const rw = t('ransom-th');
+            if (rw && typeof rw.d7 === 'number') raise(rw.d7 >= 8 ? 'crit' : (rw.d7 >= 4 ? 'warn' : 'ok'));
+
+            // ③ C2 / โฮสต์มัลแวร์ ที่ตั้งอยู่ในไทย
+            let th = 0, seen = false;
+            for (const k of ['espionage', 'feodo', 'urlhaus']) {
+                const v = t(k);
+                if (v && typeof v.th === 'number') { th += v.th; seen = true; }
+            }
+            if (seen) raise(th >= 8 ? 'crit' : (th >= 3 ? 'warn' : 'ok'));
+
+            return st;
+        } catch (_) { return 'ok'; }
+    }
+
     /* ── 7 domain canonical (มติ Option A v17.18): ควบรวม DAS+SEIS → SEABED เดียว (สถานะ = แย่สุดของสองแหล่ง)
           และยก LITTORAL ขึ้นเป็นโดเมนเต็มแทนช่อง SEIS เดิม — ให้ตรงกับกลุ่มแผง LAYERS (Seabed·Littoral)
           · SUR ยังฟังช่อง 'coastal' ตามเดิม (ช่องภัยผิวน้ำโดยพฤตินัยจากเซนเซอร์ สอ.รฝ. — ไม่มี ind-surface แยก)
           · [v17.18.3] LITTORAL ต่อช่องสดแล้ว → littoralState() อ่าน Open-Meteo Marine (sea state); ไม่มีข้อมูล = 'ok' baseline
-          · CYBER ยังคง baseline 'ok' (ยังไม่มีช่องสดเข้าโดเมนโดยตรง — SIM ซื่อสัตย์) ── */
+          · [v17.19.1] CYBER ต่อช่องสดแล้ว → cyberState() = worst-of ของ GNSS jitter (SIM) + เหยื่อ ransomware ไทย ๗ วัน
+            + โครงสร้าง C2/มัลแวร์ที่ตั้งในไทย; ไม่มีข้อมูลสด = 'ok' baseline ── */
     const DOM_ROWS = [
         { key:'air',        lbl:'✈ AIR — อากาศ-อวกาศ' },
         { key:'coastal',    lbl:'🚢 SURFACE — ผิวน้ำ' },
@@ -47925,7 +48025,7 @@ window.CommandCore = (function () {
     function domainState(key) {
         if (key === 'seabed')   return dasEvt() ? 'crit' : seismicState(); /* worst-of: เหตุ DAS ชนะ, ไม่งั้นตาม SEIS */
         if (key === 'littoral') return littoralState(); /* [v17.18.3] ← Open-Meteo Marine (sea state ชายฝั่ง) */
-        if (key === 'cyber')    return 'ok';
+        if (key === 'cyber')    return cyberState();  /* [v17.19.1] ← GNSS jitter + ransomware ไทย + C2/มัลแวร์ในไทย */
         return dom[key] || 'ok';
     }
     const SCORE = { ok:100, warn:60, crit:25 };
