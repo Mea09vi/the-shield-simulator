@@ -1,6 +1,28 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.19.1 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.20.0 · 7-Domain + AI Staff)
+  · [v17.20.0 AMMO-1 + KC-1] กระสุนมีวันหมด + นาฬิกาห่วงโซ่การทำลาย (sensors-to-shooters ขั้น ๑)
+      ที่มา: ก่อนหน้านี้เรือทุกลำมีกระสุนไม่จำกัด — ผบ. จึงไม่เคยต้องเลือกว่า "ยิงหรือเก็บไว้"
+             การตัดสินใจไม่มีต้นทุน = ไม่ใช่การตัดสินใจ  ขั้นนี้ใส่ต้นทุนกลับเข้าไป
+      - แคตตาล็อกอาวุธเพิ่ม rounds/burst/cooldown/magazine/est ครบทั้ง ๕ แบบเรือ
+          magazine:true  อาวุธนำวิถี+ตอร์ปิโด — เติมกลางทะเลไม่ได้ หมดแล้วหมดเลย
+          magazine:false ปืน — ยิงหมดดรัมพร้อมใช้ (ready-use) แล้วเติมจากคลังใต้ดาดฟ้า
+                         ตาม cooldown → ไม่มีวันแห้งถาวร แต่ถูกจำกัดจังหวะยิงแทน
+          burst          หนึ่งการปะทะ (๙๐ เฟรม ≈ ๑.๕ วิ) ≠ หนึ่งนัด — ปืนเรือยิงเป็นชุด
+          est:true       ค่าที่ไม่มีแหล่งอ้างอิงเปิด — ติดดอกจัน * บนจอ + บอกในทูลทิป
+      - สถานะรายกระบอกอยู่บนเรือแต่ละลำ (pvCloneWeapons) — ammo / reload / expended
+      - เอนจินปะทะทั้งสองทางตัดกระสุนจริง: เอนจินผิวน้ำ–ใต้น้ำ และ ESSM ใน updateAirDefense()
+        ยิงพลาดก็เสียกระสุน  · pickBestWeapon() ข้ามกระบอกที่แห้ง/กำลังเติมดรัม
+        · getMaxWeaponRange() นับเฉพาะกระบอกที่ยังใช้ได้ → ยิง Harpoon หมดแล้วต้องเข้าใกล้จริง
+      - WINCHESTER (อาวุธนำวิถีหมดทุกกระบอก) → บังคับ RTB + ป้ายกะพริบเหนือเรือ
+        เรือปืนล้วน (กระบี่/ชลบุรี/สัตหีบ) ไม่มีวันเข้าสถานะนี้ — เห็นป้าย RLD ตอนเติมดรัมแทน
+      - แถบอาวุธนำวิถีใต้แถบเชื้อเพลิง (เฉพาะเรือที่มี) + บัญชีรายลำ ●นำวิถี ▮ปืน ⏳กำลังเติม
+      - นาฬิกา kill chain ในแถบ EXECUTIVE SUMMARY: จำแนก → ลั่นไก → ผล + ค่าเฉลี่ยสะสม
+        ครอบคลุมทุกจุดปล่อยอาวุธ (เรือผิวน้ำ · ESSM · สอ.รฝ. · ตอร์ปิโดจาก ฮ.ปด.)
+        ⚠ ซิมนี้ไม่มีประตูการตรวจจับแยกต่างหาก — เป้าที่ spawn อยู่ในภาพทันที
+          จึงนับ DETECT = จังหวะที่ track ปรากฏ และรายงานข้อจำกัดนี้ตามจริง ไม่แต่งให้ดูดีกว่าจริง
+      - แถมแก้บั๊กที่เจอระหว่างทาง: เดิมเรือที่ RTB เพราะเชื้อเพลิงต่ำยังยิง ESSM อยู่
+      - resetAll() / launchScenario() บรรจุกระสุนเต็มลำและล้างสถิติ kill chain ของรอบก่อน
   · [v17.19.1 CYBER-3] ต่อโดเมน CYBER-EM เข้าฟีดสด — เลิก baseline 'ok' ที่ฮาร์ดโค้ดไว้ใน domainState()
       ที่มา: หลัง v17.18 (Option A, 7 โดเมน) เหลือ CYB โดเมนเดียวที่ยังคืนค่าคงที่ 'ok' ตลอดกาล
              = วงแหวนหลอกตา และ readiness() ถูกดันขึ้นด้วยคะแนนเต็มปลอม ๆ ทุกครั้ง
@@ -635,12 +657,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.19.1 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.20.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.19.1';
+        const APP_VERSION = '17.20.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -7342,6 +7364,8 @@
             <div class="bf-es-row"><span class="bf-es-k">ภัยอันดับ ๑</span><span class="bf-es-v" id="bf-es-top">— ไม่มี track คุกคาม —</span></div>
             <div class="bf-es-row"><span class="bf-es-k">ท่าที RMP</span><span class="bf-es-v" id="bf-es-rmp">RED 0 · GREY 0 · WHITE 0</span></div>
             <div class="bf-es-row"><span class="bf-es-k">ขั้น ROE</span><span class="bf-es-v" id="bf-es-roe">TIGHT</span></div>
+            <!-- [v17.20.0 KC-1] นาฬิกา kill chain — ตัวชี้วัดจริงของ sensor-to-shooter คือ "เวลา" -->
+            <div class="bf-es-row"><span class="bf-es-k">KILL CHAIN</span><span class="bf-es-v" id="bf-es-kc" title="เวลาสะสมจากจังหวะที่ track เข้าภาพ จนถึงผลการปะทะ">— ยังไม่มีการปะทะสำเร็จ —</span></div>
             <div class="bf-es-row"><span class="bf-es-k">ฐานกฎหมาย</span><span class="bf-es-v" id="bf-es-law">UNCLOS 60(5) · เขตปลอดภัย 500 ม. + MEZ 5 nm</span></div>
         </div>
     </div>
@@ -7617,7 +7641,7 @@
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.19.1 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.20.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -8078,7 +8102,7 @@
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.19.1 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.20.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -8095,7 +8119,7 @@
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.19.1 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.20.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -9015,7 +9039,7 @@
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.19.1 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.20.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -11158,6 +11182,26 @@ function closePVPatternModal() {
 //  PV Ship Catalog — สเปกตาม Jane's Fighting Ships 2020-2021
 //  (หมวดประเทศไทย หน้า 783-799) · มาตราความเร็ว: ๑ นอต ≈ 0.00008333 หน่วยต่อเฟรม
 // ─────────────────────────────────────────────────────────────
+//  [v17.20.0 AMMO-1] กระสุน/ลูกอาวุธ — ใช้ "ready-use อย่างเดียว" ตามมติผู้ใช้
+//  ─────────────────────────────────────────────────────────────
+//  Jane's ให้เฉพาะจำนวนแท่นยิง/ท่อ/เซลล์ ไม่เคยพิมพ์จำนวนนัดในคลังเรือ
+//  (เป็นข้อมูลความพร้อมรบ ไม่เผยแพร่) จึงจำลองเฉพาะสิ่งที่อ้างอิงได้จริง:
+//
+//    magazine:true  = อาวุธนำวิถี/ตอร์ปิโด — จำนวน = ท่อ/เซลล์ที่บรรจุได้
+//                     หมดแล้วหมดเลย เติมกลางทะเลไม่ได้ → นำไปสู่ WINCHESTER
+//    magazine:false = ปืน — rounds คือ "ดรัม ready-use" บนแท่น หมดแล้ว
+//                     พลประจำปืนเติมดรัมจากคลังใต้ดาดฟ้า (cooldown) แล้วยิงต่อ
+//                     ปืนจึงไม่มีวันแห้งถาวร แต่ถูกจำกัด "อัตรา" แทน
+//
+//    rounds   = ความจุดรัม ready-use (นัด) / จำนวนลูกในท่อ-เซลล์
+//    burst    = นัดที่ใช้ต่อการปะทะหนึ่งครั้ง (ปืนเรือยิงเป็นชุด ไม่ใช่นัดเดียว)
+//    cooldown = เฟรมที่ใช้เติมดรัมจนเต็ม (60 เฟรม = 1 วินาที) · 0 = เติมไม่ได้
+//    est:true = ⚠ ไม่มีแหล่งอ้างอิงเปิด — ค่าสมมติ จะติดป้าย est. บนหน้าจอ
+//
+//  ที่มาตัวเลข ready-use: OTO 76/62 ดรัม 80 นัด (วง 35+35 + สกรู 6 + โหลด 4) ·
+//  Mk.45 loader drum 20 นัด · DS30B Mk1 สายพานบนแท่น 160-200 นัด ·
+//  Bofors 40 Mk4 ready 100 นัด · Breda Fast Forty แม็กกาซีนคู่ 736 นัด
+// ─────────────────────────────────────────────────────────────
 const PV_SHIP_CATALOG = {
     naresuan: {
         id:'naresuan', tier:1, role:'ASW FRIGATE',
@@ -11168,11 +11212,14 @@ const PV_SHIP_CATALOG = {
         sonarType:'Atlas DSQS-21 (hull)', sonarNm:8, hasASW:true,
         color:'#64ffda',
         weapons:{
-            torpedo_mk46: {rangeNm:6.0,  pk:0.60, cooldown:0, label:'Mk.46 Torpedo (6 tube)', domain:['uuv']},
-            ssm_harpoon:  {rangeNm:19.0, pk:0.66, cooldown:0, label:'Harpoon Block II SSM',   domain:['surface']},
-            sam_essm:     {rangeNm:14.0, pk:0.58, cooldown:0, label:'ESSM SAM (Mk.41 VLS)',   domain:['drone']},
-            cannon127mm:  {rangeNm:12.0, pk:0.46, cooldown:0, label:'5"/54 Mk.45',            domain:['surface','drone']},
-            cannon30mm:   {rangeNm:2.5,  pk:0.30, cooldown:0, label:'30mm DS30M',             domain:['surface','drone']},
+            // 2× Mk.32 Mod 5 triple tube = 6 ลูก · เติมกลางทะเลไม่ได้
+            torpedo_mk46: {rangeNm:6.0,  pk:0.60, rounds:6,   burst:1,  cooldown:0,    magazine:true,  label:'Mk.46 Torpedo (6 tube)', domain:['uuv']},
+            // 2× Mk.141 quad launcher = 8 ลูก
+            ssm_harpoon:  {rangeNm:19.0, pk:0.66, rounds:8,   burst:1,  cooldown:0,    magazine:true,  label:'Harpoon Block II SSM',   domain:['surface']},
+            // Mk.41 VLS 8 เซลล์ × quad-pack = 32 ลูก
+            sam_essm:     {rangeNm:14.0, pk:0.58, rounds:32,  burst:1,  cooldown:0,    magazine:true,  label:'ESSM SAM (Mk.41 VLS)',   domain:['drone']},
+            cannon127mm:  {rangeNm:12.0, pk:0.46, rounds:20,  burst:10, cooldown:1800, magazine:false, label:'5"/54 Mk.45',            domain:['surface','drone']},
+            cannon30mm:   {rangeNm:2.5,  pk:0.30, rounds:160, burst:20, cooldown:1500, magazine:false, label:'30mm DS30M',             domain:['surface','drone']},
         },
         fuelRate:0.000006,
     },
@@ -11185,9 +11232,9 @@ const PV_SHIP_CATALOG = {
         sonarType:null, sonarNm:0, hasASW:false,
         color:'#f59e0b',
         weapons:{
-            cannon76mm: {rangeNm:8.0, pk:0.42, cooldown:0, label:'OTO 76mm Super Rapid', domain:['surface','drone']},
-            cannon30mm: {rangeNm:2.5, pk:0.30, cooldown:0, label:'2× 30mm MSI',          domain:['surface','drone']},
-            gpmg:       {rangeNm:0.8, pk:0.12, cooldown:0, label:'2× 12.7mm MG',         domain:['surface','drone']},
+            cannon76mm: {rangeNm:8.0, pk:0.42, rounds:80,  burst:12, cooldown:2700, magazine:false,            label:'OTO 76mm Super Rapid', domain:['surface','drone']},
+            cannon30mm: {rangeNm:2.5, pk:0.30, rounds:320, burst:20, cooldown:1500, magazine:false,            label:'2× 30mm MSI',          domain:['surface','drone']},
+            gpmg:       {rangeNm:0.8, pk:0.12, rounds:400, burst:50, cooldown:600,  magazine:false, est:true, label:'2× 12.7mm MG',         domain:['surface','drone']},
         },
         fuelRate:0.000008,
     },
@@ -11200,10 +11247,10 @@ const PV_SHIP_CATALOG = {
         sonarType:'Atlas DSQS-21C (hull)', sonarNm:6, hasASW:true,
         color:'#00d4ff',
         weapons:{
-            torpedo_stingray: {rangeNm:5.9, pk:0.56, cooldown:0, label:'Sting Ray Torpedo (6 tube)', domain:['uuv']},
-            cannon76mm:       {rangeNm:8.6, pk:0.40, cooldown:0, label:'OTO 76mm/62 Mod 7',          domain:['surface','drone']},
-            cannon30mm:       {rangeNm:2.5, pk:0.28, cooldown:0, label:'2× Breda 30mm',              domain:['surface','drone']},
-            gpmg:             {rangeNm:0.8, pk:0.12, cooldown:0, label:'2× 12.7mm MG',               domain:['surface','drone']},
+            torpedo_stingray: {rangeNm:5.9, pk:0.56, rounds:6,   burst:1,  cooldown:0,    magazine:true,             label:'Sting Ray Torpedo (6 tube)', domain:['uuv']},
+            cannon76mm:       {rangeNm:8.6, pk:0.40, rounds:80,  burst:12, cooldown:2700, magazine:false,            label:'OTO 76mm/62 Mod 7',          domain:['surface','drone']},
+            cannon30mm:       {rangeNm:2.5, pk:0.28, rounds:320, burst:20, cooldown:1500, magazine:false, est:true, label:'2× Breda 30mm',              domain:['surface','drone']},
+            gpmg:             {rangeNm:0.8, pk:0.12, rounds:400, burst:50, cooldown:600,  magazine:false, est:true, label:'2× 12.7mm MG',               domain:['surface','drone']},
         },
         fuelRate:0.000009,
     },
@@ -11216,8 +11263,9 @@ const PV_SHIP_CATALOG = {
         sonarType:null, sonarNm:0, hasASW:false,
         color:'#ef4444',
         weapons:{
-            cannon76mm: {rangeNm:8.6, pk:0.44, cooldown:0, label:'2× OTO 76mm/62', domain:['surface','drone']},
-            cannon40mm: {rangeNm:2.5, pk:0.24, cooldown:0, label:'2× Breda 40mm/70', domain:['surface','drone']},
+            cannon76mm: {rangeNm:8.6, pk:0.44, rounds:160, burst:12, cooldown:2700, magazine:false, label:'2× OTO 76mm/62',   domain:['surface','drone']},
+            // แท่นคู่ Breda "Fast Forty" — แม็กกาซีนคู่มาตรฐาน 736 นัด
+            cannon40mm: {rangeNm:2.5, pk:0.24, rounds:736, burst:16, cooldown:3600, magazine:false, label:'2× Breda 40mm/70', domain:['surface','drone']},
         },
         fuelRate:0.000011,
     },
@@ -11230,10 +11278,11 @@ const PV_SHIP_CATALOG = {
         sonarType:null, sonarNm:0, hasASW:false,
         color:'#fbbf24',
         weapons:{
-            cannon76mm: {rangeNm:8.0, pk:0.38, cooldown:0, label:'OTO 76mm/62',       domain:['surface','drone']},
-            cannon40mm: {rangeNm:2.5, pk:0.22, cooldown:0, label:'Bofors 40mm/70',    domain:['surface','drone']},
-            cannon20mm: {rangeNm:2.0, pk:0.26, cooldown:0, label:'2× GAM-B01 20mm',   domain:['surface','drone']},
-            gpmg:       {rangeNm:0.8, pk:0.12, cooldown:0, label:'2× 12.7mm MG',      domain:['surface','drone']},
+            cannon76mm: {rangeNm:8.0, pk:0.38, rounds:80,  burst:12, cooldown:2700, magazine:false,            label:'OTO 76mm/62',     domain:['surface','drone']},
+            // แท่นเดี่ยวรุ่นเก่า — ใช้ตัวเลข ready 100 นัดของ Bofors 40 Mk4 เป็นตัวแทน
+            cannon40mm: {rangeNm:2.5, pk:0.22, rounds:100, burst:16, cooldown:2400, magazine:false,            label:'Bofors 40mm/70',  domain:['surface','drone']},
+            cannon20mm: {rangeNm:2.0, pk:0.26, rounds:400, burst:30, cooldown:1200, magazine:false, est:true, label:'2× GAM-B01 20mm', domain:['surface','drone']},
+            gpmg:       {rangeNm:0.8, pk:0.12, rounds:400, burst:50, cooldown:600,  magazine:false, est:true, label:'2× 12.7mm MG',    domain:['surface','drone']},
         },
         fuelRate:0.000010,
     },
@@ -11318,6 +11367,123 @@ function confirmShipSelection() {
 }
 
 // ── ฟังก์ชันช่วยด้านอาวุธ ─────────────────────────────────────────
+
+// ═══ [v17.20.0 AMMO-1] สถานะกระสุนรายกระบอก ═══════════════════════
+// แนวคิดเดียวกับ h.torpedoesRemain ของ ฮ.ปราบเรือดำน้ำ แต่ขยายเป็นรายกระบอก
+// เพราะเรือผิวน้ำมีอาวุธหลายชนิดที่หมดไม่พร้อมกันและเติมได้ไม่เหมือนกัน
+//
+//   wep.ammo     นัดคงเหลือในดรัม/ท่อ ณ ขณะนี้
+//   wep.reload   เฟรมที่เหลือก่อนเติมดรัมเสร็จ (0 = พร้อมยิง)
+//   wep.expended นัดที่ใช้ไปสะสมตลอดภารกิจ (ไว้สรุปผล)
+
+/** คัดลอกชุดอาวุธของแบบเรือให้เป็นของเรือลำนั้น + ตั้งสถานะกระสุนเริ่มต้น */
+function pvCloneWeapons(shipCfg) {
+    const w = JSON.parse(JSON.stringify((shipCfg && shipCfg.weapons) || {}));
+    Object.values(w).forEach(wep => {
+        wep.rounds   = wep.rounds || 0;
+        wep.burst    = wep.burst  || 1;
+        wep.ammo     = wep.rounds;
+        wep.reload   = 0;
+        wep.expended = 0;
+    });
+    return w;
+}
+
+/** พร้อมยิงตอนนี้ไหม — ต้องมีนัดพอหนึ่งชุด และไม่ได้กำลังเติมดรัม */
+function wepReady(wep) {
+    if (!wep.rounds) return true;   // อาวุธเก่าที่ยังไม่ประกาศ rounds — ไม่จำกัด
+    return (wep.reload || 0) <= 0 && wep.ammo >= wep.burst;
+}
+
+/** ยังใช้ได้ในภารกิจนี้ไหม — ปืนใช้ได้เสมอ (เติมดรัมได้) · อาวุธนำวิถีหมดแล้วหมดเลย */
+function wepUsable(wep) {
+    if (!wep.rounds) return true;
+    return wep.magazine ? wep.ammo >= wep.burst : true;
+}
+
+/** ใช้กระสุนหนึ่งชุด — ดรัมแห้งแล้วสั่งเติม (ปืน) หรือปล่อยแห้งถาวร (อาวุธนำวิถี) */
+function wepFire(wep) {
+    if (!wep.rounds) return;
+    wep.ammo     = Math.max(0, wep.ammo - wep.burst);
+    wep.expended = (wep.expended || 0) + wep.burst;
+    if (wep.ammo < wep.burst && !wep.magazine && wep.cooldown > 0) wep.reload = wep.cooldown;
+}
+
+/** เดินนาฬิกาเติมดรัมของเรือลำหนึ่ง — เรียกทุกเฟรม */
+function pvTickReload(v) {
+    if (!v.weapons) return;
+    Object.values(v.weapons).forEach(wep => {
+        if ((wep.reload || 0) > 0 && --wep.reload <= 0) { wep.reload = 0; wep.ammo = wep.rounds; }
+    });
+}
+
+/** WINCHESTER = อาวุธนำวิถี/ตอร์ปิโดหมดทุกกระบอก
+ *  เรือปืนล้วน (กระบี่ · ชลบุรี · สัตหีบ) ไม่มีอาวุธ magazine จึงไม่มีวันเข้าสถานะนี้ */
+function pvIsWinchester(v) {
+    const mags = Object.values(v.weapons || {}).filter(w => w.magazine && w.rounds);
+    return mags.length > 0 && mags.every(w => w.ammo < w.burst);
+}
+
+/** สัดส่วนอาวุธนำวิถีคงเหลือ 0-1 — คืน null ถ้าเรือลำนี้ไม่มีอาวุธนำวิถีเลย */
+function pvMagFrac(v) {
+    const mags = Object.values(v.weapons || {}).filter(w => w.magazine && w.rounds);
+    if (!mags.length) return null;
+    const have = mags.reduce((s, w) => s + w.ammo, 0);
+    const cap  = mags.reduce((s, w) => s + w.rounds, 0);
+    return cap > 0 ? have / cap : null;
+}
+
+/** มีปืนกระบอกใดกำลังเติมดรัมอยู่ไหม (ใช้แสดงป้าย RLD) */
+function pvAnyReloading(v) {
+    return Object.values(v.weapons || {}).some(w => (w.reload || 0) > 0);
+}
+
+/** บรรจุกระสุนใหม่ทุกลำ + ล้างสถานะ WINCHESTER — ใช้ตอน reset / เริ่มฉากใหม่
+ *  (ไม่ใช่การส่งกำลังบำรุงกลางทะเล — เป็นการตั้งต้นสถานการณ์ใหม่เท่านั้น) */
+function pvRearmAll() {
+    patrolVessels.forEach(v => {
+        v.winchester = false;
+        v._dryLogged = false;
+        Object.values(v.weapons || {}).forEach(w => {
+            if (w.rounds) { w.ammo = w.rounds; w.reload = 0; w.expended = 0; }
+        });
+    });
+}
+
+/** ชื่อย่ออาวุธสำหรับบัญชีรายลำ (พื้นที่แคบ ใช้ชื่อเต็มไม่ได้) */
+const WEP_TAG = {
+    sam_essm:'ESSM', ssm_harpoon:'HRPN', torpedo_mk46:'MK46', torpedo_stingray:'STRY',
+    cannon127mm:'127', cannon76mm:'76', cannon40mm:'40', cannon30mm:'30',
+    cannon20mm:'20',   gpmg:'12.7',
+};
+
+/** แถวกระสุนคงเหลือในบัญชีเรือรายลำ — ● อาวุธนำวิถี · ▮ ปืน · ⏳ กำลังเติมดรัม
+ *  เครื่องหมาย * = ค่าสมมติ (est:true) ไม่มีแหล่งอ้างอิงเปิด */
+function pvAmmoLine(v) {
+    const parts = Object.entries(v.weapons || {})
+        .filter(([, w]) => w.rounds > 0)
+        .map(([k, w]) => {
+            const tag  = WEP_TAG[k] || k.toUpperCase().slice(0, 5);
+            const rld  = (w.reload || 0) > 0;
+            const frac = w.rounds ? w.ammo / w.rounds : 1;
+            const col  = rld              ? '#94a3b8'
+                       : w.ammo < w.burst ? '#ef4444'
+                       : frac < 0.25      ? '#f59e0b'
+                       : w.magazine       ? '#00d4ff' : '#64748b';
+            const icon = w.magazine ? '●' : '▮';
+            const tip  = `${w.label}${w.est ? ' — ค่าสมมติ ไม่มีแหล่งอ้างอิงเปิด' : ''}`
+                       + ` · ${w.ammo}/${w.rounds} นัด · ยิงครั้งละ ${w.burst}`
+                       + (w.magazine ? ' · เติมกลางทะเลไม่ได้'
+                                     : ` · เติมดรัม ${Math.round(w.cooldown/60)} วิ`)
+                       + (rld ? ` · เหลืออีก ${Math.ceil(w.reload/60)} วิ` : '');
+            return `<span style="color:${col};" title="${escapeHtml(tip)}">`
+                 + `${icon}${escapeHtml(tag)}${w.est ? '*' : ''} ${w.ammo}${rld ? '⏳' : ''}</span>`;
+        });
+    if (!parts.length) return '';
+    return `<div style="font-size:9px;line-height:1.5;padding-left:14px;letter-spacing:.2px;">`
+         + parts.join('<span style="color:#334155;"> · </span>') + `</div>`;
+}
+
 /** เลือกอาวุธที่ให้โอกาสทำลายเป้าสูงสุด ณ ระยะที่กำหนด สำหรับภัยคุกคามในโดเมนนั้น */
 function pickBestWeapon(v, threat, distNm) {
     const domain = threat.type;   // 'surface' | 'uuv' | 'drone'
@@ -11327,6 +11493,7 @@ function pickBestWeapon(v, threat, distNm) {
     Object.entries(v.weapons).forEach(([, wep]) => {
         if (!wep.domain || !wep.domain.includes(domain)) return;
         if (distNm > wep.rangeNm) return;
+        if (!wepReady(wep)) return;   // [v17.20.0 AMMO-1] ข้ามกระบอกที่แห้ง/กำลังเติมดรัม
         const rf     = 1 - Math.min(0.7, distNm / wep.rangeNm);
         const effPk  = wep.pk * rf * ssFactor;
         if (effPk > bestEffPk) { bestEffPk = effPk; bestWep = wep; bestName = wep.label; }
@@ -11334,11 +11501,13 @@ function pickBestWeapon(v, threat, distNm) {
     return bestWep ? {wep: bestWep, wepName: bestName} : null;
 }
 
-/** ระยะยิงไกลสุดที่มีต่อภัยคุกคามในโดเมนนั้น (ใช้เป็นเกณฑ์ตัดสินใจเข้าปะทะ) */
+/** ระยะยิงไกลสุดที่มีต่อภัยคุกคามในโดเมนนั้น (ใช้เป็นเกณฑ์ตัดสินใจเข้าปะทะ)
+ *  [v17.20.0 AMMO-1] นับเฉพาะกระบอกที่ยังใช้ได้ — ยิง Harpoon หมดแล้วต้องเข้าใกล้จริง
+ *  ไม่ใช้ wepReady() เพราะปืนที่กำลังเติมดรัมยังนับเป็นระยะยิงของเรือ (เดี๋ยวก็กลับมา) */
 function getMaxWeaponRange(v, threatType) {
     let maxR = 1.5;
     Object.values(v.weapons).forEach(wep => {
-        if (wep.domain && wep.domain.includes(threatType) && wep.rangeNm > maxR)
+        if (wep.domain && wep.domain.includes(threatType) && wepUsable(wep) && wep.rangeNm > maxR)
             maxR = wep.rangeNm;
     });
     return maxR;
@@ -13304,8 +13473,9 @@ map.on('click', function(e) {
         engTimer:  0,
         killCount: 0,
 
-        // ── อาวุธ (คัดลอกค่าจากบัญชีอาวุธมาเป็นชุดของเรือลำนี้) ──
-        weapons: JSON.parse(JSON.stringify(shipCfg.weapons)),
+        // ── อาวุธ (คัดลอกค่าจากบัญชีอาวุธมาเป็นชุดของเรือลำนี้ + ตั้งกระสุนเต็ม) ──
+        weapons: pvCloneWeapons(shipCfg),
+        winchester: false,   // [v17.20.0 AMMO-1] อาวุธนำวิถีหมดทุกกระบอกแล้วหรือยัง
 
         // ── เชื้อเพลิง / ระยะเวลาปฏิบัติการ ────────────────────
         fuel:     1.0,
@@ -13466,7 +13636,7 @@ function deployPVAt(lat, lng, opts) {
         nx:wps[0].nx, ny:wps[0].ny, waypoints:wps,
         currentWP:0, heading:initHdg, redirected:false, redirectTarget:null, userPlaced:true,
         state: 'PATROL', engTarget: null, engTimer: 0, killCount: 0,
-        weapons: JSON.parse(JSON.stringify(shipCfg.weapons)),
+        weapons: pvCloneWeapons(shipCfg), winchester: false,
         fuel: 1.0, fuelRate: shipCfg.fuelRate,
         radarNm: shipCfg.radarNm, flirNm: shipCfg.flirNm, sonarNm: shipCfg.sonarNm || 0,
         swathHistory: [],
@@ -14190,6 +14360,7 @@ function updateASWHelicopter() {
                         color: '#fbbf24',
                     });
                     h.torpedoesRemain--;
+                    kcStamp(h.target, 'Engage');   // [v17.20.0 KC-1] ฮ.ปด. ก็อยู่ในห่วงโซ่
                     _heloLog(h, `🚀 TORPEDO AWAY — Mk46-${tNum} → ${h.target.label}`, '#ef4444');
                     if (typeof sfxTorpedoLaunch === 'function') sfxTorpedoLaunch();
                     if (typeof setDomain === 'function') setDomain('air','warn');
@@ -17245,8 +17416,61 @@ function initShoreAATeams() {
 }
 
 // ── UPDATE — เครื่องยนต์ ปภอ. (เรียกทุก frame ใน animate) ──────
+// ═══ [v17.20.0 KC-1] นาฬิกาห่วงโซ่การทำลาย (kill chain / F2T2EA) ═══════
+//  แนวคิด sensor-to-shooter วัดผลด้วย "เวลา" ไม่ใช่จำนวนเป้าที่ยิงได้
+//  ระยะที่วัด (หน่วยเป็นเฟรม 60 fps → แปลงเป็นวินาทีตอนแสดงผล):
+//    DETECT   จังหวะที่ track ปรากฏในภาพสถานการณ์
+//             ⚠ ซิมนี้ไม่มีประตูการตรวจจับแยกต่างหาก — เป้าที่ spawn ถือว่า
+//               อยู่ในภาพทันที จึงรายงานตามความจริงข้อนี้ ไม่แต่งให้ดูดีกว่าจริง
+//    CLASSIFY จังหวะที่ t.classified เป็นจริง (พิสูจน์ทราบ / IFF)
+//    ENGAGE   จังหวะลั่นไกนัดแรกใส่ track นี้
+//    RESULT   จังหวะที่ track ถูกทำลาย
+const killChain = { last: null, done: [] };
+
+/** ประทับเวลาเฟรมแรกของเหตุการณ์หนึ่ง (ประทับซ้ำไม่ได้) */
+function kcStamp(t, key) {
+    if (t && t['_kc' + key] === undefined) t['_kc' + key] = frame;
+}
+
+function updateKillChain() {
+    if (simPaused || missionEnded) return;
+    threats.forEach(t => {
+        kcStamp(t, 'Spawn');
+        if (t.classified) kcStamp(t, 'Class');
+        // บันทึกเมื่อ track ถูกทำลาย (frozen คือเส้นทางเดียวที่การยิงสำเร็จใช้)
+        if (t.frozen && !t.active && t._kcResult === undefined && t._kcSpawn !== undefined) {
+            t._kcResult = frame;
+            const rec = {
+                label:    t.label || 'TRACK',
+                classify: t._kcClass  !== undefined ? t._kcClass  - t._kcSpawn : null,
+                engage:   t._kcEngage !== undefined ? t._kcEngage - t._kcSpawn : null,
+                result:   t._kcResult - t._kcSpawn,
+            };
+            killChain.last = rec;
+            killChain.done.push(rec);
+            if (killChain.done.length > 50) killChain.done.shift();
+        }
+    });
+}
+
+/** ข้อความสรุปห่วงโซ่ล่าสุด + ค่าเฉลี่ยสะสม สำหรับแถบ EXECUTIVE SUMMARY */
+function kcSummaryText() {
+    const r = killChain.last;
+    if (!r) return '— ยังไม่มีการปะทะสำเร็จ —';
+    const s  = f => (f / 60).toFixed(1) + 's';
+    const cl = r.classify !== null ? s(r.classify) : '—';
+    const en = r.engage   !== null ? s(r.engage)   : '—';
+    let txt = `จำแนก ${cl} → ลั่นไก ${en} → ผล ${s(r.result)}`;
+    if (killChain.done.length > 1) {
+        const avg = killChain.done.reduce((a, x) => a + x.result, 0) / killChain.done.length;
+        txt += ` · เฉลี่ย ${s(avg)} (${killChain.done.length} ครั้ง)`;
+    }
+    return txt;
+}
+
 function updateAirDefense() {
     if (simPaused || missionEnded) return;
+    updateKillChain();   // [v17.20.0 KC-1] เดินนาฬิกา kill chain ทุกเฟรม
     const hold = (typeof roeLevel !== 'undefined' && roeLevel === 'HOLD');
 
     // ════ ชั้นนอก — ESSM จากเรือ ปภอ. (สกัด UAV) ════
@@ -17255,6 +17479,9 @@ function updateAirDefense() {
         const wep = v.weapons.sam_essm;
         if (v.essmFlash) { v.essmFlash.life--; if (v.essmFlash.life <= 0) v.essmFlash = null; }
         if (hold) { v.essmTarget = null; v.essmTimer = 0; return; }
+        // [v17.20.0 AMMO-1] เรือกำลังกลับฐานหรือ ESSM หมดท่อ → ไม่ยิง
+        // (เดิมเรือที่ RTB เพราะเชื้อเพลิงต่ำยังยิง ESSM อยู่ — แก้ไปพร้อมกัน)
+        if (v.state === 'RTB' || !wepReady(wep)) { v.essmTarget = null; v.essmTimer = 0; return; }
         let best = null, bestD = Infinity;
         threats.forEach(t => {
             if (!t.active || t.frozen) return;
@@ -17269,6 +17496,8 @@ function updateAirDefense() {
             v.essmTimer = 0;
             const rf = 1 - Math.min(0.6, bestD / wep.rangeNm);
             const pk = wep.pk * (1 + rf * 0.35) * (best.reconTracked ? 1.15 : 1.0);
+            wepFire(wep);   // [v17.20.0 AMMO-1] ตัดลูก ESSM ออกจากเซลล์ VLS
+            kcStamp(best, 'Engage');
             v.essmFlash = { tx:best.nx, ty:best.ny, life:13, hit:false };
             if (Math.random() < pk) {
                 v.essmFlash.hit = true;
@@ -17302,6 +17531,7 @@ function updateAirDefense() {
             tm.engTimer = 0;
             tm.fireFlash = 9;
             tm.flashTarget = { nx:best.nx, ny:best.ny };
+            kcStamp(best, 'Engage');   // [v17.20.0 KC-1] สอ.รฝ. ก็อยู่ในห่วงโซ่
             if (Math.random() < tm.pk * (best.reconTracked ? 1.15 : 1.0)) {
                 addExplosion(best.nx, best.ny, '#ffd24a');
                 best.frozen = true; best.active = false;
@@ -20096,6 +20326,27 @@ function drawPatrolVessels() {
         ctx.fillStyle='rgba(255,255,255,0.12)'; ctx.fillRect(fbX,fbY,fbW,fbH);
         const fuelCol=v.fuel>0.40?'#22c55e':v.fuel>0.15?'#f59e0b':'#ef4444';
         ctx.fillStyle=fuelCol; ctx.fillRect(fbX,fbY,fbW*v.fuel,fbH);
+
+        // ── [v17.20.0 AMMO-1] แถบอาวุธนำวิถี (ใต้แถบเชื้อเพลิง) ──
+        //    แสดงเฉพาะเรือที่มีอาวุธนำวิถี เพราะเป็นทรัพยากรที่หมดแล้วหมดเลย
+        //    เรือปืนล้วนไม่มีแถบนี้ — สถานะปืนดูที่ป้าย RLD และบัญชีรายลำแทน
+        const magF = pvMagFrac(v);
+        if (magF !== null) {
+            const abY = fbY + 5;
+            ctx.fillStyle='rgba(255,255,255,0.12)'; ctx.fillRect(fbX,abY,fbW,fbH);
+            const ammoCol = magF>0.50?'#00d4ff':magF>0.20?'#f59e0b':'#ef4444';
+            ctx.fillStyle=ammoCol; ctx.fillRect(fbX,abY,fbW*magF,fbH);
+        }
+        // ── ป้ายสถานะอาวุธ — WINCHESTER สำคัญกว่า RLD ──
+        if (v.winchester) {
+            ctx.font='bold 9px "Share Tech Mono"';
+            ctx.fillStyle=`rgba(239,68,68,${0.65+Math.sin(frame*0.08)*0.30})`;
+            ctx.fillText('WINCHESTER', x, fbY+16);
+        } else if (pvAnyReloading(v)) {
+            ctx.font='9px "Share Tech Mono"';
+            ctx.fillStyle='rgba(148,163,184,0.85)';
+            ctx.fillText('RLD', x, fbY+16);
+        }
 
         // ── เส้นวิถีกระสุน (เฉพาะขณะเข้าปะทะ) ──
         if (v.state==='ENGAGE' && v.engTarget && v.engTarget.active) {
@@ -25132,6 +25383,18 @@ function animate() {
             }
         }
 
+        // ── ๑ก. [v17.20.0 AMMO-1] เดินนาฬิกาเติมดรัมปืน + ตรวจ WINCHESTER ──
+        pvTickReload(v);
+        if (!v.winchester && pvIsWinchester(v)) {
+            v.winchester = true;
+            if (v.state !== 'RTB') {
+                v.state = 'RTB';
+                v.redirected = false; v.engTarget = null; v.essmTarget = null;
+                addLog(`🚨 ${v.label} WINCHESTER — อาวุธนำวิถีหมด สั่งกลับฐาน`, '#ef4444');
+                addEngLog(`<span style="color:#ef4444;">⚠ ${escapeHtml(v.label)} WINCHESTER — WEAPONS EXPENDED · RTB</span>`);
+            }
+        }
+
         // ── ประวัติแนวกวาด (บันทึกตำแหน่งไว้วาดร่องรอยเส้นทาง) ──
         if (v.state !== 'RTB') {
             v.swathHistory.push([v.nx, v.ny]);
@@ -25185,6 +25448,9 @@ function animate() {
                         const ssFactor    = SS_MODS.pvSpeedMod[seaState];
                         const pk = wep.pk * rangeFactor * ssFactor * (t.evasive ? 0.55 : 1.0);
 
+                        wepFire(wep);   // [v17.20.0 AMMO-1] ตัดกระสุน — ยิงพลาดก็เสียกระสุน
+                        kcStamp(t, 'Engage');
+
                         if (Math.random() < pk) {
                             // เข้าเป้า — ทำลายภัยคุกคาม
                             const blastCol = t.type === 'uuv' ? '#bd93f9' : '#ff6600';
@@ -25199,8 +25465,17 @@ function animate() {
                         } else {
                             addEngLog(`<span style="color:#f59e0b;">✗ ${escapeHtml(v.label)}→${escapeHtml(t.label)} [${escapeHtml(wepName)}] MISS</span>`);
                         }
+                        v._dryLogged = false;
+                    } else if (pvAnyReloading(v)) {
+                        // [v17.20.0 AMMO-1] ในระยะแล้วแต่ดรัมกำลังเติม — หยุดยิงชั่วคราว
+                        // แจ้งครั้งเดียวต่อรอบการเติม ไม่ให้ท่วมบันทึกการปะทะ
+                        if (!v._dryLogged) {
+                            v._dryLogged = true;
+                            addEngLog(`<span style="color:#94a3b8;">⏳ ${escapeHtml(v.label)} RELOADING — งดยิงชั่วคราว</span>`);
+                        }
                     }
-                    // sel===null: อยู่นอกระยะอาวุธทั้งหมด → ปล่อยให้ INTERCEPT ปิดระยะ
+                    // sel===null และไม่มีกระบอกไหนเติมอยู่: อยู่นอกระยะอาวุธทั้งหมด
+                    // (หรือยิงหมดถาวร) → ปล่อยให้ INTERCEPT ปิดระยะ
                 }
             }
         }
@@ -26191,6 +26466,9 @@ function closestPatrol(nx,ny) {
 function resetAll() {
     timers.forEach(clearTimeout); timers=[];
     threats=[]; effects=[]; cablePhotons=[];
+    // [v17.20.0] ตั้งต้นใหม่: กระสุนเต็มลำ + ล้างสถิติ kill chain ของรอบก่อน
+    pvRearmAll();
+    killChain.last = null; killChain.done = [];
     dasTriggered=false; dasPrevState=false; dasKPnm=null; dasKPsegIdx=-1;
     dasFAUntilFrame=-1; // [v16.0.4 W34V-B11] ล้าง false-alarm window ค้างจากรอบก่อน
     missionEnded=false;
@@ -26292,6 +26570,9 @@ function launchScenario(type) {
     window._lastScenarioType = type; // [v16.0.4 W4-UX12] จำฉากล่าสุดสำหรับ hotkey 'b' (เปิด briefing ซ้ำ)
     timers.forEach(clearTimeout); timers=[];
     threats=[]; effects=[]; cablePhotons=[];
+    // [v17.20.0] ฉากใหม่เริ่มด้วยกระสุนเต็มลำ + สถิติ kill chain เฉพาะฉากนี้
+    pvRearmAll();
+    killChain.last = null; killChain.done = [];
     dasTriggered=false; dasPrevState=false; dasKPnm=null; dasKPsegIdx=-1;
     dasFAUntilFrame=-1; // [v16.0.4 W34V-B11] ล้าง false-alarm window ค้างจากรอบก่อน
     missionEnded=false;
@@ -27312,7 +27593,8 @@ function updateAirSurfacePanel() {
             &nbsp;<span style="color:${sCol};">${v.state}</span>
             &nbsp;<span style="color:${fCol};"><svg class="ico" aria-hidden="true"><use href="#i-fuel"/></svg>${fPct}%</span>
             ${v.killCount>0?`&nbsp;<span style="color:#22c55e;">💥×${v.killCount}</span>`:''}
-        </div>`;
+            ${v.winchester?`&nbsp;<span style="color:#ef4444;font-weight:600;" title="อาวุธนำวิถีหมดทุกกระบอก — สั่งกลับฐาน">WINCHESTER</span>`:''}
+        </div>${pvAmmoLine(v)}`;
     }).join('');
 
     // ซิงก์ปุ่มกฎการปะทะ
@@ -36214,6 +36496,15 @@ window.toggleSat3D = toggleSat3D;
                         const s = ROE_TH[r] || r;
                         if (esRoe.textContent !== s) esRoe.textContent = s;
                         esRoe.style.color = r === 'HOLD' ? 'var(--green)' : r === 'FREE' ? 'var(--red)' : 'var(--amber)';
+                    }
+                    // [v17.20.0 KC-1] นาฬิกา kill chain — ถัดจากขั้น ROE
+                    const esKc = document.getElementById('bf-es-kc');
+                    if (esKc) {
+                        const NOKC = '— ยังไม่มีการปะทะสำเร็จ —';
+                        let s = NOKC;
+                        try { if (typeof kcSummaryText === 'function') s = kcSummaryText(); } catch(_) {}
+                        if (esKc.textContent !== s) esKc.textContent = s;
+                        esKc.style.color = (s !== NOKC) ? '#00d4ff' : '';
                     }
                     const esLaw = document.getElementById('bf-es-law');
                     if (esLaw) {
