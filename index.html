@@ -1,6 +1,24 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.21.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.21.1 · 7-Domain + AI Staff)
+  · [v17.21.1 RTB-1] เรือที่กระสุนหมดกลับฐานจริง เติมกระสุนจริง แล้วออกลาดตระเวนต่อ (ปิดข้อค้างจากขั้น ๑)
+      ที่มา: ขั้น ๑ ทำให้ WINCHESTER (อาวุธนำวิถีหมดทุกกระบอก) สั่งเรือเข้าสถานะ RTB ได้ก็จริง
+             แต่ RTB เป็น "สถานะปลายทาง" — เรือแค่วิ่งเร็วขึ้น ๑.๒๐ เท่าตามเส้นลาดตระเวนเดิม
+             ไม่มีฐานให้กลับ ไม่มีการเติมกระสุน เรือลำนั้นจึงกลายเป็นเรือเปล่าที่วนอยู่ตลอดภารกิจ
+             ผบ. เห็น "เรือ ๓ ลำ" แต่ยิงได้จริง ๒ ลำ = ตัดสินใจ "ยิงตอนนี้หรือสงวนไว้" บนข้อมูลที่ไม่จริง
+      - ฐาน  PV_BASE = ทรภ.๑ (กยพ.) ที่จอดเรือในน้ำถัดจากสถานีเคเบิล DAS สาย ๒ ~๐.๔ ไมล์ทะเล
+             (จุดสถานีเคเบิลเองอยู่บนแผ่นดิน ตรวจด้วย isOnLand แล้ว เรือเข้าไม่ได้)
+      - เส้นทาง PV_BASE_ROUTE ๕ โหนด อ้อมใต้แหลมสัตหีบ — เส้นตรงจากพื้นที่ลาดตระเวนไปฐาน
+             วัดแล้วเป็นแผ่นดิน ๖๗% ของเส้น เรือจะติดฝั่ง · ทุกโหนด/ทุกช่วงต่อตรวจแล้ว = น้ำล้วน
+      - วงรอบ RTB (เดินเรือเข้าฐานทีละโหนด) → REARM (เทียบท่า จอดนิ่ง ๑๐,๘๐๐ เฟรม = ๓ นาที)
+             → PATROL (กระสุนเต็มลำ เชื้อเพลิงเต็ม กลับเข้า WP ที่ใกล้ที่สุด)
+      - สถานะที่ผู้ใช้เห็น: บนแผนที่ = "RTB·ทรภ.๑" / "REARM · เติมกระสุน" + แถบนับถอยหลัง ⏱ m:ss
+             ในบัญชีรายลำ = "RTB → ทรภ.๑ · กลับไปเติมกระสุน" / "REARM · กำลังเติมกระสุนที่ท่า" + แถบ
+             หมุดฐาน ⚓ ทรภ.๑ และเส้นทางประจุดจะโผล่เฉพาะตอนมีเรือออกนอกแนวลาดตระเวนเท่านั้น
+      - เรือที่ RTB/REARM ถูกตัดออกจากสมการรบจริง: ไม่ตรวจจับ ไม่ยิง ESSM ไม่รับคำสั่งเข้าสกัด
+             ไม่นับเป็น ON PATROL (แถบสถานะขึ้น "ON PATROL (−n)" หรือ "ALL RTB"/"ALL REARM")
+      - resetAll()/launchScenario() คืนค่า rearmTimer/rtbLeg/fuel ให้ด้วย (เดิมค้างข้ามฉาก)
+             เติมกลางภารกิจไม่ล้าง w.expended — นัดที่ยิงไปแล้วยิงไปแล้ว สถิติต้องสะสมทั้งฉาก
   · [v17.21.0 FIRES-1/2/3] แผนที่ ผบ. อนุมัติ มีผลถึงไกปืน + จัดลำดับเป้าด้วยคะแนนรวม (sensors-to-shooters ขั้น ๒)
       ที่มา: ขั้น ๑ ทำให้การยิงมีต้นทุน แต่ "การตกลงใจ" ยังไม่มีผลกับการยิงอยู่ดี —
              approvePlan() เปลี่ยนได้แค่ "วางกำลังที่ไหน" · เจตนา/คำสั่งการจาก LLM ถูกล้างค่าแล้วเอาไป
@@ -690,12 +708,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.21.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.21.1 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.21.0';
+        const APP_VERSION = '17.21.1';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -7676,7 +7694,7 @@
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.21.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.21.1 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -8140,7 +8158,7 @@
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.21.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.21.1 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -8157,7 +8175,7 @@
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.21.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.21.1 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -9077,7 +9095,7 @@
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.21.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.21.1 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -11479,16 +11497,134 @@ function pvAnyReloading(v) {
     return Object.values(v.weapons || {}).some(w => (w.reload || 0) > 0);
 }
 
+// ═══════════════════════════════════════════════════════════════
+//  [v17.21.1 RTB-1] วงรอบ กลับฐาน → เติมกระสุน → ออกลาดตระเวนใหม่
+// ───────────────────────────────────────────────────────────────
+//  ก่อนหน้านี้ RTB เป็น "สถานะปลายทาง" — เรือที่ WINCHESTER หรือ
+//  เชื้อเพลิงต่ำ แค่วิ่งเร็วขึ้น 1.20 เท่าตามเส้นลาดตระเวนเดิม
+//  ไม่มีฐานให้กลับ ไม่มีการเติมกระสุน = หายไปจากสมการทั้งภารกิจ
+//  ทำให้ ผบ. ตัดสินใจ "ยิงตอนนี้หรือสงวนไว้" บนข้อมูลที่ไม่จริง
+//
+//  ฐานส่งกำลังบำรุง = ที่จอดเรือหน้า กองบัญชาการทัพเรือภาคที่ ๑
+//  (กยพ./ทรภ.๑) ซึ่งเป็นจุดขึ้นบกของสายเคเบิล DAS สาย ๒
+//  สถานีเคเบิลบนฝั่งอยู่ที่ [12.66188, 100.91759] = DAS2_COORDS[14]
+//  จุดนั้นเป็นแผ่นดิน (ตรวจด้วย isOnLand แล้ว → true) เรือเข้าไม่ได้
+//  จึงใช้จุดทอดสมอในน้ำถัดออกมาทางทิศตะวันตกเฉียงใต้ ~0.4 ไมล์ทะเล
+// ═══════════════════════════════════════════════════════════════
+/** ที่จอดเรือหน้า ทรภ.๑ — พิกัดปกติ (normalized) บนผืนแผนที่ซิม
+ *  ตรวจแล้วว่า isOnLand(nx,ny) === false และน้ำเปิดต่อเนื่องไปทางใต้/ตะวันตก */
+const PV_BASE = {
+    nx: 0.7162, ny: 0.5998,          // ≈ 12.6570°N, 100.9130°E
+    label: 'ทรภ.๑',
+    full:  'ฐานส่งกำลังบำรุง ทรภ.๑ (กยพ.) — สถานีเคเบิล DAS สาย ๒',
+};
+
+/** เส้นทางกลับฐาน — จำเป็น ไม่ใช่ของประดับ
+ *  เส้นตรงจากพื้นที่ลาดตระเวน (แถบ UDC) ไปยังที่จอดเรือ พาดผ่านแหลมสัตหีบ
+ *  วัดแล้ว **เป็นแผ่นดิน ๖๗% ของเส้น** — เรือจะติดฝั่งแล้ววนอยู่กับที่
+ *  จึงต้องอ้อมใต้แหลมแบบเดียวกับที่สายเคเบิล DAS ๒ วางอ้อม
+ *  ทุกโหนดและทุกช่วงต่อ ตรวจด้วย isOnLand แล้ว = น้ำล้วน (0 hit / 60 sample) */
+const PV_BASE_ROUTE = [
+    { nx: 0.5450, ny: 0.6180 },      // ๐ · ออกจากพื้นที่ลาดตระเวน มุ่งใต้
+    { nx: 0.5750, ny: 0.6560 },      // ๑ · อ้อมใต้แหลมสัตหีบ
+    { nx: 0.7000, ny: 0.6560 },      // ๒ · วิ่งตะวันออกตามร่องน้ำใต้แหลม
+    { nx: 0.7160, ny: 0.6200 },      // ๓ · หันเหนือเข้าอ่าว
+    { nx: PV_BASE.nx, ny: PV_BASE.ny }, // ๔ · เทียบท่า ทรภ.๑
+];
+/** ระยะที่ถือว่าถึงโหนด/เทียบท่าแล้ว (หน่วย ny) — 0.014 ny ≈ 0.38 ไมล์ทะเล
+ *  ใช้ค่าใกล้เคียงเกณฑ์ถึง waypoint (0.012) เพื่อให้เรือไม่วนรอบจุดจอด */
+const PV_BASE_ARRIVE = 0.014;
+
+/** โหนดเส้นทางกลับฐานที่ใกล้เรือที่สุด — ใช้เป็นจุดเริ่มตอนสั่ง RTB
+ *  เรือที่อยู่ใต้แหลมอยู่แล้วจะไม่ถูกบังคับให้ย้อนขึ้นไปเริ่มที่โหนด ๐ */
+function pvNearestRouteLeg(v) {
+    let best = 0, bestD = Infinity;
+    PV_BASE_ROUTE.forEach((p, i) => {
+        const d = Math.hypot(p.nx - v.nx, p.ny - v.ny);
+        if (d < bestD) { bestD = d; best = i; }
+    });
+    return best;
+}
+
+/** จุดหมายปัจจุบันของเรือที่กำลังกลับฐาน (โหนดบนเส้นทาง) */
+function pvBaseLegPoint(v) {
+    const i = Math.min(v.rtbLeg | 0, PV_BASE_ROUTE.length - 1);
+    return PV_BASE_ROUTE[i];
+}
+/** เวลาเติมกระสุน/เชื้อเพลิงที่ท่า — ๓ นาทีของเวลาเดินซิม
+ *  ซิมไม่มีนาฬิกาแยก เฟรมคือนาฬิกา: 60 เฟรม ≈ 1 วินาที → 3 นาที = 10,800 เฟรม */
+const PV_REARM_FRAMES = 10800;
+
+/** เรืออยู่นอกแนวลาดตระเวนหรือไม่ (กลับฐาน/กำลังเติมกระสุน)
+ *  ใช้เป็นประตูเดียวกันทุกจุด: ห้ามเข้าปะทะ · ห้ามยิง ESSM · ไม่นับเป็นเรดาร์ตรวจจับ */
+function pvOffStation(v) { return v.state === 'RTB' || v.state === 'REARM'; }
+
+/** เติมกระสุนเรือลำเดียว
+ *  fullReset = true  → ตั้งต้นฉากใหม่ ล้างสถิตินัดที่ใช้ไปสะสมด้วย
+ *  fullReset = false → เทียบท่าเติมกลางภารกิจ **เก็บสถิติสะสมไว้ตามจริง**
+ *                      (นัดที่ยิงไปแล้วยิงไปแล้ว การกลับฐานไม่ลบประวัติ) */
+function pvRearmVessel(v, fullReset) {
+    v.winchester = false;
+    v._dryLogged = false;
+    v.rearmTimer = 0;
+    v.rearmTotal = 0;
+    v.rtbLeg     = null;
+    v.fuel = 1.0;
+    if (pvOffStation(v)) { v.state = 'PATROL'; v.redirected = false; v.redirectTarget = null; }
+    Object.values(v.weapons || {}).forEach(w => {
+        if (!w.rounds) return;
+        w.ammo = w.rounds; w.reload = 0;
+        if (fullReset) w.expended = 0;
+    });
+}
+
 /** บรรจุกระสุนใหม่ทุกลำ + ล้างสถานะ WINCHESTER — ใช้ตอน reset / เริ่มฉากใหม่
  *  (ไม่ใช่การส่งกำลังบำรุงกลางทะเล — เป็นการตั้งต้นสถานการณ์ใหม่เท่านั้น) */
 function pvRearmAll() {
-    patrolVessels.forEach(v => {
-        v.winchester = false;
-        v._dryLogged = false;
-        Object.values(v.weapons || {}).forEach(w => {
-            if (w.rounds) { w.ammo = w.rounds; w.reload = 0; w.expended = 0; }
-        });
+    patrolVessels.forEach(v => pvRearmVessel(v, true));
+}
+
+/** เลือก waypoint ที่ใกล้ตำแหน่งปัจจุบันที่สุด — ใช้ตอนออกจากท่ากลับเข้าแนวลาดตระเวน
+ *  ถ้าไม่ทำ เรือจะวิ่งย้อนไป WP เดิมที่ค้างไว้ตั้งแต่ก่อนกลับฐาน (อาจอยู่คนละฟาก) */
+function pvNearestWP(v) {
+    if (!v.waypoints || !v.waypoints.length) return 0;
+    let best = v.currentWP || 0, bestD = Infinity;
+    v.waypoints.forEach((wp, i) => {
+        if (typeof isOnLand === 'function' && landMaskReady && isOnLand(wp.nx, wp.ny)) return;
+        const d = Math.hypot(wp.nx - v.nx, wp.ny - v.ny);
+        if (d < bestD) { bestD = d; best = i; }
     });
+    return best;
+}
+
+/** เดินวงรอบกลับฐาน — เรียกทุกเฟรม ก่อนประตูเข้าปะทะ
+ *  RTB   : วิ่งเข้าหา PV_BASE (การเลี้ยวอยู่ในบล็อกการเคลื่อนที่) ถึงแล้ว → REARM
+ *  REARM : จอดนิ่ง นับถอยหลัง PV_REARM_FRAMES แล้วเติมเต็ม → PATROL */
+function pvTickBase(v) {
+    if (v.state === 'RTB') {
+        if (v.rtbLeg == null) v.rtbLeg = pvNearestRouteLeg(v);
+        const p = pvBaseLegPoint(v);
+        const d = Math.hypot(p.nx - v.nx, p.ny - v.ny);
+        if (d > PV_BASE_ARRIVE) return;
+        if (v.rtbLeg < PV_BASE_ROUTE.length - 1) { v.rtbLeg++; return; }   // ถึงโหนด → ไปโหนดถัดไป
+        v.rtbLeg      = null;
+        v.state       = 'REARM';
+        v.rearmTimer  = PV_REARM_FRAMES;
+        v.rearmTotal  = PV_REARM_FRAMES;
+        v.redirected  = false; v.redirectTarget = null;
+        v.engTarget   = null;  v.essmTarget = null; v.essmTimer = 0;
+        addLog(`⚓ ${v.label} เทียบท่า ${PV_BASE.label} — เริ่มเติมกระสุน/เชื้อเพลิง (${Math.round(PV_REARM_FRAMES/60)} วินาที)`, '#38bdf8');
+        addEngLog(`<span style="color:#38bdf8;">⚓ ${escapeHtml(v.label)} ALONGSIDE ${escapeHtml(PV_BASE.label)} — REARM/REFUEL เริ่มนับถอยหลัง</span>`);
+        return;
+    }
+    if (v.state !== 'REARM') return;
+    v.rearmTimer = Math.max(0, (v.rearmTimer || 0) - 1);
+    if (v.rearmTimer > 0) return;
+    pvRearmVessel(v, false);        // ตั้ง state = 'PATROL' ให้ในตัว
+    v.currentWP = pvNearestWP(v);
+    v.swathHistory.length = 0;      // ร่องรอยเดิมขาดตอนตั้งแต่กลับฐาน — เริ่มเส้นใหม่
+    addLog(`✅ ${v.label} เติมกระสุน/เชื้อเพลิงครบ — ออกลาดตระเวนต่อ`, '#22c55e');
+    addEngLog(`<span style="color:#22c55e;">✔ ${escapeHtml(v.label)} REARM COMPLETE — กลับเข้าแนวลาดตระเวน</span>`);
 }
 
 /** ชื่อย่ออาวุธสำหรับบัญชีรายลำ (พื้นที่แคบ ใช้ชื่อเต็มไม่ได้) */
@@ -17665,7 +17801,7 @@ function updateAirDefense() {
         if (hold) { v.essmTarget = null; v.essmTimer = 0; return; }
         // [v17.20.0 AMMO-1] เรือกำลังกลับฐานหรือ ESSM หมดท่อ → ไม่ยิง
         // (เดิมเรือที่ RTB เพราะเชื้อเพลิงต่ำยังยิง ESSM อยู่ — แก้ไปพร้อมกัน)
-        if (v.state === 'RTB' || !wepReady(wep)) { v.essmTarget = null; v.essmTimer = 0; return; }
+        if (pvOffStation(v) || !wepReady(wep)) { v.essmTarget = null; v.essmTimer = 0; return; }
         let best = null, bestD = Infinity;
         threats.forEach(t => {
             if (!t.active || t.frozen) return;
@@ -20248,6 +20384,30 @@ function drawGuardianUUVs() {
 //  เส้นประสีเขียวอ่อน = เส้นทาง Patrol ที่โปรแกรมไว้
 // ═══════════════════════════════════════════════════════════════
 function drawPatrolVessels() {
+    // ── [v17.21.1 RTB-1] ฐานส่งกำลังบำรุง ทรภ.๑ + เส้นทางกลับฐาน ──
+    //    วาดเฉพาะเมื่อมีเรือกำลังกลับฐาน/เทียบท่า เพื่อไม่รกแผนที่ตอนปกติ
+    const anyOff = patrolVessels.some(v => pvOffStation(v));
+    if (anyOff) {
+        const bp = pn(PV_BASE.nx, PV_BASE.ny);
+        ctx.save();
+        // เส้นทางอ้อมใต้แหลม — บอกว่าเรือไม่ได้วิ่งเส้นตรง เพราะเส้นตรงคือแผ่นดิน
+        ctx.setLineDash([4,6]); ctx.lineWidth=1;
+        ctx.strokeStyle='rgba(56,189,248,0.28)';
+        ctx.beginPath();
+        PV_BASE_ROUTE.forEach((p,i)=>{ const q=pn(p.nx,p.ny); i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y); });
+        ctx.stroke();
+        ctx.setLineDash([]);
+        // สมอ = ที่จอดเรือ
+        const pulse = 0.55 + Math.sin(frame*0.05)*0.25;
+        ctx.beginPath(); ctx.arc(bp.x, bp.y, 7, 0, Math.PI*2);
+        ctx.strokeStyle=`rgba(56,189,248,${pulse})`; ctx.lineWidth=1.4; ctx.stroke();
+        ctx.beginPath(); ctx.arc(bp.x, bp.y, 2.5, 0, Math.PI*2);
+        ctx.fillStyle='rgba(56,189,248,0.85)'; ctx.fill();
+        ctx.font='bold 10px "Share Tech Mono"'; ctx.textAlign='center';
+        ctx.fillStyle='rgba(56,189,248,0.90)';
+        ctx.fillText('⚓ ' + PV_BASE.label, bp.x, bp.y - 11);
+        ctx.restore();
+    }
     patrolVessels.forEach(v=>{
         ctx.save(); ctx.setLineDash([6,5]);
         ctx.lineDashOffset = -(frame * 0.1) % 11; // [v16.0.5 W5-Q3] marching ants ช้าๆ บนเส้น patrol loop
@@ -20493,10 +20653,15 @@ function drawPatrolVessels() {
         ctx.font='bold 12px "Share Tech Mono"'; ctx.fillStyle=labelColor;
         ctx.textAlign='center'; ctx.fillText(v.label,x,y+28);
         // ── ป้ายบอกสถานะ ──
-        const stateCol = v.state==='ENGAGE'?'#ef4444':v.state==='INTERCEPT'?'#f59e0b':v.state==='RTB'?'#94a3b8':labelColor;
+        // [v17.21.1 RTB-1] REARM = สีฟ้าท่าเรือ · RTB บอกจุดหมายด้วย ไม่งั้นดูไม่ออกว่ากำลังไปไหน
+        const stateCol = v.state==='ENGAGE'?'#ef4444':v.state==='INTERCEPT'?'#f59e0b'
+                       : v.state==='RTB'?'#94a3b8':v.state==='REARM'?'#38bdf8':labelColor;
+        const stateTxt = v.state==='RTB'   ? `RTB·${PV_BASE.label}`
+                       : v.state==='REARM' ? 'REARM · เติมกระสุน'
+                       :                      v.state;
         ctx.font='10px "Share Tech Mono"';
         ctx.fillStyle=stateCol;
-        ctx.fillText(v.state,x,y+40);
+        ctx.fillText(stateTxt,x,y+40);
         // ── Obstacle Avoidance badge (gentle pulse, ไม่กระพริบรัว) ──
         if (v._avoidingObstacle) {
             const pulse = 0.7 + Math.sin(frame*0.05) * 0.25;   // ช้าๆ 0.45-0.95
@@ -20521,15 +20686,30 @@ function drawPatrolVessels() {
             const ammoCol = magF>0.50?'#00d4ff':magF>0.20?'#f59e0b':'#ef4444';
             ctx.fillStyle=ammoCol; ctx.fillRect(fbX,abY,fbW*magF,fbH);
         }
+        // ── [v17.21.1 RTB-1] แถบเวลานับถอยหลังการเติมกระสุนที่ท่า ──
+        //    วางไว้ใต้แถบอาวุธนำวิถี ใช้พื้นที่เดียวกับแถบอื่น เพื่ออ่านรวดเดียวได้ว่า
+        //    "เรือลำนี้จะกลับเข้าแนวลาดตระเวนอีกกี่วินาที" — ตัวเลขที่ ผบ. ต้องใช้ตัดสินใจ
+        if (v.state === 'REARM' && v.rearmTotal > 0) {
+            const rbY  = fbY + (magF !== null ? 10 : 5);
+            const done = 1 - (v.rearmTimer / v.rearmTotal);   // 0 → 1
+            ctx.fillStyle='rgba(255,255,255,0.12)'; ctx.fillRect(fbX,rbY,fbW,fbH+1);
+            ctx.fillStyle='#38bdf8';                ctx.fillRect(fbX,rbY,fbW*done,fbH+1);
+            const secs = Math.ceil(v.rearmTimer / 60);
+            ctx.font='bold 9px "Share Tech Mono"';
+            ctx.fillStyle='#38bdf8';
+            ctx.fillText(`⏱ ${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`, x, rbY+11);
+        }
         // ── ป้ายสถานะอาวุธ — WINCHESTER สำคัญกว่า RLD ──
+        //    ระหว่างเทียบท่า แถบนับถอยหลังกินพื้นที่นี้อยู่ จึงเลื่อนป้ายลงไปอีกแถว
+        const wsY = fbY + 16 + (v.state === 'REARM' && v.rearmTotal > 0 ? 12 : 0);
         if (v.winchester) {
             ctx.font='bold 9px "Share Tech Mono"';
             ctx.fillStyle=`rgba(239,68,68,${0.65+Math.sin(frame*0.08)*0.30})`;
-            ctx.fillText('WINCHESTER', x, fbY+16);
+            ctx.fillText('WINCHESTER', x, wsY);
         } else if (pvAnyReloading(v)) {
             ctx.font='9px "Share Tech Mono"';
             ctx.fillStyle='rgba(148,163,184,0.85)';
-            ctx.fillText('RLD', x, fbY+16);
+            ctx.fillText('RLD', x, wsY);
         }
 
         // ── เส้นวิถีกระสุน (เฉพาะขณะเข้าปะทะ) ──
@@ -25579,13 +25759,14 @@ function animate() {
     patrolVessels.forEach(v=>{
 
         // ── ๑. การลดลงของเชื้อเพลิง ────────────────────────────
-        if (v.state !== 'RTB') {
+        //     ระหว่างกลับฐาน/เทียบท่าไม่คิดเชื้อเพลิง เพื่อให้เรือถึงฐานได้เสมอ
+        if (!pvOffStation(v)) {
             v.fuel = Math.max(0, v.fuel - v.fuelRate);
             // เตือนเชื้อเพลิงขั้นต่ำ 2 ระดับ (เหลือ 20% เตือน · เหลือ 10% ต้องกลับฐาน)
-            if (v.fuel < 0.10 && v.state !== 'RTB') {
-                v.state = 'RTB';
+            if (v.fuel < 0.10) {
+                v.state = 'RTB'; v.rtbLeg = null;
                 v.redirected = false; v.engTarget = null;
-                addLog(`⛽ ${v.label} เชื้อเพลิงต่ำ (${Math.round(v.fuel*100)}%) — RTB`, '#f59e0b');
+                addLog(`⛽ ${v.label} เชื้อเพลิงต่ำ (${Math.round(v.fuel*100)}%) — กลับฐาน ${PV_BASE.label}`, '#f59e0b');
             }
         }
 
@@ -25593,23 +25774,26 @@ function animate() {
         pvTickReload(v);
         if (!v.winchester && pvIsWinchester(v)) {
             v.winchester = true;
-            if (v.state !== 'RTB') {
-                v.state = 'RTB';
+            if (!pvOffStation(v)) {
+                v.state = 'RTB'; v.rtbLeg = null;
                 v.redirected = false; v.engTarget = null; v.essmTarget = null;
-                addLog(`🚨 ${v.label} WINCHESTER — อาวุธนำวิถีหมด สั่งกลับฐาน`, '#ef4444');
-                addEngLog(`<span style="color:#ef4444;">⚠ ${escapeHtml(v.label)} WINCHESTER — WEAPONS EXPENDED · RTB</span>`);
+                addLog(`🚨 ${v.label} WINCHESTER — อาวุธนำวิถีหมด สั่งกลับฐาน ${PV_BASE.label}`, '#ef4444');
+                addEngLog(`<span style="color:#ef4444;">⚠ ${escapeHtml(v.label)} WINCHESTER — WEAPONS EXPENDED · RTB ${escapeHtml(PV_BASE.label)}</span>`);
             }
         }
 
+        // ── ๑ข. [v17.21.1 RTB-1] วงรอบ กลับฐาน → เติมกระสุน → ออกลาดตระเวน ──
+        pvTickBase(v);
+
         // ── ประวัติแนวกวาด (บันทึกตำแหน่งไว้วาดร่องรอยเส้นทาง) ──
-        if (v.state !== 'RTB') {
+        if (!pvOffStation(v)) {
             v.swathHistory.push([v.nx, v.ny]);
             if (v.swathHistory.length > 150) v.swathHistory.shift();
         }
         // ── ๒. กลไกกฎการปะทะและการตอบโต้การรุกล้ำเขตใช้อาวุธ ──
         // ตอบโต้ contact ที่ละเมิดเขตห้ามเข้าทางทะเล (Maritime Exclusion Zone)
         // ไม่ engage ถ้า: HOLD, RTB, หรือ simPaused
-        if (roeLevel !== 'HOLD' && v.state !== 'RTB' && !simPaused && !missionEnded) {
+        if (roeLevel !== 'HOLD' && !pvOffStation(v) && !simPaused && !missionEnded) {
             // หา threat ที่ active, classified (ยืนยันแล้ว), และละเมิด MEZ
             // [v17.21.0 FIRES-1] จัดลำดับด้วยคะแนนรวม (ระดับภัย · เจตนา · เวลาถึง UDC · คำสั่งการยิง)
             // แทนเกณฑ์เดิม "ใกล้เรือเราที่สุดชนะ" — ตัวกรองสิทธิ์เข้าปะทะย้ายไปอยู่ใน pvPickTarget() ครบทุกข้อ
@@ -25702,12 +25886,23 @@ function animate() {
         const moveSpd = v.state==='ENGAGE'   ? v.speed * 0.55
                       : v.state==='INTERCEPT'? v.speed * 1.40
                       : v.state==='RTB'      ? v.speed * 1.20
+                      : v.state==='REARM'    ? 0                 // [v17.21.1 RTB-1] เทียบท่า = จอดนิ่ง
                       :                        v.speed;
 
         // 4a. คำนวณ targetHdg จาก intercept target หรือ waypoint
         let targetHdg = v.heading;
 
-        if (v.redirected && v.redirectTarget) {
+        if (v.state === 'RTB') {
+            // [v17.21.1 RTB-1] กลับฐานคือการเดินเรือจริงเข้าหา ทรภ.๑ ไม่ใช่แค่คูณความเร็ว
+            //   ยึดจุดหมายไว้ที่โหนดเส้นทางตลอด — ไม่ใช้ v.redirectTarget เพราะบล็อกนั้น
+            //   จะล้างตัวเองเมื่อเข้าใกล้ แล้วเรือจะหลุดกลับไปเดินตาม waypoint เดิม
+            const lp = pvBaseLegPoint(v);
+            const dx = lp.nx - v.nx, dy = lp.ny - v.ny;
+            const d  = Math.hypot(dx, dy);
+            targetHdg = d > 0.0005 ? Math.atan2(dy, dx) : v.heading;
+        } else if (v.state === 'REARM') {
+            targetHdg = v.heading;                                // จอดนิ่ง คงหัวเรือเดิม
+        } else if (v.redirected && v.redirectTarget) {
             const dx = v.redirectTarget.nx - v.nx;
             const dy = v.redirectTarget.ny - v.ny;
             const d  = Math.sqrt(dx*dx + dy*dy);
@@ -25775,7 +25970,13 @@ function animate() {
             v._landStuck = (v._landStuck || 0) + 1;
             if (v._landStuck > 300) {   // ~5s stuck → ข้าม WP
                 v._landStuck = 0;
-                v.currentWP  = (v.currentWP + 1) % v.waypoints.length;
+                // [v17.21.1 RTB-1] เรือที่กลับฐานไม่ได้เดินตาม WP — ต้องข้ามโหนดเส้นทางแทน
+                if (v.state === 'RTB') {
+                    if ((v.rtbLeg | 0) < PV_BASE_ROUTE.length - 1) v.rtbLeg = (v.rtbLeg | 0) + 1;
+                    else v.rtbLeg = pvNearestRouteLeg(v);
+                } else {
+                    v.currentWP  = (v.currentWP + 1) % v.waypoints.length;
+                }
                 v.redirected = false;
             }
         }
@@ -25785,7 +25986,7 @@ function animate() {
     // ตรวจสอบทุก 60 frame (~1s) เพื่อประหยัด CPU
     if (frame % 60 === 0 && !scSessionAlerted && !missionEnded) {
         patrolVessels.forEach(pv => {
-            if (pv.state === 'RTB') return;
+            if (pvOffStation(pv)) return;
             threats.forEach(t => {
                 if (!t.active || t.frozen || t.type === 'uuv' || t.scAlerted) return;
                 const pvDistNm  = haversineNm(nyToLat(pv.ny), nxToLng(pv.nx),
@@ -27786,10 +27987,13 @@ function updateAirSurfacePanel() {
     // สถานะภาพรวม
     const engCount  = patrolVessels.filter(v=>v.state==='ENGAGE').length;
     const intCount  = patrolVessels.filter(v=>v.state==='INTERCEPT').length;
-    const rtbCount  = patrolVessels.filter(v=>v.state==='RTB').length;
+    // [v17.21.1 RTB-1] เรือที่เทียบท่าเติมกระสุนก็ไม่อยู่ในแนวลาดตระเวนเช่นกัน — นับรวมกัน
+    const rtbCount  = patrolVessels.filter(v=>pvOffStation(v)).length;
+    const rearmCnt  = patrolVessels.filter(v=>v.state==='REARM').length;
     if (engCount)       { patrolEl.textContent='ENGAGE'; patrolEl.className='val s-alert'; }
     else if (intCount)  { patrolEl.textContent='INTERCEPT'; patrolEl.className='val s-warn'; }
-    else if (rtbCount === n) { patrolEl.textContent='ALL RTB'; patrolEl.className='val'; }
+    else if (rtbCount === n) { patrolEl.textContent = rearmCnt===n ? 'ALL REARM' : 'ALL RTB'; patrolEl.className='val'; }
+    else if (rtbCount)  { patrolEl.textContent=`ON PATROL (−${rtbCount})`; patrolEl.className='val s-warn'; }
     else                { patrolEl.textContent='ON PATROL'; patrolEl.className='val s-ok'; }
 
     // แถวย่อยของเรือตรวจการณ์แต่ละลำ
@@ -27799,7 +28003,26 @@ function updateAirSurfacePanel() {
         const fPct = Math.round(v.fuel * 100);
         const fCol = v.fuel>0.4?'#22c55e':v.fuel>0.15?'#f59e0b':'#ef4444';
         const hc   = v.color || '#64ffda';
-        const sCol = v.state==='ENGAGE'?'#ef4444':v.state==='INTERCEPT'?'#f59e0b':v.state==='RTB'?'#94a3b8':hc;
+        const sCol = v.state==='ENGAGE'?'#ef4444':v.state==='INTERCEPT'?'#f59e0b'
+                   : v.state==='RTB'?'#94a3b8':v.state==='REARM'?'#38bdf8':hc;
+        // [v17.21.1 RTB-1] สถานะต้องบอกให้ชัดว่า "ต้องกลับไปเติมกระสุน" ไม่ใช่แค่ตัวย่อ RTB
+        const sTxt = v.state==='RTB'   ? `RTB → ${PV_BASE.label} · กลับไปเติมกระสุน`
+                   : v.state==='REARM' ? 'REARM · กำลังเติมกระสุนที่ท่า'
+                   :                      v.state;
+        // แถบเวลานับถอยหลัง (เฉพาะตอนเทียบท่า) — ตัวเลขคือ "อีกกี่นาที:วินาที จะกลับมาใช้ได้"
+        let rearmBar = '';
+        if (v.state==='REARM' && v.rearmTotal > 0) {
+            const pct  = Math.round((1 - v.rearmTimer / v.rearmTotal) * 100);
+            const secs = Math.ceil(v.rearmTimer / 60);
+            const mmss = `${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`;
+            rearmBar = `<div style="display:flex;align-items:center;gap:5px;padding-left:14px;margin:1px 0 2px;">
+                <div style="flex:1;height:4px;background:rgba(255,255,255,.10);border-radius:2px;overflow:hidden;">
+                    <div style="width:${pct}%;height:100%;background:#38bdf8;"></div>
+                </div>
+                <span style="font-size:9px;color:#38bdf8;font-family:'Share Tech Mono',monospace;"
+                      title="เวลาที่เหลือก่อนออกลาดตระเวนต่อ">⏱ ${mmss}</span>
+            </div>`;
+        }
         // ป้ายย่อบอกชนิดเรือ
         const shipCat = PV_SHIP_CATALOG[v.shipType];
         const shipBadge = shipCat
@@ -27807,11 +28030,11 @@ function updateAirSurfacePanel() {
             : '';
         return `<div style="font-size:10px;color:#64748b;line-height:1.6;padding-left:4px;">
             <span style="color:${hc};">▸ ${v.label}</span> ${shipBadge}
-            &nbsp;<span style="color:${sCol};">${v.state}</span>
+            &nbsp;<span style="color:${sCol};">${sTxt}</span>
             &nbsp;<span style="color:${fCol};"><svg class="ico" aria-hidden="true"><use href="#i-fuel"/></svg>${fPct}%</span>
             ${v.killCount>0?`&nbsp;<span style="color:#22c55e;">💥×${v.killCount}</span>`:''}
-            ${v.winchester?`&nbsp;<span style="color:#ef4444;font-weight:600;" title="อาวุธนำวิถีหมดทุกกระบอก — สั่งกลับฐาน">WINCHESTER</span>`:''}
-        </div>${pvAmmoLine(v)}`;
+            ${v.winchester?`&nbsp;<span style="color:#ef4444;font-weight:600;" title="อาวุธนำวิถีหมดทุกกระบอก — สั่งกลับฐาน ทรภ.๑ เติมกระสุน">WINCHESTER</span>`:''}
+        </div>${rearmBar}${pvAmmoLine(v)}`;
     }).join('');
 
     // ซิงก์ปุ่มกฎการปะทะ
