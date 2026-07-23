@@ -24,8 +24,13 @@
       - แถว RANSOM-TH: ป้ายเปลี่ยนจาก "จำนวนหมุด" → "7d X / สะสม Y" และความรุนแรงตามหน้าต่าง ๗ วัน
         (ของเดิม plotted>10 → warn นับเฉพาะรายที่ปักหมุดได้ ทำให้เหยื่อที่โดเมนถูกถอดแล้ว
          ซึ่งคือรายที่โดนหนักที่สุด หายไปจากการนับทั้งหมด)
-      - ⚠ ฝั่ง Worker: แก้บั๊ก /?feed=ransomware คืน [] เปล่ามาตลอด (ดู _worker/udc-threatfox.js v7)
-        ต้อง redeploy Worker ด้วยมือก่อน สัญญาณ ② จึงจะมีข้อมูลจริง — ก่อนหน้านั้นถือเป็น baseline
+      - ฝั่ง Worker (v7 · deploy แล้ว ๒๓ ก.ค. ๖๙): แก้บั๊ก /?feed=ransomware คืน [] เปล่ามาตลอด
+        ต้นเหตุ: ส่ง "ชื่อโดเมน" เข้า ip-api.com/batch ซึ่งรับเฉพาะ IP → fail ทุกระเบียน → ถูกตัดทิ้งหมด
+        แก้ด้วย Cloudflare DoH (keyless) resolve host→IP ก่อน + เก็บระเบียนที่หาพิกัดไม่ได้ไว้ด้วย geo:null
+        ผลหลัง deploy: 40 ระเบียน · geocode สำเร็จ 38 (เดิม 0) · ครอบคลุม ๒๖ มี.ค.–๓๐ มิ.ย. ๖๙
+      - แก้บั๊กที่ตัวเองเพิ่งทำ: การอ่านเวลา published ใช้ .replace(' ','T')+'Z' ทั้งที่ต้นทางส่ง ISO
+        พร้อม offset "+00:00" มาแล้ว → กลายเป็นสอง timezone designator → Date.parse = NaN ทุกระเบียน
+        → d7 เป็นศูนย์เท็จถาวร (ศูนย์ปลอมชนิดเดียวกับบั๊ก Worker ข้างบน) · ตรวจหลังแก้: d30=2 d60=12 d90=26
   · [v17.19.0 COASTCAM] กล้องชายฝั่งอ่าวไทย — "ตาที่สอง" ไว้สอบทานสถานะโดเมน LITTORAL ด้วยภาพจริง:
       เหตุผล: v17.18.3 ทำให้ LITTORAL ไหลตาม Hs ของ Open-Meteo — แต่นั่นคือค่าจาก "โมเดล" แหล่งเดียว ไม่มีอะไรมาสอบทาน
               ถ้าโมเดลว่า SS3 (warn) แต่ภาพกล้องเห็นทะเลเรียบ ผู้ใช้ต้องมีทางตั้งคำถามกับโมเดลได้ — นี่คือสิ่งที่เลเยอร์นี้ให้
@@ -31166,9 +31171,21 @@ window.toggleSat3D = toggleSat3D;
                     เหตุผล ๒ : plotted นับเฉพาะรายที่ geocode โฮสต์สำเร็จ — เหยื่อที่โดเมนถูกถอดแล้ว
                                (ซึ่งคือรายที่โดนหนักที่สุด) จะปักหมุดไม่ได้ แต่ต้องนับเป็นเหตุ    */
                 const _now = Date.now();
+                /*  [v17.19.1 CYBER-3] ransomware.live v2 คืนเวลามาแบบ ISO เต็มพร้อม offset อยู่แล้ว
+                    ("2026-06-30T15:20:01+00:00" / มี microsecond บางระเบียน) — ห้ามเติม 'Z' ต่อท้าย
+                    เพราะจะได้ "...+00:00Z" = สอง timezone designator → Date.parse คืน NaN ทุกระเบียน
+                    → d7 เป็นศูนย์เท็จตลอดกาล (ศูนย์ปลอมแบบเดียวกับที่ทำให้ต้องไล่บั๊ก Worker รอบก่อน)
+                    เผื่อรูปแบบ naive "YYYY-MM-DD HH:MM:SS" ไว้เป็นทางสำรองเท่านั้น              */
+                const _ts = (s) => {
+                    s = String(s || '').trim();
+                    if (!s) return NaN;
+                    let t = Date.parse(s);
+                    if (!isFinite(t)) t = Date.parse(s.replace(' ', 'T') + 'Z');   // naive → ถือเป็น UTC
+                    return t;
+                };
                 let d7 = 0;
                 for (const v of recs) {
-                    const t = Date.parse(String(v.published || '').replace(' ', 'T') + 'Z');
+                    const t = _ts(v.published || v.discovered);
                     if (isFinite(t) && (_now - t) <= 7 * 86400_000) d7++;
                 }
                 try { MDA.data._tally['ransom-th'] = { d7, total: recs.length, plotted, at: _now }; } catch (_) {}
