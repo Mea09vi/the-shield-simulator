@@ -1,6 +1,43 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.21.2 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.22.0 · 7-Domain + AI Staff)
+  · [v17.22.0 TQ-1/2/3] คุณภาพ track ๓ ระดับ + ประตูปล่อยอาวุธ + ลิงก์ CEC (sensors-to-shooters ขั้น ๓)
+      ที่มา: ขั้น ๑–๒ ทำให้การยิง "มีต้นทุน" และ "แผนที่ ผบ. อนุมัติมีผลถึงไกปืน" แล้ว
+             แต่ซิมยังถือว่า *เห็นเป้า = ยิงเป้าได้ทันที* — เรือทุกลำยิงได้เท่ากันทุกระยะ
+             ที่จริงเรดาร์ตรวจการณ์ (search) กับเรดาร์ควบคุมการยิง (fire-control) เป็นคนละตัว
+             คนละระยะ ช่วง "เห็นแล้วแต่ยังยิงไม่ได้" คือช่องว่างที่โดรน ISR และลิงก์ข้อมูลเข้ามาปิด
+             ถ้าซิมไม่มีช่องว่างนี้ การส่งโดรนไปชี้เป้าก็ไม่เคยเปลี่ยนผลอะไรเลย
+      - [TQ-1] เอนจินคุณภาพ track — TQ = DETECT ๑ / CLASSIFY ๒ / FIRE-CONTROL ๓
+          คิดใหม่ทุกเฟรม แต่คิด "ครั้งเดียวต่อเฟรม" (_tqFrame) เพราะสองเอนจินปะทะเรียกคนละจังหวะ
+          ในเฟรมเดียวกัน — ลูปผิวน้ำใน animate() มาก่อน updateAirDefense() ทั้งคู่ต้องอ่านค่าชุดเดียวกัน
+          ผู้ชี้เป้าที่ให้ระดับ FC ได้: เรดาร์ควบคุมการยิงของเรือ (fcNm × ตัวคูณขนาดเป้า) ·
+            โซนาร์เรือปราบเรือดำน้ำ (ต่อ uuv) · โดรน ISR (sensorNm) · ชุด C-UAS ชายฝั่ง (ต่อ drone) ·
+            GUUV (ต่อ uuv, ใช้ nm50 จาก computeGuardianPSR) — เรดาร์ชายฝั่ง ๓ สถานีให้ได้แค่ DETECT
+          fcNm ต่อชั้นเรือ: นเรศวร ๑๔ · กระบี่ ๑๑ · คำรณสินธุ ๙ · ชลบุรี ๙ · สัตหีบ ๗ ไมล์ทะเล
+          ตัวคูณขนาดเป้า tqSizeFactor: เรือผิวน้ำ ๐.๘๕ · uav ๐.๔๕ · โดรนเล็ก suas ๐.๓๐
+            (เป้าเล็กสะท้อนคลื่นน้อย เรดาร์ควบคุมการยิงจับได้ใกล้กว่าเป้าใหญ่มาก)
+          track coasting ๑๘๐ เฟรม (๓ วินาที): ไม่มีเซ็นเซอร์ตัวใดจับอยู่แล้ว แต่ยังคาดคะเนตำแหน่งต่อ
+            — ลดระดับลงแทนที่จะหายวับ และขึ้นป้าย COAST ให้เห็นว่ากำลังยิงบนข้อมูลเก่า
+      - [TQ-2] ประตูปล่อยอาวุธ: ยิงได้เมื่อ TQ = ๓ เท่านั้น (ทั้งลูปผิวน้ำและ ESSM)
+          เรือที่ยังไม่ได้ FC จะ "ไล่เข้าใกล้ต่อ" ไม่ใช่หยุดนิ่ง — ประตูนี้ทำให้ระยะเป็นตัวแปรจริง
+          **มติ (ไม่ใช่ลืม):** ชุด สอ.รฝ. ชายฝั่งและ pvPickTarget() *ไม่* ผ่านประตูนี้ —
+            ชุดชายฝั่งเป็นผู้ชี้เป้าเองอยู่แล้ว · การ "เลือกเป้า" ต้องเกิดก่อนการ "ได้ FC"
+            ไม่งั้นเรือจะไม่มีวันวิ่งเข้าไปหาเป้าที่ยังยิงไม่ได้ = ประตูจะกลายเป็นทางตัน
+      - [TQ-3] CEC (Cooperative Engagement Capability) — แชร์ track ชี้เป้าข้ามหน่วย
+          เปิดอยู่โดยปริยาย · กดสลับได้ที่แถวสรุป "ลิงก์ CEC" บนกระดานภัยคุกคาม
+          ปิด CEC = เรือใช้ได้เฉพาะ track ที่เซ็นเซอร์ของตัวเองจับ (โดรน ISR ชี้เป้าให้ไม่ได้อีก)
+          วัดจริง (UAV เข้าหาเรือนเรศวร โดรน ISR ล่วงหน้า ๘ ไมล์ทะเล จุดตั้งต้นเดียวกัน):
+            CEC เปิด → ยิงที่เฟรม ๖๙ ระยะ ๙.๔๔ ไมล์ทะเล (ผู้ชี้เป้า = ISR-F)
+            CEC ปิด → ยิงที่เฟรม ๑๖๗ ระยะ ๓.๔๙ ไมล์ทะเล (ผู้ชี้เป้า = เรือตัวเอง)
+            ต่างกัน ~๖ ไมล์ทะเล / ~๙๘ เฟรม = ตัดสินใจต่างแล้วผลต่างจริง
+      - สิ่งที่ผู้ใช้เห็น: ป้าย D/C/FC เหนือหัวเป้าบนแผนที่ (เทา/เหลือง/เขียว) ต่อท้ายด้วยชื่อผู้ชี้เป้า
+          เมื่อเป็น FC · ป้าย COAST เมื่อไม่มีเซ็นเซอร์จับจริง · ป้าย "รอ TRACK ยิง" บนเรือและใน
+          บัญชีรายลำ (ต่างจาก RLD/WINCHESTER ตรงที่กระสุนยังมี — ที่ขาดคือผู้ชี้เป้า) ·
+          แถวสรุป "คุณภาพ track" และ "ลิงก์ CEC" บนกระดานภัยคุกคาม
+      - นาฬิกา kill chain เพิ่มขา FIRE-CTRL: จำแนก → track ยิง → ลั่นไก → ผล
+          ขาที่ขาดหายไปเดิมคือช่วง "จำแนกได้แล้วแต่ยังยิงไม่ได้" ซึ่งเป็นช่วงที่ ISR/CEC เข้ามาย่นจริง
+      - ธง fcWait/essmFcWait ถูกล้างเมื่อเลิกปะทะ · ROE = HOLD · เรือออกนอกแนว (RTB/REARM)
+          เพราะเหตุที่ไม่ยิงตอนนั้นคือคำสั่ง/การกลับฐาน ไม่ใช่การขาดผู้ชี้เป้า
   · [v17.21.2 FIT-1] แก้อาการ "เปิดไฟล์ครั้งแรกแล้วทั้งหน้าจอเล็กจนอ่านไม่ออก" (โหมดหน้าต่างปกติ ไม่ใช่ fullscreen)
       อาการ: เปิด UDC_Simulator_17.html ในเบราว์เซอร์แบบหน้าต่างธรรมดา แล้ว UI ทั้งหน้าถูกย่อเหลือ ๕๕%
              แต่ถ้ากด F11 เข้า fullscreen กลับแสดงผลถูกต้อง
@@ -726,12 +763,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.21.2 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.22.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.21.2';
+        const APP_VERSION = '17.22.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -7458,6 +7495,9 @@
             <div class="bf-es-row"><span class="bf-es-k">KILL CHAIN</span><span class="bf-es-v" id="bf-es-kc" title="เวลาสะสมจากจังหวะที่ track เข้าภาพ จนถึงผลการปะทะ">— ยังไม่มีการปะทะสำเร็จ —</span></div>
             <!-- [v17.21.0 FIRES-1] คำสั่งการยิงที่มีผลกับเอนจินปะทะอยู่ขณะนี้ -->
             <div class="bf-es-row"><span class="bf-es-k">คำสั่งการยิง</span><span class="bf-es-v" id="bf-es-fires" title="มาจากแผนที่ผู้บังคับบัญชาอนุมัติ — กำหนดโดเมนที่เน้นและนโยบายการใช้อาวุธของเรือทุกลำ&#10;หมายเหตุ: ลำดับบนกระดานภัยคุกคามจัดตาม &quot;ระดับภัย&quot; ส่วนเรือจัดตาม &quot;สิ่งที่ต้องจัดการก่อน&quot; (รวมเวลาถึง UDC และระยะยิง) สองอย่างนี้ไม่จำเป็นต้องตรงกัน">— ยังไม่ได้อนุมัติแผน —</span></div>
+            <!-- [v17.22.0 TQ-3] คุณภาพ track + สถานะ CEC — บอกว่า "ยิงได้กี่เป้า" ไม่ใช่ "เห็นกี่เป้า" -->
+            <div class="bf-es-row"><span class="bf-es-k">คุณภาพ TRACK</span><span class="bf-es-v" id="bf-es-tq" title="ระดับ ๑ DETECT ตรวจพบ · ระดับ ๒ CLASSIFY พิสูจน์ทราบ · ระดับ ๓ FIRE-CONTROL ใช้ยิงได้&#10;ปล่อยอาวุธได้เฉพาะ track ระดับ ๓ เท่านั้น — ระยะชี้เป้าของเรือสั้นกว่าระยะอาวุธ จึงต้องเข้าใกล้ หรือรับ track จากหน่วยอื่นผ่าน CEC">— ไม่มี track —</span></div>
+            <div class="bf-es-row"><span class="bf-es-k">ลิงก์ CEC</span><span class="bf-es-v" id="bf-es-cec" style="cursor:pointer;text-decoration:underline dotted" title="Cooperative Engagement Capability — แชร์ track ชี้เป้าข้ามแพลตฟอร์ม&#10;คลิกเพื่อเปิด/ปิด แล้วดูว่าระยะที่เรือเริ่มยิงได้เปลี่ยนไปอย่างไร">เปิด</span></div>
             <div class="bf-es-row"><span class="bf-es-k">ฐานกฎหมาย</span><span class="bf-es-v" id="bf-es-law">UNCLOS 60(5) · เขตปลอดภัย 500 ม. + MEZ 5 nm</span></div>
         </div>
     </div>
@@ -7733,7 +7773,7 @@
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.21.2 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.22.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -8197,7 +8237,7 @@
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.21.2 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.22.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -8214,7 +8254,7 @@
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.21.2 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.22.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -9134,7 +9174,7 @@
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.21.2 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.22.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -11306,7 +11346,10 @@ const PV_SHIP_CATALOG = {
         name:'Naresuan-class FFG', nameLocal:'เรือฟริเกต ชั้นนเรศวร',
         example:'ร.ล.นเรศวร (FFG-421)',
         // Jane's: 3,026t · 120m · 32kn · CODOG · complement 150
-        speed:0.00267, radarNm:24, flirNm:7,
+        // [v17.22.0 TQ-1] fcNm = ระยะที่ "เรดาร์ควบคุมการยิง/ผู้ชี้เป้า" จับ track คุณภาพยิงได้
+        //   นเรศวร: 2× Saab CEROS 200 director — จำกัดด้วยขอบฟ้าเรดาร์เป็นหลัก
+        //   สังเกต fcNm 14 < Harpoon 19.0 โดยตั้งใจ (ดูหมายเหตุที่ TQ_SIZE)
+        speed:0.00267, radarNm:24, flirNm:7, fcNm:14,
         sonarType:'Atlas DSQS-21 (hull)', sonarNm:8, hasASW:true,
         color:'#64ffda',
         weapons:{
@@ -11326,7 +11369,7 @@ const PV_SHIP_CATALOG = {
         name:'Krabi-class OPV', nameLocal:'เรือตรวจการณ์ไกลฝั่ง ชั้นกระบี่',
         example:'ร.ล.กระบี่ (OPV-551)',
         // Jane's: 2,540t · 90.5m · 25kn · range 3,500nm@15kt
-        speed:0.00208, radarNm:20, flirNm:6,
+        speed:0.00208, radarNm:20, flirNm:6, fcNm:11,   // [v17.22.0 TQ-1] CEROS 200 director ๑ ชุด
         sonarType:null, sonarNm:0, hasASW:false,
         color:'#f59e0b',
         weapons:{
@@ -11341,7 +11384,7 @@ const PV_SHIP_CATALOG = {
         name:'Khamronsin-class corvette', nameLocal:'เรือคอร์เวต ชั้นคำรณสินธุ์',
         example:'ร.ล.คำรณสินธุ์ (FS-531)',
         // Jane's: 640t · 62m · 25kn · 6× Sting Ray torpedo · DSQS-21C sonar
-        speed:0.00208, radarNm:14, flirNm:4,
+        speed:0.00208, radarNm:14, flirNm:4, fcNm:9,    // [v17.22.0 TQ-1] director รุ่นเก่า + ศูนย์เล็งทัศนศาสตร์
         sonarType:'Atlas DSQS-21C (hull)', sonarNm:6, hasASW:true,
         color:'#00d4ff',
         weapons:{
@@ -11357,7 +11400,7 @@ const PV_SHIP_CATALOG = {
         name:'Chon Buri-class FAC', nameLocal:'เรือเร็วโจมตีปืน ชั้นชลบุรี',
         example:'ร.ล.ชลบุรี (FACG-331)',
         // Jane's: 457t · 60.4m · 30kn · 2×76mm + 2×40mm · 3 shafts
-        speed:0.00250, radarNm:14, flirNm:4,
+        speed:0.00250, radarNm:14, flirNm:4, fcNm:9,    // [v17.22.0 TQ-1] director ปืน 76mm
         sonarType:null, sonarNm:0, hasASW:false,
         color:'#ef4444',
         weapons:{
@@ -11372,7 +11415,7 @@ const PV_SHIP_CATALOG = {
         name:'Sattahip-class PG', nameLocal:'เรือตรวจการณ์ปืน ชั้นสัตหีบ',
         example:'ร.ล.สัตหีบ (PG-521)',
         // Jane's: 305t · 50.1m · 22kn · ประจำการ ฐานทัพเรือสัตหีบ
-        speed:0.00183, radarNm:12, flirNm:4,
+        speed:0.00183, radarNm:12, flirNm:4, fcNm:7,    // [v17.22.0 TQ-1] เล็งเฉพาะที่ (local control) เป็นหลัก
         sonarType:null, sonarNm:0, hasASW:false,
         color:'#fbbf24',
         weapons:{
@@ -11850,6 +11893,9 @@ function pvTargetInfo(t) {
 /** เลือกเป้าที่ควรจัดการก่อนของเรือลำหนึ่ง — แทนเกณฑ์ "ใกล้สุดชนะ" เดิม
  *  ตัวกรอง "สิทธิ์เข้าปะทะ" (ROE · MEZ · ขีดความสามารถ ปด. · ควบคุมตัวแล้ว) คงไว้ครบทุกข้อ
  *  ขั้นนี้เปลี่ยนเฉพาะ "ลำดับ" ของเป้าที่มีสิทธิ์อยู่แล้วเท่านั้น */
+// [v17.22.0 TQ-2] **มติ: ไม่ใส่ประตู FIRE-CONTROL ในตัวกรองสิทธิ์เข้าปะทะตรงนี้** (ไม่ใช่ลืม)
+//   ตัดเป้าที่ยังไม่มี track ยิงทิ้งตั้งแต่ชั้นเลือกเป้า = เรือจะ "ไม่เห็นเป้า" แล้วกลับไปลาดตระเวน
+//   ทั้งที่ท่าที่ถูกคือ "วิ่งเข้าไปจนจับ track ได้แล้วค่อยยิง" — ประตูจึงไปอยู่ที่จังหวะลั่นไกใน animate()
 function pvPickTarget(v) {
     let best = null, bestScore = -1, bestDist = Infinity, bestInfo = null;
     threats.forEach(t => {
@@ -13844,6 +13890,7 @@ map.on('click', function(e) {
         radarNm:  shipCfg.radarNm,
         flirNm:   shipCfg.flirNm,
         sonarNm:  shipCfg.sonarNm || 0,
+        fcNm:     shipCfg.fcNm || 0,   // [v17.22.0 TQ-1] ระยะ director — ประตูปล่อยอาวุธ
         swathHistory: [],   // [[nx,ny],...] last 120 positions for swept path trail
     });
     addLog(`🚢 วาง ${label} [${shipCfg.name}] ที่ ${e.latlng.lat.toFixed(3)}°N ${e.latlng.lng.toFixed(3)}°E | Fuel 100%`);
@@ -13998,6 +14045,7 @@ function deployPVAt(lat, lng, opts) {
         weapons: pvCloneWeapons(shipCfg), winchester: false,
         fuel: 1.0, fuelRate: shipCfg.fuelRate,
         radarNm: shipCfg.radarNm, flirNm: shipCfg.flirNm, sonarNm: shipCfg.sonarNm || 0,
+        fcNm: shipCfg.fcNm || 0,       // [v17.22.0 TQ-1] ระยะ director — ประตูปล่อยอาวุธ
         swathHistory: [],
     });
     addLog(`🚢 [AI] วาง ${label} [${shipCfg.name}·${sonarType}] @ ${lat.toFixed(3)}°N ${lng.toFixed(3)}°E${opts.note ? ' · ' + opts.note : ''}`, '#64ffda');
@@ -17782,6 +17830,9 @@ function initShoreAATeams() {
 //             ⚠ ซิมนี้ไม่มีประตูการตรวจจับแยกต่างหาก — เป้าที่ spawn ถือว่า
 //               อยู่ในภาพทันที จึงรายงานตามความจริงข้อนี้ ไม่แต่งให้ดูดีกว่าจริง
 //    CLASSIFY จังหวะที่ t.classified เป็นจริง (พิสูจน์ทราบ / IFF)
+//    FIRE-CTRL [v17.22.0 TQ-3] จังหวะแรกที่มี track คุณภาพยิง (ประทับโดย updateTrackQuality)
+//             ขาที่ขาดหายไปเดิม — ช่วง "จำแนกได้แล้วแต่ยังยิงไม่ได้" คือช่องว่างที่
+//             โดรน ISR / CEC เข้ามาปิด จึงต้องวัดแยกจากขา ENGAGE
 //    ENGAGE   จังหวะลั่นไกนัดแรกใส่ track นี้
 //    RESULT   จังหวะที่ track ถูกทำลาย
 const killChain = { last: null, done: [] };
@@ -17799,11 +17850,16 @@ function updateKillChain() {
         // บันทึกเมื่อ track ถูกทำลาย (frozen คือเส้นทางเดียวที่การยิงสำเร็จใช้)
         if (t.frozen && !t.active && t._kcResult === undefined && t._kcSpawn !== undefined) {
             t._kcResult = frame;
+            // [v17.22.0 TQ-3] _kcFC อาจถูกประทับก่อน _kcSpawn ได้ ๑ เฟรม เพราะ
+            //   updateTrackQuality() ถูกเรียกจากลูปผิวน้ำใน animate() ก่อน updateKillChain()
+            //   จึงหนีบไม่ให้ติดลบ แทนที่จะรายงานเวลาที่เป็นไปไม่ได้
+            const _leg = v => (v !== undefined ? Math.max(0, v - t._kcSpawn) : null);
             const rec = {
                 label:    t.label || 'TRACK',
-                classify: t._kcClass  !== undefined ? t._kcClass  - t._kcSpawn : null,
-                engage:   t._kcEngage !== undefined ? t._kcEngage - t._kcSpawn : null,
-                result:   t._kcResult - t._kcSpawn,
+                classify: _leg(t._kcClass),
+                fc:       _leg(t._kcFC),
+                engage:   _leg(t._kcEngage),
+                result:   Math.max(0, t._kcResult - t._kcSpawn),
             };
             killChain.last = rec;
             killChain.done.push(rec);
@@ -17819,7 +17875,9 @@ function kcSummaryText() {
     const s  = f => (f / 60).toFixed(1) + 's';
     const cl = r.classify !== null ? s(r.classify) : '—';
     const en = r.engage   !== null ? s(r.engage)   : '—';
-    let txt = `จำแนก ${cl} → ลั่นไก ${en} → ผล ${s(r.result)}`;
+    // [v17.22.0 TQ-3] ขา FC — r.fc เป็น undefined ได้ในบันทึกเก่าที่เก็บไว้ก่อนอัปเดต
+    const fc = (r.fc !== null && r.fc !== undefined) ? s(r.fc) : '—';
+    let txt = `จำแนก ${cl} → track ยิง ${fc} → ลั่นไก ${en} → ผล ${s(r.result)}`;
     if (killChain.done.length > 1) {
         const avg = killChain.done.reduce((a, x) => a + x.result, 0) / killChain.done.length;
         txt += ` · เฉลี่ย ${s(avg)} (${killChain.done.length} ครั้ง)`;
@@ -17827,8 +17885,163 @@ function kcSummaryText() {
     return txt;
 }
 
+// ═══ [v17.22.0 TQ-1] คุณภาพ track ๓ ระดับ + การแชร์ track แบบ CEC ═════════
+//  แนวคิด sensors-to-shooters: "เห็น" กับ "ยิงได้" ไม่ใช่เรื่องเดียวกัน
+//    ระดับ ๑ DETECT        มีเซ็นเซอร์จับได้ว่ามีบางอย่างอยู่ตรงนั้น (เรดาร์ตรวจการณ์/โซนาร์/ISR)
+//    ระดับ ๒ CLASSIFY      พิสูจน์ทราบแล้วว่าคืออะไร ฝ่ายไหน (t.classified เดิม)
+//    ระดับ ๓ FIRE-CONTROL  track แม่นพอส่งให้อาวุธใช้ได้ — ต้องมี "ผู้ชี้เป้า" จับอยู่จริง
+//
+//  ทำไมถึงเปลี่ยนการตัดสินใจของ ผบ.:
+//    ระยะ FC ของเรือเองสั้นกว่าระยะอาวุธไกลสุดโดยตั้งใจ (นเรศวร fcNm 14 < Harpoon 19.0)
+//    และเมื่อเจอเป้าเล็กยิ่งสั้นลงอีกตาม TQ_SIZE (UAV ×0.45 → นเรศวรจับ FC ได้ ~6.3 nm
+//    ทั้งที่ ESSM ยิงได้ 14.0 nm) ⇒ ถ้าไม่มีใครช่วยชี้เป้า เรือต้อง "วิ่งเข้าไปใกล้" ก่อนยิง
+//    ผลคือ: วางโดรน ISR ไว้ข้างหน้า / เปิด CEC = ยิงได้ไกลขึ้นหลาย nm และเร็วขึ้นหลายนาที
+//    ไม่วาง/ปิด CEC = เป้าเข้าใกล้ UDC มากกว่าเดิมก่อนถูกยิง — ต่างกันจริงทั้งการตัดสินใจและผล
+//
+//  ⚠ ความซื่อสัตย์ของซิม: ซิมนี้**ไม่มี**แบบจำลอง RCS (ตกลงกันไว้ว่าไม่ทำ) ตัวคูณขนาดเป้า
+//    จึงแยกตาม "ชนิดเป้า" เท่านั้น ไม่ใช่ค่าพื้นที่สะท้อนจริง — เป็นค่าประมาณเชิงเกม
+//    และระดับ ๑ ยังผูกกับ spawn อยู่ (ดูหมายเหตุ DETECT ในบล็อก kill chain ข้างบน):
+//    เป้าที่เกิดแล้วถือว่าอยู่ในภาพเสมอ ที่เพิ่มเข้ามาคือ "ตอนนี้มีเซ็นเซอร์จับอยู่จริงไหม"
+//    ซึ่งแสดงเป็นสถานะ COASTING เมื่อไม่มีใครจับ — ไม่ลบ track ทิ้งเพื่อไม่ให้ฉากที่มีอยู่พัง
+const TQ = { DETECT:1, CLASSIFY:2, FC:3 };
+
+/** ตัวคูณระยะจับ track คุณภาพยิง ตามขนาด/ชนิดเป้า (ค่าประมาณเชิงเกม ไม่ใช่ RCS จริง) */
+function tqSizeFactor(t) {
+    if (t.type === 'drone') return t.droneClass === 'suas' ? 0.30 : 0.45;
+    return 0.85;                                  // เรือผิวน้ำขนาดกลาง (ประมง/ตรวจการณ์)
+}
+
+// track FC หลุดแล้วยังใช้ยิงต่อได้อีกกี่เฟรม (coast) — ผู้ชี้เป้าสะดุดชั่วครู่ไม่ควรตัดไฟกลางคัน
+const TQ_COAST_FRAMES = 180;                      // 3 วินาที
+
+/** เปิด/ปิดการแชร์ track ข้ามแพลตฟอร์ม (Cooperative Engagement Capability) */
+let cecEnabled = true;
+
+/** สถานีเรดาร์ชายฝั่ง — ชุดเดียวกับ buildTerrainShadowLayer()
+ *  ให้ได้แค่ระดับ DETECT: เป็นเรดาร์ตรวจการณ์ ไม่ใช่เรดาร์ควบคุมการยิง */
+const TQ_COAST_RADAR = [
+    { lat:12.661, lng:100.894, nm:50, name:'LANZA 3D' },
+    { lat:12.748, lng:100.779, nm:45, name:'SCANTER 5202' },
+    { lat:12.617, lng:100.958, nm:25, name:'เขาคลองถูป' },
+];
+
+/** ระยะจับ FC ของเรือลำหนึ่งต่อเป้าหนึ่ง (nm) — 0 = จับไม่ได้เลย */
+function pvFcRangeNm(v, t) {
+    if (t.type === 'uuv') return v.hasASW ? (v.sonarNm || 0) : 0;   // ใต้น้ำใช้โซนาร์ ไม่ใช่ director
+    return (v.fcNm || 0) * tqSizeFactor(t);
+}
+
+function _tqNm(aLat, aLng, t) {
+    return haversineNm(aLat, aLng, nyToLat(t.ny), nxToLng(t.nx));
+}
+
+/** เดินเครื่องคุณภาพ track ทุกเฟรม — เขียน t.tq / t.tqSrc / t.tqFcBy / t.tqCoasting
+ *  เรียกได้จากหลายที่ในเฟรมเดียวกัน (ลูปผิวน้ำใน animate() อยู่**ก่อน** updateAirDefense())
+ *  แต่คิดจริงแค่ครั้งเดียวต่อเฟรม เพื่อไม่ให้ประตูปล่อยอาวุธสองเอนจินอ่านค่าคนละเฟรมกัน */
+let _tqFrame = -1;
+function updateTrackQuality() {
+    if (simPaused || missionEnded) return;
+    if (_tqFrame === frame) return;
+    _tqFrame = frame;
+    threats.forEach(t => {
+        if (!t.active || t.type === 'cyber') return;
+        const tLat = nyToLat(t.ny), tLng = nxToLng(t.nx);
+        let held = false;                 // มีเซ็นเซอร์ตัวใดจับอยู่ (ระดับ DETECT)
+        let fcBy = null;                  // ชื่อผู้ชี้เป้าที่ให้ track คุณภาพยิงได้
+        const fcSet = t._tqFcSet || (t._tqFcSet = {});
+        for (const k in fcSet) delete fcSet[k];   // ล้างทุกเฟรม แล้วสร้างใหม่จากของจริง
+
+        // ── เรือ ปภอ. — เรดาร์ตรวจการณ์ = DETECT, director/โซนาร์ = FC ──
+        patrolVessels.forEach(v => {
+            if (pvOffStation(v)) return;                       // กลับฐาน/เติมกระสุน = ไม่ได้เฝ้าตรวจ
+            const d = _tqNm(nyToLat(v.ny), nxToLng(v.nx), t);
+            const searchNm = t.type === 'uuv' ? (v.hasASW ? v.sonarNm || 0 : 0) : (v.radarNm || 0);
+            if (d <= searchNm) held = true;
+            const fcNm = pvFcRangeNm(v, t);
+            if (fcNm > 0 && d <= fcNm) { held = true; fcSet[v.label] = true; if (!fcBy) fcBy = v.label; }
+        });
+
+        // ── โดรน ISR ของ สอ.รฝ. — จับเป้าอากาศได้ถึงระดับ FC (เดิมคือ reconTracked) ──
+        if (t.type === 'drone') {
+            reconDrones.forEach(rd => {
+                const d = _tqNm(nyToLat(rd.ny), nxToLng(rd.nx), t);
+                if (d <= (rd.sensorNm || 0)) { held = true; fcSet[rd.label] = true; if (!fcBy) fcBy = rd.label; }
+            });
+            // ── ทีม สอ.รฝ. บนฝั่ง — ตามองเห็น = ชี้เป้าปืนตัวเองได้ ──
+            shoreAATeams.forEach(tm => {
+                const d = _tqNm(nyToLat(tm.ny), nxToLng(tm.nx), t);
+                if (d <= (tm.rangeNm || 0)) { held = true; fcSet[tm.label] = true; if (!fcBy) fcBy = tm.label; }
+            });
+        }
+
+        // ── GUUV — โซนาร์รับเสียง ใช้ระยะตรวจจับ 50% จากสมการโซนาร์จริง ──
+        if (t.type === 'uuv' && typeof guardianUUVs !== 'undefined') {
+            guardianUUVs.forEach(g => {
+                let nm50 = 0;
+                try { nm50 = computeGuardianPSR(g).nm50 || 0; } catch (e) {}
+                const d = _tqNm(nyToLat(g.ny), nxToLng(g.nx), t);
+                if (nm50 > 0 && d <= nm50) { held = true; fcSet[g.label] = true; if (!fcBy) fcBy = g.label; }
+            });
+        }
+
+        // ── เรดาร์ชายฝั่ง — DETECT อย่างเดียว (เรดาร์ตรวจการณ์ ไม่ใช่ผู้ชี้เป้า) ──
+        if (!held && t.type !== 'uuv') {
+            for (const s of TQ_COAST_RADAR) {
+                if (_tqNm(s.lat, s.lng, t) <= s.nm) { held = true; break; }
+            }
+        }
+
+        // ── coast: FC ที่เพิ่งหลุดยังใช้ได้อีกครู่หนึ่ง ──
+        if (fcBy) { t._tqFcLast = frame; t.tqFcBy = fcBy; }
+        const fcFresh = t._tqFcLast !== undefined && (frame - t._tqFcLast) <= TQ_COAST_FRAMES;
+        if (!fcBy && !fcFresh) t.tqFcBy = null;
+
+        t.tqHeld     = held;
+        t.tqCoasting = !held;                      // ไม่มีใครจับอยู่ = เดินตามข้อมูลเก่า
+        t.tq         = fcFresh ? TQ.FC : (t.classified ? TQ.CLASSIFY : TQ.DETECT);
+        t.tqSrc      = t.tq === TQ.FC ? (t.tqFcBy || '—') : null;
+        // reconTracked เดิมยังใช้อยู่ที่โบนัส Pk — ให้เป็นสับเซ็ตของ FC เพื่อไม่ให้ความหมายขัดกัน
+        if (t.tq === TQ.FC) kcStamp(t, 'FC');
+    });
+}
+
+/** ยานลำนี้มี track คุณภาพยิงต่อเป้านี้ไหม
+ *  organic = จับเอง · networked = คนอื่นจับให้ แล้วส่งผ่านลิงก์ CEC
+ *  คืน {ok, via, remote} — via = ชื่อผู้ชี้เป้า, remote = true เมื่อใช้ track ของคนอื่น */
+function pvHasFC(v, t) {
+    if (!t || t.tq === undefined) return { ok:true, via:null, remote:false };   // เครื่องยังไม่เดิน = ไม่กีดขวาง
+    const own = t._tqFcSet && v && v.label && t._tqFcSet[v.label];
+    if (own) return { ok:true, via:v.label, remote:false };
+    if (cecEnabled && t.tq === TQ.FC) return { ok:true, via:t.tqFcBy, remote:true };
+    return { ok:false, via:null, remote:false };
+}
+
+/** ป้ายกำกับระดับ track สำหรับแสดงผล */
+function tqLabel(t) {
+    if (!t || !t.tq) return { s:'D',  th:'ตรวจพบ',        c:'#94a3b8' };
+    if (t.tq === TQ.FC)       return { s:'FC', th:'ควบคุมการยิง', c:'#39ff8c' };
+    if (t.tq === TQ.CLASSIFY) return { s:'C',  th:'พิสูจน์ทราบ',  c:'#fbbf24' };
+    return { s:'D', th:'ตรวจพบ', c:'#94a3b8' };
+}
+
+/** [v17.22.0 TQ-3] เปิด/ปิดลิงก์ CEC — ให้ ผบ. ลองเทียบผลได้กลางภารกิจ */
+function toggleCEC() {
+    cecEnabled = !cecEnabled;
+    // ล้างธงกันแจ้งซ้ำ เพื่อให้บันทึกการปะทะรายงานสภาพใหม่ทันทีที่สลับ
+    patrolVessels.forEach(v => { v._cecLogged = null; v._essmCecLogged = null; v._fcWaitLogged = null; v._essmFcLogged = null; });
+    addLog(cecEnabled
+        ? '🔗 เปิดลิงก์ CEC — เรือใช้ track ชี้เป้าจากหน่วยอื่นได้ (ยิงได้ไกลถึงระยะอาวุธเต็ม)'
+        : '⛓️‍💥 ปิดลิงก์ CEC — เรือใช้ได้เฉพาะ track ที่จับเอง (ต้องเข้าใกล้ก่อนยิง)',
+        cecEnabled ? '#39ff8c' : '#f59e0b');
+}
+try {
+    const _cecEl = document.getElementById('bf-es-cec');
+    if (_cecEl) _cecEl.addEventListener('click', toggleCEC);
+} catch (e) {}
+
 function updateAirDefense() {
     if (simPaused || missionEnded) return;
+    updateTrackQuality();   // [v17.22.0 TQ-1] คิดคุณภาพ track ก่อน — ประตูปล่อยอาวุธอ่านค่านี้
     updateKillChain();   // [v17.20.0 KC-1] เดินนาฬิกา kill chain ทุกเฟรม
     const hold = (typeof roeLevel !== 'undefined' && roeLevel === 'HOLD');
 
@@ -17849,7 +18062,38 @@ function updateAirDefense() {
             if (d <= wep.rangeNm && d < bestD) { bestD = d; best = t; }
         });
         v.essmTarget = best;
-        if (!best) { v.essmTimer = 0; return; }
+        if (!best) { v.essmTimer = 0; v.essmFcWait = false; return; }
+        // [v17.22.0 TQ-2] ประตูปล่อยอาวุธ — ESSM ยิงได้ 14 nm แต่ director ของเรือจับ UAV
+        //   ได้แค่ fcNm × 0.45 (นเรศวร ~6.3 nm) ⇒ ช่วง 6.3–14 nm ต้องพึ่ง track จากหน่วยอื่น
+        //   นี่คือจุดที่โดรน ISR ที่วางไว้ข้างหน้า / CEC เปลี่ยนผลการรบจริง
+        const fcE = pvHasFC(v, best);
+        if (!fcE.ok) {
+            v.essmFcWait = true;
+            v.essmTimer  = 0;
+            const kE = (v.label || '') + '|' + (best.label || '');
+            if (v._essmFcLogged !== kE) {
+                v._essmFcLogged = kE;
+                const needE = pvFcRangeNm(v, best);
+                try {
+                    addEngLog(`<span style="color:#fbbf24;">⏸ ${escapeHtml(v.label || 'PV')} เห็น ${escapeHtml(best.label || 'UAV')} ที่ ${bestD.toFixed(1)} nm `
+                            + `แต่ยังไม่มี track ควบคุมการยิง — director จับ UAV ได้ ≤ ${needE.toFixed(1)} nm `
+                            + `<span style="color:#64748b;">(ต้องมีโดรน ISR ชี้เป้า หรือเปิด CEC)</span></span>`);
+                } catch (_) {}
+            }
+            return;
+        }
+        v.essmFcWait = false;
+        v._essmFcLogged = null;
+        if (fcE.remote) {
+            const rkE = (v.label || '') + '>' + (fcE.via || '') + '|' + (best.label || '');
+            if (v._essmCecLogged !== rkE) {
+                v._essmCecLogged = rkE;
+                try {
+                    addEngLog(`<span style="color:#39ff8c;">🔗 CEC — ${escapeHtml(v.label || 'PV')} ยิง ESSM ใส่ ${escapeHtml(best.label || 'UAV')} `
+                            + `ด้วย track จาก ${escapeHtml(fcE.via || '—')}</span>`);
+                } catch (_) {}
+            }
+        }
         v.essmTimer = (v.essmTimer || 0) + 1;
         if (v.essmTimer >= 70) {                       // ยิง ESSM ทุก ~1.2 วินาที
             v.essmTimer = 0;
@@ -17872,6 +18116,9 @@ function updateAirDefense() {
     });
 
     // ════ ชั้นใน — ทีม สอ.รฝ. ปืนลูกซอง (hard-kill sUAS) ════
+    // [v17.22.0 TQ-2] **มติ: ไม่ใส่ประตู FC ให้ชั้นนี้** (ไม่ใช่ลืม)
+    //   ทีมยิงด้วยสายตาในระยะ 1.5 nm ซึ่ง updateTrackQuality() ให้เป็น FC อยู่แล้วทั้งช่วง
+    //   ใส่ประตูไปก็เป็นเงื่อนไขที่ไม่มีวันเป็นเท็จ = โค้ดหลอกตา ไม่เพิ่มการตัดสินใจใด ๆ
     shoreAATeams.forEach(tm => {
         if (tm.fireFlash > 0) tm.fireFlash--;
         if (hold) { tm.state = 'STANDBY'; tm.target = null; tm.engTimer = 0; return; }
@@ -20750,6 +20997,15 @@ function drawPatrolVessels() {
             ctx.fillStyle='rgba(148,163,184,0.85)';
             ctx.fillText('RLD', x, wsY);
         }
+        // ── [v17.22.0 TQ-3] ป้าย "รอ track ยิง" — เห็นเป้าแล้วแต่ยังลั่นไกไม่ได้ ──
+        //    ต่างจาก RLD/WINCHESTER ตรงที่กระสุนยังมี — ที่ขาดคือผู้ชี้เป้า
+        //    ผบ. แก้ได้สองทาง: ปล่อยให้เรือวิ่งเข้าใกล้ หรือส่งโดรน ISR/เปิด CEC ไปชี้ให้
+        if (v.fcWait || v.essmFcWait) {
+            const fwY = wsY + (v.winchester || pvAnyReloading(v) ? 11 : 0);
+            ctx.font='bold 9px "Share Tech Mono"';
+            ctx.fillStyle=`rgba(251,191,36,${0.60+Math.sin(frame*0.06)*0.30})`;
+            ctx.fillText('รอ TRACK ยิง', x, fwY);
+        }
 
         // ── เส้นวิถีกระสุน (เฉพาะขณะเข้าปะทะ) ──
         if (v.state==='ENGAGE' && v.engTarget && v.engTarget.active) {
@@ -20896,6 +21152,24 @@ function drawThreats() {
         ctx.fillStyle=t.detained?'#39ff14':dispColor;
         ctx.textAlign='center';
         hudText(iffLabel, sx, sy-17); // [v16.0.5 W5-Q5] halo
+
+        // ── [v17.22.0 TQ-3] ป้ายระดับคุณภาพ track — D / C / FC ──
+        //   วางไว้เหนือชื่อเป้า เพราะเป็นสิ่งที่ ผบ. ต้องอ่านก่อนสั่งยิง:
+        //   FC เขียว = ยิงได้เดี๋ยวนี้ · C เหลือง = รู้ว่าเป็นใครแต่ยังยิงไม่ได้ · D เทา = เห็นเฉย ๆ
+        //   ต่อท้ายด้วยชื่อผู้ชี้เป้าเมื่อเป็น FC และ "COAST" เมื่อไม่มีเซ็นเซอร์ตัวใดจับอยู่จริง
+        if (t.tq && typeof tqLabel === 'function') {
+            const tql = tqLabel(t);
+            ctx.font = 'bold 10px "Share Tech Mono"';
+            ctx.fillStyle = tql.c;
+            ctx.textAlign = 'center';
+            hudText(tql.s + (t.tq === 3 && t.tqSrc ? '·' + t.tqSrc : ''), sx, sy-29);
+            if (t.tqCoasting) {
+                ctx.font = '9px "Share Tech Mono"';
+                ctx.fillStyle = '#64748b';
+                hudText('COAST', sx, sy-40);
+            }
+            ctx.textAlign = 'center';
+        }
 
         // ── Telemetry (stable position — ไม่สั่น, แสดงตลอด) ──
         const distNm=haversineNm(nyToLat(t.ny),nxToLng(t.nx),UDC_LAT,UDC_LNG);
@@ -25832,7 +26106,14 @@ function animate() {
         // ── ๒. กลไกกฎการปะทะและการตอบโต้การรุกล้ำเขตใช้อาวุธ ──
         // ตอบโต้ contact ที่ละเมิดเขตห้ามเข้าทางทะเล (Maritime Exclusion Zone)
         // ไม่ engage ถ้า: HOLD, RTB, หรือ simPaused
+        // [v17.22.0 TQ-3] เรือที่ไม่ได้อยู่ในสมการรบ (HOLD / RTB / REARM) ต้องไม่ค้างป้าย
+        //   "รอ TRACK ยิง" — เหตุที่ไม่ยิงคือคำสั่ง/การกลับฐาน ไม่ใช่การขาดผู้ชี้เป้า
+        if (roeLevel === 'HOLD' || pvOffStation(v)) { v.fcWait = false; v.essmFcWait = false; v._fcWaitLogged = null; v._essmFcLogged = null; }
         if (roeLevel !== 'HOLD' && !pvOffStation(v) && !simPaused && !missionEnded) {
+            // [v17.22.0 TQ-1] ลูปนี้อยู่ก่อน updateAirDefense() ในเฟรมเดียวกัน — เดินเครื่อง
+            //   คุณภาพ track ให้เสร็จก่อน เพื่อให้ประตูปล่อยอาวุธสองเอนจินอ่านค่าเฟรมเดียวกัน
+            //   (ตัวฟังก์ชันมีตัวกันคิดซ้ำต่อเฟรมอยู่แล้ว เรียกซ้ำจึงไม่เปลืองแรงเครื่อง)
+            if (typeof updateTrackQuality === 'function') updateTrackQuality();
             // หา threat ที่ active, classified (ยืนยันแล้ว), และละเมิด MEZ
             // [v17.21.0 FIRES-1] จัดลำดับด้วยคะแนนรวม (ระดับภัย · เจตนา · เวลาถึง UDC · คำสั่งการยิง)
             // แทนเกณฑ์เดิม "ใกล้เรือเราที่สุดชนะ" — ตัวกรองสิทธิ์เข้าปะทะย้ายไปอยู่ใน pvPickTarget() ครบทุกข้อ
@@ -25864,7 +26145,44 @@ function animate() {
             }
 
             // ── 3. Engage: คำนวณ Pk ทุก 90 frame ────────────────
-            if (v.state === 'ENGAGE' && v.engTarget && !v.engTarget.frozen) {
+            // [v17.22.0 TQ-2] ประตูปล่อยอาวุธ — ต้องมี track ระดับ FIRE-CONTROL ก่อนลั่นไก
+            //   ไม่มี = ไม่ยิง แต่**ยังวิ่งเข้าหาต่อ** (redirectTarget ตั้งไว้แล้วข้างบน)
+            //   เพราะระยะ FC สั้นกว่าระยะอาวุธ เรือจึงแก้เองได้ด้วยการเข้าใกล้ ถ้าไม่มีใครชี้เป้าให้
+            const _fc = (typeof pvHasFC === 'function' && v.state === 'ENGAGE' && v.engTarget)
+                      ? pvHasFC(v, v.engTarget) : { ok:true, via:null, remote:false };
+            // [v17.22.0 TQ-3] เลิกปะทะแล้วต้องล้างธง ไม่งั้นป้าย "รอ TRACK ยิง" ค้างทั้งที่เรือ
+            //   กลับไปลาดตระเวนแล้ว — สถานะบนจอต้องตรงกับสิ่งที่เรือกำลังทำจริง
+            if (v.state !== 'ENGAGE' || !v.engTarget) { v.fcWait = false; v._fcWaitLogged = null; }
+            if (v.state === 'ENGAGE' && v.engTarget && !_fc.ok) {
+                v.fcWait  = true;
+                v.engTimer = 0;
+                const _k = (v.label || '') + '|' + (v.engTarget.label || '');
+                if (v._fcWaitLogged !== _k) {
+                    v._fcWaitLogged = _k;
+                    const need = pvFcRangeNm(v, v.engTarget);
+                    try {
+                        addEngLog(`<span style="color:#fbbf24;">⏸ ${escapeHtml(v.label || 'PV')} ยังไม่มี track ควบคุมการยิง (FIRE-CONTROL) ต่อ `
+                                + `${escapeHtml(v.engTarget.label || 'CONTACT')} — `
+                                + `${need > 0 ? 'ต้องเข้าใกล้ ≤ ' + need.toFixed(1) + ' nm หรือรับ track จากหน่วยอื่นผ่าน CEC'
+                                             : 'เรือลำนี้ไม่มีเซ็นเซอร์ชี้เป้าชนิดนี้ — ต้องรับ track ผ่าน CEC'}</span>`);
+                    } catch (_) {}
+                }
+            }
+            if (v.state === 'ENGAGE' && v.engTarget && !v.engTarget.frozen && _fc.ok) {
+                v.fcWait = false;
+                v._fcWaitLogged = null;
+                // [v17.22.0 TQ-2] ยิงด้วย track ของหน่วยอื่น = CEC ทำงานจริง — แจ้งครั้งเดียวต่อคู่
+                if (_fc.remote) {
+                    const _rk = (v.label || '') + '>' + (_fc.via || '') + '|' + (v.engTarget.label || '');
+                    if (v._cecLogged !== _rk) {
+                        v._cecLogged = _rk;
+                        try {
+                            addEngLog(`<span style="color:#39ff8c;">🔗 CEC — ${escapeHtml(v.label || 'PV')} ใช้ track จาก `
+                                    + `${escapeHtml(_fc.via || '—')} ยิง ${escapeHtml(v.engTarget.label || 'CONTACT')} `
+                                    + `<span style="color:#64748b;">(นอกระยะชี้เป้าของเรือเอง)</span></span>`);
+                        } catch (_) {}
+                    }
+                }
                 v.engTimer = (v.engTimer || 0) + 1;
                 if (v.engTimer >= 90) {   // ยิงทุก ~1.5s
                     v.engTimer = 0;
@@ -28073,6 +28391,7 @@ function updateAirSurfacePanel() {
             &nbsp;<span style="color:${fCol};"><svg class="ico" aria-hidden="true"><use href="#i-fuel"/></svg>${fPct}%</span>
             ${v.killCount>0?`&nbsp;<span style="color:#22c55e;">💥×${v.killCount}</span>`:''}
             ${v.winchester?`&nbsp;<span style="color:#ef4444;font-weight:600;" title="อาวุธนำวิถีหมดทุกกระบอก — สั่งกลับฐาน ทรภ.๑ เติมกระสุน">WINCHESTER</span>`:''}
+            ${(v.fcWait||v.essmFcWait)?`&nbsp;<span style="color:#fbbf24;font-weight:600;" title="เห็นเป้าแล้ว กระสุนก็มี แต่ยังไม่มี track ระดับควบคุมการยิง (FIRE-CONTROL) — ต้องเข้าใกล้จนเรดาร์ชี้เป้าจับได้ หรือรับ track จากหน่วยอื่นผ่านลิงก์ CEC">รอ TRACK ยิง</span>`:''}
         </div>${rearmBar}${pvAmmoLine(v)}`;
     }).join('');
 
@@ -37005,6 +37324,31 @@ window.toggleSat3D = toggleSat3D;
                         try { if (typeof kcSummaryText === 'function') s = kcSummaryText(); } catch(_) {}
                         if (esKc.textContent !== s) esKc.textContent = s;
                         esKc.style.color = (s !== NOKC) ? '#00d4ff' : '';
+                    }
+                    // [v17.22.0 TQ-3] คุณภาพ track — นับว่าตอนนี้ "ยิงได้จริง" กี่เป้า
+                    const esTq = document.getElementById('bf-es-tq');
+                    if (esTq) {
+                        let nD = 0, nC = 0, nF = 0, nCoast = 0;
+                        try {
+                            threats.forEach(t => {
+                                if (!t.active || t.frozen || t.type === 'cyber' || !t.tq) return;
+                                if (t.tq === 3) nF++; else if (t.tq === 2) nC++; else nD++;
+                                if (t.tqCoasting) nCoast++;
+                            });
+                        } catch (_) {}
+                        const tot = nD + nC + nF;
+                        const s = tot === 0 ? '— ไม่มี track —'
+                                : `ยิงได้ ${nF} · พิสูจน์ทราบ ${nC} · ตรวจพบ ${nD}`
+                                  + (nCoast ? ` · ขาดเซ็นเซอร์จับ ${nCoast}` : '');
+                        if (esTq.textContent !== s) esTq.textContent = s;
+                        esTq.style.color = tot === 0 ? '' : (nF > 0 ? '#39ff8c' : '#fbbf24');
+                    }
+                    const esCec = document.getElementById('bf-es-cec');
+                    if (esCec) {
+                        const on = (typeof cecEnabled === 'undefined') || cecEnabled;
+                        const s = on ? 'เปิด — แชร์ track ชี้เป้าข้ามหน่วย' : 'ปิด — เรือใช้ได้เฉพาะ track ที่จับเอง';
+                        if (esCec.textContent !== s) esCec.textContent = s;
+                        esCec.style.color = on ? '#39ff8c' : '#f59e0b';
                     }
                     // [v17.21.0 FIRES-1] คำสั่งการยิงที่บังคับใช้อยู่ — ผลของการตกลงใจของ ผบ. ที่มีต่อไกปืน
                     const esFg = document.getElementById('bf-es-fires');
