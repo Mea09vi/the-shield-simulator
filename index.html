@@ -1,6 +1,23 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.18.4 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.19.0 · 7-Domain + AI Staff)
+  · [v17.19.0 COASTCAM] กล้องชายฝั่งอ่าวไทย — "ตาที่สอง" ไว้สอบทานสถานะโดเมน LITTORAL ด้วยภาพจริง:
+      เหตุผล: v17.18.3 ทำให้ LITTORAL ไหลตาม Hs ของ Open-Meteo — แต่นั่นคือค่าจาก "โมเดล" แหล่งเดียว ไม่มีอะไรมาสอบทาน
+              ถ้าโมเดลว่า SS3 (warn) แต่ภาพกล้องเห็นทะเลเรียบ ผู้ใช้ต้องมีทางตั้งคำถามกับโมเดลได้ — นี่คือสิ่งที่เลเยอร์นี้ให้
+      - แถว "Coastal Cam (ยืนยันภาพ)" ในกลุ่ม LITTORAL → หน้าต่างลอย #coastCamPanel (ลากได้ที่แถบหัว แนวเดียวกับ marine-wx)
+      - แถบเทียบในหน้าต่าง: โชว์ Hs/Sea State จาก window.WAVE_STATE คู่กับป้ายสถานะ LIT (ok/warn/crit) ที่คำนวณด้วยเกณฑ์เดียวกับ littoralState()
+        ถ้าเลเยอร์ Wave Field ปิด หรือข้อมูลเก่ากว่า 1 ชม. → ขึ้น "NO DATA" ตรง ๆ ไม่แต่งค่าให้ดูสด (SIM ซื่อสัตย์)
+      - keyless 100%: ฝัง YouTube ผ่าน iframe (youtube-nocookie เพื่อความเป็นส่วนตัว) ไม่ใช้ API key ใด ๆ
+      - กันลิงก์ตาย (บทเรียนเดียวกับที่ทำให้ตัดสินใจไม่ต่อ ADS-B/NGA — ฟีดตายแล้วยังดู "เหมือนมีข้อมูล" คือของอันตรายกว่าไม่มีเลย):
+          (a) รายชื่อกล้องหลายตัว ไม่ผูกกับตัวเดียว — จอมเทียน(~24กม.) · พัทยา(~29กม.) · ละไม เกาะสมุย
+          (b) ตรวจก่อนฝังด้วย YouTube oEmbed (endpoint สาธารณะ ไม่ใช้ key): 4xx = ตายจริง → ข้ามไปกล้องถัดไปอัตโนมัติ
+              (5xx/เน็ตล่ม = "ไม่รู้" ไม่ตัดสินว่าตาย — ยังลองฝังแล้วบอกผู้ใช้ว่าตรวจไม่ได้)
+          (c) ตายทั้งรายชื่อ → ล้าง iframe เป็น about:blank + ขึ้นป้ายบอกเหตุ ไม่ปล่อยให้เหลือ "จอดำเงียบ" ที่ดูเหมือนกล้องเสีย
+          (d) เปิดจาก file:// → บอกตรง ๆ ว่า YouTube ต้องการ origin https พร้อมลิงก์เปิดแท็บใหม่ (ไม่ใช่จอดำไร้คำอธิบาย)
+          (e) แก้รายชื่อเองได้ที่ ccSetupRoster() → เก็บใน localStorage['udc-coastcam-roster'] — สตรีมตายไม่ต้องแก้ไฟล์/ไม่ต้อง deploy ใหม่
+      - ปิดหน้าต่าง = ถอด iframe เป็น about:blank + เคลียร์ timer (ไม่กินแบนด์วิดท์/CPU เบื้องหลัง) · ปิดตอน boot เป็นค่าตั้งต้น
+      - syncActionRow() รองรับ data-state-fn ใหม่ (อ่านสถานะจากฟังก์ชัน global) — แถวรุ่นใหม่ที่ไม่มีปุ่มเดิมสมัย v11 ไม่ต้องปลอมปุ่มซ่อนไว้ให้ readBtnOn อ่าน
+      - OPSEC: กล้องท่องเที่ยวสาธารณะที่เจ้าของเผยแพร่เองเท่านั้น — ไม่มีและต้องไม่มีกล้องฐานทัพ · เป็นการยืนยันเชิงบริบท ไม่ใช่เซนเซอร์ ทร.
   · [v17.18.4 AIS-LIVE keyless] เปิดใช้ AIS Live (AISStream.io) แบบไม่มีรหัสลับฝังในไฟล์:
       - เดิม const AIS_API_KEY = 'YOUR_AISSTREAM_API_KEY' (placeholder ฮาร์ดโค้ด) → ต่อไม่ติด; และถ้าใส่คีย์จริงแล้ว commit = คีย์โผล่ใน view-source (ผิดกติกา keyless)
       - เปลี่ยนเป็นแพตเทิร์น localStorage เดียวกับ GFW: getAisKey() อ่าน localStorage['aisstream-api-token'] · setupAisKey() = prompt() เก็บคีย์ต่อเครื่อง
@@ -588,12 +605,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.18.4 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.19.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.18.4';
+        const APP_VERSION = '17.19.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -2098,7 +2115,118 @@
             height: 100%;
             position: relative;
         }
-        
+
+        /* ══ [v17.19.0 COASTCAM] หน้าต่างกล้องชายฝั่ง — ยืนยันสภาพทะเลด้วยสายตา (โดเมน LITTORAL) ══
+           ลากได้ที่แถบหัว (แนวเดียวกับ #marine-wx-panel) · iframe ถอด src ตอนปิดเหมือน #windyPanel */
+        #coastCamPanel {
+            position: fixed;
+            bottom: 56px; right: 430px;
+            width: 380px;
+            background: rgb(var(--bg-panel-rgb) / 0.94);
+            border: 1px solid rgba(34,197,94,0.45);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 0 24px rgba(34,197,94,0.18), inset 0 0 40px rgba(0,0,0,0.45);
+            backdrop-filter: blur(10px) saturate(140%);
+            z-index: 1200;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: var(--font-mono), monospace;
+            font-size: 11px;
+            color: #e8ffef;
+        }
+        #coastCamPanel[data-shown="1"] { display: flex; }
+        .cc-hdr {
+            display: flex; align-items: center; gap: 6px;
+            padding: 7px 10px 6px;
+            background: rgba(34,197,94,0.10);
+            border-bottom: 1px solid rgba(34,197,94,0.30);
+            cursor: move; user-select: none;
+            font-size: 11px; font-weight: 600;
+            color: #86efac; letter-spacing: .04em;
+            flex-shrink: 0;
+        }
+        .cc-close {
+            margin-left: auto; cursor: pointer;
+            background: transparent !important; border: none !important;
+            box-shadow: none !important; color: var(--text-muted) !important;
+            font-size: 14px !important; line-height: 1; padding: 0 !important;
+            width: 22px !important; height: 22px;
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .cc-close:hover { color: var(--red) !important; }
+
+        /* แถบเทียบสภาพทะเล: ค่าที่ "โมเดลบอก" (Open-Meteo) vs ภาพที่ "ตาเห็น" (กล้อง) */
+        .cc-seabar {
+            display: flex; align-items: center; gap: 8px;
+            padding: 5px 10px;
+            background: rgba(96,165,250,0.07);
+            border-bottom: 1px solid rgba(96,165,250,0.20);
+            font-size: 10px; flex-shrink: 0;
+        }
+        .cc-seabar .cc-sea-lbl { color: #64748b; letter-spacing: .06em; }
+        .cc-seabar .cc-sea-val { color: #93c5fd; font-weight: 700; }
+        .cc-seabar .cc-sea-pill {
+            margin-left: auto; padding: 1px 7px; border-radius: 8px;
+            font-weight: 700; letter-spacing: .05em; font-size: 9px;
+            border: 1px solid currentColor;
+        }
+        .cc-pill-ok   { color: #22c55e; background: rgba(34,197,94,.12); }
+        .cc-pill-warn { color: #f59e0b; background: rgba(245,158,11,.12); }
+        .cc-pill-crit { color: #ef4444; background: rgba(239,68,68,.12); }
+        .cc-pill-none { color: #64748b; background: rgba(100,116,139,.12); }
+
+        /* แถบเลือกกล้อง */
+        .cc-navbar {
+            display: flex; align-items: center; gap: 6px;
+            padding: 4px 8px;
+            border-bottom: 1px solid rgba(34,197,94,0.18);
+            flex-shrink: 0;
+        }
+        .cc-navbar button {
+            background: rgba(34,197,94,.10) !important;
+            border: 1px solid rgba(34,197,94,.30) !important;
+            color: #86efac !important;
+            border-radius: 5px; cursor: pointer;
+            font-size: 10px !important; line-height: 1;
+            padding: 3px 7px !important; height: 20px;
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .cc-navbar button:hover { background: rgba(34,197,94,.22) !important; }
+        .cc-navbar .cc-camname {
+            flex: 1; text-align: center; overflow: hidden;
+            white-space: nowrap; text-overflow: ellipsis;
+            color: #cbd5e1; font-size: 10px;
+        }
+        .cc-navbar .cc-dist { color: #64748b; font-size: 9px; flex-shrink: 0; }
+
+        #coastCamBody {
+            position: relative;
+            width: 100%; height: 214px;
+            background: #000; flex-shrink: 0;
+        }
+        #coastCamBody iframe { width: 100%; height: 100%; border: none; display: block; }
+        /* ป้ายสถานะ — กันไม่ให้เหลือ "จอดำเงียบ" เมื่อสตรีมตาย/ฝังไม่ได้ */
+        #coastCamStatus {
+            position: absolute; inset: 0;
+            display: none; flex-direction: column;
+            align-items: center; justify-content: center; gap: 6px;
+            text-align: center; padding: 14px;
+            background: rgba(2,10,20,0.94);
+            font-size: 10px; line-height: 1.55; color: #94a3b8;
+        }
+        #coastCamStatus[data-shown="1"] { display: flex; }
+        #coastCamStatus .cc-st-ico  { font-size: 20px; }
+        #coastCamStatus .cc-st-main { color: #f59e0b; font-weight: 700; font-size: 11px; letter-spacing: .05em; }
+        #coastCamStatus a { color: #64ffda; }
+        .cc-foot {
+            padding: 4px 9px;
+            border-top: 1px solid rgba(34,197,94,0.20);
+            color: #64748b; font-size: 9px; line-height: 1.5;
+            flex-shrink: 0;
+        }
+        .cc-foot a { color: #64748b; text-decoration: underline; }
+
         /* ── v12.6-C: หน้าต่างกราฟแผ่นดินไหว ๓ แท็บ (ทับบนแผนที่ · รูปแบบเดียวกับหน้าต่างน้ำขึ้นน้ำลง) ── */
         #seismicChartPanel {
             position: absolute;
@@ -7031,6 +7159,13 @@
                 <span class="count" id="mda-cnt-gistda-flood">--</span>
                 <span class="mda-sw"></span>
             </div>
+            <!-- [v17.19.0 COASTCAM] กล้องชายฝั่งอ่าวไทย — ภาพจริงไว้เทียบกับ Hs ของ Open-Meteo ที่ขับสถานะ LITTORAL -->
+            <div class="mda-lp-row" data-mda-action="coastcam" data-state-fn="ccIsOn" title="Coastal Cam — กล้องชายฝั่งอ่าวไทย (YouTube Live, keyless) ไว้ยืนยันสภาพทะเลด้วยสายตา เทียบกับ Hs/Sea State ของ Open-Meteo ที่ขับสถานะโดเมน LITTORAL · กล้องสาธารณะเท่านั้น ไม่ใช่เซนเซอร์ ทร.">
+                <span class="bullet"></span>
+                <span class="label"><span class="swatch" style="background:#4ade80"></span><svg class="ico" aria-hidden="true"><use href="#i-camera"/></svg> Coastal Cam (ยืนยันภาพ)</span>
+                <span class="count" id="mda-cnt-coastcam">--</span>
+                <span class="mda-sw"></span>
+            </div>
         </div>
     </div>
 
@@ -7085,6 +7220,43 @@
     </div>
     <div class="marine-wx-foot">
         <span>Open-Meteo Marine API · CC-BY 4.0 · อัปเดตทุก 30 นาที</span>
+    </div>
+</div>
+
+<!-- ════════ [v17.19.0 COASTCAM] กล้องชายฝั่ง — ยืนยันสภาพทะเลด้วยสายตา (โดเมน LITTORAL) ════════
+     เหตุผล: littoralState() ตัดสิน ok/warn/crit จาก Hs ของ Open-Meteo (โมเดล) เพียงแหล่งเดียว
+             กล้องชายฝั่งในอ่าวไทยให้ "ภาพจริง" มาเทียบ — โมเดลว่า SS3 แต่ตาเห็นทะเลเรียบ = ตั้งคำถามได้
+     keyless: ฝัง YouTube ผ่าน iframe ล้วน ไม่ใช้ API key · ตรวจสตรีมตายด้วย oEmbed (endpoint สาธารณะ)
+     OPSEC: ใช้เฉพาะกล้องท่องเที่ยว/สาธารณะที่เจ้าของเผยแพร่เอง — ไม่มีและต้องไม่มีกล้องฐานทัพ -->
+<div id="coastCamPanel">
+    <div class="cc-hdr" id="coastCamHdr">
+        <span><svg class="ico" aria-hidden="true"><use href="#i-tree-palm"/></svg> COASTAL CAM · LITTORAL</span>
+        <button class="cc-close" id="coastCamClose" title="ปิด"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="cc-seabar">
+        <span class="cc-sea-lbl">โมเดล:</span>
+        <span class="cc-sea-val" id="ccSeaVal">—</span>
+        <span class="cc-sea-pill cc-pill-none" id="ccSeaPill">NO DATA</span>
+    </div>
+    <div class="cc-navbar">
+        <button id="ccPrev" title="กล้องก่อนหน้า">‹</button>
+        <span class="cc-camname" id="ccCamName">—</span>
+        <span class="cc-dist" id="ccCamDist"></span>
+        <button id="ccNext" title="กล้องถัดไป">›</button>
+    </div>
+    <div id="coastCamBody">
+        <iframe id="coastCamFrame" src="about:blank"
+                allow="autoplay; encrypted-media; picture-in-picture"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen></iframe>
+        <div id="coastCamStatus">
+            <div class="cc-st-ico">📷</div>
+            <div class="cc-st-main" id="ccStatusMain">กำลังตรวจสอบสตรีม…</div>
+            <div id="ccStatusSub"></div>
+        </div>
+    </div>
+    <div class="cc-foot" id="ccFoot">
+        กล้องสาธารณะ (YouTube Live) · keyless — ไม่ใช้ API key · ภาพจากบุคคลที่สาม ไม่ใช่เซนเซอร์ ทร.
     </div>
 </div>
 
@@ -7415,7 +7587,7 @@
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.18.4 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.19.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -7876,7 +8048,7 @@
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.18.4 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.19.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -7893,7 +8065,7 @@
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.18.4 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.19.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -8813,7 +8985,7 @@
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.18.4 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.19.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -16209,6 +16381,262 @@ function toggleWindyPanel() {
         iframe.src = "https://embed.windy.com/embed2.html?lat=12.67&lon=100.90&detailLat=12.67&detailLon=100.90&zoom=8&level=surface&overlay=wind&menu=&message=true&marker=true&calendar=now&pressure=true&type=map&location=coordinates&detail=true&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1";
     }
 }
+
+// ═══════════════════════════════════════════════════════════════════
+//  [v17.19.0 COASTCAM] กล้องชายฝั่งอ่าวไทย — ยืนยันสภาพทะเลด้วยสายตา (โดเมน LITTORAL)
+//  ─────────────────────────────────────────────────────────────────
+//  ทำไมถึงมี : littoralState() ตัดสิน ok/warn/crit จาก Hs ของ Open-Meteo (ค่าจาก "โมเดล")
+//              แหล่งเดียว — ไม่มีอะไรมาสอบทาน. กล้องชายฝั่งในอ่าวไทยให้ "ภาพจริง" มาเทียบ:
+//              โมเดลว่า SS3 (เฝ้าระวัง) แต่ตาเห็นทะเลเรียบ → ตั้งคำถามกับโมเดลได้
+//  keyless   : ฝัง YouTube ผ่าน iframe ล้วน ไม่ใช้ API key ใด ๆ (ใช้ youtube-nocookie เพื่อความเป็นส่วนตัว)
+//  กันสายตาย : ตรวจด้วย oEmbed (endpoint สาธารณะ ไม่ใช้ key) — 404/401 = สตรีมตายแน่นอน → ข้ามอัตโนมัติ
+//              network error = "ไม่รู้" → ยังลองฝัง (ไม่ตัดสินว่าตายทั้งที่อาจสด) — ไม่เดาแทนผู้ใช้
+//  ซ่อมได้   : รายชื่อกล้องแก้ได้เองผ่าน localStorage['udc-coastcam-roster'] (ccSetupRoster())
+//              → สตรีมตายไม่ต้องแก้ไฟล์ HTML / ไม่ต้อง deploy ใหม่
+//  OPSEC     : กล้องท่องเที่ยวสาธารณะที่เจ้าของเผยแพร่เองเท่านั้น — ไม่มีและต้องไม่มีกล้องฐานทัพ
+//              ไม่ใช่เซนเซอร์ ทร. · เป็นการยืนยันเชิงบริบท ไม่ใช่แหล่งข่าวกรอง
+// ═══════════════════════════════════════════════════════════════════
+const CC_STORAGE = 'udc-coastcam-roster';
+const CC_AOI     = { lat: 12.67, lon: 100.90 };      // สัตหีบ / UDC — ศูนย์กลางพื้นที่รับผิดชอบ
+
+// กล้องตั้งต้น — ตรวจแล้วว่ามีจริงผ่าน YouTube oEmbed (2026-07-23) เรียงตามใกล้ AOI ก่อน
+const CC_CAMS_DEFAULT = [
+    { id:'M1YfBrtTHKk', name:'หาดจอมเทียน · พัทยา',        by:'Jem Lupina',            lat:12.888, lon:100.868 },
+    { id:'8McZEF3pttA', name:'หาดพัทยา · ชลบุรี',           by:'bangkokandmore',        lat:12.930, lon:100.874 },
+    { id:'Fw9hgttWzIg', name:'อ่าวคริสตัล ละไม · เกาะสมุย', by:'The Real Samui Webcam', lat: 9.462, lon:100.043 }
+];
+
+let ccIndex   = 0;
+let ccActive  = false;
+let ccSeaTimer = null;
+let ccDeadSet = {};          // id -> true เมื่อ oEmbed ยืนยันว่าตาย
+
+// อ่านรายชื่อกล้อง: ของผู้ใช้ (localStorage) ทับของตั้งต้น — ไม่มีความลับอยู่ในไฟล์
+function ccRoster() {
+    try {
+        const raw = localStorage.getItem(CC_STORAGE);
+        if (raw) {
+            const arr = JSON.parse(raw);
+            if (Array.isArray(arr) && arr.length && arr.every(c => c && c.id)) return arr;
+        }
+    } catch (e) {}
+    return CC_CAMS_DEFAULT;
+}
+
+// ให้ผู้ใช้แก้รายชื่อกล้องเองเมื่อสตรีมเดิมตาย — ไม่ต้องแก้ไฟล์/ไม่ต้อง deploy ใหม่
+function ccSetupRoster() {
+    let cur = '';
+    try { cur = localStorage.getItem(CC_STORAGE) || JSON.stringify(CC_CAMS_DEFAULT, null, 1); } catch (e) {}
+    const v = prompt(
+        'รายชื่อกล้องชายฝั่ง (JSON) — id = รหัสวิดีโอ YouTube Live\n' +
+        'ตัวอย่าง: [{"id":"xxxxxxxxxxx","name":"ชื่อจุด","by":"เจ้าของ","lat":12.9,"lon":100.87}]\n' +
+        'ปล่อยว่างแล้วกด OK = กลับไปใช้รายชื่อตั้งต้น', cur);
+    if (v === null) return;
+    try {
+        if (!v.trim()) { localStorage.removeItem(CC_STORAGE); }
+        else {
+            const arr = JSON.parse(v);
+            if (!Array.isArray(arr) || !arr.length || !arr.every(c => c && c.id)) throw new Error('รูปแบบไม่ถูกต้อง');
+            localStorage.setItem(CC_STORAGE, JSON.stringify(arr));
+        }
+        ccDeadSet = {}; ccIndex = 0;
+        if (typeof addLog === 'function') addLog('[CoastCam] อัปเดตรายชื่อกล้องแล้ว', '#4ade80');
+        if (ccActive) ccShow(0);
+    } catch (e) {
+        alert('JSON ไม่ถูกต้อง: ' + (e && e.message || e));
+    }
+}
+
+// ระยะทางจาก AOI (กม.) — haversine
+function ccDistKm(cam) {
+    if (typeof cam.lat !== 'number' || typeof cam.lon !== 'number') return null;
+    const R = 6371, rad = Math.PI / 180;
+    const dLat = (cam.lat - CC_AOI.lat) * rad, dLon = (cam.lon - CC_AOI.lon) * rad;
+    const a = Math.sin(dLat/2)**2 + Math.cos(CC_AOI.lat*rad) * Math.cos(cam.lat*rad) * Math.sin(dLon/2)**2;
+    return Math.round(2 * R * Math.asin(Math.sqrt(a)));
+}
+
+// แถบเทียบ: ค่าที่โมเดลบอก (Open-Meteo ผ่าน WAVE_STATE) + สถานะ LITTORAL ที่ได้จากค่านั้น
+function ccUpdateSeaBar() {
+    const vEl = document.getElementById('ccSeaVal');
+    const pEl = document.getElementById('ccSeaPill');
+    if (!vEl || !pEl) return;
+    const w = window.WAVE_STATE;
+    const fresh = w && typeof w.ss === 'number' && !(typeof w.at === 'number' && (Date.now() - w.at) > 3_600_000);
+    if (!fresh) {
+        vEl.textContent = 'ไม่มีข้อมูลคลื่นสด';
+        pEl.textContent = 'NO DATA';
+        pEl.className   = 'cc-sea-pill cc-pill-none';
+        pEl.title       = 'เปิดเลเยอร์ Wave Field เพื่อดึง Open-Meteo Marine แล้วค่อยเทียบกับภาพกล้อง';
+        return;
+    }
+    const hs = (typeof w.hs === 'number') ? w.hs.toFixed(1) + ' ม.' : '—';
+    vEl.textContent = 'Hs ' + hs + ' · SS' + w.ss;
+    const st = (w.ss >= 4) ? 'crit' : (w.ss >= 3) ? 'warn' : 'ok';
+    pEl.textContent = 'LIT ' + st.toUpperCase();
+    pEl.className   = 'cc-sea-pill cc-pill-' + st;
+    pEl.title       = 'สถานะโดเมน LITTORAL ที่คำนวณจาก Sea State นี้ — เทียบกับภาพจากกล้องว่าตรงกันไหม';
+}
+
+// ป้ายสถานะทับ iframe — กันไม่ให้เหลือ "จอดำเงียบ" เวลาสตรีมตาย
+function ccStatus(main, sub) {
+    const box = document.getElementById('coastCamStatus');
+    const m   = document.getElementById('ccStatusMain');
+    const s   = document.getElementById('ccStatusSub');
+    if (!box) return;
+    if (main === null) { box.removeAttribute('data-shown'); return; }
+    if (m) m.textContent = main;
+    if (s) s.innerHTML   = sub || '';
+    box.setAttribute('data-shown', '1');
+}
+
+// ตรวจว่าสตรีมยังอยู่ไหม ผ่าน oEmbed สาธารณะ (ไม่ใช้ key)
+//   true = ยังอยู่ · false = ตายแน่นอน (404/401) · null = ตรวจไม่ได้ (เน็ต/CORS) → อย่าเพิ่งตัดสิน
+async function ccProbe(id) {
+    const url = 'https://www.youtube.com/oembed?url=' +
+                encodeURIComponent('https://www.youtube.com/watch?v=' + id) + '&format=json';
+    try {
+        const ctl = new AbortController();
+        const t   = setTimeout(() => ctl.abort(), 8000);
+        const res = await fetch(url, { signal: ctl.signal });
+        clearTimeout(t);
+        if (res.ok) return true;
+        // 4xx ทุกตัว = วิดีโอใช้ไม่ได้จริง (YouTube ตอบ 400 กับรหัสที่ผิดรูป, 404 กับที่ไม่มี, 401/403 กับที่ปิด)
+        // เดิมเช็คแค่ 404/401/403 ทำให้ของตายที่ตอบ 400 หลุดเป็น "ไม่รู้" แล้วถูกฝังจนเหลือจอดำ
+        if (res.status >= 400 && res.status < 500) return false;
+        return null;   // 5xx = ฝั่ง YouTube เอง ไม่ใช่ความผิดของกล้อง → อย่าเพิ่งตัดสินว่าตาย
+    } catch (e) { return null; }
+}
+
+// แสดงกล้องลำดับ i — ถ้าตายให้ข้ามไปตัวถัดไปอัตโนมัติ (กันวนไม่รู้จบด้วย tried)
+async function ccShow(i, tried) {
+    const cams = ccRoster();
+    if (!cams.length) { ccStatus('ไม่มีกล้องในรายชื่อ', 'กดปุ่ม ⚙ เพื่อเพิ่มกล้อง'); return; }
+    tried = tried || 0;
+    if (tried >= cams.length) {
+        ccStatus('กล้องในรายชื่อใช้ไม่ได้ทั้งหมด',
+                 'สตรีมอาจปิดไปแล้ว — แก้รายชื่อได้ที่คอนโซล: <b>ccSetupRoster()</b>');
+        const c = document.getElementById('mda-cnt-coastcam'); if (c) c.textContent = 'DEAD';
+        return;
+    }
+    ccIndex = ((i % cams.length) + cams.length) % cams.length;
+    const cam   = cams[ccIndex];
+    const frame = document.getElementById('coastCamFrame');
+    const nameEl = document.getElementById('ccCamName');
+    const distEl = document.getElementById('ccCamDist');
+
+    if (nameEl) nameEl.textContent = (cam.name || cam.id) + (cam.by ? ' · ' + cam.by : '');
+    if (distEl) { const d = ccDistKm(cam); distEl.textContent = (d === null) ? '' : d + ' กม.'; }
+    const cntEl = document.getElementById('mda-cnt-coastcam');
+    if (cntEl) cntEl.textContent = (ccIndex + 1) + '/' + cams.length;
+
+    // เปิดจาก file:// → YouTube ปฏิเสธการฝัง (origin = null) บอกตรง ๆ ดีกว่าปล่อยจอดำ
+    if (location.protocol === 'file:') {
+        if (frame) frame.src = 'about:blank';
+        ccStatus('ฝังวิดีโอไม่ได้เมื่อเปิดจากไฟล์ (file://)',
+                 'YouTube ต้องการ origin เป็น https — เปิดผ่าน GitHub Pages หรือเว็บเซิร์ฟเวอร์<br>' +
+                 '<a href="https://www.youtube.com/watch?v=' + cam.id + '" target="_blank" rel="noopener">เปิดกล้องนี้ในแท็บใหม่ ↗</a>');
+        return;
+    }
+
+    if (ccDeadSet[cam.id]) { return ccShow(ccIndex + 1, tried + 1); }
+
+    ccStatus('กำลังตรวจสอบสตรีม…', cam.name || '');
+    const alive = await ccProbe(cam.id);
+    if (!ccActive) return;                       // ผู้ใช้ปิดหน้าต่างระหว่างรอ
+    if (alive === false) {
+        ccDeadSet[cam.id] = true;
+        if (typeof addLog === 'function') addLog('[CoastCam] ✗ สตรีมตาย: ' + (cam.name || cam.id) + ' — ข้ามไปตัวถัดไป', '#f59e0b');
+        return ccShow(ccIndex + 1, tried + 1);
+    }
+    // alive === true (สด) หรือ null (ตรวจไม่ได้ — ยังลองฝัง ไม่เดาแทนผู้ใช้)
+    if (frame) {
+        frame.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(cam.id) +
+                    '?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1';
+    }
+    if (alive === null) {
+        ccStatus('ตรวจสถานะสตรีมไม่ได้', 'กำลังลองแสดงภาพ — ถ้าไม่ขึ้น กด › เพื่อเปลี่ยนกล้อง');
+        setTimeout(() => { if (ccActive) ccStatus(null); }, 3500);
+    } else {
+        ccStatus(null);
+    }
+}
+
+function ccNext() { if (ccActive) ccShow(ccIndex + 1); }
+function ccPrev() { if (ccActive) ccShow(ccIndex - 1); }
+
+function toggleCoastCam() {
+    const panel = document.getElementById('coastCamPanel');
+    const frame = document.getElementById('coastCamFrame');
+    if (!panel) return;
+    ccActive = panel.getAttribute('data-shown') !== '1';
+
+    if (!ccActive) {
+        panel.removeAttribute('data-shown');
+        if (frame) frame.src = 'about:blank';           // ถอดสตรีมออกจริง ไม่ให้กินแบนด์วิดท์/CPU เบื้องหลัง
+        if (ccSeaTimer) { clearInterval(ccSeaTimer); ccSeaTimer = null; }
+        const c = document.getElementById('mda-cnt-coastcam'); if (c) c.textContent = '--';
+        if (typeof addLog === 'function') addLog('[CoastCam] OFF', '#64748b');
+        return;
+    }
+
+    panel.setAttribute('data-shown', '1');
+    ccUpdateSeaBar();
+    ccSeaTimer = setInterval(ccUpdateSeaBar, 30000);
+    if (typeof addLog === 'function') addLog('[CoastCam] ON — กล้องชายฝั่งอ่าวไทย (ยืนยันสภาพทะเลด้วยสายตา)', '#4ade80');
+    if (!window.WAVE_STATE && typeof addLog === 'function') {
+        addLog('[CoastCam] ℹ เปิดเลเยอร์ Wave Field ด้วย เพื่อเทียบ Hs/Sea State กับภาพจากกล้อง', '#94a3b8');
+    }
+    ccShow(ccIndex);
+}
+
+// ── ผูกปุ่มในหน้าต่างกล้อง + ลากย้ายหน้าต่างที่แถบหัว (แนวเดียวกับ #marine-wx-panel) ──
+(function ccWire() {
+    function init() {
+        const panel = document.getElementById('coastCamPanel');
+        const hdr   = document.getElementById('coastCamHdr');
+        if (!panel || !hdr) return;
+        const closeBtn = document.getElementById('coastCamClose');
+        if (closeBtn) closeBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleCoastCam(); syncCoastCamRow(); });
+        const nx = document.getElementById('ccNext'); if (nx) nx.addEventListener('click', (e) => { e.stopPropagation(); ccNext(); });
+        const pv = document.getElementById('ccPrev'); if (pv) pv.addEventListener('click', (e) => { e.stopPropagation(); ccPrev(); });
+
+        let dragging = false, ox = 0, oy = 0;
+        hdr.addEventListener('mousedown', (e) => {
+            if (closeBtn && (e.target === closeBtn || closeBtn.contains(e.target))) return;
+            dragging = true;
+            const r = panel.getBoundingClientRect();
+            ox = e.clientX - r.left; oy = e.clientY - r.top;
+            e.preventDefault();
+        });
+        document.addEventListener('mousemove', (e) => {
+            if (!dragging) return;
+            const r  = panel.getBoundingClientRect();
+            let nx2 = Math.max(0, Math.min(window.innerWidth  - r.width,  e.clientX - ox));
+            let ny2 = Math.max(0, Math.min(window.innerHeight - r.height, e.clientY - oy));
+            panel.style.left = nx2 + 'px'; panel.style.top = ny2 + 'px';
+            panel.style.right = 'auto';    panel.style.bottom = 'auto';
+        });
+        document.addEventListener('mouseup', () => { dragging = false; });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+})();
+
+// สะท้อนสถานะกลับไปที่แถวในแผง LAYERS (เมื่อปิดจากปุ่ม × ในหน้าต่าง)
+function syncCoastCamRow() {
+    const row = document.querySelector('.mda-lp-row[data-mda-action="coastcam"]');
+    if (!row) return;
+    const sw = row.querySelector('.mda-sw');
+    row.classList.toggle('on', ccActive);
+    if (sw) sw.classList.toggle('on', ccActive);
+}
+
+window.toggleCoastCam = toggleCoastCam;
+window.ccSetupRoster  = ccSetupRoster;
+window.ccNext = ccNext;
+window.ccPrev = ccPrev;
+window.ccIsOn = () => ccActive;   // ให้ syncActionRow (data-state-fn) อ่านสถานะจริงของหน้าต่าง
 
 // ═══════════════════════════════════════════════════════════════
 //  v12.6-C  หน้าต่างกราฟแผ่นดินไหว — สลับได้ 3 แท็บ (กราฟคลื่นสั่น / ขนาด / ความเร่งพื้นดิน)
@@ -35093,6 +35521,7 @@ window.toggleSat3D = toggleSat3D;
             'frustum'    : () => window.toggleCamFrustum  && window.toggleCamFrustum(),
             'tlheat'     : () => window.toggleTlHeat      && window.toggleTlHeat(),
             'wavefield'  : () => window.toggleWaveField   && window.toggleWaveField(),
+            'coastcam'   : () => window.toggleCoastCam    && window.toggleCoastCam(),   // [v17.19.0] กล้องชายฝั่ง — ยืนยันสภาพทะเลด้วยสายตา (LITTORAL)
             'ocean4d'    : () => window.toggleOcean4D     && window.toggleOcean4D(),
             'sediment'   : () => window.toggleSeabed      && window.toggleSeabed(),
             'ais-live'   : () => window.toggleAISLive     && window.toggleAISLive(),
@@ -35163,6 +35592,19 @@ window.toggleSat3D = toggleSat3D;
                 const sw = row.querySelector('.mda-sw');
                 row.classList.toggle('on', on);
                 if (sw) sw.classList.toggle('on', on);
+                return;
+            }
+            // [v17.19.0] แถวรุ่นใหม่ที่ไม่มีปุ่มเดิมสมัย v11 ให้บอกสถานะผ่านฟังก์ชัน global แทน
+            //            (data-state-fn="ccIsOn") — ไม่ต้องปลอมปุ่มซ่อนไว้เพียงเพื่อให้ readBtnOn อ่านได้
+            if (row.dataset.stateFn) {
+                let on = false;
+                try {
+                    const f = window[row.dataset.stateFn];
+                    if (typeof f === 'function') on = !!f();
+                } catch(_) { on = false; }
+                const sw2 = row.querySelector('.mda-sw');
+                row.classList.toggle('on', on);
+                if (sw2) sw2.classList.toggle('on', on);
                 return;
             }
             const btnId = row.dataset.syncBtn;
@@ -35300,8 +35742,8 @@ window.toggleSat3D = toggleSat3D;
             'hsv-dashboard': false, 'seismic': true,
             // ── ไซเบอร์-สเปกตรัม (Cyber-EM) — GDELT · CVE · KEV เปิด (info) · Ransomware(TH)/ภัยจารกรรม/Feodo/URLhaus ปิด default (map layer · geocode หนัก)
             'gdelt': true, 'cve': true, 'ransom-th': false, 'espionage': false, 'feodo': false, 'urlhaus': false, 'kev': true,
-            // ── ฝั่ง-ชายฝั่ง (Littoral) — IALA Seamarks
-            'seamark': true, 'marine-wx': false,
+            // ── ฝั่ง-ชายฝั่ง (Littoral) — IALA Seamarks (Coastal Cam ปิดตอน boot — สตรีมวิดีโอกินแบนด์วิดท์ เปิดเมื่อต้องการยืนยันเท่านั้น)
+            'seamark': true, 'marine-wx': false, 'coastcam': false,
         };
         let _presetApplied = false;
         function applyDefaultSensingPreset() {
