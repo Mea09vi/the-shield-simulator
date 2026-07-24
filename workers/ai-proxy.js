@@ -1,12 +1,13 @@
 /* ════════════════════════════════════════════════════════════════════
    THE SHIELD 2.0 — UDC Simulator v15.0.0
-   AI Proxy Worker · Multi-provider (Cloudflare Workers AI + Google Gemini + Z.AI GLM)
+   AI Proxy Worker · Multi-provider (Cloudflare Workers AI + Google Gemini + Z.AI GLM + ThaiLLM/BDI)
    ──────────────────────────────────────────────────────────────────────
    Purpose : ตัวกลาง (relay) ระหว่าง client (UDC Simulator) กับ LLM provider
              หลายเจ้า — เลือก provider โดยอัตโนมัติจาก model id ที่ส่งมา:
                • prefix `@cf/`        → Cloudflare Workers AI (binding)
                • prefix `gemini-`     → Google Gemini REST API (Generative Language)
                • prefix `glm-`        → Z.AI (Zhipu GLM) · OpenAI-compatible REST
+               • ThaiLLM model ids    → ThaiLLM (BDI) · OpenAI-compatible REST (membership set)
 
    Why     : รองรับทั้ง Workers AI (ฟรีทั้งหมด, neuron quota) และ Gemini
              (free tier 10 RPM สำหรับ gemini-2.5-flash · Google ย้าย 2.0
@@ -52,7 +53,7 @@
      5. คัดลอก URL (xxx.workers.dev) → UDC Simulator ผ่านปุ่ม ⚙
    ════════════════════════════════════════════════════════════════════ */
 
-const VERSION = '15.5.4';   // v15.5.4 — แก้ /gdelt: multi-source RSS fallback (Diplomat→USNI→NavalNews) แทน GDELT/GNews ที่ block CF IPs · v15.5.3 — แก้ /gdelt: pivot Google News RSS (GDELT silent-blocks CF IPs) + parse RSS XML + cache 5 min · v15.5.2 — แก้ /gdelt: Cloudflare Cache API 5 min + soft-fail 200 เมื่อ 429/timeout + simplify query · v15.5.1 — แก้ /cve: เพิ่ม pubEndDate (NVD บังคับ), format +00:00, ขยาย 90d, แยก SCADA/ICS keyword (AND→OR) · v15.5.0 — เพิ่ม GET /gdelt proxy (bypass CORS ฝั่ง Worker) + GET /cve proxy (NVD ICS/SCADA HIGH/CRITICAL 30d) + เพิ่ม CVE context ใน buildUserPrompt · v15.4.3 — แก้ ZAI_ENDPOINT: /api/openai/v1/ คืน 404 NOT_FOUND → เปลี่ยนเป็น path ทางการ /api/paas/v4/chat/completions (docs.z.ai · curl ตัวอย่างใช้ paas/v4 + glm-5.2) · v15.4.2 — callZai: ดักซอง Zhipu native {code,msg,success} (แม้ HTTP 200) + ดัมพ์ raw body ใน detail · v15.4.1 — surface error จริงจาก Z.AI (Zhipu คืน HTTP 200+body error) + อ่าน raw body · v15.4 — เพิ่ม provider Z.AI (Zhipu GLM): glm-5.2/glm-4.6 ผ่าน OpenAI-compatible endpoint (callZai) · v15.3 — [JP 3-04] prompt upgrade: A1 ข้อเท็จจริง/ตีความ+สมมติฐานสุจริต+หลักฐานหักล้าง · A2 feed-trust+confidence รายโดเมน · A5 ผล/กลไก/อำนาจ/เสี่ยง/ผลลำดับสอง · A6 บทสรุปเรื่องเล่า 4 ส่วน+6 informational aspects · v15.3.1 — แก้ Gemini 2.5 โดนตัดที่ MAX_TOKENS (thinking กิน budget ร่วมกับคำตอบ)
+const VERSION = '15.6.0';   // v15.6.0 — เพิ่ม provider ThaiLLM (BDI): 5 โมเดล (OpenThaiGPT/Typhoon-S/Pathumma/THaLLE + qwen3.6-35b-a3b) ผ่าน OpenAI-compatible endpoint https://thaillm.or.th/api/v1 (callThaiLLM · Bearer THAILLM_API_KEY · strip <think>) · v15.5.4 — แก้ /gdelt: multi-source RSS fallback (Diplomat→USNI→NavalNews) แทน GDELT/GNews ที่ block CF IPs · v15.5.3 — แก้ /gdelt: pivot Google News RSS (GDELT silent-blocks CF IPs) + parse RSS XML + cache 5 min · v15.5.2 — แก้ /gdelt: Cloudflare Cache API 5 min + soft-fail 200 เมื่อ 429/timeout + simplify query · v15.5.1 — แก้ /cve: เพิ่ม pubEndDate (NVD บังคับ), format +00:00, ขยาย 90d, แยก SCADA/ICS keyword (AND→OR) · v15.5.0 — เพิ่ม GET /gdelt proxy (bypass CORS ฝั่ง Worker) + GET /cve proxy (NVD ICS/SCADA HIGH/CRITICAL 30d) + เพิ่ม CVE context ใน buildUserPrompt · v15.4.3 — แก้ ZAI_ENDPOINT: /api/openai/v1/ คืน 404 NOT_FOUND → เปลี่ยนเป็น path ทางการ /api/paas/v4/chat/completions (docs.z.ai · curl ตัวอย่างใช้ paas/v4 + glm-5.2) · v15.4.2 — callZai: ดักซอง Zhipu native {code,msg,success} (แม้ HTTP 200) + ดัมพ์ raw body ใน detail · v15.4.1 — surface error จริงจาก Z.AI (Zhipu คืน HTTP 200+body error) + อ่าน raw body · v15.4 — เพิ่ม provider Z.AI (Zhipu GLM): glm-5.2/glm-4.6 ผ่าน OpenAI-compatible endpoint (callZai) · v15.3 — [JP 3-04] prompt upgrade: A1 ข้อเท็จจริง/ตีความ+สมมติฐานสุจริต+หลักฐานหักล้าง · A2 feed-trust+confidence รายโดเมน · A5 ผล/กลไก/อำนาจ/เสี่ยง/ผลลำดับสอง · A6 บทสรุปเรื่องเล่า 4 ส่วน+6 informational aspects · v15.3.1 — แก้ Gemini 2.5 โดนตัดที่ MAX_TOKENS (thinking กิน budget ร่วมกับคำตอบ)
 const DEFAULT_MODEL = 'gemini-2.5-flash';  // v14.0.7 — Google ย้าย 2.0-flash ไป paid tier · 2.5-flash ยังฟรี
 const MAX_TOKENS = 4096;                    // v15.3.1 — Workers AI cap (3000→4096) เผื่อ template v15.3 ที่ยาวขึ้น
 const MAX_TOKENS_GEMINI = 8192;             // v15.3.1 — Gemini 2.5 เป็น thinking model: การคิดภายใน (~2-3k tok ที่วัดจริง) นับรวมใน maxOutputTokens → ค่า 3000 เดิมเหลือที่ให้คำตอบ ~100 tok แล้วโดนตัดกลางประโยค
@@ -90,13 +91,29 @@ const ZAI_ENDPOINT = 'https://api.z.ai/api/paas/v4/chat/completions';
 const ZAI_TIMEOUT_MS = 60_000;   // GLM-5.2 reasoning อาจช้ากว่า → เผื่อเวลา
 const MAX_TOKENS_ZAI = 8192;     // เพดาน output (เท่า Gemini)
 
-const ALLOWED_MODELS = new Set([...WORKERS_AI_MODELS, ...GEMINI_MODELS, ...ZAI_MODELS]);
+// v15.6 — ThaiLLM (BDI · สถาบันข้อมูลขนาดใหญ่ ประเทศไทย) — OpenAI-compatible /v1/chat/completions
+//   ยืนยันจากทดสอบจริง 24 ก.ค. 69: choices[0].message.content + usage.prompt/completion_tokens
+//   เหมือน OpenAI เป๊ะ · โมเดลห่อ chain-of-thought ด้วย <think>…</think> (strip แบบเดียวกับ GLM)
+//   ใช้ https:// (เข้ารหัส · ทดสอบแล้วคืน 200) · rate limit 5 req/s หรือ 200 req/min
+const THAILLM_MODELS = new Set([
+    'OpenThaiGPT-ThaiLLM-8B-Instruct-v7.2',      // AIEAT
+    'Typhoon-S-ThaiLLM-8B-Instruct',             // SCB 10X
+    'Pathumma-ThaiLLM-qwen3-8b-think-3.0.0',     // NECTEC
+    'THaLLE-0.2-ThaiLLM-8B-fa',                  // KBTG
+    'qwen3.6-35b-a3b',                           // Alibaba/Qwen (MoE 35B) — ตัวใหญ่สุดบน ThaiLLM · เก่ง JSON กว่า 8B
+]);
+const THAILLM_ENDPOINT = 'https://thaillm.or.th/api/v1/chat/completions';
+const THAILLM_TIMEOUT_MS = 60_000;   // 8B/35B บน infra ไทย เผื่อเวลา
+const MAX_TOKENS_THAILLM = 8192;     // เพดาน output (เท่า Gemini/Z.AI)
+
+const ALLOWED_MODELS = new Set([...WORKERS_AI_MODELS, ...GEMINI_MODELS, ...ZAI_MODELS, ...THAILLM_MODELS]);
 
 function providerOf(modelId) {
     if (!modelId) return null;
     if (WORKERS_AI_MODELS.has(modelId)) return 'cloudflare-workers-ai';
     if (GEMINI_MODELS.has(modelId))     return 'google-gemini';
     if (ZAI_MODELS.has(modelId))        return 'zhipu-zai';
+    if (THAILLM_MODELS.has(modelId))    return 'thaillm';
     return null;
 }
 
@@ -607,6 +624,102 @@ async function callZai(env, model, system, userMsg) {
     };
 }
 
+// ── provider: ThaiLLM (BDI) ──────────────────────────────────────────
+// v15.6 — OpenAI-compatible Chat Completions (โครงเดียวกับ callZai)
+// https://bdi.or.th/thaillm/ · endpoint https://thaillm.or.th/api/v1/chat/completions
+async function callThaiLLM(env, model, system, userMsg) {
+    const key = env.THAILLM_API_KEY;
+    if (!key) {
+        return {
+            error: 'THAILLM_API_KEY ไม่ได้ตั้ง — เพิ่ม secret: wrangler secret put THAILLM_API_KEY',
+            status: 500
+        };
+    }
+
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), THAILLM_TIMEOUT_MS);
+
+    let resp, data, rawBody = '';
+    try {
+        resp = await fetch(THAILLM_ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${key}`
+            },
+            body: JSON.stringify({
+                model,
+                messages: [
+                    { role: 'system', content: system },
+                    { role: 'user',   content: userMsg }
+                ],
+                max_tokens: MAX_TOKENS_THAILLM,
+                temperature: 0.7,
+                stream: false
+            }),
+            signal: ctrl.signal
+        });
+        // อ่าน body เป็น text ก่อน แล้วค่อย parse — เผื่อ body ไม่ใช่ JSON จะได้เก็บ raw ไว้ debug
+        rawBody = await resp.text().catch(() => '');
+        try { data = JSON.parse(rawBody); } catch (_) { data = null; }
+    } catch (e) {
+        clearTimeout(tid);
+        const isAbort = e && (e.name === 'AbortError' || /abort/i.test(String(e.message || '')));
+        return {
+            error: isAbort ? 'ThaiLLM timeout' : 'ThaiLLM call failed',
+            detail: String(e && e.message || e),
+            status: isAbort ? 504 : 502
+        };
+    }
+    clearTimeout(tid);
+
+    const apiErr = data && data.error;
+    if (!resp.ok || apiErr || data == null) {
+        let detail;
+        if (apiErr) {
+            const code = apiErr.code != null ? ' (code ' + apiErr.code + ')' : '';
+            detail = String(apiErr.message || apiErr.code || JSON.stringify(apiErr)) + code;
+        } else if (data == null) {
+            detail = 'non-JSON body (HTTP ' + resp.status + '): ' + String(rawBody || '').slice(0, 300);
+        } else {
+            detail = 'HTTP ' + resp.status;
+        }
+        return { error: 'ThaiLLM API error', detail, raw: data, status: resp.ok ? 502 : resp.status };
+    }
+
+    const choice = data && data.choices && data.choices[0];
+    const m = choice && choice.message;
+    // โมเดล ThaiLLM (โดยเฉพาะตัว *-think) ห่อ chain-of-thought ด้วย <think>…</think> — strip เหมือน GLM
+    let text = ((m && m.content) || '').replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+    if (!text && m && m.reasoning_content) text = String(m.reasoning_content).trim();
+
+    if (!text) {
+        const shape = 'keys=[' + Object.keys(data).join(',') + ']'
+                    + ' · finish=' + ((choice && choice.finish_reason) || 'none')
+                    + ' · msgKeys=[' + (m ? Object.keys(m).join(',') : '-') + ']';
+        return {
+            error: 'Empty response from ThaiLLM',
+            detail: shape,
+            raw: data,
+            status: 502
+        };
+    }
+
+    // Normalize usage → input/output_tokens (Anthropic-compatible)
+    const um = data.usage || {};
+    const usage = {
+        input_tokens:  um.prompt_tokens     ?? null,
+        output_tokens: um.completion_tokens ?? null,
+        total_tokens:  um.total_tokens      ?? null
+    };
+
+    return {
+        text,
+        usage,
+        stop_reason: (choice && choice.finish_reason) || null
+    };
+}
+
 // ── OSINT News proxy (GET /gdelt) ───────────────────────────────────
 // fix v15.5.4: multi-source RSS fallback chain (GDELT + Google News block CF IPs)
 // Sources: The Diplomat → USNI News → Naval News (อย่างน้อยหนึ่งแหล่งควร accessible)
@@ -778,6 +891,8 @@ async function handleAnalysis(request, env) {
         result = await callGemini(env, model, system, userMsg);
     } else if (provider === 'zhipu-zai') {
         result = await callZai(env, model, system, userMsg);
+    } else if (provider === 'thaillm') {
+        result = await callThaiLLM(env, model, system, userMsg);
     } else {
         return jsonResponse({ error: 'No handler for provider: ' + provider }, 500);
     }
@@ -834,6 +949,10 @@ export default {
                     'zhipu-zai': {
                         configured: !!env.ZAI_API_KEY,
                         models: Array.from(ZAI_MODELS)
+                    },
+                    'thaillm': {
+                        configured: !!env.THAILLM_API_KEY,
+                        models: Array.from(THAILLM_MODELS)
                     }
                 },
                 model_default: DEFAULT_MODEL,

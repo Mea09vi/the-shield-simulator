@@ -1,14 +1,16 @@
 # ════════════════════════════════════════════════════════════════════
-# THE SHIELD 2.0 — UDC Simulator · ai-proxy v15.4.0
+# THE SHIELD 2.0 — UDC Simulator · ai-proxy v15.6.0
 # Cloudflare Workers config (ai-proxy) — Multi-provider:
 #   • Workers AI binding (Llama 3.3, DeepSeek, etc. · ฟรี neuron quota)
 #   • Google Gemini (REST · ต้องตั้ง GEMINI_API_KEY เป็น secret)
 #   • Z.AI / Zhipu GLM (OpenAI-compatible · ต้องตั้ง ZAI_API_KEY เป็น secret)
+#   • ThaiLLM / BDI (OpenAI-compatible · ต้องตั้ง THAILLM_API_KEY เป็น secret)
 # ──────────────────────────────────────────────────────────────────────
-# Setup:
+# Setup (รันจากโฟลเดอร์นี้เท่านั้น — ที่ที่มี wrangler.toml):
 #   1. wrangler login
-#   2. (optional · ถ้าจะใช้ Gemini)  wrangler secret put GEMINI_API_KEY
-#   2b.(optional · ถ้าจะใช้ GLM)     wrangler secret put ZAI_API_KEY
+#   2. (optional · ถ้าจะใช้ Gemini)   wrangler secret put GEMINI_API_KEY
+#   2b.(optional · ถ้าจะใช้ GLM)      wrangler secret put ZAI_API_KEY
+#   2c.(optional · ถ้าจะใช้ ThaiLLM)  wrangler secret put THAILLM_API_KEY
 #   3. wrangler deploy
 #
 # v15.4 note: เพิ่ม provider Z.AI (Zhipu GLM): glm-5.2 / glm-4.6
