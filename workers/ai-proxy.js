@@ -53,7 +53,7 @@
      5. คัดลอก URL (xxx.workers.dev) → UDC Simulator ผ่านปุ่ม ⚙
    ════════════════════════════════════════════════════════════════════ */
 
-const VERSION = '15.6.0';   // v15.6.0 — เพิ่ม provider ThaiLLM (BDI): 5 โมเดล (OpenThaiGPT/Typhoon-S/Pathumma/THaLLE + qwen3.6-35b-a3b) ผ่าน OpenAI-compatible endpoint https://thaillm.or.th/api/v1 (callThaiLLM · Bearer THAILLM_API_KEY · strip <think>) · v15.5.4 — แก้ /gdelt: multi-source RSS fallback (Diplomat→USNI→NavalNews) แทน GDELT/GNews ที่ block CF IPs · v15.5.3 — แก้ /gdelt: pivot Google News RSS (GDELT silent-blocks CF IPs) + parse RSS XML + cache 5 min · v15.5.2 — แก้ /gdelt: Cloudflare Cache API 5 min + soft-fail 200 เมื่อ 429/timeout + simplify query · v15.5.1 — แก้ /cve: เพิ่ม pubEndDate (NVD บังคับ), format +00:00, ขยาย 90d, แยก SCADA/ICS keyword (AND→OR) · v15.5.0 — เพิ่ม GET /gdelt proxy (bypass CORS ฝั่ง Worker) + GET /cve proxy (NVD ICS/SCADA HIGH/CRITICAL 30d) + เพิ่ม CVE context ใน buildUserPrompt · v15.4.3 — แก้ ZAI_ENDPOINT: /api/openai/v1/ คืน 404 NOT_FOUND → เปลี่ยนเป็น path ทางการ /api/paas/v4/chat/completions (docs.z.ai · curl ตัวอย่างใช้ paas/v4 + glm-5.2) · v15.4.2 — callZai: ดักซอง Zhipu native {code,msg,success} (แม้ HTTP 200) + ดัมพ์ raw body ใน detail · v15.4.1 — surface error จริงจาก Z.AI (Zhipu คืน HTTP 200+body error) + อ่าน raw body · v15.4 — เพิ่ม provider Z.AI (Zhipu GLM): glm-5.2/glm-4.6 ผ่าน OpenAI-compatible endpoint (callZai) · v15.3 — [JP 3-04] prompt upgrade: A1 ข้อเท็จจริง/ตีความ+สมมติฐานสุจริต+หลักฐานหักล้าง · A2 feed-trust+confidence รายโดเมน · A5 ผล/กลไก/อำนาจ/เสี่ยง/ผลลำดับสอง · A6 บทสรุปเรื่องเล่า 4 ส่วน+6 informational aspects · v15.3.1 — แก้ Gemini 2.5 โดนตัดที่ MAX_TOKENS (thinking กิน budget ร่วมกับคำตอบ)
+const VERSION = '15.6.1';   // v15.6.1 — callThaiLLM: retry อัตโนมัติ 1 ครั้งเมื่อ gateway ThaiLLM ล่มชั่วขณะ (CF คืน "error code: 502" แบบ non-JSON ต่อ replica เป็นครั้งคราว) · retry เฉพาะ error เด้งเร็ว (429/500/502/503/504/non-JSON) ไม่ retry ตอน timeout · v15.6.0 — เพิ่ม provider ThaiLLM (BDI): 5 โมเดล (OpenThaiGPT/Typhoon-S/Pathumma/THaLLE + qwen3.6-35b-a3b) ผ่าน OpenAI-compatible endpoint https://thaillm.or.th/api/v1 (callThaiLLM · Bearer THAILLM_API_KEY · strip <think>) · v15.5.4 — แก้ /gdelt: multi-source RSS fallback (Diplomat→USNI→NavalNews) แทน GDELT/GNews ที่ block CF IPs · v15.5.3 — แก้ /gdelt: pivot Google News RSS (GDELT silent-blocks CF IPs) + parse RSS XML + cache 5 min · v15.5.2 — แก้ /gdelt: Cloudflare Cache API 5 min + soft-fail 200 เมื่อ 429/timeout + simplify query · v15.5.1 — แก้ /cve: เพิ่ม pubEndDate (NVD บังคับ), format +00:00, ขยาย 90d, แยก SCADA/ICS keyword (AND→OR) · v15.5.0 — เพิ่ม GET /gdelt proxy (bypass CORS ฝั่ง Worker) + GET /cve proxy (NVD ICS/SCADA HIGH/CRITICAL 30d) + เพิ่ม CVE context ใน buildUserPrompt · v15.4.3 — แก้ ZAI_ENDPOINT: /api/openai/v1/ คืน 404 NOT_FOUND → เปลี่ยนเป็น path ทางการ /api/paas/v4/chat/completions (docs.z.ai · curl ตัวอย่างใช้ paas/v4 + glm-5.2) · v15.4.2 — callZai: ดักซอง Zhipu native {code,msg,success} (แม้ HTTP 200) + ดัมพ์ raw body ใน detail · v15.4.1 — surface error จริงจาก Z.AI (Zhipu คืน HTTP 200+body error) + อ่าน raw body · v15.4 — เพิ่ม provider Z.AI (Zhipu GLM): glm-5.2/glm-4.6 ผ่าน OpenAI-compatible endpoint (callZai) · v15.3 — [JP 3-04] prompt upgrade: A1 ข้อเท็จจริง/ตีความ+สมมติฐานสุจริต+หลักฐานหักล้าง · A2 feed-trust+confidence รายโดเมน · A5 ผล/กลไก/อำนาจ/เสี่ยง/ผลลำดับสอง · A6 บทสรุปเรื่องเล่า 4 ส่วน+6 informational aspects · v15.3.1 — แก้ Gemini 2.5 โดนตัดที่ MAX_TOKENS (thinking กิน budget ร่วมกับคำตอบ)
 const DEFAULT_MODEL = 'gemini-2.5-flash';  // v14.0.7 — Google ย้าย 2.0-flash ไป paid tier · 2.5-flash ยังฟรี
 const MAX_TOKENS = 4096;                    // v15.3.1 — Workers AI cap (3000→4096) เผื่อ template v15.3 ที่ยาวขึ้น
 const MAX_TOKENS_GEMINI = 8192;             // v15.3.1 — Gemini 2.5 เป็น thinking model: การคิดภายใน (~2-3k tok ที่วัดจริง) นับรวมใน maxOutputTokens → ค่า 3000 เดิมเหลือที่ให้คำตอบ ~100 tok แล้วโดนตัดกลางประโยค
@@ -636,42 +636,54 @@ async function callThaiLLM(env, model, system, userMsg) {
         };
     }
 
-    const ctrl = new AbortController();
-    const tid = setTimeout(() => ctrl.abort(), THAILLM_TIMEOUT_MS);
-
+    // v15.6.1 — retry 1 ครั้งเมื่อ gateway ThaiLLM ล่มชั่วขณะ (CF คืน "error code: 502"
+    // แบบ non-JSON เป็นครั้งคราวต่อ replica) · retry เฉพาะ error ที่เด้งเร็ว —
+    // ไม่ retry ตอน timeout เพราะกิน budget 60s ไปแล้ว จะทะลุ client timeout 90s
+    const RETRYABLE_HTTP = new Set([429, 500, 502, 503, 504]);
+    const MAX_ATTEMPTS = 2;
     let resp, data, rawBody = '';
-    try {
-        resp = await fetch(THAILLM_ENDPOINT, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${key}`
-            },
-            body: JSON.stringify({
-                model,
-                messages: [
-                    { role: 'system', content: system },
-                    { role: 'user',   content: userMsg }
-                ],
-                max_tokens: MAX_TOKENS_THAILLM,
-                temperature: 0.7,
-                stream: false
-            }),
-            signal: ctrl.signal
-        });
-        // อ่าน body เป็น text ก่อน แล้วค่อย parse — เผื่อ body ไม่ใช่ JSON จะได้เก็บ raw ไว้ debug
-        rawBody = await resp.text().catch(() => '');
-        try { data = JSON.parse(rawBody); } catch (_) { data = null; }
-    } catch (e) {
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        const ctrl = new AbortController();
+        const tid = setTimeout(() => ctrl.abort(), THAILLM_TIMEOUT_MS);
+        try {
+            resp = await fetch(THAILLM_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${key}`
+                },
+                body: JSON.stringify({
+                    model,
+                    messages: [
+                        { role: 'system', content: system },
+                        { role: 'user',   content: userMsg }
+                    ],
+                    max_tokens: MAX_TOKENS_THAILLM,
+                    temperature: 0.7,
+                    stream: false
+                }),
+                signal: ctrl.signal
+            });
+            // อ่าน body เป็น text ก่อน แล้วค่อย parse — เผื่อ body ไม่ใช่ JSON จะได้เก็บ raw ไว้ debug
+            rawBody = await resp.text().catch(() => '');
+            try { data = JSON.parse(rawBody); } catch (_) { data = null; }
+        } catch (e) {
+            clearTimeout(tid);
+            const isAbort = e && (e.name === 'AbortError' || /abort/i.test(String(e.message || '')));
+            if (isAbort) {
+                return { error: 'ThaiLLM timeout', detail: String(e && e.message || e), status: 504 };
+            }
+            // network error (ไม่ใช่ timeout) → retry ได้ 1 ครั้ง
+            if (attempt < MAX_ATTEMPTS) { await new Promise(r => setTimeout(r, 500)); continue; }
+            return { error: 'ThaiLLM call failed', detail: String(e && e.message || e), status: 502 };
+        }
         clearTimeout(tid);
-        const isAbort = e && (e.name === 'AbortError' || /abort/i.test(String(e.message || '')));
-        return {
-            error: isAbort ? 'ThaiLLM timeout' : 'ThaiLLM call failed',
-            detail: String(e && e.message || e),
-            status: isAbort ? 504 : 502
-        };
+
+        // upstream ล่มชั่วขณะ (CF 429/500/502/503/504 · หรือ body ไม่ใช่ JSON) → retry 1 ครั้ง
+        const transient = (!resp.ok && RETRYABLE_HTTP.has(resp.status)) || (data == null);
+        if (transient && attempt < MAX_ATTEMPTS) { await new Promise(r => setTimeout(r, 500)); continue; }
+        break;
     }
-    clearTimeout(tid);
 
     const apiErr = data && data.error;
     if (!resp.ok || apiErr || data == null) {
