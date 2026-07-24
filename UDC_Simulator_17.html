@@ -1,6 +1,24 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.22.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.23.0 · 7-Domain + AI Staff)
+  · [v17.23.0 WTA/SLS/LEAK] จัดเป้า-อาวุธรวมศูนย์ + shoot-look-shoot + ตัวชี้วัดช่องโหว่ผู้ยิง (sensors-to-shooters ขั้น ๔)
+      ที่มา: ขั้น ๓ ทำให้ "เห็นแล้วยังยิงไม่ได้จนกว่าจะมี FC" แล้ว แต่เรือแต่ละลำยังเลือกเป้าเอง
+             อิสระ — สองลำจึงยิงเป้าเดียวกันได้ขณะเป้าอีกลำลอดเข้าหา UDC โดยไม่มีใครรับ
+             และการยิงพลาด (MISS) ไม่เคยปรากฏต่อ ผบ. เลย เพราะไม่มีตัวชี้วัดกระสุน/สังหาร
+      - [WTA-1] updateWTA() จัดเป้ารวมศูนย์ครั้งเดียวต่อเฟรม (_wtaFrame) — รอบ ๑ ล็อกลำที่ปะทะอยู่
+          รอบ ๒ จ่ายเป้าที่เหลือให้เรือว่างที่ใกล้ที่สุด เป็นการเกลี่ยแบบนุ่ม (soft ×0.5/×1.15 ใน
+          pvPickTarget) ไม่ใช่สั่งบังคับ — ถ้าลำที่รับตายหรือกลับฐาน อีกลำรับช่วงเฟรมถัดไป
+          ครอบเฉพาะเรือผิวน้ำ↔เป้าผิวน้ำ/uuv; ESSM กับ สอ.รฝ. เป็นป้องกันจุดบทบาทเดียว ไม่มีปัญหาเกลี่ย
+      - [SLS-2] หน้าต่างประเมินผลยิง (assessUntil = frame+90) — ห้ามลำที่ ๒ ถล่มซ้ำเป้าที่น่าจะตายแล้ว
+          จนกว่าจะครบหน้าต่างประเมิน (BDA) นี่คือ "look" ของ shoot-look-shoot — ไม่ใช่เวลาบินของกระสุน
+          wtaLogShot() นับ salvos/hits/misses/kills/rounds (rounds = wep.burst จริง) → กระสุน/สังหาร
+          ยิงพลาดทำให้ตัวเลขนี้สูงขึ้น = MISS มีผลจริงต่อการตัดสินใจของ ผบ.
+      - [LEAK-3] ช่องโหว่ผู้ยิง (t.wtaGap) = เป้ากำลังเข้าหา UDC ในระยะ MEZ แต่ไม่มีเรือว่างรับ —
+          "leaker ที่คาดการณ์ได้" เตือนก่อนกลายเป็น MISSION FAIL: ป้าย ⚠ ไม่มีผู้ยิง บนแคนวาส
+          + แถวสรุป "จัดเป้า-อาวุธ" ในกระดานภัยคุกคาม (แดงเมื่อมีช่องโหว่)
+      - [MERGE-4] **จงใจเลื่อน** การรวมลูปผิวน้ำเข้ากับ updateAirDefense — เป็น refactor ล้วน ไม่เปลี่ยน
+          การตัดสินใจของ ผบ. (ตกเกณฑ์คัดฟีเจอร์) และเสี่ยงสูงในไฟล์ ๕ หมื่นบรรทัด คุณค่าการเกลี่ย
+          ที่ MERGE-4 ตั้งใจได้ ถูกส่งมอบแล้วด้วยชั้นประสานงาน WTA แทน
   · [v17.22.0 TQ-1/2/3] คุณภาพ track ๓ ระดับ + ประตูปล่อยอาวุธ + ลิงก์ CEC (sensors-to-shooters ขั้น ๓)
       ที่มา: ขั้น ๑–๒ ทำให้การยิง "มีต้นทุน" และ "แผนที่ ผบ. อนุมัติมีผลถึงไกปืน" แล้ว
              แต่ซิมยังถือว่า *เห็นเป้า = ยิงเป้าได้ทันที* — เรือทุกลำยิงได้เท่ากันทุกระยะ
@@ -763,12 +781,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.22.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.23.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.22.0';
+        const APP_VERSION = '17.23.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -7498,6 +7516,8 @@
             <!-- [v17.22.0 TQ-3] คุณภาพ track + สถานะ CEC — บอกว่า "ยิงได้กี่เป้า" ไม่ใช่ "เห็นกี่เป้า" -->
             <div class="bf-es-row"><span class="bf-es-k">คุณภาพ TRACK</span><span class="bf-es-v" id="bf-es-tq" title="ระดับ ๑ DETECT ตรวจพบ · ระดับ ๒ CLASSIFY พิสูจน์ทราบ · ระดับ ๓ FIRE-CONTROL ใช้ยิงได้&#10;ปล่อยอาวุธได้เฉพาะ track ระดับ ๓ เท่านั้น — ระยะชี้เป้าของเรือสั้นกว่าระยะอาวุธ จึงต้องเข้าใกล้ หรือรับ track จากหน่วยอื่นผ่าน CEC">— ไม่มี track —</span></div>
             <div class="bf-es-row"><span class="bf-es-k">ลิงก์ CEC</span><span class="bf-es-v" id="bf-es-cec" style="cursor:pointer;text-decoration:underline dotted" title="Cooperative Engagement Capability — แชร์ track ชี้เป้าข้ามแพลตฟอร์ม&#10;คลิกเพื่อเปิด/ปิด แล้วดูว่าระยะที่เรือเริ่มยิงได้เปลี่ยนไปอย่างไร">เปิด</span></div>
+            <!-- [v17.23.0 WTA/LEAK] แผนจัดเป้ารวมศูนย์ + ช่องโหว่ผู้ยิง + ประสิทธิภาพกระสุน -->
+            <div class="bf-es-row"><span class="bf-es-k">จัดเป้า-อาวุธ</span><span class="bf-es-v" id="bf-es-wta" title="แผนจัดเป้ารวมศูนย์: กันเรือสองลำยิงเป้าเดียวกันขณะเป้าอีกลำลอดเข้าหา UDC&#10;ช่องโหว่ = เป้าที่กำลังเข้าหา UDC ในระยะ MEZ แต่ไม่มีผู้ยิงว่างรับ (เตือนก่อนกลายเป็น MISSION FAIL)&#10;กระสุน/สังหาร = ตัวชี้วัดประสิทธิภาพจริง — ยิงพลาดทำให้ตัวเลขนี้สูงขึ้น">— ยังไม่มีเป้าในระยะ —</span></div>
             <div class="bf-es-row"><span class="bf-es-k">ฐานกฎหมาย</span><span class="bf-es-v" id="bf-es-law">UNCLOS 60(5) · เขตปลอดภัย 500 ม. + MEZ 5 nm</span></div>
         </div>
     </div>
@@ -7773,7 +7793,7 @@
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.22.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.23.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -8237,7 +8257,7 @@
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.22.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.23.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -8254,7 +8274,7 @@
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.22.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.23.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -9174,7 +9194,7 @@
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.22.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.23.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -11910,7 +11930,11 @@ function pvPickTarget(v) {
         // ยิงไม่ถึง "ตอนนี้" ไม่ตัดทิ้ง แค่ถ่วงลง — ไม่งั้นเรือจะละเป้าที่จัดการได้ไปไล่เป้าที่ไล่ไม่ทัน
         const reach = distNm <= getMaxWeaponRange(v, t.type) ? 1 : 0.55;
         // ความเฉื่อยของเป้าที่จับอยู่ — กันเรือแกว่งสลับเป้าที่คะแนนไล่เลี่ยกันจนไม่ได้ยิงสักนัด
-        const sc = info.score * reach * (t === v.engTarget ? 1.10 : 1);
+        // [v17.23.0 WTA-1] ถ่วงตามแผนจัดเป้ารวมศูนย์ (soft) — เป้าที่ลำอื่นถูกจองให้ยิง ลดคะแนนครึ่งหนึ่ง
+        //   ไม่ตัดทิ้ง: ถ้าลำที่ถูกจองตาย/กลับฐาน ลำนี้รับช่วงต่อได้ทันที · เป้าที่จองให้ลำนี้ ดันขึ้นเล็กน้อย
+        const wtaBias = (t.wtaShooter && t.wtaShooter !== v.label) ? 0.5
+                      : (t.wtaShooter && t.wtaShooter === v.label) ? 1.15 : 1;
+        const sc = info.score * reach * (t === v.engTarget ? 1.10 : 1) * wtaBias;
         if (sc > bestScore + 1e-9 || (Math.abs(sc - bestScore) <= 1e-9 && distNm < bestDist)) {
             bestScore = sc; best = t; bestDist = distNm; bestInfo = info;
         }
@@ -18039,9 +18063,89 @@ try {
     if (_cecEl) _cecEl.addEventListener('click', toggleCEC);
 } catch (e) {}
 
+// ═══ [v17.23.0 WTA-1] กระดานจัดเป้า-อาวุธรวมศูนย์ (Weapon-Target Assignment) ═══
+//  ปัญหาที่แก้: เดิมเรือแต่ละลำเลือกเป้าเองผ่าน pvPickTarget() — สองลำจึงเล็งเป้าเดียวกันได้
+//    ผลคือกระสุนสองชุดถล่มเป้าเดียว ขณะที่เป้าอีกลำที่กำลังเข้าหา UDC ไม่มีใครยิง = leaker
+//  วิธี: เดินแผนจัดเป้าครั้งเดียวต่อเฟรม (กันคิดซ้ำด้วย _wtaFrame) ก่อนเอนจินปะทะทั้งสองอ่านค่า
+//    รอบ ๑ ยึดเป้าที่กำลังปะทะอยู่ (incumbent) ไว้ก่อน — กันเรือแกว่งสลับเป้า
+//    รอบ ๒ เป้าที่เหลือ จัดให้ผู้ยิงว่างที่ใกล้สุด · ผู้ยิงหมดแต่เป้ายังเข้าหา UDC = ทำเครื่องหมาย "ช่องโหว่"
+//
+//  ⚠ เป็นชั้น "คำแนะนำ" ไม่ใช่คำสั่งบังคับ: pvPickTarget() ยังตัดสินใจเองได้ แค่ถ่วงน้ำหนักให้ทำตามแผน
+//    (×0.5 เมื่อเป้าถูกจองโดยลำอื่น) — ถ้าลำที่ถูกจองตาย/กลับฐาน ลำนี้รับช่วงต่อได้ทันทีเฟรมถัดไป
+//    ประตู FIRE-CONTROL และตัวกรองสิทธิ์เข้าปะทะทั้งหมดของขั้น ๓ คงไว้ครบ ไม่ถูกแทนที่
+//  หมายเหตุขอบเขต: จัดเฉพาะเรือ ปภอ. ต่อเป้าผิวน้ำ/ใต้น้ำ — สอ.รฝ./ESSM เป็นชั้นป้องกันประจำจุด
+//    บทบาทเดียว ตำแหน่งตายตัว ไม่มีปัญหาจัดเป้าซ้ำข้ามหน่วย จึงไม่ต้องเข้าแผนจัดเป้ารวมศูนย์
+const WTA_ASSESS_FRAMES = 90;        // shoot-look-shoot: หลังยิงชุดหนึ่ง รอประเมินผล ~1.5s ก่อนให้ลำอื่นมายิงซ้ำ
+const wtaStats = { salvos:0, hits:0, misses:0, kills:0, rounds:0, gap:0 };
+
+/** กระสุนต่อการสังหาร — ตัวชี้วัดประสิทธิภาพจริงเมื่อ MISS มีต้นทุน (0 = ยังไม่มีการสังหาร) */
+function wtaRoundsPerKill() {
+    return wtaStats.kills > 0 ? (wtaStats.rounds / wtaStats.kills) : 0;
+}
+/** บันทึกผลการยิงหนึ่งชุด (เรียกจากทุกเอนจินปะทะ) — ให้ตัวชี้วัด leaker/ประสิทธิภาพนับได้จริง
+ *  rounds = จำนวนกระสุนจริงในชุดนั้น (burst ของปืน / ๑ นัดต่อลูกสำหรับอาวุธนำวิถี-ตอร์ปิโด) */
+function wtaLogShot(hit, rounds) {
+    wtaStats.salvos++;
+    wtaStats.rounds += Math.max(1, rounds || 1);
+    if (hit) { wtaStats.hits++; wtaStats.kills++; } else { wtaStats.misses++; }
+}
+
+let _wtaFrame = -1;
+function updateWTA() {
+    if (simPaused || missionEnded) return;
+    if (_wtaFrame === frame) return;
+    _wtaFrame = frame;
+
+    // ล้างการจัดเป้าของเฟรมก่อน
+    threats.forEach(t => { t.wtaShooter = null; t.wtaGap = false; });
+    patrolVessels.forEach(v => { v.wtaTarget = null; v._wtaTargetRef = null; });
+
+    // ผู้ยิงที่ใช้การได้จริง = เรือ ปภอ. ที่อยู่ในสมการรบ (ไม่ RTB/REARM, อาวุธนำวิถียังไม่หมด)
+    const pool = patrolVessels.filter(v => !pvOffStation(v) && !v.winchester);
+
+    // เป้าที่ต้องจัด = ผิวน้ำ/ใต้น้ำ ในระยะ MEZ (โดรนจัดการโดย updateAirDefense คนละชั้น)
+    const cand = [];
+    threats.forEach(t => {
+        if (!t.active || t.frozen || t.detained) return;
+        if (t.type === 'drone' || t.type === 'cyber') return;
+        if (roeLevel === 'TIGHT' && !t.classified) return;   // สอดคล้องตัวกรอง pvPickTarget
+        const info = pvTargetInfo(t);
+        if (info.distUDC > MEZ_NM) return;
+        // shoot-look-shoot: เป้าที่เพิ่งถูกยิงชุดหนึ่งกำลังรอประเมินผล — ถือว่ามีคนจัดการชั่วคราว
+        //   ไม่ส่งผู้ยิงลำที่สองไปถล่มซ้ำเป้าที่น่าจะตายแล้ว ปล่อยให้ลำที่ยิงประเมินก่อน
+        const underAssess = t.assessUntil !== undefined && frame < t.assessUntil;
+        cand.push({ t, score: info.score, closing: info.closingKt > 0.2, underAssess });
+    });
+    cand.sort((a, b) => b.score - a.score);
+
+    // ── รอบ ๑ · ยึดเป้าที่กำลังปะทะอยู่ (incumbent) — ลดการแกว่งสลับเป้า ──
+    cand.forEach(c => {
+        if (c.t.wtaShooter) return;
+        const inc = pool.find(v => !v.wtaTarget && v.engTarget === c.t && (c.t.type !== 'uuv' || v.hasASW));
+        if (inc) { inc.wtaTarget = c.t.label || c.t.id || 'CONTACT'; inc._wtaTargetRef = c.t; c.t.wtaShooter = inc.label; }
+    });
+
+    // ── รอบ ๒ · เป้าที่เหลือ จัดให้ผู้ยิงว่างที่ใกล้สุด ──
+    let gap = 0;
+    cand.forEach(c => {
+        if (c.t.wtaShooter || c.underAssess) return;    // มีคนจัดแล้ว หรือกำลังรอประเมิน = ข้าม
+        let bestV = null, bestD = Infinity;
+        pool.forEach(v => {
+            if (v.wtaTarget) return;
+            if (c.t.type === 'uuv' && !v.hasASW) return;
+            const d = haversineNm(nyToLat(c.t.ny), nxToLng(c.t.nx), nyToLat(v.ny), nxToLng(v.nx));
+            if (d < bestD) { bestD = d; bestV = v; }
+        });
+        if (bestV) { bestV.wtaTarget = c.t.label || c.t.id || 'CONTACT'; bestV._wtaTargetRef = c.t; c.t.wtaShooter = bestV.label; }
+        else if (c.closing) { c.t.wtaGap = true; gap++; }   // ผู้ยิงหมด + เป้ายังเข้าหา UDC = ช่องโหว่จริง
+    });
+    wtaStats.gap = gap;
+}
+
 function updateAirDefense() {
     if (simPaused || missionEnded) return;
     updateTrackQuality();   // [v17.22.0 TQ-1] คิดคุณภาพ track ก่อน — ประตูปล่อยอาวุธอ่านค่านี้
+    updateWTA();         // [v17.23.0 WTA-1] จัดเป้า-อาวุธรวมศูนย์ (มีตัวกันคิดซ้ำต่อเฟรม)
     updateKillChain();   // [v17.20.0 KC-1] เดินนาฬิกา kill chain ทุกเฟรม
     const hold = (typeof roeLevel !== 'undefined' && roeLevel === 'HOLD');
 
@@ -18102,7 +18206,9 @@ function updateAirDefense() {
             wepFire(wep);   // [v17.20.0 AMMO-1] ตัดลูก ESSM ออกจากเซลล์ VLS
             kcStamp(best, 'Engage');
             v.essmFlash = { tx:best.nx, ty:best.ny, life:13, hit:false };
-            if (Math.random() < pk) {
+            const _hitE = Math.random() < pk;
+            wtaLogShot(_hitE, 1);   // [v17.23.0 LEAK-3] ESSM ๑ ลูก/ชุด
+            if (_hitE) {
                 v.essmFlash.hit = true;
                 addExplosion(best.nx, best.ny, '#00d4ff');
                 best.frozen = true; best.active = false;
@@ -18138,12 +18244,16 @@ function updateAirDefense() {
             tm.fireFlash = 9;
             tm.flashTarget = { nx:best.nx, ny:best.ny };
             kcStamp(best, 'Engage');   // [v17.20.0 KC-1] สอ.รฝ. ก็อยู่ในห่วงโซ่
-            if (Math.random() < tm.pk * (best.reconTracked ? 1.15 : 1.0)) {
+            const _hitS = Math.random() < tm.pk * (best.reconTracked ? 1.15 : 1.0);
+            wtaLogShot(_hitS, 1);   // [v17.23.0 LEAK-3] ปืนลูกซอง ๑ ชุด/ครั้ง
+            if (_hitS) {
                 addExplosion(best.nx, best.ny, '#ffd24a');
                 best.frozen = true; best.active = false;
                 tm.killCount = (tm.killCount || 0) + 1;
                 addLog(`🔫 สอ.รฝ. ${tm.label} → ${best.label} — ยิงโดรนเล็กตก (ปืนลูกซอง)`, '#39ff8c');
                 addEngLog(`<span style="color:#39ff8c;">✓ สอ.รฝ.${escapeHtml(tm.label)}→${escapeHtml(best.label)} HARD-KILL</span>`);
+            } else {
+                addEngLog(`<span style="color:#f59e0b;">✗ สอ.รฝ.${escapeHtml(tm.label)}→${escapeHtml(best.label)} MISS</span>`);
             }
         }
     });
@@ -21169,6 +21279,20 @@ function drawThreats() {
                 hudText('COAST', sx, sy-40);
             }
             ctx.textAlign = 'center';
+        }
+
+        // ── [v17.23.0 LEAK-3] ป้ายเตือนช่องโหว่ผู้ยิง — เป้ากำลังเข้าหา UDC ในระยะ MEZ แต่ไม่มีเรือว่างรับ ──
+        //   นี่คือ "leaker ที่คาดการณ์ได้" — เตือน ผบ. ก่อนเป้าลอดเข้าใกล้จนกลายเป็น MISSION FAIL
+        if (t.wtaGap) {
+            const blink = (Math.floor(frame / 18) % 2) === 0;
+            if (blink) {
+                ctx.save();
+                ctx.font = 'bold 10px "Share Tech Mono"';
+                ctx.fillStyle = '#ef4444';
+                ctx.textAlign = 'center';
+                hudText('⚠ ไม่มีผู้ยิง', sx, sy - (t.tq ? 52 : 40));
+                ctx.restore();
+            }
         }
 
         // ── Telemetry (stable position — ไม่สั่น, แสดงตลอด) ──
@@ -26114,6 +26238,7 @@ function animate() {
             //   คุณภาพ track ให้เสร็จก่อน เพื่อให้ประตูปล่อยอาวุธสองเอนจินอ่านค่าเฟรมเดียวกัน
             //   (ตัวฟังก์ชันมีตัวกันคิดซ้ำต่อเฟรมอยู่แล้ว เรียกซ้ำจึงไม่เปลืองแรงเครื่อง)
             if (typeof updateTrackQuality === 'function') updateTrackQuality();
+            if (typeof updateWTA === 'function') updateWTA();   // [v17.23.0 WTA-1] จัดเป้ารวมศูนย์ก่อนเลือกเป้ารายลำ
             // หา threat ที่ active, classified (ยืนยันแล้ว), และละเมิด MEZ
             // [v17.21.0 FIRES-1] จัดลำดับด้วยคะแนนรวม (ระดับภัย · เจตนา · เวลาถึง UDC · คำสั่งการยิง)
             // แทนเกณฑ์เดิม "ใกล้เรือเราที่สุดชนะ" — ตัวกรองสิทธิ์เข้าปะทะย้ายไปอยู่ใน pvPickTarget() ครบทุกข้อ
@@ -26197,6 +26322,9 @@ function animate() {
 
                         wepFire(wep);   // [v17.20.0 AMMO-1] ตัดกระสุน — ยิงพลาดก็เสียกระสุน
                         kcStamp(t, 'Engage');
+                        // [v17.23.0 SLS-2] shoot-look-shoot — ยิงชุดหนึ่งแล้วเข้าห้วงประเมินผล
+                        //   updateWTA จะไม่ส่งลำที่สองมาถล่มซ้ำระหว่างนี้ ลำที่ยิงเองประเมินก่อน
+                        t.assessUntil = frame + WTA_ASSESS_FRAMES;
 
                         // [v17.21.0 FIRES-2] นโยบายใช้อาวุธเปลี่ยนกระบอกที่เลือกจริง — แจ้งครั้งเดียวต่อลำต่อนโยบาย
                         if (sel.byPolicy && v._fgPolLogged !== sel.policy + '|' + wepName) {
@@ -26205,11 +26333,13 @@ function animate() {
                             addEngLog(`<span style="color:#a78bfa;">⚔ ${escapeHtml(v.label)} ใช้ [${escapeHtml(wepName)}] ตามคำสั่งการยิง — ${polTh}</span>`);
                         }
 
-                        if (Math.random() < pk) {
+                        const _hit = Math.random() < pk;
+                        wtaLogShot(_hit, wep.burst || 1);   // [v17.23.0 LEAK-3] นับกระสุน/สังหารทุกชุด — MISS มีต้นทุน
+                        if (_hit) {
                             // เข้าเป้า — ทำลายภัยคุกคาม
                             const blastCol = t.type === 'uuv' ? '#bd93f9' : '#ff6600';
                             addExplosion(t.nx, t.ny, blastCol);
-                            t.frozen = true; t.active = false;
+                            t.frozen = true; t.active = false; t.assessUntil = undefined;
                             v.killCount++;
                             v.state = 'PATROL'; v.engTarget = null; v.redirected = false;
                             const domLabel = t.type === 'uuv' ? '🌊 ASW' : '🔫';
@@ -37349,6 +37479,42 @@ window.toggleSat3D = toggleSat3D;
                         const s = on ? 'เปิด — แชร์ track ชี้เป้าข้ามหน่วย' : 'ปิด — เรือใช้ได้เฉพาะ track ที่จับเอง';
                         if (esCec.textContent !== s) esCec.textContent = s;
                         esCec.style.color = on ? '#39ff8c' : '#f59e0b';
+                    }
+                    // [v17.23.0 WTA/LEAK] จัดเป้ารวมศูนย์ · ช่องโหว่ผู้ยิง · กระสุน/สังหาร
+                    const esWta = document.getElementById('bf-es-wta');
+                    if (esWta) {
+                        let assigned = 0, gap = 0, freeShooters = 0, poolN = 0;
+                        try {
+                            threats.forEach(t => {
+                                if (!t.active || t.frozen || t.type === 'drone' || t.type === 'cyber') return;
+                                if (t.wtaShooter) assigned++;
+                                if (t.wtaGap) gap++;
+                            });
+                            if (typeof patrolVessels !== 'undefined') patrolVessels.forEach(v => {
+                                if (typeof pvOffStation === 'function' && pvOffStation(v)) return;
+                                if (v.winchester) return;
+                                poolN++; if (!v.wtaTarget) freeShooters++;
+                            });
+                        } catch (_) {}
+                        let s, col = '';
+                        if (assigned === 0 && gap === 0) {
+                            s = '— ยังไม่มีเป้าในระยะ —';
+                        } else {
+                            s = `จัดเป้าแล้ว ${assigned} · ผู้ยิงว่าง ${freeShooters}/${poolN}`;
+                            if (gap > 0) { s += ` · ⚠ ช่องโหว่ ${gap}`; col = '#ef4444'; }
+                            else col = '#39ff8c';
+                        }
+                        // ประสิทธิภาพสะสม — แสดงเมื่อมีการสังหารแล้ว
+                        try {
+                            if (typeof wtaStats !== 'undefined' && wtaStats.kills > 0) {
+                                const rpk = (wtaStats.rounds / wtaStats.kills);
+                                s += ` · ${rpk.toFixed(1)} นัด/สังหาร`;
+                            } else if (typeof wtaStats !== 'undefined' && wtaStats.salvos > 0) {
+                                s += ` · ยิง ${wtaStats.salvos} ชุด ยังไม่โดน`;
+                            }
+                        } catch (_) {}
+                        if (esWta.textContent !== s) esWta.textContent = s;
+                        esWta.style.color = col;
                     }
                     // [v17.21.0 FIRES-1] คำสั่งการยิงที่บังคับใช้อยู่ — ผลของการตกลงใจของ ผบ. ที่มีต่อไกปืน
                     const esFg = document.getElementById('bf-es-fires');
