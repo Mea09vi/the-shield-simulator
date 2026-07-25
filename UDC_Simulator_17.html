@@ -1,6 +1,54 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.33.1 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.34.0 · 7-Domain + AI Staff)
+  · [v17.34.0] OPERATIONAL CALM เฟส ๔ — data-threat: สีบนขอบแผงต้อง "ได้มาจากสถานะ"
+      โจทย์ที่ P2 จดค้างไว้ว่า "แผง ๑๒ ใบถือสีขอบต่างกันถึง ๘ สี" ปิดในเฟสนี้
+      ขอบแผงเคยทำหน้าที่เป็นป้ายชื่อ — ส้ม=ชายฝั่ง ฟ้า=ใต้น้ำ แดง=ข้าศึก ม่วง=บัญชาการ
+      ผลคือแผงทุกใบสว่างตั้งแต่ตอนปกติ พอโดเมนใดเข้าภาวะวิกฤตจริงมันไม่เหลืออะไร
+      จะเปลี่ยนเป็น ห้องยุทธการจึงกวาดตาแล้วอ่านไม่ได้ว่า "ตอนนี้ที่ไหนกำลังมีเรื่อง"
+      กติกาใหม่: สีสงวนไว้ให้สถานะภัยคุกคาม ไม่ใช่ให้ตัวตนของแผง
+
+      P4-A · ย้ายสีประจำตัวออกจากกรอบ ไปไว้ที่ --dc
+        กรอบทั้ง ๑๒ ใบเหลือเส้นบางกลางเส้นเดียว (var(--hairline)) เท่ากันหมด
+        สีเดิมไม่ได้ถูกทิ้ง — ย้ายไปเป็น --dc ซึ่งคุมหัวแผงและสีวงแหวน hover
+        จึงยังบอกได้ว่าแผงไหนคือโดเมนไหน แต่ไม่กินช่องทางของสถานะอีกต่อไป
+        · หัวแผง ๙ จุดที่เขียน color เองอยู่ → color:var(--dc) คำโฆษณาที่ว่า
+          "--dc คุมหัวแผง" จึงเป็นจริง ไม่ใช่แค่ความตั้งใจในคอมเมนต์
+        · .therm-panel เคยบังคับขอบส้มด้วย !important — ถอดทิ้ง ถ้าเก็บไว้มันจะชนะ
+          กฎ data-threat ทุกข้อ แผงนั้นจะไม่มีวันแสดงภาวะวิกฤตได้เลย
+        · hex ตรงตัวสุดท้ายบน .panel (#2d3a6f) → var(--purple) พร้อมให้ id="panel-c2"
+          ค่าที่เขียนตรงคือค่าที่ธีมสั่งไม่ได้ — บทเรียนเดียวกับบั๊กไซเบอร์ v17.33.1
+
+      P4-B · สามสถานะ ไม่มีสถานะที่สี่
+        ready  = เส้นบางกลาง ไม่มีสี (ไม่มีกฎ CSS เลย — ปล่อยตกกลับ --hairline
+                 การแต้มเขียวให้ ๑๒ ใบคือการสร้างเสียงรบกวนชุดใหม่แทนชุดเดิม)
+        alert  = ขอบ --warn-hi ๖๒% + แถบซ้าย ๒px
+        engage = ขอบ --crit-hi + แถบซ้าย + วงแหวน electric ติดค้าง + หายใจ ๒.๖ วิ
+        ทั้งสามอ่าน semantic ramp (--warn-hi / --crit-hi) ไม่ใช่ --amber/--red ดิบ
+        จึงตามธีมครบทั้งเจ็ดชุดสี · วงแหวน electric เลื่อนจาก "สัญญาณว่าเมาส์ชี้อยู่"
+        → "สัญญาณว่าแผงนี้กำลังปะทะ" ตามที่ P2-C จดไว้ว่าจะทำในเฟสนี้ (hover ยังเปิดได้)
+        ป้าย ALERT/ENGAGE บนหัวแผงเป็นตัวอักษร ไม่ใช่แค่สี — สีล้วนตกผู้ใช้ตาบอดสี
+        ราว ๘% ของชาย · ขนาด var(--text-2xs)=9px ตามพื้นล่างที่ผู้ใช้กำหนด
+
+      P4-C · ตัวขับ: ผูกกรอบเข้ากับสถานะจริง ไม่ใช่ทาสีเอาสวย
+        แหล่งความจริงคือ CommandCore.domainState() ตัวเดียวกับที่โมดัล Command Core ใช้
+        (เปิด domainState/overallState/syncFromDom ออกนอก IIFE เพื่อการนี้)
+        ไม่คำนวณสถานะซ้ำที่นี่ — ถ้าคำนวณเองจะกลายเป็นแหล่งความจริงที่สอง และจะเพี้ยน
+        จากโมดัลทันทีที่เกณฑ์ใดถูกแก้ · มี interval ของตัวเอง ๒ วิ เพราะ tick() ของ
+        Command Core เดินเฉพาะตอนโมดัลเปิด · รอบแรกบังคับรันเสมอ (โหลดทิ้งไว้ในแท็บหลัง
+        ก็ยังได้สถานะตั้งต้น) และฟัง visibilitychange เพื่ออัปเดตทันทีที่กลับมาที่แท็บ
+        แผงที่ผูก ๘ ใบ: Coastal · Tidal · Surface · Underwater · Seismic · C2 ·
+        RMP (overallState รวมทุกโดเมน) · RED FORCE (ผูกกับสถานการณ์ที่กำลังเดิน)
+
+      ยังไม่ทำในเฟสนี้ (เป็นการตัดสินใจ ไม่ใช่การข้าม)
+      · ไม่คืนมุม --aug-* ให้ .rr-section — P2 เก็บตัวแปรไว้เผื่อเฟสนี้ แต่ตรวจแล้วพบว่า
+        .rr-section คือหมวดของชั้นแผนที่ (BASE MAP / OVERLAYS) ไม่ใช่โดเมน จึงไม่มีสถานะ
+        ที่ซื่อสัตย์จะผูกให้ การคืนกรอบให้มันคือของตกแต่งที่ปลอมตัวเป็นสัญญาณ
+      · แผง ๔ ใบเป็นกลางถาวร: UDC Core Health · IFF Legend · Event Log · PLAN STATUS
+        ทั้งสี่เป็นแผงอ้างอิง/บันทึก/ควบคุม ไม่ใช่เซนเซอร์ประจำโดเมน
+      · จุดสีดิบที่ยกไป P5: bf-tb-dot ๗ ค่าใน #bf-deploy-panel · .rmp-mh ๗ ค่าใน
+        SENSOR IMPACT MATRIX · swatch/bullet ราว ๔๘ จุดใน #mda-layerpanel
+        ทั้งสามชุดเขียนค่าดิบครบทุกโดเมน จึงไม่มีใบไหนโดดออกมา — ไม่ใช่บั๊กที่ต้องรีบ
   · [v17.33.1] การ์ดไซเบอร์-สเปกตรัมในแผง MULTI-DOMAIN SENSING ม่วงอยู่คนเดียว — แก้ที่ต้นทาง
       อาการที่ผู้ใช้รายงาน: เปิดธีม Stealth Mono แล้วการ์ดโดเมนหกใบจางลงเป็นเทาตามธีม
       แต่การ์ด "ไซเบอร์-สเปกตรัม" ยังมีแถบซ้ายสีม่วงสดใบเดียว — ไม่เข้าพวก
@@ -1160,12 +1208,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.33.1 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.34.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.33.1';
+        const APP_VERSION = '17.34.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -2040,6 +2088,58 @@
         }
         @media (prefers-reduced-motion: reduce) {
             .panel::before { animation: none; transition: none; }
+        }
+        /* ══ [v17.34.0 P4] data-threat — สีบนขอบแผงต้อง "ได้มาจากสถานะ" ไม่ใช่ "ติดมากับตัวแผง" ══
+           ปัญหาที่ปิดในเฟสนี้ (ยกมาจาก P2 บรรทัด "แผง ๑๒ ใบถือสีขอบต่างกันถึง ๘ สี"):
+           ขอบแผงเคยเป็น "ป้ายชื่อ" — ส้ม=ชายฝั่ง ฟ้า=ใต้น้ำ แดง=ข้าศึก ฯลฯ ผลคือ
+           เมื่อแผงหนึ่งเข้าสู่ภาวะวิกฤตจริง มันไม่มีอะไรจะเปลี่ยนเป็น เพราะมันสว่าง
+           อยู่แล้วตั้งแต่ตอนปกติ ห้องยุทธการจึงอ่าน "ที่ไหนกำลังมีเรื่อง" ไม่ได้เลย
+           กฎใหม่: ๓ สถานะเท่านั้น
+             ready  = เส้นบางกลาง ไม่มีสี   (สงบ = เงียบ — ไม่มีกฎ ปล่อยให้ตกกลับ --hairline)
+             alert  = ขอบเหลืองอำพัน + แถบซ้าย ๒px  (เทียบ warn ของโดเมน)
+             engage = ขอบแดง + แถบซ้าย + วงแหวน electric ติดค้าง (เทียบ crit)
+           วงแหวน electric ย้ายจาก "สัญญาณว่าเมาส์ชี้อยู่" → "สัญญาณว่าแผงนี้กำลังปะทะ"
+           ตามที่ P2-C จดไว้ว่าจะทำในเฟสนี้ · hover ยังเปิดวงแหวนได้เหมือนเดิม
+           สีประจำแผงเดิมไม่ได้ถูกทิ้ง — ย้ายไปเป็น --dc ซึ่งคุมหัวแผงและสีวงแหวน
+           hover จึงยังบอกได้ว่าแผงไหนคือโดเมนไหน แต่ไม่กินช่องทางของสถานะ */
+        .panel[data-threat="alert"] {
+            border-color: color-mix(in srgb, var(--warn-hi) 62%, transparent);
+            box-shadow: inset 2px 0 0 var(--warn-hi),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.05), var(--elev-1);
+        }
+        .panel[data-threat="engage"] {
+            --dc: var(--crit-hi);                       /* วงแหวนและหัวแผงเปลี่ยนเป็นแดงพร้อมกัน */
+            border-color: var(--crit-hi);
+            box-shadow: inset 2px 0 0 var(--crit-hi),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.07), var(--elev-2);
+            animation: panel-threat-breathe 2.6s ease-in-out infinite;   /* ทับ udc-panel-in ที่จบไปแล้ว — ไม่ให้แผงเล่นอนิเมชันเข้าใหม่กลางภารกิจ */
+        }
+        .panel[data-threat="engage"]::before {
+            opacity: .8;
+            animation-play-state: running;
+        }
+        @keyframes panel-threat-breathe {
+            0%, 100% { border-color: var(--crit-hi); }
+            50%      { border-color: color-mix(in srgb, var(--crit-hi) 45%, transparent); }
+        }
+        /* ป้ายสถานะบนหัวแผง — ตัวอักษร ไม่ใช่แค่สี (สีล้วนตกผู้ใช้ตาบอดสี ~๘% ของชาย)
+           สร้างโดย P4-C ตอนรันไทม์ ไม่ได้เขียนไว้ใน HTML เพราะแผงที่มีสถานะจริงมีแค่ ๘ ใบ */
+        .panel[data-threat="alert"]  .thr-chip { color: var(--warn-hi); border-color: color-mix(in srgb, var(--warn-hi) 55%, transparent); }
+        .panel[data-threat="engage"] .thr-chip { color: var(--crit-hi); border-color: color-mix(in srgb, var(--crit-hi) 62%, transparent); }
+        .thr-chip {
+            float: right;                                /* หัวแผงเป็น block — float ทำให้ป้ายไปชิดขวาโดยไม่ต้องแปลง layout เดิมเป็น flex */
+            font-family: var(--font-mono), monospace; font-size: var(--text-2xs);
+            letter-spacing: 1px; line-height: 1;
+            padding: var(--space-px) var(--space-1);
+            border: 1px solid transparent; border-radius: var(--radius-xs);
+        }
+        .thr-chip--float {                               /* แผงที่ไม่มี .panel-title (เช่น RMP ที่เรนเดอร์เนื้อในด้วย JS) */
+            float: none; position: absolute; z-index: 2;
+            top: var(--space-1); right: var(--space-1);
+            background: var(--plane-1-bg);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .panel[data-threat="engage"] { animation: none; }
         }
         /* [v17.7.9 VIS-1] tab ถูกซ่อน (สลับแท็บ/ย่อหน้าต่าง) → หยุด animation/backdrop-filter
            ที่ยังวิ่งอยู่เบื้องหลังทั้งหน้า กัน GPU compositing เปล่าประโยชน์ตอนไม่มีใครมองอยู่ */
@@ -4084,7 +4184,9 @@
         #outcomeAckBtn:hover { background:rgb(var(--teal-rgb) / .22); }
 
         /* ── หน้าต่างข้อมูลความร้อนและประสิทธิภาพการใช้พลังงาน (PUE) ── */
-        .therm-panel { border-color:var(--orange) !important; flex-shrink:0; }
+        /* [v17.34.0 P4-A] เดิมบังคับขอบส้มด้วย !important — ตอนนี้สีประจำแผงย้ายไป --dc
+           (ใช้กับหัวแผงและวงแหวน hover) ขอบเป็นเส้นบางกลางเหมือนแผงอื่นทุกใบ */
+        .therm-panel { --dc:var(--orange-hi); flex-shrink:0; }
         .therm-row {
             display:flex; justify-content:space-between; align-items:center;
             font-family:var(--font-mono), monospace; font-size:var(--text-xs);
@@ -8641,7 +8743,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.33.1 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.34.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9111,7 +9213,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.33.1 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.34.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9129,7 +9231,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.33.1 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.34.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -9240,9 +9342,9 @@ window.udcHdrAnchor = udcHdrAnchor;
 
     <!-- LEFT: Domain panels -->
     <div style="display:flex;flex-direction:column;gap:var(--space-2);overflow-y:auto;overflow-x:hidden;">
-        <div class="panel" id="panel-coastal" style="border-color:var(--orange);flex:0 0 auto;">
+        <div class="panel" id="panel-coastal" style="--dc:var(--orange);flex:0 0 auto;">
             <div style="display:flex;justify-content:space-between;align-items:center;">
-                <div class="panel-title" style="color:var(--orange);"><svg class="ico" aria-hidden="true"><use href="#i-mountain-snow"/></svg> Coastal &amp; Landing Domain</div>
+                <div class="panel-title" style="color:var(--dc);"><svg class="ico" aria-hidden="true"><use href="#i-mountain-snow"/></svg> Coastal &amp; Landing Domain</div>
                 <span class="ind ind-ok" id="ind-coastal"></span>
             </div>
             <div class="panel-sub" style="color:var(--orange);">สอ.รฝ. — หน่วยบัญชาการต่อสู้อากาศยานและรักษาฝั่ง</div>
@@ -9254,9 +9356,9 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="sensor-row"><span>🪖 Coastal Guard</span><span class="val s-ok" id="cs-guard">READY</span></div>
         </div>
 
-        <div class="panel" id="panel-underwater" style="border-color:var(--cyan);flex:0 0 auto;">
+        <div class="panel" id="panel-underwater" style="--dc:var(--cyan);flex:0 0 auto;">
             <div style="display:flex;justify-content:space-between;align-items:center;">
-                <div class="panel-title" style="color:var(--cyan);"><svg class="ico" aria-hidden="true"><use href="#i-waves"/></svg> Underwater Domain</div>
+                <div class="panel-title" style="color:var(--dc);"><svg class="ico" aria-hidden="true"><use href="#i-waves"/></svg> Underwater Domain</div>
                 <span class="ind ind-ok" id="ind-underwater"></span>
             </div>
             <div class="panel-sub" style="color:var(--cyan);">ศสต.ศปก.ทร. — ศูนย์สงครามใต้น้ำ</div>
@@ -9274,9 +9376,9 @@ window.udcHdrAnchor = udcHdrAnchor;
         </div>
 
         <!-- ── TIDE MONITOR PANEL ── -->
-        <div class="panel" id="panel-tide" style="border-color:var(--cyan-mid);padding:var(--space-1-5) var(--space-2);flex-shrink:0;">
+        <div class="panel" id="panel-tide" style="--dc:var(--cyan-mid);padding:var(--space-1-5) var(--space-2);flex-shrink:0;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-px);">
-                <div class="panel-title" style="color:var(--cyan-mid);"><svg class="ico" aria-hidden="true"><use href="#i-waves"/></svg> Tidal Monitor</div>
+                <div class="panel-title" style="color:var(--dc);"><svg class="ico" aria-hidden="true"><use href="#i-waves"/></svg> Tidal Monitor</div>
                 <span class="ind" id="ind-tide" style="background:var(--cyan-mid);box-shadow:0 0 6px var(--cyan-mid);"></span>
             </div>
             <div class="panel-sub" style="color:var(--cyan-mid);margin-bottom:var(--space-0-5);">อ่าวสัตหีบ · SH2026 (กรมอุทกศาสตร์)</div>
@@ -9395,9 +9497,9 @@ window.udcHdrAnchor = udcHdrAnchor;
             </details>
         </div>
 
-        <div class="panel" id="panel-air" style="border-color:var(--cyan-dim);flex:0 0 auto;">
+        <div class="panel" id="panel-air" style="--dc:var(--cyan-dim);flex:0 0 auto;">
             <div style="display:flex;justify-content:space-between;align-items:center;">
-                <div class="panel-title" style="color:var(--cyan-dim);"><svg class="ico" aria-hidden="true"><use href="#i-ship"/></svg> Surface Domain</div>
+                <div class="panel-title" style="color:var(--dc);"><svg class="ico" aria-hidden="true"><use href="#i-ship"/></svg> Surface Domain</div>
                 <span class="ind ind-ok" id="ind-air"></span>
             </div>
             <div class="panel-sub" style="color:var(--cyan-dim);">ทรภ.๑ — ทัพเรือภาคที่ ๑ (First Naval Area Command)</div>
@@ -9429,7 +9531,7 @@ window.udcHdrAnchor = udcHdrAnchor;
         </div>
 
         <!-- ═══ [v15.14] RECOGNIZED MARITIME PICTURE — docked ใต้ Surface Domain (สมมาตรกับ threat board ฝั่งขวา) ═══ -->
-        <div class="panel rmp-dock" id="panel-rmp" style="border-color:var(--cyan-mid);flex:0 0 auto;">
+        <div class="panel rmp-dock" id="panel-rmp" style="--dc:var(--cyan-mid);flex:0 0 auto;">
             <div id="rmp-host"></div>
         </div>
     </div>
@@ -10089,9 +10191,9 @@ window.udcHdrAnchor = udcHdrAnchor;
 
     <!-- RIGHT: Command + Controls -->
     <div class="right-col">
-        <div class="panel" style="border-color:#2d3a6f;">
+        <div class="panel" id="panel-c2" style="--dc:var(--purple);">
             <div style="display:flex;justify-content:space-between;align-items:center;">
-                <div class="panel-title" style="color:var(--purple);"><svg class="ico" aria-hidden="true"><use href="#i-eye"/></svg> Command &amp; Intelligence</div>
+                <div class="panel-title" style="color:var(--dc);"><svg class="ico" aria-hidden="true"><use href="#i-eye"/></svg> Command &amp; Intelligence</div>
                 <div style="display:flex;align-items:center;gap:var(--space-1-5);">
                     <!-- [v17.13.0 CORE-1] ปุ่มเปิด UDC COMMAND CORE — JARVIS-style fullscreen overlay -->
                     <button id="ccOpenBtn" onclick="CommandCore.open()" title="เปิด UDC COMMAND CORE — ภาพรวมสถานะทุกระบบแบบเต็มจอ (ESC เพื่อปิด)">⬡ CORE</button>
@@ -10101,7 +10203,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.33.1 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.34.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -10111,7 +10213,7 @@ window.udcHdrAnchor = udcHdrAnchor;
              (Seawater Inlet / ΔT / Tidal Flush ย้ายไปการ์ด COOLING ใน Command Core) -->
         <div class="panel therm-panel" style="padding:var(--space-1-5) var(--space-2);">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-px);">
-                <div class="panel-title" style="color:var(--orange-hi);"><svg class="ico" aria-hidden="true"><use href="#i-thermometer"/></svg> UDC Core Health</div>
+                <div class="panel-title" style="color:var(--dc);"><svg class="ico" aria-hidden="true"><use href="#i-thermometer"/></svg> UDC Core Health</div>
                 <button class="iff-toggle-btn" onclick="toggleTherm()" id="thermToggleBtn">▼ ซ่อน</button>
             </div>
             <div id="thermContent">
@@ -10189,9 +10291,9 @@ window.udcHdrAnchor = udcHdrAnchor;
              แสดง: PGA at UDC · last event · risk level · tsunami · cable
              ปุ่ม Open Chart → toggle #seismicChartPanel (3 tabs)
              ════════════════════════════════════════════════════════════ -->
-        <div class="panel" id="panel-seismic" style="border-color:var(--orange-hi);padding:var(--space-1-5) var(--space-2);flex-shrink:0;">
+        <div class="panel" id="panel-seismic" style="--dc:var(--orange-hi);padding:var(--space-1-5) var(--space-2);flex-shrink:0;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-px);">
-                <div class="panel-title" style="color:var(--orange-hi);"><svg class="ico" aria-hidden="true"><use href="#i-globe"/></svg> Seismic Monitor</div>
+                <div class="panel-title" style="color:var(--dc);"><svg class="ico" aria-hidden="true"><use href="#i-globe"/></svg> Seismic Monitor</div>
                 <span class="ind" id="ind-seismic" style="background:var(--orange-hi);box-shadow:0 0 6px var(--orange-hi);"></span>
             </div>
             <div class="panel-sub" style="color:var(--orange-hi);margin-bottom:var(--space-0-5);">TMD + USGS · PGA at UDC site</div>
@@ -10228,8 +10330,8 @@ window.udcHdrAnchor = udcHdrAnchor;
         <!-- 🔴 RED FORCE — Threat Injection -->
         <!-- [v16.0.4 W4-UX13] regroup เป็น ๓ กลุ่มตาม taxonomy งานวิจัย (ใต้น้ำ / ผิวน้ำ-Grey-zone / อากาศ-ผสม)
              + ป้าย greytrawler อ้างกรณี Yi Peng 3 + id="redforce-panel" เป็น scroll target ของ #tlIdle (UX18) -->
-        <div class="panel" id="redforce-panel" style="border-color:var(--red);">
-            <div class="panel-title" style="color:var(--red);"><span class="dot dot--crit"></span> Threat Injection</div>
+        <div class="panel" id="redforce-panel" style="--dc:var(--red);">
+            <div class="panel-title" style="color:var(--dc);"><span class="dot dot--crit"></span> Threat Injection</div>
             <div class="panel-sub" style="color:var(--red);">จำลองภัยข้าศึก — RED FORCE</div>
             <div class="ctrl-grp">▾ ภัยใต้น้ำ — UUV / เรือดำน้ำ / ทุ่นระเบิด</div>
             <div class="ctrl-row">
@@ -48611,9 +48713,9 @@ window.MDA.StrategicAnalysis = (function () {
       panel = document.createElement('div');
       panel.className = 'panel psi-panel';
       panel.id = 'planStatusPanel';
-      panel.style.borderColor = 'var(--cyan-mid)';
+      panel.style.setProperty('--dc', 'var(--cyan-mid)');   /* [v17.34.0 P4-A] สีประจำแผง → --dc ขอบเหลือเส้นบางกลาง */
       var h = '';
-      h += '<div class="panel-title" style="color:var(--cyan-mid);" data-en="<svg class=&quot;ico&quot; aria-hidden=&quot;true&quot;><use href=&quot;#i-compass&quot;/></svg> PLAN STATUS · Operation Plan Status"><svg class="ico" aria-hidden="true"><use href="#i-compass"/></svg> PLAN STATUS · สถานะแผนปฏิบัติการ</div>';
+      h += '<div class="panel-title" style="color:var(--dc);" data-en="<svg class=&quot;ico&quot; aria-hidden=&quot;true&quot;><use href=&quot;#i-compass&quot;/></svg> PLAN STATUS · Operation Plan Status"><svg class="ico" aria-hidden="true"><use href="#i-compass"/></svg> PLAN STATUS · สถานะแผนปฏิบัติการ</div>';
       h += '<div class="panel-sub" style="color:var(--cyan-hi);" data-en="Planning Cycle — OPLAN → CAP → OPORD">วงรอบการวางแผน — OPLAN → CAP → OPORD</div>';
       h += '<div class="psi-track">';
       for (var i=0;i<STAGES.length;i++){
@@ -51354,7 +51456,10 @@ window.CommandCore = (function () {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
     else init();
 
-    return { open, close, setView, _onLog, _onDomain, _onSensor };
+    /* [v17.34.0 P4-C] เปิด domainState/overallState/syncFromDom ออกนอก IIFE
+       เพื่อให้ตัวขับ data-threat อ่านสถานะโดเมนได้แม้ Command Core ปิดอยู่
+       (dom ถูก wrapper ของ setDomain เลี้ยงให้สดตลอด — ดูบล็อกถัดไป) */
+    return { open, close, setView, _onLog, _onDomain, _onSensor, domainState, overallState, syncFromDom };
 })();
 
 /* ── wrapper: mirror ข้อมูล live เข้า Command Core โดยไม่แตะฟังก์ชันเดิม ──
@@ -51375,6 +51480,91 @@ window.CommandCore = (function () {
         setSensor = function (i, t, c) { o.apply(this, arguments); try { CommandCore._onSensor(i, t, c); } catch (_) {} };
         setSensor._ccWrapped = true;
     }
+})();
+
+/* ══ [v17.34.0 P4-C] ตัวขับ data-threat — ผูกกรอบแผงเข้ากับสถานะโดเมนจริง ══
+   เฟส P4-A ถอดสีประจำตัวออกจากกรอบแผงทั้ง ๑๒ ใบไปไว้ที่ --dc แล้ว
+   กรอบจึงว่าง — บล็อกนี้คือสิ่งที่มาเติมช่องว่างนั้น: แผงจะสว่างก็ต่อเมื่อ
+   "มีเรื่อง" เท่านั้น ทำให้กวาดตาครั้งเดียวรู้ว่าโดเมนไหนกำลังเสื่อม/ปะทะ
+
+   แหล่งความจริงคือ CommandCore.domainState() ตัวเดียวกับที่ Command Core ใช้
+   ไม่มีการคำนวณสถานะซ้ำที่นี่ (ถ้าคำนวณเองจะกลายเป็นแหล่งความจริงที่สอง
+   และจะเพี้ยนจากโมดัลทันทีที่เกณฑ์ใดเกณฑ์หนึ่งถูกแก้)
+   ต้องมี interval ของตัวเอง เพราะ tick() ของ Command Core เดินเฉพาะตอนโมดัลเปิด
+
+   แผงที่ "ไม่" ผูกสถานะ — เป็นการตัดสินใจ ไม่ใช่ลืม:
+     UDC Core Health · IFF Legend · Event Log · PLAN STATUS
+   ทั้งสี่เป็นแผงอ้างอิง/บันทึก ไม่ใช่เซนเซอร์ประจำโดเมน ไม่มีสถานะภัยคุกคาม
+   ที่ซื่อสัตย์จะผูกให้ — การใส่สีให้มันคือการตกแต่งที่ปลอมเป็นสัญญาณ */
+(function () {
+    'use strict';
+    var PERIOD = 2000;
+
+    function cc() {
+        var c = window.CommandCore;
+        return (c && typeof c.domainState === 'function') ? c : null;
+    }
+    /* สถานการณ์กำลังเดินอยู่หรือไม่ — ไม่มีตัวแปร global ที่บอกตรง ๆ
+       สัญญาณที่ซื่อสัตย์ที่สุดคือแถบ #tlActive ซึ่ง clearOutcome() เป็นคนซ่อน */
+    function scenario() {
+        var a = document.getElementById('tlActive');
+        if (!a || a.style.display === 'none') return 'ok';
+        return window.missionEnded ? 'warn' : 'crit';
+    }
+
+    var MAP = [
+        { id:'panel-coastal',    read:function (c) { return c.domainState('littoral');   } },  /* Coastal & Landing */
+        { id:'panel-tide',       read:function (c) { return c.domainState('littoral');   } },  /* Tidal Monitor     */
+        { id:'panel-air',        read:function (c) { return c.domainState('coastal');    } },  /* Surface Domain (คีย์ coastal = ผิวน้ำ ตาม DOM_ROWS) */
+        { id:'panel-underwater', read:function (c) { return c.domainState('underwater'); } },
+        { id:'panel-seismic',    read:function (c) { return c.domainState('seabed');     } },
+        { id:'panel-c2',         read:function (c) { return c.domainState('command');    } },
+        { id:'panel-rmp',        read:function (c) { return c.overallState();            } },  /* ภาพรวมทุกโดเมน */
+        { id:'redforce-panel',   read:function ( ) { return scenario();                  } }
+    ];
+    var LEVEL = { ok:'ready', warn:'alert', crit:'engage' };
+    var CHIP  = {
+        alert:  { txt:'ALERT',  ttl:'เฝ้าระวัง — โดเมนนี้เสื่อมสภาพบางส่วน' },
+        engage: { txt:'ENGAGE', ttl:'ปะทะ — โดเมนนี้อยู่ในภาวะวิกฤต' }
+    };
+
+    function chip(el, threat) {
+        var host = el.querySelector('.panel-title') || el;
+        var c = host.querySelector(':scope > .thr-chip');
+        if (threat === 'ready') { if (c) c.parentNode.removeChild(c); return; }
+        if (!c) {
+            c = document.createElement('span');
+            c.className = 'thr-chip' + (host === el ? ' thr-chip--float' : '');
+            host.insertBefore(c, host.firstChild);   /* หน้าสุดเพื่อให้ float ขึ้นบรรทัดเดียวกับหัวแผงเสมอ */
+        }
+        c.textContent = CHIP[threat].txt;
+        c.title       = CHIP[threat].ttl;
+    }
+
+    function apply(force) {
+        if (document.hidden && !force) return;       /* ตาม VIS-1 — แท็บถูกซ่อนก็ไม่ต้องคำนวณ */
+        var c = cc(); if (!c) return;
+        try { c.syncFromDom(); } catch (_) {}        /* กันกรณี wrapper ของ setDomain ติดตั้งช้ากว่าตัวแรกที่เรียก setDomain */
+        for (var i = 0; i < MAP.length; i++) {
+            var el = document.getElementById(MAP[i].id); if (!el) continue;
+            var t;
+            try { t = LEVEL[MAP[i].read(c)] || 'ready'; } catch (_) { continue; }
+            if (el.getAttribute('data-threat') === t) continue;
+            el.setAttribute('data-threat', t);
+            chip(el, t);
+        }
+    }
+
+    function start() {
+        apply(true);                                 /* รอบแรกบังคับเสมอ — โหลดหน้าเว็บทิ้งไว้ในแท็บหลังก็ยังได้สถานะตั้งต้น */
+        setInterval(function () { apply(); }, PERIOD);
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) apply();           /* กลับมาที่แท็บแล้วอัปเดตทันที ไม่ต้องรอครบรอบ */
+        });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+    else start();
+    window.UDCThreatChoreo = { apply: apply, map: MAP };   /* ให้ทดสอบ/บังคับรีเฟรชได้ */
 })();
 </script>
 
