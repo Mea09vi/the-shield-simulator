@@ -1,6 +1,72 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.39.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.39.1 · 7-Domain + AI Staff)
+  · [v17.39.1] D3-2 "ลงทุน" — ยกเครื่องแผนที่ ๓ มิติ (three.js r128 · ฉาก #dive3d) รอบที่ ๒
+      ครึ่งหลังของงานตามคำสั่งเดิม "ทำทุกข้อเลย ยกเว้น ข้อสถานะตอน load ครับ"
+      รอบที่ ๑ (v17.39.0) คือ "ถางงบ" — ลดภาระที่ไม่ให้ภาพกลับคืน
+      รอบนี้คือการเอางบที่ถางได้ไปซื้อสิ่งที่ตาเห็นจริง ๔ อย่าง
+
+      ก. เปลี่ยนวิธี ไม่ใช่แค่เปลี่ยนค่า — ต้องแจ้งตรง ๆ
+         ข้อตรวจเดิมเขียนไว้ว่า "เพิ่มความละเอียดผิวน้ำจาก ๕๖×๕๖ เป็น ๑๙๒×๑๙๒"
+         ถ้าทำตามตัวอักษรโดยคงลูป Gerstner ไว้บน CPU เหมือนเดิม จะเป็น "การถอยหลัง" ทันที
+         เพราะจุดยอดเพิ่มจาก ๓,๒๔๙ เป็น ๓๗,๒๔๙ (~๑๑.๕ เท่า) แล้วต้องคำนวณตรีโกณ ๘ คลื่น
+         ต่อจุดต่อเฟรม บวก computeVertexNormals() บนจุดยอด ๓๗,๒๔๙ — คืนงบที่ v17.39.0
+         เพิ่งถางมาได้ทั้งหมด จึงย้ายการ "ประเมินผล" คลื่นขึ้น vertex shader และคำนวณ
+         normal เชิงวิเคราะห์ (อนุพันธ์ย่อยของ Gerstner) แทน computeVertexNormals()
+         ผลคือความละเอียดที่เพิ่มขึ้นแทบไม่มีต้นทุน และงาน CPU ต่อเฟรม "น้อยลงกว่าเดิม"
+
+      ข. ทำไมต้องเพิ่มความละเอียด — เลขไนควิสต์
+         ผิวน้ำกว้าง D3_W*1.5 = ๖๓๐ หน่วย ÷ ๕๖ ส่วน = ๑๑.๒๕ หน่วย/ช่อง ≈ ๒๙๑ ม./ช่อง
+         เกณฑ์ไนควิสต์ตัดคลื่นที่สั้นกว่า ~๒๒.๕ หน่วยทิ้งหมด
+         คลื่นทั้งชุดคือ ๑๒๐ · ๖๖ · ๓๖ · ๒๐ · ๑๑ · ๖ · ๓.๕ · ๒ หน่วย
+         ⇒ เห็นจริงแค่ ๓ คลื่นแรก อีก ๕ คลื่นถูก alias เป็นการสั่นมั่ว — คำนวณฟรีทิ้งทุกเฟรมมาตลอด
+         ที่ ๑๙๒ ส่วน ได้ ๓.๒๘ หน่วย/ช่อง ⇒ แยกได้ถึงคลื่น ~๖.๖ หน่วย
+         เหลือ ๓.๕ กับ ๒ หน่วยที่ normalMap รับช่วงไป ซึ่งเป็นหน้าที่ที่ถูกต้องของ normalMap อยู่แล้ว
+         สามเหลี่ยมผิวน้ำ ๖,๒๗๒ → ๗๓,๗๒๘ (บน GPU) แลกกับงาน CPU ต่อเฟรม ๓,๒๔๙ จุด → ๐
+
+      ค. Phong → Standard (PBR) — การแปลค่า ไม่ใช่การคงค่า
+         MeshPhongMaterial ไม่มีคู่ตรงใน PBR สำหรับ shininess/specular จึงแปลดังนี้
+           ผิวน้ำ  shininess ๘๐ + specular 0xffeec8 → roughness ๐.๑๔ · metalness ๐ · envMap (PMREM) ๑.๑๕
+           พื้นทะเล shininess ๐                     → roughness ๐.๙๕ · metalness ๐ · envMap (PMREM) ๐.๔๕
+         โทนอุ่นของ highlight ไม่หายไปแม้ถอด specular 0xffeec8 ทิ้ง เพราะความอุ่นมาจาก
+         สีของ SpotLight (0xfff4dc) เองอยู่แล้ว ไม่ได้มาจากค่า specular ของ material
+         envMap ใช้ d3_envMap ที่มีอยู่แล้ว (สร้างด้วย PMREMGenerator ก่อนสร้างฉาก) ไม่ได้เพิ่มพื้นผิวใหม่
+
+      ง. Beer–Lambert — การดูดกลืนแสงตามความลึก (พื้นทะเลเท่านั้น)
+         ★ ชุดสีนี้เป็น "ข้อมูล" ไม่ใช่ "ตกแต่ง" → จึงไม่ผูกโทเคนธีมโดยตั้งใจ ตามกฎตัดสินข้อเดียว
+         σ ที่ใช้จริง (๐.๐๓๐, ๐.๐๑๐, ๐.๐๐๕) ต่อเมตร × ระยะทางแสง ๑.๕
+         ⇒ ที่ ๔๕ ม. เหลือ R≈๐.๑๓ G≈๐.๕๑ B≈๐.๗๑ — ยังอ่านภูมิประเทศออก
+         ⚠ นี่ "อ่อนกว่า" น้ำชายฝั่งจริงโดยตั้งใจ ค่าตามฟิสิกส์จริง (๐.๑๑๕, ๐.๐๓๖, ๐.๐๑๘)
+           ให้ที่ ๔๕ ม. เหลือ R≈๐.๐๐๐๒๕ G≈๐.๐๗๕ B≈๐.๒๗๓ = ดำสนิท อ่านแผนที่ทหารไม่ได้
+           และซ้ำซ้อนกับ FogExp2 ที่มืดตามระยะอยู่แล้ว — เลือกอ่านออกก่อนสมจริง เพราะนี่คือแผนที่ปฏิบัติการ
+         ★ ตั้งใจไม่ใส่ extinction ให้ผ้าคลุมภาพดาวเทียม เพราะ D3-1b กรองสามเหลี่ยมที่เป็นน้ำออกไปแล้ว
+           ผ้าคลุมจึงเหลือเฉพาะพื้นดินเหนือน้ำ (ความลึก ≈ ๐) ใส่ไปก็เป็น no-op
+
+      จ. Anisotropic filtering (๑๖× เท่าที่การ์ดรองรับ / ผิวน้ำ ๘×)
+         พื้นผิวทั้งสามถูกมองด้วยมุมเฉียดเกือบตลอดเวลา mipmap จึงเบลอจนลายหาย
+           ทราย (repeat ๘๕) ๑๖× · bump ทราย (repeat ๓๒) ๑๖× · normal ผิวน้ำ (repeat ๘) ๘×
+         วัดตอนรัน: getMaxAnisotropy() = ๑๖ และค่าที่ตั้งจริงคือ ๑๖ / ๑๖ / ๘
+
+      ฉ. ผลข้างเคียงที่ยอมรับแล้ว — ต้องบันทึกไว้ ไม่ใช่ซ่อน
+         SSAOPass วาดฉากด้วย override material ซึ่งไม่มีโค้ด Gerstner ที่เราฉีดเข้าไป
+         ผิวน้ำจึง "แบน" ใน depth/AO pass ขณะที่ยกตัวจริงใน beauty pass
+         (ก่อนหน้านี้ CPU ขยับเรขาคณิตจริง ทั้งสอง pass จึงตรงกัน)
+         ขนาดความคลาดเคลื่อน ≤ ~๑๐ หน่วย บนระนาบไกล ๑,๖๐๐ หน่วย และผิวน้ำเป็น
+         transparent + depthWrite:false อยู่แล้ว จึงประเมินว่าไม่มีนัยสำคัญทางสายตา
+         ⚠ ถ้าวันหนึ่งผิวน้ำต้องทึบหรือต้องรับเงาตัวเอง ข้อนี้จะกลายเป็นบั๊กทันที
+
+      ช. ผลตรวจตอนรัน (โปรโตคอลเดิม: autoReset=true แล้ว render ธรรมดาครั้งเดียว)
+         โปรแกรมที่ฉีดเข้าไปทั้งสองตัวคอมไพล์และลิงก์สำเร็จ
+           udc-gerstner-v1   LINK_STATUS = true
+           udc-extinction-v1 LINK_STATUS = true
+           gl.getError() = 0 · ไม่มี WebGLProgram diagnostics
+         จุดยอดผิวน้ำ ๓๗,๒๔๙ (=๑๙๓²) · สามเหลี่ยม ๗๓,๗๒๘ · material ทั้งสองเป็น MeshStandardMaterial
+         uniform คลื่นถูกอัดครบ ๘ ตัว (uGW1[0] และ uGW1[7] มีค่าไม่เป็นศูนย์)
+         การเขียนค่าต่อเฟรมยังทำงาน: opacity ๐.๓๙๕ · normalScale ๐.๓๘ · uWSpd ๐.๙๕ (ตรงสูตรที่ seaState=1)
+         หมายเหตุความซื่อสัตย์: ไม่รายงานตัวเลขเทียบก่อน/หลังของทั้งฉาก เพราะฉากนี้มีวัตถุ
+         เกิด/ดับตลอดเวลา และแท็บทดสอบถูกเบราว์เซอร์หรี่ rAF อยู่ ตัวเลขคนละวินาทีเทียบกันไม่ได้
+         และไม่รายงานเป็นมิลลิวินาทีเพราะนาฬิกาบนเครื่องทดสอบแกว่งเกินกว่าจะอ้างได้
+
   · [v17.39.0] D3-1 "ถางงบ" — ยกเครื่องแผนที่ ๓ มิติ (three.js r128 · ฉาก #dive3d) รอบที่ ๑
       ผู้ใช้สั่ง "ทำทุกข้อเลย ยกเว้น ข้อสถานะตอน load ครับ" หลังการตรวจออกแบบ
       งานรอบนี้คือครึ่งแรก "ถางงบ" (ลดภาระที่ไม่ให้ภาพกลับคืน) ครึ่งหลัง "ลงทุน" อยู่ใน v17.39.1
@@ -1565,12 +1631,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.39.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.39.1 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.39.0';
+        const APP_VERSION = '17.39.1';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -9554,7 +9620,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.39.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.39.1 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -10024,7 +10090,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.39.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.39.1 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -10042,7 +10108,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.39.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.39.1 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -11015,7 +11081,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.39.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.39.1 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -24946,28 +25012,39 @@ function init3D() {
     fillLight.position.set(-140, -100, -120);
     d3_scene.add(fillLight);
 
-    // ── Sea surface — [v09.4] Phong + normal map (ไม่มี mirror reflection) ──
+    // ── Sea surface — [v09.4] normal map (ไม่มี mirror reflection) ──
     //   เลิกใช้ THREE.Water เพราะ reflection สะท้อน terrain ใต้น้ำขึ้นเป็น "ภูเขาม่วง" บนผิวน้ำ
-    //   ใช้ Phong + waternormals.jpg เป็น normalMap → คลื่นมีรายละเอียดแสง shading โดยไม่ reflect
-    const surfGeo = new THREE.PlaneGeometry(D3_W*1.5, D3_W*1.5, 56, 56);
+    //   ใช้ waternormals.jpg เป็น normalMap → คลื่นมีรายละเอียดแสง shading โดยไม่ reflect
+    // ── [v17.39.1 D3-2a] tessellation 56×56 → 192×192 + Gerstner ย้ายขึ้น GPU ──
+    //   ปัญหาเดิม: ผิวน้ำกว้าง D3_W*1.5 = 630 units ÷ 56 = 11.25 units/quad ≈ 291 m/quad
+    //   เกณฑ์ไนควิสต์ตัดคลื่นที่สั้นกว่า ~22.5 units ทิ้งหมด ⇒ bank 8 คลื่น (120,66,36,20,11,6,3.5,2)
+    //   มองเห็นจริงแค่ 3 คลื่นแรก อีก 5 คลื่นถูก alias เป็นการสั่นมั่ว — คำนวณฟรีทิ้งทุกเฟรม
+    //   192×192 → 3.28 units/quad ⇒ ได้เพิ่มถึงคลื่น 11 m (ยังเหลือ 3.5/2 m ที่ normalMap รับช่วงไป)
+    const surfGeo = new THREE.PlaneGeometry(D3_W*1.5, D3_W*1.5, 192, 192);
     surfGeo.rotateX(-Math.PI/2);
     const waterNormalTex = new THREE.TextureLoader().load(
         'https://threejs.org/examples/textures/waternormals.jpg',
         (t)=>{
             t.wrapS = t.wrapT = THREE.RepeatWrapping;
             t.repeat.set(8, 8);                  // ทำซ้ำให้คลื่นถี่
+            _d3aniso(t, 8);                      // [D3-2d] ผิวน้ำมองเฉียดเสมอ — ripple หายถ้าไม่ใส่
         }
     );
-    const surfMat = new THREE.MeshPhongMaterial({
+    // ── [v17.39.1 D3-2b] Phong → Standard (PBR) ──
+    //   shininess 80 / specular 0xffeec8 ไม่มีคู่ตรงใน PBR → แทนด้วย roughness ต่ำ + envMap (PMREM)
+    //   โทนอุ่นของ highlight ไม่หาย เพราะมาจากสี SpotLight (0xfff4dc) เองอยู่แล้ว
+    //   envMap ทำให้ผิวน้ำสะท้อน "ฟ้าบน–มืดล่าง" ตามทิศ normal ของคลื่น = ยอดคลื่นสว่างกว่าร่องจริง ๆ
+    const surfMat = new THREE.MeshStandardMaterial({
         color: 0x3a8ab0,                         // ฟ้าเข้มอ่าวไทย (ไม่ม่วง)
         transparent: true, opacity: 0.42,        // ใส ~58% (เห็น UDC/terrain ผ่านผิวน้ำ)
         side: THREE.DoubleSide,
-        shininess: 80,                           // มันวาวจากดวงอาทิตย์ (specular)
-        specular: 0xffeec8,                      // highlight สีอุ่นจาก sun
+        roughness: 0.14, metalness: 0.0,         // ผิวน้ำมันวาว ไม่ใช่โลหะ
+        envMap: d3_envMap, envMapIntensity: 1.15,
         normalMap: waterNormalTex,
         normalScale: new THREE.Vector2(0.35, 0.35),
         depthWrite: false,                       // ★ ไม่บัง object ใต้น้ำ
     });
+    _d3AttachGerstner(surfMat);
     d3_surface = new THREE.Mesh(surfGeo, surfMat);
     d3_surface.renderOrder = 2;
     d3_surface.userData.normalTex = waterNormalTex;   // เก็บ ref สำหรับ animate offset
@@ -25073,11 +25150,21 @@ function init3D() {
     if (typeof _d3BuildSedLegend==='function') _d3BuildSedLegend();
     if (typeof _d3ApplySediment==='function') _d3ApplySediment(true);
     bedGeo.computeVertexNormals();
-    const bed = new THREE.Mesh(bedGeo, new THREE.MeshPhongMaterial({
-        vertexColors:true, shininess:0, flatShading:false,
+    // ── [v17.39.1 D3-2b/c] พื้นทะเล: Phong → Standard (PBR) + Beer–Lambert ──
+    //   PBR: shininess 0 → roughness 0.95 (ทรายด้าน) + envMap (PMREM) เป็นแสงรอบทิศ
+    //        Phong เดิมได้ ambient เป็นค่าคงที่ทั้งผืน → ร่องทรายฝั่งที่ไม่โดนดวงอาทิตย์แบนสนิท
+    //        IBL ให้ irradiance ตามทิศ normal → ริ้วทรายมีไล่ระดับแม้ในเงา
+    //   Beer–Lambert: ดูรายละเอียดที่ _d3AttachExtinction()
+    //   ★ ไม่ใส่ extinction ให้ satellite drape เพราะ D3-1b กรอง triangle ที่เป็นน้ำออกไปแล้ว
+    //     — drape เหลือเฉพาะพื้นดินเหนือน้ำ (ความลึก ≈ 0) จะใส่ไปก็เป็น no-op
+    const bedMat = new THREE.MeshStandardMaterial({
+        vertexColors:true, roughness:0.95, metalness:0.0, flatShading:false,
+        envMap:d3_envMap, envMapIntensity:0.45,
         map:_d3sandTex(),
         // [v16.2.0 G2-1] ริ้วทรายนูนจริง (bump) — แสง/เงา side-light ตามแนวริ้ว ไม่ใช่แค่ลายสี
-        bumpMap:_d3sandBumpTex(), bumpScale:0.55 }));   // smooth + sand texture (HD)
+        bumpMap:_d3sandBumpTex(), bumpScale:0.55 });   // smooth + sand texture (HD)
+    _d3AttachExtinction(bedMat);
+    const bed = new THREE.Mesh(bedGeo, bedMat);
     bed.position.y = 0;   // vertices อยู่ที่ world Y จริงแล้ว
     d3_scene.add(bed);
     d3_seabedY = _d3y(D3_SEABED);
@@ -26597,6 +26684,128 @@ function _d3dotTex() {
     return new THREE.CanvasTexture(cv);
 }
 
+// ═══ [v17.39.1 D3-2] เครื่องมือร่วมสำหรับ "ลงทุน" ภาพ — anisotropy / Gerstner GPU / Beer–Lambert ═══
+
+// ── [D3-2d] anisotropic filtering ──────────────────────────────────────────────
+//   texture ที่ repeat สูง (ทราย 85×85) เมื่อมองจากมุมเฉียดพื้น mipmap มาตรฐานจะเลือก level
+//   ตามแกนที่ย่อมากที่สุด → ลายทรายกลายเป็นสีเทาเรียบตั้งแต่ระยะกลาง  anisotropy แก้ตรงจุดนี้
+//   ราคา: sampling เพิ่มเฉพาะพิกเซลที่เฉียดจริง — ถูกกว่าการเพิ่มความละเอียด texture มาก
+function _d3aniso(tex, cap) {
+    if (!tex || !d3_renderer || !d3_renderer.capabilities) return tex;
+    const max = d3_renderer.capabilities.getMaxAnisotropy();
+    tex.anisotropy = Math.min(cap || 16, max);
+    tex.needsUpdate = true;
+    return tex;
+}
+
+// ── [D3-2a] Gerstner บน GPU ────────────────────────────────────────────────────
+//   เดิมคำนวณคลื่นทีละ vertex บน CPU ทุกเฟรม  พอยก tessellation ผิวน้ำ 56×56 → 192×192
+//   (3,249 → 37,249 verts) ภาระลูปตรีโกณจะเพิ่ม ~11.5 เท่า — กินคืนทุกอย่างที่ D3-1 ถางไป
+//   ย้ายสมการเดิม (ตัวเดียวกันทุกเทอม) ขึ้น vertex shader แล้ว CPU เหลืองานต่อเฟรมแค่
+//   เขียน uniform 1 ตัว (uTime) ⇒ ได้ทั้งความละเอียดคลื่นและ CPU ที่เบาลงกว่าเดิม
+//   normal คำนวณเชิงวิเคราะห์จากอนุพันธ์ย่อยของผลรวม → เลิกใช้ computeVertexNormals() ทั้งหมด
+const D3_GWAVES = 8;                       // จำนวนคลื่นใน bank (ต้องตรงกับขอบเขตลูปใน shader)
+function _d3AttachGerstner(mat) {
+    const w1 = [], w2 = [];
+    for (let i = 0; i < D3_GWAVES; i++) { w1.push(new THREE.Vector4()); w2.push(new THREE.Vector4()); }
+    mat.userData.gUniforms = {
+        uTime: { value: 0 },
+        uWSpd: { value: 1 },
+        uGW1:  { value: w1 },              // (dirX, dirZ, k, ω)
+        uGW2:  { value: w2 },              // (amp, Q, phase, —)
+    };
+    mat.onBeforeCompile = function (shader) {
+        Object.assign(shader.uniforms, mat.userData.gUniforms);
+        shader.vertexShader = shader.vertexShader
+            .replace('#include <common>', '#include <common>\n' + [
+                'uniform float uTime;',
+                'uniform float uWSpd;',
+                'uniform vec4  uGW1[' + D3_GWAVES + '];',
+                'uniform vec4  uGW2[' + D3_GWAVES + '];',
+                'vec3 udcGerstner(vec2 p0, out vec3 nrm) {',
+                '    vec3 d  = vec3(0.0);',
+                '    vec3 tX = vec3(1.0, 0.0, 0.0);',   // ∂P/∂x0
+                '    vec3 tZ = vec3(0.0, 0.0, 1.0);',   // ∂P/∂z0
+                '    for (int j = 0; j < ' + D3_GWAVES + '; j++) {',
+                '        vec2  dir = uGW1[j].xy;',
+                '        float k   = uGW1[j].z;',
+                '        float w   = uGW1[j].w;',
+                '        float amp = uGW2[j].x;',
+                '        float Q   = uGW2[j].y;',
+                '        float ph  = uGW2[j].z;',
+                '        float th  = k * dot(dir, p0) - w * uTime * uWSpd + ph;',
+                '        float c = cos(th);',
+                '        float s = sin(th);',
+                '        d.x += Q * amp * dir.x * c;',
+                '        d.z += Q * amp * dir.y * c;',
+                '        d.y += amp * s;',
+                '        float ka = k * amp;',
+                '        tX.x += -Q * ka * dir.x * dir.x * s;',
+                '        tX.y +=      ka * dir.x * c;',
+                '        tX.z += -Q * ka * dir.x * dir.y * s;',
+                '        tZ.x += -Q * ka * dir.y * dir.x * s;',
+                '        tZ.y +=      ka * dir.y * c;',
+                '        tZ.z += -Q * ka * dir.y * dir.y * s;',
+                '    }',
+                '    nrm = normalize(cross(tZ, tX));',
+                '    return d;',
+                '}',
+            ].join('\n'))
+            // beginnormal_vertex มาก่อน begin_vertex เสมอ → คำนวณครั้งเดียวแล้วส่งต่อ
+            .replace('#include <beginnormal_vertex>', [
+                'vec3 udcGN;',
+                'vec3 udcGD = udcGerstner(position.xz, udcGN);',
+                'vec3 objectNormal = udcGN;',
+                '#ifdef USE_TANGENT',
+                '    vec3 objectTangent = vec3( tangent.xyz );',
+                '#endif',
+            ].join('\n'))
+            .replace('#include <begin_vertex>', 'vec3 transformed = position + udcGD;');
+        mat.userData.gShader = shader;
+    };
+    mat.customProgramCacheKey = function () { return 'udc-gerstner-v1'; };
+    return mat;
+}
+
+// ── [D3-2c] Beer–Lambert depth extinction ──────────────────────────────────────
+//   น้ำทะเลดูดกลืนแสงไม่เท่ากันทุกช่องสี: I = I₀·e^(−σ·d) โดย σ(แดง) ≫ σ(เขียว) > σ(น้ำเงิน)
+//   ผลคือยิ่งลึกยิ่งเหลือแต่ฟ้า–เขียว ⇒ "ความลึก" อ่านออกจากสีได้ทันทีโดยไม่ต้องอ่านตัวเลข
+//   ★ สีชุดนี้เป็น "ข้อมูล" ไม่ใช่ "ตกแต่ง" → จึงไม่ผูกกับ theme token โดยตั้งใจ (ตามกฎตัดสินสีข้อเดียว)
+//   ค่า σ ปรับให้เบากว่าฟิสิกส์จริงของน้ำชายฝั่ง เพราะฉากมี FogExp2 ทำ fade-to-black ซ้อนอยู่แล้ว
+//   ที่ 45 m (พื้นทะเลลึกสุด) เหลือ R≈0.13 G≈0.51 B≈0.71 — ยังอ่านภูมิประเทศออก ไม่ดำทึบ
+const D3_EXT_SIGMA = [0.030, 0.010, 0.005];   // σ ต่อเมตร (R, G, B)
+const D3_EXT_PATH  = 1.5;                     // ประมาณระยะทางแสง "ลงไป+สะท้อนขึ้นมาหากล้อง"
+function _d3AttachExtinction(mat) {
+    mat.userData.extUniforms = {
+        uExtSigma: { value: new THREE.Vector3(D3_EXT_SIGMA[0], D3_EXT_SIGMA[1], D3_EXT_SIGMA[2]) },
+        uExtPath:  { value: D3_EXT_PATH },
+        uExtYK:    { value: D3_DEPTH },       // world Y → เมตร (แกน Y ถูกขยาย D3_DEPTH เท่า)
+        uExtGain:  { value: 1.0 },            // 0 = ปิดสนิท, 1 = เต็ม
+    };
+    mat.onBeforeCompile = function (shader) {
+        Object.assign(shader.uniforms, mat.userData.extUniforms);
+        shader.vertexShader = shader.vertexShader
+            .replace('#include <common>', '#include <common>\nvarying float vUdcDep;\nuniform float uExtYK;')
+            .replace('#include <begin_vertex>',
+                '#include <begin_vertex>\n' +
+                'vUdcDep = max(0.0, -( modelMatrix * vec4( transformed, 1.0 ) ).y / uExtYK);');
+        shader.fragmentShader = shader.fragmentShader
+            .replace('#include <common>', '#include <common>\n' + [
+                'varying float vUdcDep;',
+                'uniform vec3  uExtSigma;',
+                'uniform float uExtPath;',
+                'uniform float uExtGain;',
+            ].join('\n'))
+            // ใส่ก่อน fog เสมอ: การดูดกลืนเป็นสมบัติของตัวกลางที่วัตถุจม fog เป็นชั้นระยะไกลคนละเรื่อง
+            .replace('#include <fog_fragment>',
+                'gl_FragColor.rgb *= mix(vec3(1.0), exp(-uExtSigma * vUdcDep * uExtPath), uExtGain);\n' +
+                '#include <fog_fragment>');
+        mat.userData.extShader = shader;
+    };
+    mat.customProgramCacheKey = function () { return 'udc-extinction-v1'; };
+    return mat;
+}
+
 // ── sand texture — พื้นทรายมี grain + ระลอกทราย (HD seabed) ──
 function _d3sandTex() {
     const S=256, cv=document.createElement('canvas'); cv.width=cv.height=S;
@@ -26620,6 +26829,7 @@ function _d3sandTex() {
     const tex=new THREE.CanvasTexture(cv);
     tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
     tex.repeat.set(85,85);
+    _d3aniso(tex);              // [v17.39.1 D3-2d] repeat 85 + มุมกล้องเฉียด → ต้อง anisotropic filtering
     return tex;
 }
 
@@ -26656,6 +26866,7 @@ function _d3sandBumpTex() {
     const tex=new THREE.CanvasTexture(cv);
     tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
     tex.repeat.set(32,32);
+    _d3aniso(tex);              // [v17.39.1 D3-2d] bumpMap เบลอเพราะ mipmap → ริ้วทรายหายที่ระยะกลาง
     return tex;
 }
 
@@ -27811,13 +28022,16 @@ function render3DLoop() {
     //   ผลคือคลื่นมียอดแหลม ร่องลึก ไม่ใช่ sine เกลี้ยง ๆ — ใกล้ FFT ocean จริง
     if(d3_surface){
         const ss = (typeof seaState==='number') ? seaState : 1;
+        // [v17.39.1 D3-2a] bank ยังสร้างบน CPU (ครั้งเดียวต่อ seaState) แต่ "ประเมินผล" ย้ายไป GPU แล้ว
+        const gu = d3_surface.material && d3_surface.material.userData
+                 ? d3_surface.material.userData.gUniforms : null;
         // ── Gerstner wave bank — สร้างครั้งเดียวต่อ seaState ──
         if (!d3_surface.userData.gerstnerWaves || d3_surface.userData.gerstnerSS !== ss) {
             // wind direction (rad) — สมมุติ NE monsoon / SW monsoon ตาม season
             const windDir = (typeof seasonMode !== 'undefined' && seasonMode === 'WET')
                             ? Math.PI*1.25 : Math.PI*0.35;
             const baseAmp = 0.30 + ss*1.10;     // SS0=0.30 → SS4=4.70 (m)
-            const N = 8;
+            const N = D3_GWAVES;                // ต้องเท่ากับขอบเขตลูปใน vertex shader
             const waves = [];
             const g = 9.81;
             for (let i=0; i<N; i++) {
@@ -27837,37 +28051,22 @@ function render3DLoop() {
             }
             d3_surface.userData.gerstnerWaves = waves;
             d3_surface.userData.gerstnerSS    = ss;
-        }
-        const waves = d3_surface.userData.gerstnerWaves;
-        const p = d3_surface.geometry.attributes.position;
-        // ── เก็บตำแหน่งเดิมขณะอยู่นิ่ง ──
-        if (!d3_surface.userData.restPos) {
-            const r = new Float32Array(p.count * 2);
-            for (let i=0; i<p.count; i++) { r[i*2]=p.getX(i); r[i*2+1]=p.getZ(i); }
-            d3_surface.userData.restPos = r;
-        }
-        const rest = d3_surface.userData.restPos;
-        const spdMul = 0.85 + ss*0.10;            // ปรับเวลา (คลื่นแรง = เร็วขึ้นเล็กน้อย)
-        for (let i=0; i<p.count; i++) {
-            const x0 = rest[i*2], z0 = rest[i*2+1];
-            let dx=0, dy=0, dz=0;
-            for (let j=0; j<waves.length; j++) {
-                const W = waves[j];
-                const theta = W.k*(W.dx*x0 + W.dz*z0) - W.w*tm*spdMul + W.phase;
-                const cosT = Math.cos(theta), sinT = Math.sin(theta);
-                dx += W.Q * W.amp * W.dx * cosT;
-                dz += W.Q * W.amp * W.dz * cosT;
-                dy += W.amp * sinT;
+            // อัดพารามิเตอร์ลง uniform — หลังจากนี้ CPU ไม่แตะเรขาคณิตผิวน้ำอีกเลย
+            if (gu) {
+                for (let i=0; i<waves.length && i<gu.uGW1.value.length; i++) {
+                    const W = waves[i];
+                    gu.uGW1.value[i].set(W.dx, W.dz, W.k, W.w);
+                    gu.uGW2.value[i].set(W.amp, W.Q, W.phase, 0);
+                }
             }
-            p.setX(i, x0 + dx);
-            p.setY(i, dy);
-            p.setZ(i, z0 + dz);
         }
-        p.needsUpdate = true;
-        // [v16.0.4 W4-Bug33] คำนวณ normals เฟรมเว้นเฟรม — จุดแพงสุดของ Gerstner loop (ผิวคลื่นเปลี่ยนช้ากว่า 60fps มาก ตามองไม่ออก)
-        d3_surface.userData._nrmFlip = !d3_surface.userData._nrmFlip;
-        if (d3_surface.userData._nrmFlip)
-            d3_surface.geometry.computeVertexNormals();   // shading ตามคลื่นจริง
+        // [v17.39.1 D3-2a] งานต่อเฟรมของ CPU เหลือเท่านี้ — เดิมคือลูป 3,249 verts × 8 คลื่น
+        //   + computeVertexNormals() เฟรมเว้นเฟรม  ตอนนี้ 37,249 verts ทำบน GPU และ normal
+        //   คำนวณเชิงวิเคราะห์ใน shader → ทั้ง restPos และ _nrmFlip ไม่จำเป็นอีกต่อไป
+        if (gu) {
+            gu.uTime.value = tm;
+            gu.uWSpd.value = 0.85 + ss*0.10;      // คลื่นแรง = เร็วขึ้นเล็กน้อย
+        }
         // (2) normal map offset — รายละเอียด ripple ที่ไหลตามลม
         const nt = d3_surface.userData.normalTex;
         if (nt) {
