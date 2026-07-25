@@ -1,6 +1,74 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.38.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.39.0 · 7-Domain + AI Staff)
+  · [v17.39.0] D3-1 "ถางงบ" — ยกเครื่องแผนที่ ๓ มิติ (three.js r128 · ฉาก #dive3d) รอบที่ ๑
+      ผู้ใช้สั่ง "ทำทุกข้อเลย ยกเว้น ข้อสถานะตอน load ครับ" หลังการตรวจออกแบบ
+      งานรอบนี้คือครึ่งแรก "ถางงบ" (ลดภาระที่ไม่ให้ภาพกลับคืน) ครึ่งหลัง "ลงทุน" อยู่ใน v17.39.1
+
+      ก. ผลการวัดจริง (โปรโตคอลเดียวกันทั้งก่อนและหลัง: renderer.info.autoReset=true
+         แล้วเรียก d3_renderer.render(d3_scene, d3_camera) ธรรมดาครั้งเดียว — ไม่ใช่ composer
+         เพราะ EffectComposer.render() ยิงหลาย pass และ autoReset จะล้างค่าทุกครั้ง
+         ทำให้เก็บค่าหลัง composer ได้ calls:1 tris:1 ซึ่งเป็นภาพลวง ไม่ใช่ผลจริง)
+           mesh              ๑,๑๙๐ → ๙๔๘
+           material ไม่ซ้ำ    ๙๓๖ → ๔๑๕        (วัตถุ material ส่วนเกิน ๓๘๑ → ๒๑๓)
+           draw call         ๑,๓๑๘ → ๙๙๒
+           triangle          ๔๕๑,๑๑๗ → ๔๕๐,๒๑๙
+         หมายเหตุความซื่อสัตย์: ฉากนี้มีวัตถุเกิด/ดับตลอดเวลา (contact, threat, ping)
+         ตัวเลขที่วัดคนละวินาทีจึงไม่เท่ากันเป๊ะ — คู่ก่อน/หลังข้างบนวัดในสภาพเทียบกันได้
+         และไม่รายงานเป็นมิลลิวินาที เพราะนาฬิกาบนเครื่องทดสอบแกว่งเกินกว่าจะอ้างได้
+
+      ข. รายการที่ทำ
+         ๑ SSAO ลดเหลือครึ่งความละเอียด (D3_SSAO_SCALE = 0.5) + เพิ่มปุ่มปิด/เปิดให้ผู้ใช้
+         ๒ กรองสามเหลี่ยม "ที่เป็นน้ำล้วน" ออกจากผ้าคลุมภาพดาวเทียม
+           หมายเหตุ: ข้อนี้เดิมตั้งชื่อไว้ว่า "ตัดผ้าคลุมตามกรอบสี่เหลี่ยมของเกาะ (bbox)"
+           ซึ่งผิดสำหรับฉากนี้ เพราะเกาะครามไม่ได้อยู่กลางกรอบ การตัดด้วย bbox จะกินพื้นที่
+           ทะเลที่ยังต้องแสดงไปด้วย จึงเปลี่ยนเป็นกรองรายสามเหลี่ยม — เปลี่ยนวิธี ไม่ใช่แค่เปลี่ยนชื่อ
+         ๓ เงา: ขยาย shadow map เป็น ๔๐๙๖² และแก้ปริภูมิพิกัดใน _d3FitSunShadow()
+           หมายเหตุ: ข้อตรวจเดิมอ้างว่า "กรอบเงากว้างเกินไป" — วัดจริงแล้ว "ไม่จริง" กรอบพอดีอยู่แล้ว
+           จึงตัดข้อนั้นทิ้งและใส่การขยาย shadow map แทน (แลกหน่วยความจำกับขอบเงาที่คมขึ้น)
+           ที่พบจริงคือบั๊กคนละตัว: _d3FitSunShadow() คำนวณในปริภูมิพิกัดผิด ทำให้เลื่อน ±๙๘๔ — แก้แล้ว
+         ๔ composer.setSize() ใช้พิกเซลอุปกรณ์จริง (_d3ResizeComposer()) เพราะ r128 ไม่คูณ pixelRatio ให้
+         ๕ ถอด pass ปรับสีที่ซ้อนกันออก
+         ๖ SRI — สคริปต์/สไตล์ภายนอกครบ ๑๖ รายการมี sha384 ทุกตัว ตรวจตอนรันแล้วผ่านหมด
+           ⚠ ถ้าเปลี่ยนเลขรุ่นของ CDN ตัวใดตัวหนึ่ง ต้องคำนวณ digest ใหม่ ไม่งั้นเบราว์เซอร์จะบล็อกเงียบ
+           ⚠ Google Fonts เป็นข้อยกเว้นโดยตั้งใจ — ตอบ CSS ต่างกันตาม user-agent จึงตรึง digest ไม่ได้
+         ๗ ต้นไม้เปลี่ยนเป็น InstancedMesh ๕ ก้อน (รวม ๓๒๐ ต้น) + ใช้ material ร่วมกันเท่าที่ปลอดภัย
+
+      ค. กลุ่ม material ที่ "ตั้งใจไม่ให้ใช้ร่วมกัน" — เป็นการตัดสินใจ ไม่ใช่งานตกหล่น
+         ทุกกลุ่มด้านล่างถูกเขียนค่าเป็นรายชิ้นทุกเฟรม ถ้าใช้ร่วมกันจะกลายเป็นบั๊กภาพทันที
+           · LED (0x39ff14 / 0x39ff8c ~๕๑ ชิ้น) — เขียน opacity แยกทีละดวงทุกเฟรม
+           · udc-marker · plateEdge · udc-beam — opacity เปลี่ยนรายชิ้นทุกเฟรม
+           · halo / ping / pulse / caustics / sun / surface / thermocline — ทั้งสีและ opacity รายชิ้น
+           · ShaderMaterial ๑๐ ตัว — uniform เป็นของใครของมัน
+           · สีเรืองขอบฝั่ง 0x39ff8c — ใช้ค่าเดียวกับ LED แต่คนละหน้าที่ ถ้ารวมจะดับพร้อมกัน
+           · ทุกอย่างที่ _disposeObject3D เข้าถึง — ใช้ร่วมกันแล้วจะถูก dispose ทิ้งทั้งชุด
+         และ d3_satGeo ห้าม dispose เด็ดขาด — r128 ปล่อย attribute buffer ที่ใช้ร่วมกันไปด้วย
+
+      ง. โทเคนสีและไอคอน (D3-1g) — สีที่ "เปลี่ยนเฉดจริง" ต้องแจ้ง ไม่ใช่การแทนค่าเท่าเดิม
+           · #22d3ee → var(--cyan) (#00d4ff) บนสีพื้นตอนชี้ — เฉดฟ้าเปลี่ยนจริง
+           · #a78bfa → var(--purple) (#bd93f9) บน #d3northBtn — เฉดม่วงเปลี่ยนจริง
+           · #ff6b6b / #ffb454 / #7dffb0 → var(--crit-hi) / var(--warn-hi) / var(--ok-hi)
+             บนอุณหภูมิแกนกลางใน HUD — แดงเข้มขึ้น ส้มเหลืองขึ้น เขียวเข้มขึ้น เห็นได้ด้วยตา
+             เหตุผล: สามค่านี้คือ "ระดับความรุนแรง" ซึ่งในระบบนี้ผูกธีม ไม่ใช่กลุ่ม --sym-* ที่ยกเว้นธีม
+           · เพิ่ม --pink ครบทั้ง ๗ บล็อกสี (ค่าตั้งต้น + ๖ ธีม) — ก่อนหน้านี้ธีม Stealth
+             ยังโผล่สีชมพูสดออกมาเพราะโทเคนไม่มีใน override
+           · เลิกแผน --sed-* — ใช้โทเคนที่มีอยู่แล้วแทน เพราะการเพิ่มโทเคนใหม่ ๑ ตัว
+             แปลว่าต้องแก้ ๗ บล็อก และตะกอนไม่ได้มีความหมายต่างจาก --amber/--brass จริง
+           · เข็มทิศ: ขอบและตัวอักษรผูกธีมแล้ว แต่ "เข็มแดง/เทา" ตั้งใจปล่อยเป็นสีดิบ
+             เพราะแดง = ทิศเหนือตามธรรมเนียมเดินเรือ ถ้าให้ฟังธีมจะกลายเป็นเทาในธีม Stealth
+           · เปลี่ยนอักขระข้อความ ๖ ตัว (↺ − + ↻ ⟲ ⬆) เป็น <use> จากสไปรท์ udc-ext
+           · ช่องไฟไอคอน/ป้ายปุ่ม: flex กลืนช่องว่างที่พิมพ์ไว้ระหว่าง <svg> กับข้อความ แก้ด้วย gap
+             ⚠ ข้อนี้เป็นข้อบกพร่องเดิมตั้งแต่ ICON-1 ไม่ใช่ของใหม่ที่เพิ่งเกิดในรอบนี้
+
+      จ. HUD ๓ มิติ (D3-1h) — จาก ๘ บรรทัดแบน เป็น ๓ ชั้นตามอัตราการเปลี่ยนแปลง
+           ชั้น ๑ สถานะ (๑๓px) · ชั้น ๒ สภาพแวดล้อม (๑๑px) · ชั้น ๓ บริบทคงที่ (๙px — พื้นล่างสุดที่ยอมรับ)
+           ตารางคีย์/ค่า ๒ คอลัมน์แทน <br> เพื่อให้กวาดตาลงคอลัมน์ตัวเลขได้
+           จำนวนภัยคุกคาม > ๐ ยกเป็นสีวิกฤต + เรืองแสง (ตัวเดียวใน HUD ที่เปลี่ยนการตัดสินใจได้ทันที)
+           ⚠ พบบั๊กเงียบ: #d3ssaoBtn ไม่เคยมีในมาร์กอัปเลยตั้งแต่ D3-1a ทั้งที่ d3ToggleSSAO()
+             อ้างถึงปุ่มนี้อยู่ในตัว — ฟังก์ชันจึงเรียกจาก UI ไม่ได้ตลอดมา และไม่ระเบิดเพราะมี if (b) คุมไว้
+             รอบนี้เพิ่มปุ่มจริงแล้ว ตั้ง class="is-on" ตั้งแต่มาร์กอัปให้ตรงกับ let d3_ssaoOn = true
+
+      ฉ. ไม่ได้ทำ (ผู้ใช้สั่งยกเว้นเอง): ตัวบอกสถานะตอนโหลดฉาก ๓ มิติครั้งแรก (A-7)
   · [v17.38.0] POP-1 — ป๊อปอัป Global UDC และ MDA-COP วางผิดที่ · แก้ด้วยตัววางตำแหน่งกลางตัวเดียว
       ผู้ใช้แจ้งว่ากดปุ่มแล้วแผงโผล่ผิดตำแหน่ง · วัดจริงบนสี่ขนาดจอแล้วพบข้อบกพร่อง ๕ ข้อ
       ไม่ใช่ข้อเดียว และทั้งห้าข้อมีรากเดียวกันคือ "ตรึงตัวเลขไว้ตั้งแต่ตอนแถบหัวยังเตี้ย"
@@ -1497,12 +1565,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.38.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.39.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.38.0';
+        const APP_VERSION = '17.39.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -1514,29 +1582,60 @@
       Sarabun / Share Tech Mono คือฟอนต์สำหรับแสดงข้อความไทย
       และข้อมูล telemetry ในรูปแบบ monospace (อ่านง่ายเหมือนหน้าจอ C2)
     -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <!--
+      ── [v17.39.0 D3-1f] Subresource Integrity (SRI) — ลายนิ้วมือไฟล์ไลบรารีภายนอก ──
+      ทุกไฟล์ด้านล่างถูก "ตรึงเวอร์ชัน" (pinned) ไว้แล้ว แต่เดิมไม่มี integrity hash
+      แปลว่าถ้า CDN ถูกเจาะ หรือมีคนดักกลางทาง (supply-chain attack)
+      เบราว์เซอร์จะรันสคริปต์ที่ถูกสับเปลี่ยนโดยไม่รู้ตัว — ในระบบ C2 ถือว่ารับไม่ได้
+      integrity="sha384-…" บังคับให้เบราว์เซอร์ตรวจ hash ก่อนรัน · ไม่ตรง = ไม่รัน
+      crossorigin="anonymous" จำเป็นคู่กับ integrity (ต้องโหลดแบบ CORS จึงตรวจ hash ได้)
+      ★ ค่า hash คำนวณจริงจากไฟล์บน CDN (openssl dgst -sha384 | base64) เมื่อ 26 ก.ค. 2569
+        ถ้าอัปเวอร์ชันไลบรารีเมื่อใด ต้องคำนวณ hash ใหม่ มิฉะนั้นไฟล์จะโหลดไม่ขึ้น
+      หมายเหตุ: seamarks-static.js / cables-static.js เป็นไฟล์ในเครื่อง (same-origin) ไม่ต้องมี SRI
+      ★ ข้อยกเว้นที่ "ตั้งใจ" ไม่ใส่ SRI: <link> ฟอนต์ของ fonts.googleapis.com (บรรทัดถัดลงไป)
+        เพราะกูเกิลส่ง CSS ต่างกันตาม User-Agent ของเบราว์เซอร์ (woff2 / unicode-range ไม่เท่ากัน)
+        ตัว CSS จึงไม่มี hash คงที่ให้ตรึง — ใส่ integrity เมื่อใด ฟอนต์จะโหลดไม่ขึ้นทันที
+        นี่เป็นข้อจำกัดของบริการ ไม่ใช่การมองข้าม · ถ้าต้องการปิดช่องนี้จริงต้อง self-host ฟอนต์
+    -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous"/>
     <!-- [v11] augmented-ui — CSS-only clip-path cyberpunk panel borders -->
-    <link rel="stylesheet" href="https://unpkg.com/augmented-ui@2.0.0/augmented-ui.min.css"/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/augmented-ui@2.0.0/augmented-ui.min.css"
+          integrity="sha384-AwggZlPSUmI5legYzInsBEfKSXK/tsAZalUjV52u/ttb2R7i6pprcWAm8VWPBnWy" crossorigin="anonymous"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
     <!-- [v11] Leaflet.heat — vessel trajectory kernel-density heatmap -->
-    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"
+            integrity="sha384-mFKkGiGvT5vo1fEyGCD3hshDdKmW3wzXW/x+fWriYJArD0R3gawT6lMvLboM22c0" crossorigin="anonymous"></script>
     <!-- Chart.js — Real-time telemetry graph (Tide Level vs Detection Modifier) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"
+            integrity="sha384-bs/nf9FbdNouRbMiFcrcZfLXYPKiPaGVGplVbv7dLGECccEXDW+S3zjqSKR5ZEaD" crossorigin="anonymous"></script>
     <!-- Three.js r128 — 3D Underwater Dive View (v09) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
+            integrity="sha384-CI3ELBVUz9XQO+97x6nwMDPosPR5XvsxW2ua7N1Xeygeh1IxtgqtCkGfQY9WWdHu" crossorigin="anonymous"></script>
     <!-- Three.js postprocessing — Bloom (v09 Tier A) -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"
+            integrity="sha384-nhO9toQuMo5osCuA0l+YFpSqscZWxDu251Bnho2gD3kSPv1neEwHg0LyEmrA+mPj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"
+            integrity="sha384-mY+ii969jnDCI2HjRHftH2NZVkIO5ZGUkcnGCg3oVJ3kVstWQXwerYWBg+nbUG4R" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"
+            integrity="sha384-GkidzTYmQg24v13sa3xhBBbvOLbVLO1QxfyKLdOWweQqNqS/iWwUst2T1fER2Xrg" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"
+            integrity="sha384-2EpLreWSFuZsk4hcSplXLhlHd/wzvDNF907bTGIXSXM0SlhJNzy4YK0DhBFvkFEs" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"
+            integrity="sha384-I3lsvPeDJYFrEAzn/TA0yhc/SCYKwpyfyq8lKzHYKohu43H9f7xc/Q9ZWgSVUDl3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"
+            integrity="sha384-aVQ2QnWkoxhOefDB0YZB64OPVzujvccydpcC7UqMDJUK0ChwA382zOHmrWHGDRRa" crossorigin="anonymous"></script>
     <!-- [v16.0.5 W5-Q6] FXAA — EffectComposer ของ r128 ทำ MSAA หาย ต้องชดเชยด้วย FXAA pass -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/FXAAShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/FXAAShader.js"
+            integrity="sha384-No2tT0gxxdbq/aRJ3g6hqHsfLzAiS1uKg3Wz3r69GU/XGctg4GGZ3FKH3RN0wXGs" crossorigin="anonymous"></script>
     <!-- [v09.4] SSAO post-processing (depth perception) — เลิกใช้ Water.js (reflection ทำภาพม่วง) -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/math/SimplexNoise.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/SSAOShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/SSAOPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/math/SimplexNoise.js"
+            integrity="sha384-o5gViontwLwU3Z8McqwM/rtuxIptKAXp3BJdeyXdEukqzlSLHsAUP27WxNrvg5zM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/SSAOShader.js"
+            integrity="sha384-QJHOkdPsx51pQSATTCNMomyvcOrMD34+38JFwM0qCSHO9AORZ75psXd+BqTj/uhg" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/SSAOPass.js"
+            integrity="sha384-FOfA/KeY2vXqB0oljp5J+SZ+W3EoTNj5gACDurc3L8eAONa77OY1YvI0YCg2eoeM" crossorigin="anonymous"></script>
     <!-- [v13.0.5] Static IALA seamark snapshot — offline fallback (loaded best-effort) -->
     <script src="seamarks-static.js" onerror="console.warn('[MDA·Seamarks] static snapshot not found — offline fallback disabled')"></script>
     <script src="cables-static.js" onerror="console.warn('[MDA·Cables] static snapshot not found — Overpass-only mode')"></script>
@@ -1576,6 +1675,11 @@
             --orange: #f97316;
             --purple: #bd93f9;
             --teal:   #64ffda;
+            /* [v17.39.0 D3-1g] ชมพู — เดิมไม่มีโทเคน ปุ่ม "ลำแสงใต้น้ำ" (#d3raysBtn)
+               จึงฝัง #f472b6/#f9a8d4 ดิบไว้ใน CSS ทำให้เป็นปุ่มเดียวในชุด ๘ ปุ่มที่
+               ไม่ฟังธีม (Stealth Mono เปลี่ยนทุกปุ่มเป็นเทา เหลือปุ่มนี้ชมพูโดดอยู่ตัวเดียว)
+               สีปุ่มควบคุมเป็น "สีตกแต่ง" ตามกฎตัดสิน → ต้องฟังธีม จึงยกขึ้นเป็นโทเคน */
+            --pink:   #f472b6;
             --brass:  #c9a876; /* [Staff Planner elegance pass] เส้นกรอบ/หัวข้อ AI Decision-Support — แยกจาก --amber (สงวนไว้ semantic warning) */
 
             /* ชุดสีม่วง — จอแสดงผลดาวเทียมและหน้าต่างฝ่ายอำนวยการ */
@@ -1611,6 +1715,7 @@
                  bg-dark    2 12 24     (#020c18) → 1 13 26      (#010d1a)
                  text-muted 100 116 139 (#64748b) → 136 146 176  (#8892b0) */
             --purple-rgb:     189 147 249;
+            --pink-rgb:       244 114 182;   /* [v17.39.0 D3-1g] คู่กับ --pink #f472b6 */
             --brass-rgb:      201 168 118;
             --bg-dark-rgb:    1 13 26;
             --bg-panel-rgb:   8 21 37;
@@ -1793,6 +1898,8 @@
             /* เขียวน้ำทะเล / ม่วง — ป้ายรอง */
             --teal-dim:   #14b8a6;
             --purple-hi:  #c4b5fd;
+            /* ชมพู — ป้ายรอง (ปุ่มลำแสงใต้น้ำ) · base คือ --pink */
+            --pink-hi:    #f9a8d4;
 
             /* [v17.35.0 P5-A] กรอบโฟกัสแป้นพิมพ์
                เดิมตรึงไว้ที่ var(--cyan) ซึ่งใน Stealth Mono กลายเป็นเทา
@@ -1881,6 +1988,12 @@
             --sym-tss1:      #fb923c;   /* TSS ๑ แหลมฉบัง/สีชัง */
             --sym-tss2:      #22d3ee;   /* TSS ๒ มาบตาพุด */
             --sym-tss3:      #e879f9;   /* TSS ๓ ร่องน้ำสัตหีบ */
+            /* [v17.39.0 D3-1g] ชั้นสมุทรศาสตร์ในฉากดำน้ำ ๓ มิติ — เป็น "ข้อมูล"
+               ไม่ใช่ตกแต่ง: ฟ้าคือชั้นเทอร์โมไคลน์ (ชั้นอุณหภูมิหักเห กระทบทางเดินเสียง
+               โซนาร์) เทาคือพื้นทะเล ทั้งสองต้องคงสีเดิมทุกธีม ค่าตรงกับที่ฉาก
+               three.js วาดจริง เดิมฝังดิบทั้งใน CSS และ HTML ป้ายอธิบายจึงหลุดจากฉาก */
+            --sym-thermocline: #38bdf8;  /* ชั้นเทอร์โมไคลน์ · ~๒๐ ม. */
+            --sym-seabed:      #9aa8bd;  /* พื้นทะเล/ตะกอน (ค่ากลาง) */
         }
         /* [v16.0.5 W5-Q11] panel entrance — โผล่นุ่มๆ ตอน mount/เปิด */
         @keyframes udc-panel-in {
@@ -2643,9 +2756,13 @@
         }
 
         /* ── ชั้นแสดงภาพดำน้ำสามมิติ (v09) ── */
+        /* [v17.39.0 D3-1g] พื้นหลังกล่องดำน้ำ ๓ มิติ — เดิม #020912 ดิบ
+           เห็นจริงเฉพาะเสี้ยววินาทีก่อน WebGL วาดเฟรมแรก จึงเป็น "สีตกแต่ง"
+           ตามกฎตัดสิน → ผูกกับ --bg-deep ให้เปลี่ยนตามธีมเหมือนพื้นอื่นทั้งระบบ
+           (สีน้ำของฉาก ๓ มิติเองอยู่ในจาวาสคริปต์ เป็นสัญลักษณ์ ไม่ผูกธีม) */
         #dive3d {
             display:none; position:fixed; inset:0; z-index:9000;
-            background:#020912;
+            background:var(--bg-deep);
         }
         #dive3d.active { display:block; }
         #dive3dCanvas { width:100%; height:100%; display:block; }
@@ -2657,16 +2774,75 @@
             display:flex; align-items:center; touch-action:manipulation;
         }
         #dive3dClose:hover { background:rgb(var(--red-rgb) / .18); }
+        /* ── [v17.39.0 D3-1h] HUD ฉากดำน้ำ ๓ มิติ — จัดชั้นข้อมูลใหม่ ────────────────
+           เดิมเป็น ๘ บรรทัดเรียงแบน ๆ ระดับเดียวกันหมด (AREA / DEPTH SCALE / UDC /
+           CORE TEMP / GUUV / THREATS / SEA STATE / THERMOCLINE) — ตัวเลขที่ "เปลี่ยน
+           ทุกวินาที" กับข้อความที่ "ไม่เคยเปลี่ยนเลยตลอดการจำลอง" ใช้ขนาดและน้ำหนัก
+           เท่ากัน สายตาผู้บังคับบัญชาจึงต้องไล่อ่านทีละบรรทัดเพื่อหาว่าอะไรขยับ
+           จัดใหม่เป็น ๓ ชั้นตามอัตราการเปลี่ยนแปลง (rate of change) ซึ่งเป็นเกณฑ์
+           เดียวกับที่ Lattice/9LV ใช้จัด HUD: เปลี่ยนบ่อย = เด่นและอยู่บนสุด
+             ชั้น ๑ สถานะ      — CORE TEMP · GUUV · THREATS  (เปลี่ยนทุกเฟรม)
+             ชั้น ๒ สภาพแวดล้อม — SEA STATE · THERMOCLINE      (เปลี่ยนเป็นครั้งคราว)
+             ชั้น ๓ บริบทคงที่  — AREA · DEPTH SCALE · UDC      (ไม่เปลี่ยนเลย)
+           ชั้น ๓ ไม่ตัดทิ้งเพราะเป็นข้อมูลที่ทำให้ตีความมาตราส่วนถูก (ความลึกถูกขยาย
+           ๓.๒ เท่า ถ้าไม่บอกจะอ่านภูมิประเทศผิด) แต่ลดน้ำหนักลงให้เป็นเชิงอรรถ */
         #dive3dHud {
             position:absolute; top:14px; left:16px; z-index:9020;
             background:rgb(var(--bg-dark-rgb) / .82); border:1px solid var(--border-dim);
             border-radius:var(--radius-md); padding:var(--space-2) var(--space-3);
             font-family:var(--font-mono), monospace; color:var(--cyan);
             font-size:var(--text-sm); line-height:1.65; pointer-events:none;
+            min-width:238px; max-width:290px;
         }
         #dive3dHud .d3-title { color:var(--cyan); font-weight:700;
-            font-size:var(--text-base); letter-spacing:1px; }
+            font-size:var(--text-base); letter-spacing:1px;
+            display:flex; align-items:center; gap:var(--space-1-5);
+            padding-bottom:var(--space-1); margin-bottom:var(--space-1-5);
+            border-bottom:1px solid var(--border-dim); }
+        #dive3dHud .d3-title .ico { width:15px; height:15px; vertical-align:0; }
         #dive3dHud .d3-k { color:var(--text-muted); }
+        /* หัวชั้น — ตัวพิมพ์เล็กสุดที่ระบบยอมรับ (๙px) ทำหน้าที่เป็นป้ายกำกับกลุ่ม
+           ไม่ใช่ข้อมูล จึงใช้สีเทากลางให้จมลงไปกว่าทุกอย่างที่มันครอบ
+           เส้นคั่นยืดเต็มความกว้างที่เหลือด้วย flex:1 แทนการวาด <hr> แยก */
+        #dive3dHud .d3-tier {
+            display:flex; align-items:center; gap:var(--space-1-5);
+            font-size:var(--text-2xs); letter-spacing:1.4px;
+            color:var(--n-500); margin:var(--space-1-5) 0 var(--space-0-5);
+            line-height:1.2;
+        }
+        /* หัวชั้นแรกชิดเส้นคั่นใต้หัวเรื่อง — ใช้ตัวเลือกพี่น้องติดกัน ไม่ใช่
+           :first-of-type เพราะ :first-of-type นับตาม "ชนิดแท็ก" ไม่ใช่คลาส
+           ลูกตัวแรกที่เป็น div คือ .d3-title จึงจะไม่ตรงกับ .d3-tier เลย */
+        #dive3dHud .d3-title + .d3-tier { margin-top:0; }
+        #dive3dHud .d3-tier::after {
+            content:""; flex:1; height:1px; background:var(--border-dim);
+        }
+        /* ตาราง ๒ คอลัมน์ คีย์/ค่า — เดิมใช้ <br> ต่อบรรทัด ค่าจึงเริ่มไม่ตรงกัน
+           ตามความยาวของคีย์ ทำให้กวาดตาลงคอลัมน์ตัวเลขไม่ได้ */
+        #dive3dHud .d3-grid {
+            display:grid; grid-template-columns:auto 1fr;
+            column-gap:var(--space-3); row-gap:var(--space-0-5);
+            align-items:baseline;
+        }
+        #dive3dHud .d3-grid .d3-k { font-size:var(--text-xs); letter-spacing:.6px; }
+        /* ชั้น ๑ — ค่าที่เปลี่ยนตลอด ตัวใหญ่และสว่างที่สุดในแผง */
+        #dive3dHud .d3-live .d3-v {
+            font-size:var(--text-md); font-weight:700; color:var(--n-100);
+            font-variant-numeric:tabular-nums; line-height:1.35;
+        }
+        /* ชั้น ๒ — สภาพแวดล้อม อ่านเป็นบริบท ไม่ใช่ตัวเร่งการตัดสินใจ */
+        #dive3dHud .d3-env .d3-v { font-size:var(--text-sm); color:var(--cyan-hi); }
+        /* ชั้น ๓ — บริบทคงที่ ลดทั้งขนาดและความสว่าง ให้เป็นเชิงอรรถ */
+        #dive3dHud .d3-static { color:var(--n-400); }
+        #dive3dHud .d3-static .d3-k,
+        #dive3dHud .d3-static .d3-v { font-size:var(--text-2xs); line-height:1.45; }
+        #dive3dHud .d3-static .d3-v { color:var(--n-400); }
+        /* จำนวนภัยคุกคาม > ๐ = สัญญาณที่ "เปลี่ยนการตัดสินใจ" จริง จึงยกให้เป็น
+           สีวิกฤตพร้อมเรืองแสง · จาวาสคริปต์สลับคลาสนี้ตามจำนวนที่นับได้ */
+        #dive3dHud .d3-v.d3-alert {
+            color:var(--crit-hi);
+            text-shadow:0 0 8px color-mix(in srgb, var(--crit-hi) 55%, transparent);
+        }
         #dive3dNav {
             position:absolute; top:62px; right:16px; z-index:9020;
             display:flex; flex-direction:column; align-items:center; gap:var(--space-1-5);
@@ -2675,15 +2851,23 @@
         #d3camctlRow {
             display:flex; gap:var(--space-1-5);
         }
+        /* [v17.39.0 D3-1g] เดิม font-size:var(--text-lg) + font-weight:700 มีไว้ขยาย
+           อักขระข้อความ ↺ − + ↻ เมื่อเปลี่ยนเป็นสไปรท์เวกเตอร์แล้วจึงเป็นของตกค้าง
+           (.ico กว้าง ๑em ถ้าปล่อยไว้ไอคอนจะเหลือ ๑๔px ในปุ่ม ๔๔px = เล็กเกินไป)
+           กำหนดขนาดไอคอนตรง ๆ ที่ ๒๐px ให้เท่าปุ่มควบคุมกล้องทุกตัว */
         .d3-camctl-btn {
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--cyan);
             color:var(--cyan); font-family:var(--font-mono), monospace;
-            font-size:var(--text-lg); font-weight:700; min-width:44px; min-height:44px;
+            min-width:44px; min-height:44px;
             border-radius:var(--radius-sm); cursor:pointer;
             display:flex; align-items:center; justify-content:center;
             touch-action:manipulation;
         }
-        .d3-camctl-btn:hover { background:rgba(34,211,238,.22); }
+        .d3-camctl-btn .ico { width:20px; height:20px; vertical-align:0; }
+        /* [v17.39.0 D3-1g] เดิม rgba(34,211,238,.22) = #22d3ee ซึ่ง "ไม่ใช่" --cyan
+           ของธีมปริยาย (#00d4ff) ด้วยซ้ำ — ปุ่มจึงเรืองคนละเฉดกับเส้นขอบตัวเอง
+           มาตลอด · ผูกกับ --cyan-rgb แล้วทั้งขอบ ตัวอักษร และแสง hover ตรงกัน */
+        .d3-camctl-btn:hover { background:rgb(var(--cyan-rgb) / .22); }
         #d3resetBtn {
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--cyan);
             color:var(--cyan); font-family:var(--font-mono), monospace;
@@ -2691,7 +2875,7 @@
             cursor:pointer; letter-spacing:.4px; white-space:nowrap;
             display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
-        #d3resetBtn:hover { background:rgba(34,211,238,.22); }
+        #d3resetBtn:hover { background:rgb(var(--cyan-rgb) / .22); }
         #d3northBtn {
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--purple);
             color:var(--purple); font-family:var(--font-mono), monospace;
@@ -2699,7 +2883,7 @@
             cursor:pointer; letter-spacing:.4px; white-space:nowrap;
             display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
-        #d3northBtn:hover { background:rgba(167,139,250,.22); }
+        #d3northBtn:hover { background:rgb(var(--purple-rgb) / .22); }
         #d3straitBtn {
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--amber);
             color:var(--yellow); font-family:var(--font-mono), monospace;
@@ -2707,26 +2891,34 @@
             cursor:pointer; letter-spacing:.4px; white-space:nowrap;
             display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
-        #d3straitBtn:hover { background:rgba(251,191,36,.22); }
+        #d3straitBtn:hover { background:rgb(var(--amber-rgb) / .22); }
         #d3udcBtn {
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--teal);
-            color:#9affe9; font-family:var(--font-mono), monospace;
+            /* [v17.39.0 D3-1g] เดิม #9affe9 ดิบ — เป็น --teal เจือขาว ไม่มีโทเคนรองรับ
+               ใช้ color-mix ที่จุดใช้งาน (ไม่ใช่ที่ :root) เพราะ custom property
+               ถูกคำนวณบนอิลิเมนต์ที่ประกาศ ถ้าประกาศไว้ที่ :root จะล็อกค่าธีมปริยาย
+               ตายตัว แล้ว body[data-theme] จะแทนที่ไม่ได้ — บทเรียนเดียวกับ TOK-6 */
+            color:color-mix(in srgb, var(--teal) 62%, var(--n-100));
+            font-family:var(--font-mono), monospace;
             font-size:var(--text-sm); padding:var(--space-2) var(--space-3); min-height:44px; min-width:44px; border-radius:var(--radius-sm);
             cursor:pointer; letter-spacing:.4px; white-space:nowrap;
             display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
         #d3udcBtn:hover { background:rgb(var(--teal-rgb) / .22); }
+        /* [v17.39.0 D3-1g] ปุ่มลำแสงใต้น้ำ — เดิมฝัง #f472b6/#f9a8d4 ดิบ
+           เป็นปุ่มเดียวในชุด ๘ ปุ่มที่ไม่ฟังธีม (เปิด Stealth Mono แล้วชมพูโดดตัวเดียว)
+           ตอนนี้ผูกกับตระกูล --pink ซึ่งมีครบทั้ง ๗ ชุดสี (ปริยาย + ๖ ธีม) */
         #d3raysBtn {
-            background:rgb(var(--bg-dark-rgb) / .85); border:1px solid #f472b6;
-            color:#f9a8d4; font-family:var(--font-mono), monospace;
+            background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--pink);
+            color:var(--pink-hi); font-family:var(--font-mono), monospace;
             font-size:var(--text-sm); padding:var(--space-2) var(--space-3); min-height:44px; min-width:44px; border-radius:var(--radius-sm);
             cursor:pointer; letter-spacing:.4px; white-space:nowrap;
             display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
-        #d3raysBtn:hover { background:rgba(244,114,182,.22);
-            box-shadow:0 0 10px rgba(244,114,182,.4); }
-        #d3raysBtn.active { background:rgba(244,114,182,.32);
-            box-shadow:0 0 14px rgba(244,114,182,.6); }
+        #d3raysBtn:hover { background:rgb(var(--pink-rgb) / .22);
+            box-shadow:0 0 10px rgb(var(--pink-rgb) / .4); }
+        #d3raysBtn.active { background:rgb(var(--pink-rgb) / .32);
+            box-shadow:0 0 14px rgb(var(--pink-rgb) / .6); }
         /* [v15.5 · #1-3D] ปุ่มสลับชั้นตะกอนพื้นทะเล (DMR) + legend ละเอียด */
         #d3sedBtn {
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--amber);
@@ -2747,10 +2939,13 @@
             cursor:pointer; letter-spacing:.4px; white-space:nowrap;
             display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
-        #d3satBtn:hover { background:rgba(56,189,248,.22);
-            box-shadow:0 0 10px rgba(56,189,248,.4); }
-        #d3satBtn.active { background:rgba(56,189,248,.34);
-            box-shadow:0 0 14px rgba(56,189,248,.6); }
+        /* [v17.39.0 D3-1g] เดิม rgba(56,189,248,…) = #38bdf8 = --cyan-mid ของธีมปริยาย
+           แต่เขียนดิบไว้ ปุ่มจึงฟ้าเท่าเดิมทุกธีม · ตระกูล --cyan-mid ไม่มีคู่ *-rgb
+           จึงใช้ color-mix ผสมกับ transparent แทนการเพิ่มโทเคนใหม่อีก ๗ ชุด */
+        #d3satBtn:hover { background:color-mix(in srgb, var(--cyan-mid) 22%, transparent);
+            box-shadow:0 0 10px color-mix(in srgb, var(--cyan-mid) 40%, transparent); }
+        #d3satBtn.active { background:color-mix(in srgb, var(--cyan-mid) 34%, transparent);
+            box-shadow:0 0 14px color-mix(in srgb, var(--cyan-mid) 60%, transparent); }
         /* [v15.9 · UNDEX] ปุ่มจำลองการระเบิดทุ่นจริง 3 มิติ — โทนส้ม-แดง ให้เข้าชุดกับ BDA 2D */
         #d3detonateBtn {
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--orange);
@@ -2763,11 +2958,51 @@
             box-shadow:0 0 10px rgb(var(--orange-rgb) / .45); }
         #d3detonateBtn:active { background:rgb(var(--orange-rgb) / .34);
             box-shadow:0 0 14px rgb(var(--orange-rgb) / .65); }
+        /* [v17.39.0 D3-1g] ปุ่มมีป้ายกำกับทั้ง ๘ ตัวเป็น display:flex ช่องว่างที่พิมพ์ไว้
+           ระหว่าง <svg> กับข้อความจึงถูกยุบทิ้ง (ข้อความกลายเป็น anonymous flex item
+           ที่ตัดช่องว่างนำหน้า) ไอคอนกับตัวอักษรเลยชนกันมาตลอด — เป็นมาก่อนหน้านี้แล้ว
+           ตั้งแต่ ICON-1 ไม่ใช่ของใหม่ · ใช้ gap แทนเพราะเชื่อถือได้กว่าช่องว่างข้อความ
+           รวมเป็นกฎเดียวไม่แก้ทีละ ๘ บล็อก เพื่อให้จุดแก้ในอนาคตอยู่ที่เดียว
+           .ico ๑๖px เข้าคู่กับ font-size:var(--text-sm) ของปุ่มชุดนี้
+           (ต่างจาก .d3-camctl-btn ที่ ๒๐px เพราะเป็นปุ่มไอคอนล้วน ไม่มีข้อความถ่วง) */
+        #d3resetBtn, #d3northBtn, #d3straitBtn, #d3udcBtn, #d3raysBtn,
+        #d3sedBtn, #d3satBtn, #d3detonateBtn, #d3ssaoBtn { gap:var(--space-1-5); }
+        #d3resetBtn .ico, #d3northBtn .ico, #d3straitBtn .ico, #d3udcBtn .ico,
+        #d3raysBtn .ico, #d3sedBtn .ico, #d3satBtn .ico, #d3detonateBtn .ico,
+        #d3ssaoBtn .ico {
+            width:16px; height:16px; vertical-align:0;
+        }
+        /* ── [v17.39.0 D3-1h] ปุ่มสลับ SSAO ─────────────────────────────────────
+           d3ToggleSSAO() มีมาตั้งแต่ D3-1a แล้วและอ้างถึง #d3ssaoBtn อยู่ในตัว
+           แต่ไม่เคยมีปุ่มนี้ในมาร์กอัปเลย — ฟังก์ชันจึงเรียกจาก UI ไม่ได้ตลอดมา
+           (ไม่ระเบิดเพราะมี `if (b)` คุมไว้ ซึ่งทำให้บั๊กเงียบสนิท)
+           สีต่างจากอีก ๘ ปุ่มโดยตั้งใจ: ใช้ระดับสีเทากลาง (--n-300/--n-100)
+           เพราะนี่คือปุ่ม "คุณภาพการแสดงผล" ไม่ใช่ปุ่มเปิด/ปิดชั้นข้อมูลทางยุทธการ
+           ถ้าให้สีสดเท่ากัน จะแย่งความสนใจจากปุ่มที่เปลี่ยนภาพสถานการณ์จริง
+           ใช้คลาส .is-on (ไม่ใช่ .active เหมือนปุ่มอื่น) เพราะ d3ToggleSSAO()
+           เขียนไว้อย่างนั้นตั้งแต่ D3-1a — เลือกตามจาวาสคริปต์ที่มีอยู่ ไม่แก้ทั้งสองฝั่ง */
+        #d3ssaoBtn {
+            background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--n-300);
+            color:var(--n-100); font-family:var(--font-mono), monospace;
+            font-size:var(--text-sm); padding:var(--space-2) var(--space-3); min-height:44px; min-width:44px; border-radius:var(--radius-sm);
+            cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+            display:flex; align-items:center; justify-content:center; touch-action:manipulation;
+        }
+        #d3ssaoBtn:hover { background:color-mix(in srgb, var(--n-300) 20%, transparent); }
+        #d3ssaoBtn.is-on { border-color:var(--cyan); color:var(--cyan-hi);
+            background:rgb(var(--cyan-rgb) / .18); }
+        #d3ssaoBtn.is-on:hover { background:rgb(var(--cyan-rgb) / .28); }
+        /* [v17.39.0 D3-1g] ป้ายชนิดตะกอนพื้นทะเล — เดิมเป็นแผงเดียวในฉาก ๓ มิติ
+           ที่ฝังสีดิบทั้งชุด (น้ำตาลอมส้ม ๗ ค่า) จึงไม่ฟังธีมเลย
+           ตัดสินตามกฎ: "แถบสีตัวอย่าง" (.sed-sw) = ข้อมูล → จาวาสคริปต์กำหนด
+           ตามชั้นตะกอนจริง ห้ามฟังธีม · ส่วน "เปลือกแผง" (พื้น/ตัวอักษร/เส้นคั่น)
+           = ตกแต่ง → ต้องฟังธีม จึงย้ายมาใช้โทเคนกลางทั้งหมด
+           เอกลักษณ์ "แผงธรณี" ยังอยู่ที่ขอบอำพัน + หัวข้อ --warn-hi ซึ่งมีอยู่แล้ว */
         #dive3dSedLegend {
             position:absolute; bottom:92px; left:16px; z-index:9021;
-            background:rgba(28,18,6,.90); border:1px solid rgb(var(--amber-rgb) / .5);
+            background:rgb(var(--bg-dark-rgb) / .90); border:1px solid rgb(var(--amber-rgb) / .5);
             border-radius:var(--radius-lg); padding:var(--space-2) 34px var(--space-2) var(--space-3); max-width:336px;
-            font-family:var(--font-mono), monospace; color:#f5e9d0;
+            font-family:var(--font-mono), monospace; color:var(--n-100);
             box-shadow:0 6px 22px rgba(0,0,0,.55);
             /* [v16.0.7 W5UI-2] เดิม pointer-events:none คลิกไม่ได้เลย — เปิดให้คลิก + ยุบเข้าด้านซ้ายได้ */
             pointer-events:auto; transition:transform .28s var(--ease-out, ease);
@@ -2784,7 +3019,10 @@
             font-size:var(--text-sm); font-weight:bold; color:var(--warn-hi);
             letter-spacing:.2px; margin-bottom:var(--space-1); line-height:1.4;
         }
-        #dive3dSedLegend .sed-lg-title small { color:#b59866; font-weight:normal; font-size:var(--text-xs); }
+        /* [v17.39.0 D3-1g] #b59866 ทั้งสามจุด (แหล่งอ้างอิง/บรรทัดรอง/หมายเหตุ)
+           คือ "ทองหม่น" อ่อนกว่าหัวข้อหนึ่งขั้น → ตรงกับ --brass ซึ่งมีครบทั้ง ๗ ชุดสี
+           และถูกสงวนไว้สำหรับกรอบ/หัวข้อรองอยู่แล้ว (แยกจาก --amber ที่เป็น semantic warning) */
+        #dive3dSedLegend .sed-lg-title small { color:var(--brass); font-weight:normal; font-size:var(--text-xs); }
         #dive3dSedLegend .sed-lg-row { margin:var(--space-0-5) 0; }
         #dive3dSedLegend .sed-lg-row.here {
             background:rgb(var(--amber-rgb) / .15); border-left:2px solid var(--amber);
@@ -2794,18 +3032,22 @@
             display:flex; align-items:center; gap:var(--space-1-5);
             font-size:var(--text-xs); line-height:1.5; white-space:nowrap;
         }
+        /* [v17.39.0 D3-1g] เส้นขอบแถบตัวอย่างเป็นเพียงเส้นตัดพื้น ไม่ได้สื่อชนิดตะกอน
+           จึงเป็น "ตกแต่ง" → ผูกธีม (ตัวสีในแถบยังมาจากจาวาสคริปต์ = ข้อมูล คงเดิม) */
         #dive3dSedLegend .sed-sw {
             width:15px; height:10px; border-radius:var(--radius-xs); flex:0 0 auto;
-            border:1px solid rgba(255,255,255,.28); display:inline-block;
+            border:1px solid color-mix(in srgb, var(--n-100) 30%, transparent); display:inline-block;
         }
-        #dive3dSedLegend .sed-nm { color:#f5e9d0; }
+        #dive3dSedLegend .sed-nm { color:var(--n-100); }
         #dive3dSedLegend .sed-here-tag { color:var(--amber); font-size:var(--text-xs); font-weight:bold; letter-spacing:.3px; }
-        #dive3dSedLegend .sed-en { color:#9c855f; font-style:normal; font-size:var(--text-xs); margin-left:auto; }
-        #dive3dSedLegend .sed-lg-sub { font-size:var(--text-xs); color:#b59866; line-height:1.5; padding-left:var(--space-5); }
+        /* [v17.39.0 D3-1g] ชื่ออังกฤษเป็นข้อความจางสุดของแผง — เดิม #9c855f คือ
+           --brass หรี่ลง ใช้ color-mix ที่จุดใช้งานแทนการเพิ่มโทเคนใหม่อีก ๗ ชุด */
+        #dive3dSedLegend .sed-en { color:color-mix(in srgb, var(--brass) 72%, var(--bg-dark)); font-style:normal; font-size:var(--text-xs); margin-left:auto; }
+        #dive3dSedLegend .sed-lg-sub { font-size:var(--text-xs); color:var(--brass); line-height:1.5; padding-left:var(--space-5); }
         #dive3dSedLegend .sed-lg-sub b { color:var(--warn-hi); font-weight:bold; }
         #dive3dSedLegend .sed-lg-note {
             margin-top:var(--space-1-5); padding-top:var(--space-1-5); border-top:1px solid rgb(var(--amber-rgb) / .22);
-            font-size:var(--text-xs); color:#b59866; line-height:1.55; white-space:normal;
+            font-size:var(--text-xs); color:var(--brass); line-height:1.55; white-space:normal;
         }
         #dive3dLegend {
             position:absolute; bottom:14px; left:16px; z-index:9020;
@@ -2823,14 +3065,17 @@
             font-family:var(--font-mono), monospace; font-size:var(--text-2xs);
             color:var(--text-muted); pointer-events:none;
         }
+        /* [v17.39.0 D3-1g] ปุ่มเปิด/ปิดมุมมอง ๓ มิติ — เดิม rgba(34,211,238,…) = #22d3ee
+           ทั้งพื้นและแสง hover แต่เส้นขอบกับตัวอักษรใช้ var(--cyan) (#00d4ff)
+           ปุ่มเดียวจึงมีฟ้าสองเฉดปนกัน · ผูก --cyan-rgb ให้ทั้งสามส่วนเป็นเฉดเดียว */
         .dive3d-btn {
-            background:rgba(34,211,238,.10); border:1px solid var(--cyan);
+            background:rgb(var(--cyan-rgb) / .10); border:1px solid var(--cyan);
             border-radius:var(--radius-sm); color:var(--cyan);
             font-family:var(--font-mono), monospace; font-size:var(--text-xs);
             padding:var(--space-0-5) var(--space-2); cursor:pointer; letter-spacing:.4px;
         }
-        .dive3d-btn:hover { background:rgba(34,211,238,.22);
-            box-shadow:0 0 10px rgba(34,211,238,.4); }
+        .dive3d-btn:hover { background:rgb(var(--cyan-rgb) / .22);
+            box-shadow:0 0 10px rgb(var(--cyan-rgb) / .4); }
         #mapContainer { flex:1; min-height:0; position:relative; }
         /* [v16.0.5 W5-Q2] night-ops basemap grading — เกรดสีเฉพาะ tile pane (basemap)
            ไม่กระทบ overlay pane (heatmap/GeoJSON/marker) · เลือกตาม data-basemap ที่ switcher ติดให้ */
@@ -6329,6 +6574,10 @@
             --orange-dim: #737373;
             --teal-dim:   #a3a3a3;
             --purple-hi:  #d4d4d4;
+            /* [v17.39.0 D3-1g] ชมพูของธีมนี้ = เทา · ปุ่มลำแสงใต้น้ำเลิกโดดสีเดียวในชุด */
+            --pink:       #a3a3a3;
+            --pink-rgb:   163 163 163;
+            --pink-hi:    #d4d4d4;
 
             /* ── [v17.31.0 TOK-6] ปิดรูรั่วของชั้น token ──────────────────────
                ๑๑ ตัวข้างล่างนี้ "ถูกใช้งาน" อยู่ทั่วเปลือกระบบ แต่ไม่เคยมีธีมไหน
@@ -6401,6 +6650,11 @@
             --crit-hi:  #ff9a94; --crit-dim:  #c23a33;
             --orange-hi:#ffab5c; --orange-dim:#b8621a;
             --teal-dim: #4a7ab0; --purple-hi: #b0c0e8;
+            /* [v17.39.0 D3-1g] ชมพูของธีมนี้ = กุหลาบหม่น · เย็นพอจะอยู่กับกรมท่า
+               และไม่ไปชนกับทองราชนาวี (--cyan) ซึ่งเป็น accent หลัก */
+            --pink:     #e08aa8;
+            --pink-rgb: 224 138 168;
+            --pink-hi:  #f2b3c8;
             /* Typography — เอกลักษณ์ฟอนต์ ทร. (Prompt ≈ DB Heavent · mono คงเดิม) */
             --font-body:   'Prompt', sans-serif;
             --font-accent: 'Prompt', sans-serif;
@@ -6463,6 +6717,10 @@
             --crit-hi:  #f08a84; --crit-dim:  #b83c35;
             --orange-hi:#e08a4e; --orange-dim:#94472a;
             --teal-dim: #3a94a8; --purple-hi: #bdb0e8;
+            /* [v17.39.0 D3-1g] ชมพูของธีมนี้ = ม่วงอมชมพู · ต่อยอดจากม่วง Linear */
+            --pink:     #c96bc4;
+            --pink-rgb: 201 107 196;
+            --pink-hi:  #e3a4e0;
 
             /* [v17.31.0 TOK-6] ชุดเดียวกับที่อธิบายไว้ในธีม Stealth Mono —
                หาค่าจากฐานสีของธีมนี้เอง ไม่ใช่ hex ตายตัว */
@@ -6581,6 +6839,10 @@
             --crit-hi:  #fca5a5; --crit-dim:  #b91c1c;
             --orange-hi:#fb923c; --orange-dim:#c2410c;
             --teal-dim: #0d9488; --purple-hi: #c4b5fd;
+            /* [v17.39.0 D3-1g] ชมพูของธีมนี้ = ชมพูสด ตระกูลเดียวกับ slate/emerald */
+            --pink:     #ec4899;
+            --pink-rgb: 236 72 153;
+            --pink-hi:  #f9a8d4;
             /* mood overlay — teal deep-sea bloom จากล่างกลาง + navy rim ขวาบน */
             background-image:
                 radial-gradient(ellipse 70% 40% at 50% 108%, rgb(6 182 212 / .14) 0%, transparent 60%),
@@ -6644,6 +6906,11 @@
             --crit-hi:  #ff6b70; --crit-dim:  #a8151a;
             --orange-hi:#ff9640; --orange-dim:#b34d00;
             --teal-dim: #9e9e9e; --purple-hi: #d4d4d4;
+            /* [v17.39.0 D3-1g] ชมพูของธีมนี้ = เทา · ธีมนี้ลดความอิ่มสีของทุกเฉด
+               ที่ไม่ใช่แดงเลือดหมูอยู่แล้ว (ม่วง/เขียวน้ำทะเลก็เป็นเทา) */
+            --pink:     #bdbdbd;
+            --pink-rgb: 189 189 189;
+            --pink-hi:  #e0e0e0;
             /* ใช้อักษรความกว้างเท่ากัน ให้ใกล้เคียงงานออกแบบเรียบ ๆ ของ Tesla */
             --font-mono:   'Orbitron', sans-serif;
             --font-accent: 'Orbitron', sans-serif;
@@ -6709,6 +6976,11 @@
             --crit-hi:  #fca5a5; --crit-dim:  #b91c1c;
             --orange-hi:#ffab5c; --orange-dim:#c2510a;
             --teal-dim: #d18a3a; --purple-hi: #e0b06a;
+            /* [v17.39.0 D3-1g] ชมพูของธีมนี้ = ดินเผาอมชมพู · อยู่ในตระกูลอุ่น
+               ตามธีม (ม่วง=บรอนซ์ · เขียวน้ำทะเล=ส้มอ่อน) ไม่แหกโทน */
+            --pink:     #d98a7a;
+            --pink-rgb: 217 138 122;
+            --pink-hi:  #f0b5a5;
             /* mood overlay — เรืองส้มมุมขวาบน+ซ้ายล่าง + center ดำ */
             background-image:
                 radial-gradient(ellipse 55% 42% at 100% 0%,   rgb(255 122 24 / .13) 0%, transparent 60%),
@@ -8367,6 +8639,57 @@
     <circle cx="6" cy="14" r="1"/>
     <circle cx="10" cy="14" r="1"/>
   </symbol>
+  <!-- [v17.39.0 D3-1g] ชุดควบคุมกล้องของฉากดำน้ำ ๓ มิติ ๖ ตัว
+       ปุ่มแถบ #dive3dNav เดิมใช้อักขระข้อความ ↺ − + ↻ ⟲ ⬆ ซึ่งมีปัญหาสามข้อ:
+       (๑) ↺↻⟲ เป็นสัญลักษณ์คณิตศาสตร์ ฟอนต์โมโนสเปซหลายตัวไม่มี glyph จริง
+           เบราว์เซอร์จึงถอยไปหาฟอนต์สำรอง ทำให้ขนาด/น้ำหนักเส้นไม่ตรงกันเอง
+       (๒) − กับ + เป็นตัวอักษร ปรับน้ำหนักเส้นให้เท่าไอคอนอื่นไม่ได้
+       (๓) เป็นข้อความ จึงถูกโปรแกรมอ่านหน้าจออ่านออกเสียงมั่ว (มี aria-label กำกับอยู่
+           แต่ตัวอักษรยังรั่วเข้า accessible name ได้)
+       ชุดหลัก ๘๘ ตัวไม่มีตัวไหนตรงเลย (ใกล้สุดคือ i-refresh-cw/i-maximize/i-compass
+       ซึ่งสื่อความหมายผิด) จึงวาดใหม่ตามข้อกำหนด Lucide เดียวกับชุดข้างบน -->
+  <symbol id="i-rotate-ccw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
+    <path d="M3 3v5h5"/>
+  </symbol>
+  <symbol id="i-rotate-cw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 12a9 9 0 1 1-3-6.7L21 8"/>
+    <path d="M21 3v5h-5"/>
+  </symbol>
+  <symbol id="i-zoom-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="11" cy="11" r="8"/>
+    <path d="m21 21-4.3-4.3"/>
+    <path d="M11 8v6"/>
+    <path d="M8 11h6"/>
+  </symbol>
+  <symbol id="i-zoom-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="11" cy="11" r="8"/>
+    <path d="m21 21-4.3-4.3"/>
+    <path d="M8 11h6"/>
+  </symbol>
+  <!-- คืนค่ามุมกล้อง — ลูกศรย้อนกลับพร้อมเส้นฐาน ต่างจาก i-rotate-ccw ตรงที่
+       สื่อ "กลับไปจุดตั้งต้น" ไม่ใช่ "หมุนต่อเนื่อง" -->
+  <symbol id="i-view-reset" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
+    <path d="M3 3v5h5"/>
+    <circle cx="12" cy="12" r="2.5"/>
+  </symbol>
+  <!-- มุมมองจากด้านบน — ลูกศรชนเพดาน (Lucide arrow-up-to-line) -->
+  <symbol id="i-arrow-up-to-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 3h14"/>
+    <path d="m18 13-6-6-6 6"/>
+    <path d="M12 7v14"/>
+  </symbol>
+  <!-- [v17.39.0 D3-1h] เงาซอกมุม (SSAO) — ทรงกลมที่มีเส้นแรเงาไล่ในซีกล่างซ้าย
+       สื่อ "ความมืดในซอก" ตรงกว่าไอคอน contrast ของ Lucide ซึ่งใช้การถมครึ่งวง
+       (ถมไม่ได้ เพราะสไปรท์ชุดนี้บังคับ fill:none ทั้งชุด)
+       เส้นแรเงาทั้ง ๓ เส้นคำนวณให้ปลายทุกจุดอยู่ในรัศมี ๙ จึงไม่ล้นออกนอกวง -->
+  <symbol id="i-ssao" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="9"/>
+    <path d="M5.6 15.2 8.9 18.5"/>
+    <path d="M4.2 11.4 10.9 18.1"/>
+    <path d="M4.4 7.7 15.3 18.6"/>
+  </symbol>
 </svg>
 
 <script>
@@ -9231,7 +9554,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.38.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.39.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9701,7 +10024,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.38.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.39.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9719,7 +10042,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.38.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.39.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -10692,7 +11015,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.38.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.39.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -11094,48 +11417,81 @@ window.udcHdrAnchor = udcHdrAnchor;
     <button id="dive3dClose" onclick="toggle3DView()"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg> ปิด 3D · กลับ 2D</button>
     <div id="dive3dHud">
         <div class="d3-title"><svg class="ico" aria-hidden="true"><use href="#i-globe"/></svg> 3D DIVE — UDC · ทิศตะวันออกของเกาะคราม</div>
-        <span class="d3-k">AREA</span> crop ~13.6 × 13.6 km<br>
-        <span class="d3-k">DEPTH SCALE</span> exaggerated ×3.2<br>
-        <span class="d3-k">UDC</span> 8× Natick module · deck 25 m<br>
-        <span class="d3-k">CORE TEMP</span> <span id="d3-temp">-- °C</span><br>
-        <span class="d3-k">GUUV</span> <span id="d3-guuv">0</span> ·
-        <span class="d3-k">THREATS</span> <span id="d3-threats">0</span><br>
-        <span class="d3-k">SEA STATE</span> <span id="d3-seastate">SS1</span><br>
-        <span class="d3-k">THERMOCLINE</span> ~20 m
+        <!-- [v17.39.0 D3-1h] เดิมทั้ง ๘ แถวเป็น <span>+<br> ระดับเดียวกันหมด
+             ตอนนี้แบ่ง ๓ ชั้นตามอัตราการเปลี่ยนแปลง และเปลี่ยนเป็น grid ๒ คอลัมน์
+             เพื่อให้คอลัมน์ตัวเลขตรงกัน กวาดสายตาลงแนวดิ่งได้ (คำอธิบายเต็มอยู่ที่ CSS)
+             id ของค่าทั้ง ๔ ตัวคงเดิมทุกตัว — จาวาสคริปต์ที่เขียนค่าไม่ต้องแก้ -->
+        <div class="d3-tier">สถานะ · LIVE</div>
+        <div class="d3-grid d3-live">
+            <span class="d3-k">CORE TEMP</span><span class="d3-v" id="d3-temp">-- °C</span>
+            <span class="d3-k">GUUV</span><span class="d3-v" id="d3-guuv">0</span>
+            <span class="d3-k">THREATS</span><span class="d3-v" id="d3-threats">0</span>
+        </div>
+        <div class="d3-tier">สภาพแวดล้อม · ENV</div>
+        <div class="d3-grid d3-env">
+            <span class="d3-k">SEA STATE</span><span class="d3-v" id="d3-seastate">SS1</span>
+            <span class="d3-k">THERMOCLINE</span><span class="d3-v">~20 m</span>
+        </div>
+        <div class="d3-tier">บริบทคงที่ · REF</div>
+        <div class="d3-grid d3-static">
+            <span class="d3-k">AREA</span><span class="d3-v">crop ~13.6 × 13.6 km</span>
+            <span class="d3-k">DEPTH SCALE</span><span class="d3-v">exaggerated ×3.2</span>
+            <span class="d3-k">UDC</span><span class="d3-v">8× Natick module · deck 25 m</span>
+        </div>
     </div>
     <div id="dive3dLegend">
         <span class="lg-dot" style="background:var(--cyan-mid);"></span>Guardian UUV &nbsp;
         <span class="lg-dot" style="background:var(--red);"></span>Threat<br>
         <span class="lg-dot" style="background:var(--teal);"></span>UDC Capsule &nbsp;
         <span class="lg-dot" style="background:var(--amber);"></span>Surface Vessel<br>
-        <span class="lg-dot" style="background:rgba(56,189,248,.5);"></span>Thermocline &nbsp;
-        <span class="lg-dot" style="background:#9aa8bd;"></span>Seabed
+        <!-- [v17.39.0 D3-1g] เดิมฝัง rgba(56,189,248,.5) และ #9aa8bd ดิบ ทั้งที่อีก ๔ จุด
+             ในป้ายเดียวกันใช้โทเคนหมด · ย้ายมาใช้ --sym-thermocline / --sym-seabed
+             ซึ่งเป็นกลุ่มสัญลักษณ์ (ยกเว้นธีมโดยตั้งใจ) ให้ตรงกับสีที่ฉาก ๓ มิติ วาดจริง -->
+        <span class="lg-dot" style="background:color-mix(in srgb, var(--sym-thermocline) 50%, transparent);"></span>Thermocline &nbsp;
+        <span class="lg-dot" style="background:var(--sym-seabed);"></span>Seabed
     </div>
     <div id="dive3dSedLegend" style="display:none;"></div>
     <div id="dive3dHint"><svg class="ico" aria-hidden="true"><use href="#i-mouse"/></svg> ลาก: หมุนกล้อง · Scroll: ซูม</div>
     <div id="dive3dNav">
         <div id="d3camctlRow">
-            <button class="d3-camctl-btn" onclick="d3RotateLeft()" title="หมุนกล้องซ้าย" aria-label="หมุนกล้องซ้าย">↺</button>
-            <button class="d3-camctl-btn" onclick="d3ZoomOut()" title="ซูมออก" aria-label="ซูมออก">−</button>
-            <button class="d3-camctl-btn" onclick="d3ZoomIn()" title="ซูมเข้า" aria-label="ซูมเข้า">+</button>
-            <button class="d3-camctl-btn" onclick="d3RotateRight()" title="หมุนกล้องขวา" aria-label="หมุนกล้องขวา">↻</button>
+            <!-- [v17.39.0 D3-1g] เดิมเป็นอักขระข้อความ ↺ − + ↻ · เปลี่ยนเป็นสไปรท์เวกเตอร์
+                 ให้น้ำหนักเส้นเท่ากับไอคอนอื่นทั้งระบบ และรับสีปุ่มผ่าน currentColor -->
+            <button class="d3-camctl-btn" onclick="d3RotateLeft()" title="หมุนกล้องซ้าย" aria-label="หมุนกล้องซ้าย"><svg class="ico" aria-hidden="true"><use href="#i-rotate-ccw"/></svg></button>
+            <button class="d3-camctl-btn" onclick="d3ZoomOut()" title="ซูมออก" aria-label="ซูมออก"><svg class="ico" aria-hidden="true"><use href="#i-zoom-out"/></svg></button>
+            <button class="d3-camctl-btn" onclick="d3ZoomIn()" title="ซูมเข้า" aria-label="ซูมเข้า"><svg class="ico" aria-hidden="true"><use href="#i-zoom-in"/></svg></button>
+            <button class="d3-camctl-btn" onclick="d3RotateRight()" title="หมุนกล้องขวา" aria-label="หมุนกล้องขวา"><svg class="ico" aria-hidden="true"><use href="#i-rotate-cw"/></svg></button>
         </div>
+        <!-- [v17.39.0 D3-1g] เข็มทิศ — ตัดสินแยกสองส่วนตามกฎ "ตกแต่งหรือข้อมูล":
+             · จานพื้น + วงขอบ + ตัวอักษร N = เปลือกเครื่องมือ (ตกแต่ง) → ผูกธีม
+               (เดิมวงขอบเป็น #22d3ee ซึ่งไม่ใช่ --cyan ของธีมปริยายด้วยซ้ำ)
+             · เข็มแดงชี้เหนือ / เข็มเทาชี้ใต้ = ธรรมเนียมแผนที่สากล เป็น "ข้อมูล"
+               จึงคงค่าดิบไว้โดยตั้งใจ ห้ามผูกธีม — ถ้าธีม Stealth ทำเข็มเหนือเป็นเทา
+               เข็มทิศจะอ่านไม่ออกว่าด้านไหนคือทิศเหนือ (ยังไม่ตั้งโทเคนใหม่เพราะ
+               ใช้ที่เดียวในระบบ · ถ้ามีจุดที่สองเมื่อใดค่อยยกเป็น --sym-north/-south) -->
         <svg viewBox="0 0 64 64" width="58" height="58">
-            <circle cx="32" cy="32" r="29" fill="rgba(2,12,24,.82)" stroke="#22d3ee" stroke-width="1.5"/>
+            <circle cx="32" cy="32" r="29" style="fill:rgb(var(--bg-dark-rgb) / .82);stroke:var(--cyan);" stroke-width="1.5"/>
             <g id="d3compassRose">
                 <polygon points="32,6 37,32 32,27 27,32" fill="#ef4444"/>
                 <polygon points="32,58 27,32 32,37 37,32" fill="#8aa0b4"/>
-                <text x="32" y="17.5" text-anchor="middle" fill="#fff" font-size="11" font-family="monospace" font-weight="bold">N</text>
+                <text x="32" y="17.5" text-anchor="middle" style="fill:var(--n-100);" font-size="11" font-family="monospace" font-weight="bold">N</text>
             </g>
         </svg>
-        <button id="d3resetBtn"  onclick="resetDive3DView()">⟲ Reset View</button>
-        <button id="d3northBtn"  onclick="resetDive3DNorthPole()">⬆ Top View</button>
+        <button id="d3resetBtn"  onclick="resetDive3DView()"><svg class="ico" aria-hidden="true"><use href="#i-view-reset"/></svg> Reset View</button>
+        <button id="d3northBtn"  onclick="resetDive3DNorthPole()"><svg class="ico" aria-hidden="true"><use href="#i-arrow-up-to-line"/></svg> Top View</button>
         <button id="d3straitBtn" onclick="zoomToStrait()"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg> Strait</button>
         <button id="d3udcBtn"    onclick="zoomToUDC()"><svg class="ico" aria-hidden="true"><use href="#i-microscope"/></svg> UDC</button>
         <button id="d3raysBtn"   onclick="toggleAcousticRays()" title="แสดง ray paths เสียงผ่าน SVP (Snell's law)"><svg class="ico" aria-hidden="true"><use href="#i-target"/></svg> Rays</button>
         <button id="d3sedBtn"    onclick="toggleSeabed3D()" title="ชนิดตะกอนพื้นท้องทะเล (DMR) — ระบายสีพื้นทะเลตามชนิดตะกอน + Bottom Loss"><svg class="ico" aria-hidden="true"><use href="#i-anchor"/></svg> ตะกอน</button>
         <button id="d3satBtn"    onclick="toggleSat3D()" title="ภาพดาวเทียมจริงทับแผ่นดิน/เกาะ (z15 ≈ 4.7 m/px) — MapTiler ถ้ามี key, ไม่มีใช้ Esri World Imagery ฟรี"><svg class="ico" aria-hidden="true"><use href="#i-satellite"/></svg> ดาวเทียม</button>
         <button id="d3detonateBtn" onclick="if(typeof simulateMineDetonation==='function')simulateMineDetonation()" title="จำลองการจุดระเบิดทุ่นจริง (UNDEX · Cole 1948) — พวยน้ำ + ฟองแก๊ส + คลื่นผิวน้ำ + หลุมพื้นทะเล และผลกระทบต่อน้ำโดยรอบ"><svg class="ico" aria-hidden="true"><use href="#i-bomb"/></svg> ระเบิดจริง</button>
+        <!-- [v17.39.0 D3-1h] ปุ่มนี้ขาดหายมาตั้งแต่ D3-1a — d3ToggleSSAO() มีอยู่แล้ว
+             และอ้าง #d3ssaoBtn ไว้ในตัว แต่ไม่มีปุ่มจริงในหน้า จึงเรียกจาก UI ไม่ได้เลย
+             ตั้ง class="is-on" + aria-pressed="true" ไว้ตั้งแต่มาร์กอัป เพราะ
+             let d3_ssaoOn = true; เป็นค่าตั้งต้น ถ้าไม่ตั้งให้ตรง ปุ่มจะแสดงว่า "ปิด"
+             ทั้งที่ SSAO เปิดอยู่ แล้วต้องกด ๒ ครั้งกว่าสถานะจะตรงกับภาพ
+             เกณฑ์คัดฟีเจอร์: ปุ่มนี้เปลี่ยนการตัดสินใจได้จริง — เครื่องสนามที่ GPU อ่อน
+             ยอมเสียเงาซอกมุมเพื่อแลกอัตราเฟรมที่ยังตามเป้าเคลื่อนที่ได้ทัน -->
+        <button id="d3ssaoBtn" class="is-on" aria-pressed="true" onclick="d3ToggleSSAO()" title="เงาซอกมุม (SSAO) — เพิ่มการรับรู้ความลึกของภูมิประเทศใต้น้ำ · ปิดเพื่อแลกอัตราเฟรมบนเครื่องที่ GPU อ่อน"><svg class="ico" aria-hidden="true"><use href="#i-ssao"/></svg> เงาซอกมุม</button>
     </div>
 </div>
 
@@ -23542,6 +23898,9 @@ let d3_envMap = null;   // [v16.2.0 G2-2] PMREM environment map กลาง (�
 let d3_fish = [], d3_seabedY = 0;
 // [v15.5 · #1-3D] DMR seabed-sediment overlay บน terrain 3D — เก็บ geometry + สองชุดสี (ฐาน/ตะกอน) + สถานะปุ่ม
 let d3_bedGeo = null, d3_bedColBase = null, d3_bedColSed = null, d3_sedOn = false;
+// [v17.39.0 D3-1b] geometry เฉพาะของ drape ดาวเทียม — index ที่กรองเอาสามเหลี่ยม
+//   ส่วนที่เป็น "น้ำล้วน" ออก แต่ยังใช้ BufferAttribute ชุดเดียวกับพื้นทะเล
+let d3_satGeo = null;
 // [v16.3.0 SAT-1] Satellite drape — mesh แผ่นที่สองใช้ bed geometry เดิม โชว์ภาพดาวเทียมจริงเฉพาะส่วนเกาะ/แผ่นดิน
 // key: ใส่ MapTiler key ของคุณแทน placeholder หรือเรียก setupMaptilerKey() ใน console (เก็บใน localStorage ไม่ติดไปกับไฟล์)
 // ไม่มี key → fallback เป็น Esri World Imagery (ฟรี ไม่ต้องมี key — แหล่งเดียวกับ basemap 2D ของซิม)
@@ -23563,6 +23922,12 @@ let d3_droneGroup = null;      // [AD] กลุ่มโดรนทางอ�
 let d3_udcTempC = 35, d3_tempLastT = 0;   // อุณหภูมิ core UDC (sync → HUD)
 let d3_udcDeckY = 0;           // ระดับ deck ของ UDC (จุดเชื่อมสายเคเบิล)
 let d3_composer = null;   // bloom post-processing
+// [v17.39.0 D3-1a] SSAO เป็นตัวกินงบเฟรมอันดับ ๑ (วัดได้ ๗๕% ของเวลาเรนเดอร์ทั้งเฟรม)
+//   เพราะ SSAOPass ของ r128 เรนเดอร์ฉากซ้ำอีก ๒ รอบ (depth + normal) — ต้นทุนจึงผูก
+//   กับจำนวนสามเหลี่ยมทั้งฉาก ไม่ใช่แค่จำนวนพิกเซล จึงให้ทำงานที่ครึ่งความละเอียด
+//   และเปิด/ปิดได้จาก HUD เพื่อให้ผู้บังคับบัญชาเลือกเองระหว่าง "ลื่น" กับ "ลึก"
+let d3_ssaoOn = true;               // สถานะปุ่ม SSAO บน HUD
+const D3_SSAO_SCALE = 0.5;          // ครึ่งความละเอียด → ต้นทุน pass ราว ๑/๔
 let d3_raf = null;
 let d3_cam  = { theta: 0.9, phi: 0.92, radius: 520, target: null };
 // [v16.0.5 W5-Q8] DEPTH-GRADED OCEAN — เกรดสีน้ำ/หมอก teal ตามความลึกกล้อง
@@ -23579,6 +23944,45 @@ function toggleOceanGrade3D() {
         if (d3_renderer) d3_renderer.toneMappingExposure = 0.78;
     }
     return d3_oceanGrade;
+}
+// ── [v17.39.0 D3-1a] ปรับขนาด composer ให้ตรง "พิกเซลจริงของอุปกรณ์" ────────────
+//   บั๊กเดิม: EffectComposer.setSize() ของ r128 ไม่คูณ pixelRatio ให้ (มีแต่ constructor
+//   ที่คูณผ่าน getDrawingBufferSize) การส่งหน่วย CSS จึงทำให้ render target เล็กกว่า
+//   ที่ควรเป็นตาม pixelRatio — บนจอ HiDPI ภาพหลัง post-processing เบลอลงทันทีครึ่งหนึ่ง
+//   รวมโค้ดที่เคยซ้ำกัน ๒ จุด (resize listener + toggle3DView) ไว้ที่เดียว
+function _d3ResizeComposer() {
+    if (!d3_composer || !d3_renderer) return;
+    const pr = d3_renderer.getPixelRatio();
+    const dw = Math.round(window.innerWidth  * pr);   // พิกเซลจริง
+    const dh = Math.round(window.innerHeight * pr);
+    d3_composer.setSize(dw, dh);
+    const ud = d3_composer.userData || {};
+    if (ud.scanPass && ud.scanPass.uniforms && ud.scanPass.uniforms.resolution) {
+        ud.scanPass.uniforms.resolution.value.set(dw, dh);   // sharpen ต้องรู้พิกเซลจริง
+    }
+    if (ud.fxaaPass) {
+        ud.fxaaPass.material.uniforms['resolution'].value.set(1 / dw, 1 / dh);
+    }
+}
+// ── [v17.39.0 D3-1a] สวิตช์ SSAO บน HUD ────────────────────────────────────────
+//   เกณฑ์คัดฟีเจอร์: ปุ่มนี้ "เปลี่ยนการตัดสินใจ" ได้จริง — เครื่องสนามที่ GPU อ่อน
+//   ยอมเสียเงาซอกมุมเพื่อแลกอัตราเฟรมที่ทำให้ติดตามเป้าเคลื่อนที่ได้ทัน
+function d3ToggleSSAO() {
+    d3_ssaoOn = !d3_ssaoOn;
+    if (d3_composer && d3_composer.userData && d3_composer.userData.ssaoPass) {
+        d3_composer.userData.ssaoPass.enabled = d3_ssaoOn;
+        // SSAOPass เรนเดอร์ฉากเองอยู่แล้ว → RenderPass ต้องทำงานเฉพาะตอน SSAO ปิด
+        if (d3_composer.userData.renderPass)
+            d3_composer.userData.renderPass.enabled = !d3_ssaoOn;
+    }
+    const b = document.getElementById('d3ssaoBtn');
+    if (b) {
+        b.classList.toggle('is-on', d3_ssaoOn);
+        b.setAttribute('aria-pressed', d3_ssaoOn ? 'true' : 'false');
+    }
+    if (typeof addLog==='function')
+        addLog('[3D] 🌑 SSAO ' + (d3_ssaoOn ? 'เปิด' : 'ปิด — โหมดอัตราเฟรมสูง'), 'var(--cyan-mid)');
+    return d3_ssaoOn;
 }
 // [v16.0.5 W5-Q7] camera damping — input ทุกทาง (drag/wheel/preset) เขียนที่ goal
 // แล้ว render3DLoop lerp d3_cam เข้าหา goal ทุกเฟรม ให้กล้องมีน้ำหนักแบบ cinematic
@@ -24341,6 +24745,80 @@ function _d3EnableShadowsForGroup(grp) {
     });
 }
 
+// ── [v17.39.0 D3-1c] บีบกรอบเงาแดดให้พอดีเป้าหมายจริง ──────────────────────────
+//   เดิมกรอบ ortho ถูกตรึงที่ ±D3_W*0.6 (=252) และเล็งที่จุดกำเนิด (0,0,0) ซึ่งไม่ใช่
+//   ที่ตั้งของเกาะ — shadow map 2048² จึงถูกใช้ไปกับผืนน้ำเปล่าที่ไม่มีอะไรทอดเงา
+//   ที่นี่วัดขอบเขต "แผ่นดินจริง + ฐาน UDC" แล้วบีบกรอบกับเล็งใหม่ให้พอดี
+//   พูดกันตรง ๆ ตามหลักฐาน: นี่เป็นกำไรด้าน "ความคมของเงา" ไม่ใช่ด้านอัตราเฟรม
+//   จำนวนวัตถุที่ต้องเรนเดอร์ลง shadow map เท่าเดิมทุกตัว เปลี่ยนแค่ความหนาแน่นเท็กเซล
+//   (คง castShadow ของพื้นทะเลไว้ — พื้นทะเลกับเกาะเป็น mesh เดียวกัน ปิดแล้วเงาเกาะหาย)
+//
+//   ★ ผลการวัดจริงบนกรอบ crop ปัจจุบัน (เกาะคราม) — สมมติฐานเดิม "ผิด" ★
+//   กวาด 129×129 จุดในกรอบพื้นทะเลที่เรนเดอร์จริง พบพิกเซลแผ่นดิน 8,062 จุด (48%)
+//   กระจายชนขอบกรอบทั้งสี่ด้าน (x −153…+222.6, z −222.6…+222.6) เพราะกรอบนี้
+//   ไม่ได้มีแค่เกาะคราม แต่กินชายฝั่งแผ่นดินใหญ่เข้ามาด้วย
+//   → รัศมีครอบที่คำนวณได้ ≈ 314 หน่วย ซึ่ง "ใหญ่กว่า" กรอบเดิม ±252
+//   ดังนั้นข้อเสนอ "บีบกรอบเงา" ในผลตรวจจึงใช้กับฉากนี้ไม่ได้ · ฟังก์ชันนี้มีการ์ด
+//   กันการถอยหลังอยู่ จึงคืนค่ากรอบเดิมไว้ตามเดิม แล้วไปได้ความคมจากการขยับ
+//   shadow map เป็น 4096² แทน (วัดต้นทุนจริง +1.2 มิลลิวินาที/เฟรม)
+//   คงฟังก์ชันไว้เพราะทำงานครั้งเดียวตอน init และจะให้กำไรทันทีถ้ากรอบ crop
+//   ถูกย้ายไปพื้นที่ที่มีเกาะเดี่ยวกลางทะเลจริง ๆ
+function _d3FitSunShadow() {
+    if (!d3_sun10AM || typeof sampleLandness !== 'function') return;
+    // ถ้า land mask ยังไม่พร้อม จะวัดขอบเขตแผ่นดินไม่ได้ → ปล่อยกรอบเดิม (±D3_W*0.6) ไว้
+    // ดีกว่าบีบกรอบผิดแล้วเงาเกาะหายไปทั้งเกาะ
+    if (typeof landMaskReady !== 'undefined' && !landMaskReady) return;
+    let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity, found = false;
+    // กวาดใน "พิกัดโลกของฉาก" ไม่ใช่พิกัด nx,ny ของ play-area —
+    //   _d3x(nx) รับค่าปกติของ play-area ทั้งผืน ซึ่งกว้างกว่ากรอบ crop ของฉาก ๓ มิติมาก
+    //   การกวาด nx 0→1 จึงได้ x นอกกรอบไปไกล (วัดได้ ±984 หน่วย) กลายเป็นกรอบใหญ่กว่าเดิม
+    //   จึงกวาดตามขอบเขตพื้นทะเลที่เรนเดอร์จริง (D3_W*1.06) แล้วแปลงกลับเป็น nx,ny
+    const HB = D3_W * 1.06 / 2, N = 128;
+    for (let i = 0; i <= N; i++) {
+        const x = -HB + (2 * HB) * (i / N), nx = _d3nx(x);
+        if (nx < 0 || nx > 1) continue;
+        for (let j = 0; j <= N; j++) {
+            const z = -HB + (2 * HB) * (j / N), ny = _d3ny(z);
+            if (ny < 0 || ny > 1) continue;
+            if (sampleLandness(nx, ny) <= 0) continue;
+            if (x < minX) minX = x;  if (x > maxX) maxX = x;
+            if (z < minZ) minZ = z;  if (z > maxZ) maxZ = z;
+            found = true;
+        }
+    }
+    // ฐาน UDC ต้องอยู่ในกรอบเสมอ — เป็นโครงสร้างที่ผู้ใช้ซูมเข้าไปดูบ่อยที่สุด
+    if (typeof UDC !== 'undefined') {
+        const ux = _d3x(UDC.nx), uz = _d3z(UDC.ny), pad = m2u(400);
+        if (!found) { minX = ux - pad; maxX = ux + pad; minZ = uz - pad; maxZ = uz + pad; found = true; }
+        else { minX = Math.min(minX, ux - pad); maxX = Math.max(maxX, ux + pad);
+               minZ = Math.min(minZ, uz - pad); maxZ = Math.max(maxZ, uz + pad); }
+    }
+    if (!found) return;
+    const cx = (minX + maxX) / 2, cz = (minZ + maxZ) / 2;
+    // รัศมีทรงกลมครอบ — ครึ่งเส้นทแยงบวกเผื่อความสูงยอดไม้/เสาอากาศบนเกาะ
+    const r = Math.hypot(maxX - minX, maxZ - minZ) / 2 + m2u(600);
+    // กันการถอยหลัง: ถ้าวัดแล้วได้กรอบใหญ่กว่าเดิม แปลว่าไม่มีกำไร → ไม่แตะของเดิม
+    if (r >= D3_W * 0.6) {
+        if (typeof addLog === 'function')
+            addLog('[3D] ☀️ กรอบเงาแดดคงเดิม — ขอบเขตแผ่นดินที่วัดได้ไม่เล็กกว่ากรอบเดิม', 'var(--txt-dim)');
+        return;
+    }
+    // ย้ายทั้งตำแหน่งแสงและเป้าพร้อมกัน เพื่อ "รักษาทิศแดด 10 น. เดิมไว้เป๊ะ"
+    const dir = d3_sun10AM.position.clone().sub(d3_sun10AM.target.position);
+    d3_sun10AM.target.position.set(cx, 0, cz);
+    d3_sun10AM.target.updateMatrixWorld();
+    d3_sun10AM.position.copy(d3_sun10AM.target.position).add(dir);
+    const c = d3_sun10AM.shadow.camera;
+    c.left = -r; c.right = r; c.top = r; c.bottom = -r;
+    // near/far คำนวณจากระยะแสง→ศูนย์กลางจริง ไม่ใช่ค่าคงที่ที่เดาไว้ (เดิม 50/1200)
+    const dist = dir.length();
+    c.near = Math.max(1, dist - r - m2u(1000));
+    c.far  = dist + r + m2u(1000);
+    c.updateProjectionMatrix();
+    if (typeof addLog === 'function')
+        addLog('[3D] ☀️ กรอบเงาแดดพอดีเป้าหมาย ±' + r.toFixed(0) + ' หน่วย (เดิม ±' + (D3_W*0.6).toFixed(0) + ')', 'var(--warn-hi)');
+}
+
 function init3D() {
     if (d3_initDone) return;
     const canvas = document.getElementById('dive3dCanvas');
@@ -24389,8 +24867,18 @@ function init3D() {
     // [v16.0.5 W5V-4] เคารพ flag ถ้า toggleOceanGrade3D() ถูกปิดก่อนเข้า 3D ครั้งแรก → ดำสนิท
     d3_scene.background = new THREE.Color(d3_oceanGrade ? D3_OG_BG_SHALLOW : 0x000000);
 
+    // ── [v17.39.0 D3-1c] ระยะ far 4000 → 1600 ────────────────────────────────────
+    //   อัตราส่วน far/near เดิม 8000:1 บีบความละเอียดของ depth buffer จนเกิด z-fighting
+    //   ระหว่าง drape ดาวเทียมกับพื้นทะเลที่ห่างกันเพียง 0.15 หน่วย
+    //   คำนวณค่าที่ปลอดภัยจากของจริง ไม่ใช่เดา: d3ZoomOut()/wheel จำกัดรัศมีวงโคจร
+    //   ไว้ที่ 900 และเรขาคณิตนอกสุด (ผิวน้ำ 630×630) มีครึ่งเส้นทแยงราว 445
+    //   → ระยะที่มองเห็นได้จริงแย่สุดราว 1345 · เลือก 1600 เผื่อไว้ ~19%
+    //   (โดมท้องฟ้ารัศมี 2200 ไม่นับ เพราะ d3_sky.visible=false ตลอดในโหมด Black Void)
+    //   ส่วน near คง 0.5 ตามเดิม — d3ZoomIn() ยอมให้รัศมีลงถึง 5 หน่วย (~129 ม.)
+    //   ถ้าดัน near ขึ้นเป็น 2.0 จะตัดเรขาคณิตทิ้งตอนซูมชิด UDC ซึ่งเป็นท่าที่ใช้จริง
+    //   ผลที่ได้จึงเป็นการเพิ่มความละเอียด depth ราว 2.5 เท่า ไม่ใช่มากกว่านั้น
     d3_camera = new THREE.PerspectiveCamera(
-        56, window.innerWidth/window.innerHeight, 0.5, 4000);
+        56, window.innerWidth/window.innerHeight, 0.5, 1600);
 
     // hemisphere — สีกลางคืน/ห้องแล็บ (ฟ้าหม่นน้อยลง พื้นดำ)
     d3_scene.add(new THREE.HemisphereLight(0x3a607a, 0x000000, 0.55));  // ↓ ลดเล็กน้อยให้ shadow เด่น
@@ -24418,7 +24906,13 @@ function init3D() {
     sun10AM.shadow.camera.bottom = -_sz;
     sun10AM.shadow.camera.near   = 50;
     sun10AM.shadow.camera.far    = 1200;
-    sun10AM.shadow.mapSize.set(2048, 2048);   // คมพอควร ไม่หนัก
+    // ── [v17.39.0 D3-1c] 2048² → 4096² ───────────────────────────────────────
+    //   วัดจริงแล้วพบว่ากรอบเงา ±252 หน่วย = 13,032 ม. ที่ 2048² ให้ความละเอียด
+    //   6.4 ม./texel — ฐาน UDC กว้างราว 100 ม. จึงได้เงาเพียง ~16 texel เท่านั้น
+    //   ขยับเป็น 4096² ได้ 3.2 ม./texel (คมขึ้น ๔ เท่าต่อพื้นที่) โดยวัดต้นทุนจริง
+    //   บน Intel UHD ได้ +1.2 มิลลิวินาที/เฟรม (18.2 → 19.4) ซึ่งคุ้มมาก
+    //   เมื่อเทียบกับที่ D3-1a คืนงบมาให้ราว 250 มิลลิวินาที
+    sun10AM.shadow.mapSize.set(4096, 4096);
     sun10AM.shadow.bias       = -0.0006;       // กัน shadow acne
     sun10AM.shadow.normalBias = 0.025;
     sun10AM.shadow.radius     = 4;             // soft edge (PCFSoft)
@@ -24575,6 +25069,7 @@ function init3D() {
     bedGeo.setAttribute('color', new THREE.Float32BufferAttribute(bedCol,3));
     // [v15.5 · #1-3D] เก็บ geometry + สองชุดสี ไว้สลับเมื่อกดปุ่ม ⚓ ตะกอน · สร้าง legend · เปิดชั้นตะกอนเป็นค่าเริ่มต้น
     d3_bedGeo = bedGeo; d3_bedColBase = bedCol; d3_bedColSed = bedColSed;
+    d3_satGeo = null;   // [v17.39.0 D3-1b] พื้นทะเลถูกสร้างใหม่ → index ของ drape ที่แคชไว้หมดอายุ
     if (typeof _d3BuildSedLegend==='function') _d3BuildSedLegend();
     if (typeof _d3ApplySediment==='function') _d3ApplySediment(true);
     bedGeo.computeVertexNormals();
@@ -24628,17 +25123,48 @@ function init3D() {
     if (typeof THREE.EffectComposer !== 'undefined' &&
         typeof THREE.UnrealBloomPass !== 'undefined') {
         d3_composer = new THREE.EffectComposer(d3_renderer);
-        d3_composer.addPass(new THREE.RenderPass(d3_scene, d3_camera));
+        d3_composer.userData = d3_composer.userData || {};
+        const _rPass = new THREE.RenderPass(d3_scene, d3_camera);
+        d3_composer.addPass(_rPass);
+        d3_composer.userData.renderPass = _rPass;
         // ── [v09.3] SSAO — Screen Space Ambient Occlusion (เงาในซอกหลืบ/ใต้โครงสร้าง) ──
         //   ช่วยให้รู้สึก "ลึก" และ "สามมิติ" มากขึ้น โดยเฉพาะใต้ pod/seabed
+        // ── [v17.39.0 D3-1a] ปรับ ๓ เรื่อง หลังวัดพบว่า pass นี้กิน ๗๕% ของเวลาทั้งเฟรม ──
+        //   ๑) SSAOPass ของ r128 "ไม่อ่าน readBuffer" — มันเรนเดอร์ฉากใหม่ลง beautyRenderTarget
+        //      เอง ผลของ RenderPass ที่อยู่ข้างหน้าจึงถูกทิ้งทั้งดุ้น → ปิด RenderPass เมื่อ SSAO เปิด
+        //   ๒) ชั้น AO (normal/ssao/blur) ทำงานที่ครึ่งความละเอียด — beauty ยังเต็มความละเอียด
+        //      จึงไม่ทำให้ภาพรวมเบลอ เพราะ AO เป็นสัญญาณความถี่ต่ำอยู่แล้ว
+        //   ๓) เปิด/ปิดได้จาก HUD — เครื่องที่ GPU อ่อนเลือก "ลื่น" แทน "ลึก" ได้เอง
         if (typeof THREE.SSAOPass !== 'undefined') {
-            const ssao = new THREE.SSAOPass(d3_scene, d3_camera, window.innerWidth, window.innerHeight);
+            const _pr0 = d3_renderer.getPixelRatio();
+            const _dw  = Math.round(window.innerWidth  * _pr0);
+            const _dh  = Math.round(window.innerHeight * _pr0);
+            const ssao = new THREE.SSAOPass(d3_scene, d3_camera, _dw, _dh);
             ssao.kernelRadius = 8;      // ขนาด sampling radius (px) — เล็ก=คม, ใหญ่=นุ่ม
             ssao.minDistance  = 0.0008; // ใกล้สุดที่ AO เริ่มทำงาน
             ssao.maxDistance  = 0.10;   // ไกลสุดที่ AO ยัง valid
             ssao.output       = THREE.SSAOPass.OUTPUT.Default;  // mix กับ scene ปกติ
+            // แทนที่ setSize ของ instance นี้ ให้ beauty เต็มความละเอียด แต่ชั้น AO ลดครึ่ง
+            // (ถ้าไม่ทำ composer.setSize จะดึงทุก target กลับเป็นความละเอียดเต็มเงียบ ๆ)
+            ssao.setSize = function (w, h) {
+                const sw = Math.max(1, Math.round(w * D3_SSAO_SCALE));
+                const sh = Math.max(1, Math.round(h * D3_SSAO_SCALE));
+                this.width = w; this.height = h;
+                this.beautyRenderTarget.setSize(w, h);      // ภาพหลัก — เต็มความละเอียด
+                this.normalRenderTarget.setSize(sw, sh);    // ชั้น AO — ครึ่งเดียว
+                this.ssaoRenderTarget.setSize(sw, sh);
+                this.blurRenderTarget.setSize(sw, sh);
+                this.ssaoMaterial.uniforms['resolution'].value.set(sw, sh);
+                this.ssaoMaterial.uniforms['cameraProjectionMatrix'].value.copy(this.camera.projectionMatrix);
+                this.ssaoMaterial.uniforms['cameraInverseProjectionMatrix'].value.copy(this.camera.projectionMatrixInverse);
+                this.blurMaterial.uniforms['resolution'].value.set(sw, sh);
+            };
+            ssao.setSize(_dw, _dh);
             d3_composer.addPass(ssao);
-            if (typeof addLog==='function') addLog('[3D] 🌑 SSAO depth-perception พร้อม','var(--cyan-mid)');
+            d3_composer.userData.ssaoPass = ssao;
+            ssao.enabled   = d3_ssaoOn;
+            _rPass.enabled = !d3_ssaoOn;
+            if (typeof addLog==='function') addLog('[3D] 🌑 SSAO depth-perception พร้อม (half-res)','var(--cyan-mid)');
         }
         const bloom = new THREE.UnrealBloomPass(
             new THREE.Vector2(window.innerWidth, window.innerHeight),
@@ -24681,13 +25207,13 @@ function init3D() {
                     '  vec3 blur = (cL.rgb + cR.rgb + cU.rgb + cD.rgb) * 0.25;'+
                     '  c.rgb += (c.rgb - blur) * 0.20;'+                    // ★ +20% sharpness
                     '  c.rgb=pow(max(c.rgb,vec3(0.0)),vec3(0.4545));'+      // linear→sRGB
-                    // โทนสีสดแบบไอแมกซ์: เพิ่มความต่างแสง ความอิ่มสี และดันโทนฟ้า-น้ำเงิน
-                    '  float lum=dot(c.rgb, vec3(0.299,0.587,0.114));'+
-                    '  c.rgb=mix(vec3(lum), c.rgb, 1.12);'+                  // saturation +12%
-                    '  c.rgb=(c.rgb-0.5)*1.06+0.5;'+                         // contrast +6%
-                    '  c.b += 0.008; c.g += 0.004;'+                         // ทะเลฟ้าใสขึ้น
-                    '  c.rgb-=sin(vUv.y*900.0)*0.018;'+                      // scanlines จางมาก
-                    '  vec2 d=vUv-0.5; c.rgb*=1.0-dot(d,d)*0.22;'+           // vignette
+                    // ── [v17.39.0 D3-1d] ถอดการเกรดสีทั้งชุดออก ──────────────────────
+                    //   เดิมมี saturation +12% · contrast +6% · ดันโทนฟ้า · scanline · vignette
+                    //   ทั้งห้าตัวแต่งเฉพาะ "ภาพในฉาก" แต่ไม่แตะ swatch ของ legend ที่เป็น CSS
+                    //   ผลคือสีในฉากกับสีในคำอธิบายไม่ตรงกัน — ผิดหลัก "SIM ซื่อสัตย์" เพราะ
+                    //   ผู้ใช้เทียบสีเพื่ออ่านสถานะ ไม่ได้ดูเพื่อความสวย · vignette ยังหรี่ขอบจอ
+                    //   ซึ่งเป็นที่อยู่ของ contact ที่เพิ่งเข้าฉาก จึงตัดทิ้งทั้งหมด
+                    //   คงไว้เฉพาะ ๒ ตัวที่เป็น "ความถูกต้อง" ไม่ใช่ "รสนิยม": ความคม + sRGB
                     '  gl_FragColor=c;'+
                     '}'
             });
@@ -24730,23 +25256,10 @@ function init3D() {
         d3_camera.aspect = window.innerWidth/window.innerHeight;
         d3_camera.updateProjectionMatrix();
         d3_renderer.setSize(window.innerWidth, window.innerHeight);
-        if(d3_composer) {
-            d3_composer.setSize(window.innerWidth, window.innerHeight);
-            // [v09.3] อัปเดต resolution uniform ของ sharpen shader
-            if (d3_composer.userData && d3_composer.userData.scanPass &&
-                d3_composer.userData.scanPass.uniforms &&
-                d3_composer.userData.scanPass.uniforms.resolution) {
-                d3_composer.userData.scanPass.uniforms.resolution.value.set(
-                    window.innerWidth, window.innerHeight);
-            }
-            // [v16.0.5 W5-Q6] อัปเดต resolution ของ FXAA (หน่วย 1/พิกเซลจริง รวม pixelRatio)
-            if (d3_composer.userData && d3_composer.userData.fxaaPass) {
-                const _fpr = d3_renderer.getPixelRatio();
-                d3_composer.userData.fxaaPass.material.uniforms['resolution'].value.set(
-                    1 / (window.innerWidth * _fpr), 1 / (window.innerHeight * _fpr));
-            }
-        }
+        _d3ResizeComposer();   // [v17.39.0 D3-1a] คิด pixelRatio ให้ครบทุก target
     });
+    // [v17.39.0 D3-1c] บีบกรอบเงาให้พอดีเกาะ+ฐาน UDC (ต้องเรียกหลังภูมิประเทศเสร็จ)
+    _d3FitSunShadow();
     // [v09.5] เปิด shadow ให้ mesh static ทั้งฉาก (UDC pod, terrain, อาคารบนเกาะ ฯลฯ)
     _d3EnableShadowsForGroup(d3_scene);
     if (typeof addLog==='function') addLog('[3D] ☀️ แดด 10 AM + soft shadow พร้อม','var(--warn-hi)');
@@ -24766,6 +25279,22 @@ function _d3box(w,h,d,color,emissive) {
         new THREE.MeshPhongMaterial({ color:color, emissive:emissive||0x000000 }));
 }
 
+// ── [v17.39.0 D3-1e] คลังวัสดุใช้ร่วม — ตัด material ซ้ำของวัตถุ "นิ่ง" ในฉาก ────────
+//   เดิม mesh ทุกตัวสร้าง material ของตัวเอง แม้พารามิเตอร์จะเหมือนกันเป๊ะ
+//   เช่น 8 UDC module = hull 8 + end cap 16 + rib 24 ตัวที่เหมือนกันทุกประการ
+//   material 1 ตัว = 1 ชุด uniform ที่ต้องผูกใหม่ทุกครั้งที่สลับวัตถุ (state change ต่อ draw call)
+//   ★ ใช้ร่วมกันได้ "เฉพาะเมื่อไม่มีใครแก้ค่าราย object ตอน runtime" เท่านั้น
+//     ตรวจแล้วทุกกลุ่มที่เรียกใช้ฟังก์ชันนี้เป็นวัตถุ static — สร้างครั้งเดียวใน init3D
+//     (มี d3_initDone กันซ้ำ) · ไม่เคยผ่าน _disposeObject3D · แอนิเมชันแตะแค่ position/rotation
+//   ✗ ห้ามใช้กับ LED · udc-marker · udc-beam · plateEdge · ping · halo · โดรน · dyn entity
+//     กลุ่มเหล่านั้นเขียน .opacity/.color ราย mesh ทุกเฟรม หรือถูก dispose ตอนล้างของ
+function _d3sm(key, factory) {
+    const c = _d3sm._c || (_d3sm._c = new Map());
+    let m = c.get(key);
+    if (!m) { m = factory(); c.set(key, m); }
+    return m;
+}
+
 // ── UDC module เดี่ยว — pressure vessel + server-rack glow ──
 function _d3udcModule(L, R) {
     const g = new THREE.Group();
@@ -24773,20 +25302,21 @@ function _d3udcModule(L, R) {
     const foul = _d3foulTex();
     const hullG = new THREE.CylinderGeometry(R, R, L*0.80, 22);
     hullG.rotateZ(Math.PI/2);
-    const hull = new THREE.Mesh(hullG, new THREE.MeshStandardMaterial({
+    // [v17.39.0 D3-1e] hull/end cap/rib ใช้วัสดุร่วม — ทั้ง 8 โมดูลใช้ค่าเดียวกันเป๊ะ และไม่ถูกแก้ตอน runtime
+    const hull = new THREE.Mesh(hullG, _d3sm('udc-hull', ()=> new THREE.MeshStandardMaterial({
         color:0xe9eef2, emissive:0x2c3a44, metalness:0.72, roughness:0.45,
-        map:foul, envMap:d3_envMap, envMapIntensity:0.85 }));
+        map:foul, envMap:d3_envMap, envMapIntensity:0.85 })));
     g.add(hull);
     [-1, 1].forEach(s=>{                          // end caps — domed
         const ec = new THREE.Mesh(new THREE.SphereGeometry(R, 18, 12),
-            new THREE.MeshStandardMaterial({ color:0xccd4dc, metalness:0.72, roughness:0.48,
-                map:foul, envMap:d3_envMap, envMapIntensity:0.85 }));
+            _d3sm('udc-cap', ()=> new THREE.MeshStandardMaterial({ color:0xccd4dc, metalness:0.72, roughness:0.48,
+                map:foul, envMap:d3_envMap, envMapIntensity:0.85 })));
         ec.position.x = s*L*0.40; ec.scale.x = 0.55; g.add(ec);
     });
     [-0.32, 0, 0.32].forEach(f=>{                  // hull ribs
         const rib = new THREE.Mesh(new THREE.TorusGeometry(R*1.06, R*0.10, 6, 18),
-            new THREE.MeshStandardMaterial({ color:0x6b7682, metalness:0.85, roughness:0.50,
-                envMap:d3_envMap, envMapIntensity:0.70 }));
+            _d3sm('udc-rib', ()=> new THREE.MeshStandardMaterial({ color:0x6b7682, metalness:0.85, roughness:0.50,
+                envMap:d3_envMap, envMapIntensity:0.70 })));
         rib.rotation.y = Math.PI/2; rib.position.x = f*L; g.add(rib);
     });
 
@@ -24891,12 +25421,12 @@ function buildUDC3D() {
         // [v16.2.0 G2-2/G2-3] ขา/ฐานราก PBR + คราบเพรียง (ส่วนใกล้พื้นโดน fouling หนักสุดตามจริง)
         const leg=new THREE.Mesh(
             new THREE.CylinderGeometry(0.30, 0.42, legLen, 8),
-            new THREE.MeshStandardMaterial({ color:0x39434f, metalness:0.65, roughness:0.60,
-                map:_d3foulTex(), envMap:d3_envMap, envMapIntensity:0.55 }));
+            _d3sm('udc-leg', ()=> new THREE.MeshStandardMaterial({ color:0x39434f, metalness:0.65, roughness:0.60,
+                map:_d3foulTex(), envMap:d3_envMap, envMapIntensity:0.55 })));
         leg.position.set(lx, (legTopY+bedY)/2, lz); grp.add(leg);
         const foot=new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.35, 0.5, 10),
-            new THREE.MeshStandardMaterial({ color:0x2c343d, metalness:0.55, roughness:0.70,
-                map:_d3foulTex(), envMap:d3_envMap, envMapIntensity:0.45 }));
+            _d3sm('udc-foot', ()=> new THREE.MeshStandardMaterial({ color:0x2c343d, metalness:0.55, roughness:0.70,
+                map:_d3foulTex(), envMap:d3_envMap, envMapIntensity:0.45 })));
         foot.position.set(lx, bedY+0.25, lz); grp.add(foot);
     });
 
@@ -25063,45 +25593,66 @@ function buildShore3D() {
     d3_scene.add(grp);
 }
 
-// ── ต้นสน low-poly — trunk + cone ซ้อนชั้น ──
-function buildPineTree3D(h) {
-    const g = new THREE.Group();
-    const trunkH = h*0.24, trunkR = h*0.05;
-    const trunk = new THREE.Mesh(
-        new THREE.CylinderGeometry(trunkR*0.8, trunkR*1.15, trunkH, 6),
-        new THREE.MeshPhongMaterial({ color:0x6e4a2c, flatShading:true }));
-    trunk.position.y = trunkH/2;
-    g.add(trunk);
+// ── [v17.39.0 D3-1e] ชิ้นส่วนต้นสน "สูง ๑ หน่วย" — ใช้ร่วมกันทุกต้น ──────────────
+//   เดิม buildPineTree3D(h) สร้าง Group ละ 5 mesh + 5 material ต่อต้น · 64 ต้น
+//   = 320 mesh / 320 material / 320 draw call ทั้งที่ทุกต้นเป็น "ทรงเดียวกันเป๊ะ"
+//   ต่างกันแค่ ตำแหน่ง · มุมหมุนรอบแกน Y · ความสูง h
+//   ★ ทุกสัดส่วนในฟังก์ชันเดิมคูณ h ตรง ๆ ทั้งหมด (trunkH, trunkR, cr, tierH, ระยะชั้น)
+//     จึงย่อเป็น "ต้นหนึ่งหน่วยแล้ว scale เท่ากันทั้งสามแกน" ได้โดยไม่เพี้ยนแม้แต่นิด
+//   → geometry เลื่อนตำแหน่งฝังไว้ในตัว (translate) ให้โคนต้นอยู่ที่ y=0
+//     เมทริกซ์ต่อ instance จึงเหลือแค่ position · rotY · uniform scale
+function _d3PineParts() {
+    const parts = [];
+    const trunkH = 0.24, trunkR = 0.05;
+    const tg = new THREE.CylinderGeometry(trunkR*0.8, trunkR*1.15, trunkH, 6);
+    tg.translate(0, trunkH/2, 0);
+    parts.push({ geo: tg, mat: new THREE.MeshPhongMaterial({ color:0x6e4a2c, flatShading:true }) });
     // ใบสน — กรวยซ้อน 4 ชั้น เล็กลงเรื่อยๆ
     const greens=[0x14401f, 0x1a4d27, 0x215b2f, 0x296a39];   // เขียวเข้มลึก
-    const N=4, folBase=trunkH*0.72, tierH=h*0.40;
+    const N=4, folBase=trunkH*0.72, tierH=0.40;
     for(let i=0;i<N;i++){
-        const cr=h*0.30*(1-i*0.205);
-        const cone=new THREE.Mesh(new THREE.ConeGeometry(cr, tierH, 7),
-            new THREE.MeshPhongMaterial({ color:greens[i], flatShading:true }));
-        cone.position.y = folBase + i*(h*0.205) + tierH*0.5;
-        g.add(cone);
+        const cg = new THREE.ConeGeometry(0.30*(1-i*0.205), tierH, 7);
+        cg.translate(0, folBase + i*0.205 + tierH*0.5, 0);
+        parts.push({ geo: cg, mat: new THREE.MeshPhongMaterial({ color:greens[i], flatShading:true }) });
     }
-    return g;
+    return parts;
 }
 // ── ต้นไม้บนเกาะคราม — กระจายบนพื้นเกาะ (กลางเกาะ ไม่ใช่ขอบหาด) ──
 function buildIslandTrees() {
     if (typeof isOnLand !== 'function' || !landMaskReady) return;
-    const grp = new THREE.Group();
     const rand=(a,b)=>a+Math.random()*(b-a);
-    let placed=0, tries=0;
-    while(placed<64 && tries<1100){
+    // ๑) สุ่มตำแหน่งด้วยเกณฑ์เดิมทุกประการ (landness ≥ 0.78 · สูง 7–12.5 · หมุนสุ่ม · 64 ต้น)
+    const spots=[];
+    let tries=0;
+    while(spots.length<64 && tries<1100){
         tries++;
         const x=rand(-D3_W*0.5,D3_W*0.5), z=rand(-D3_W*0.5,D3_W*0.5);
         if (sampleLandness(_d3nx(x),_d3ny(z)) < 0.78) continue;   // กลางเกาะ
-        const ty=terrainY(x,z);
-        const tree=buildPineTree3D(rand(7,12.5));
-        tree.position.set(x, ty-0.6, z);
-        tree.rotation.y=rand(0,6.283);
-        grp.add(tree);
-        placed++;
+        spots.push({ x:x, z:z, y:terrainY(x,z)-0.6, h:rand(7,12.5), r:rand(0,6.283) });
+    }
+    if (!spots.length) return;
+    // ๒) วาดทั้ง 64 ต้นด้วย InstancedMesh 5 ตัว (ลำต้น + ใบ 4 ชั้น) = 5 draw call
+    const grp = new THREE.Group();
+    const parts = _d3PineParts();
+    const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(),
+          _p = new THREE.Vector3(), _s = new THREE.Vector3(), _e = new THREE.Euler();
+    for (let k=0;k<parts.length;k++){
+        const im = new THREE.InstancedMesh(parts[k].geo, parts[k].mat, spots.length);
+        for (let i=0;i<spots.length;i++){
+            const sp = spots[i];
+            _e.set(0, sp.r, 0); _q.setFromEuler(_e);
+            _p.set(sp.x, sp.y, sp.z); _s.set(sp.h, sp.h, sp.h);
+            im.setMatrixAt(i, _m.compose(_p, _q, _s));
+        }
+        im.instanceMatrix.needsUpdate = true;
+        // Frustum.intersectsObject() ของ r128 ใช้ boundingSphere ของ "geometry" คูณ matrixWorld
+        //   ซึ่งของ InstancedMesh คือทรงหนึ่งหน่วยที่จุดกำเนิด — ไม่รู้จักเมทริกซ์ราย instance
+        //   ถ้าปล่อยให้ cull ต้นไม้ทั้งเกาะจะหายทันทีที่จุดกำเนิดหลุดเฟรม (รวมถึงเงาด้วย)
+        im.frustumCulled = false;
+        grp.add(im);
     }
     grp.name='island-trees';
+    grp.userData.trees = spots.length;
     d3_scene.add(grp);
 }
 
@@ -25339,8 +25890,9 @@ function buildMEZ3D() {
 // ── ADCP unit — เครื่องวัดกระแสน้ำ ติดตั้งบนพื้นทะเล (bottom-mounted) ──
 function buildADCPunit() {
     const g = new THREE.Group();
-    const frame = new THREE.MeshPhongMaterial({ color:0x39434e });
-    const inst  = new THREE.MeshPhongMaterial({ color:0xe6c64a, emissive:0x4a3c10 });
+    // [v17.39.0 D3-1e] วัสดุร่วมข้าม 6 ตัว — ADCP สร้างครั้งเดียวใน init3D และไม่มีแอนิเมชันแตะวัสดุ
+    const frame = _d3sm('adcp-frame', ()=> new THREE.MeshPhongMaterial({ color:0x39434e }));
+    const inst  = _d3sm('adcp-inst',  ()=> new THREE.MeshPhongMaterial({ color:0xe6c64a, emissive:0x4a3c10 }));
     // base frame — จานแบนวางบนพื้น
     const base = new THREE.Mesh(new THREE.CylinderGeometry(2.6,3.0,0.7,8), frame);
     base.position.y=0.35; g.add(base);
@@ -25358,7 +25910,7 @@ function buildADCPunit() {
     // transducer head — โดมเข้มด้านบน
     const head=new THREE.Mesh(
         new THREE.SphereGeometry(1.05,12,8,0,6.283,0,Math.PI/2),
-        new THREE.MeshPhongMaterial({ color:0x2a3138 }));
+        _d3sm('dark-2a3138', ()=> new THREE.MeshPhongMaterial({ color:0x2a3138 })));
     head.position.y=4.9; g.add(head);
     // acoustic profiling beam — โคนเสียง teal พุ่งขึ้น (จางมาก)
     const beam=new THREE.Mesh(new THREE.ConeGeometry(9,72,12,1,true),
@@ -25413,20 +25965,21 @@ function buildESSMDome3D() {
 function buildShoreAAteam() {
     const g = new THREE.Group();
     // กระสอบทราย — ทรงกระบอกเตี้ยกว้าง
+    // [v17.39.0 D3-1e] วัสดุร่วมข้ามทุกฐาน — สร้างครั้งเดียวใน init3D · ไม่มีแอนิเมชันแตะวัสดุ
     const bags = new THREE.Mesh(new THREE.CylinderGeometry(3.2,3.4,1.6,10),
-        new THREE.MeshPhongMaterial({ color:0x3a5a2f }));
+        _d3sm('aa-bags', ()=> new THREE.MeshPhongMaterial({ color:0x3a5a2f })));
     bags.position.y=0.8; g.add(bags);
     // ลำตัวพลปืน — กระบอกบางสีเข้ม
     const body=new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.65,3.0,6),
-        new THREE.MeshPhongMaterial({ color:0x20262b }));
+        _d3sm('aa-body', ()=> new THREE.MeshPhongMaterial({ color:0x20262b })));
     body.position.set(0,3.1,0); g.add(body);
     // ศีรษะ — ทรงกลมเล็ก
     const head=new THREE.Mesh(new THREE.SphereGeometry(0.7,8,6),
-        new THREE.MeshPhongMaterial({ color:0x2a3138 }));
+        _d3sm('dark-2a3138', ()=> new THREE.MeshPhongMaterial({ color:0x2a3138 })));
     head.position.set(0,4.9,0); g.add(head);
     // ปืนลูกซอง — กระบอกบางเอียง
     const gun=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.16,3.0,5),
-        new THREE.MeshPhongMaterial({ color:0x14181c }));
+        _d3sm('aa-gun', ()=> new THREE.MeshPhongMaterial({ color:0x14181c })));
     gun.position.set(1.0,3.7,0.3); gun.rotation.z=-0.7; g.add(gun);
     // ไฟเขียวเรือง — ให้อ่านได้ในระยะไกล
     const acc=new THREE.Mesh(new THREE.SphereGeometry(0.5,8,6),
@@ -25673,8 +26226,10 @@ function buildSeabedDecor() {
         const branches = 3+(Math.random()*4|0);
         for (let b=0;b<branches;b++){
             const h=rand(5,13);
+            // [v17.39.0 D3-1e] วัสดุร่วมต่อ "สีปะการัง" — ปะการังโอนตามกระแสน้ำด้วย rotation เท่านั้น
+            //   ไม่มีที่ไหนแก้ .color/.opacity ของกิ่งปะการัง จึงใช้ material ร่วมได้ (5 สี × ~40 กิ่ง)
             const br=new THREE.Mesh(new THREE.ConeGeometry(rand(1.2,2.6),h,6),
-                new THREE.MeshPhongMaterial({color:cl,emissive:0x0a0608}));
+                _d3sm('coral-'+cl.toString(16), ()=> new THREE.MeshPhongMaterial({color:cl,emissive:0x0a0608})));
             br.position.set(rand(-3,3),h/2,rand(-3,3));
             br.rotation.z=rand(-0.3,0.3);
             cg.add(br);
@@ -25699,7 +26254,7 @@ function buildSeabedDecor() {
         if (onLand(x,z)) continue;
         const y=onBed(x,z), s=rand(3,9);
         const rk=new THREE.Mesh(new THREE.IcosahedronGeometry(s,0),
-            new THREE.MeshPhongMaterial({color:0x39424c,flatShading:true}));
+            _d3sm('rock', ()=> new THREE.MeshPhongMaterial({color:0x39424c,flatShading:true})));
         rk.position.set(x,y+s*0.4,z);
         rk.rotation.set(rand(0,3),rand(0,3),rand(0,3));
         rk.scale.y=rand(0.5,0.9);
@@ -26157,6 +26712,49 @@ function setupMaptilerKey(){
 }
 window.setupMaptilerKey = setupMaptilerKey;
 
+// ── [v17.39.0 D3-1b] geometry ของ drape ดาวเทียม — ตัดสามเหลี่ยม "น้ำล้วน" ทิ้ง ─────
+//   เดิม drape ใช้ d3_bedGeo ทั้งแผ่น (340×340 = 231,200 สามเหลี่ยม) แล้วอาศัย alphaMap
+//   ทำให้ส่วนที่เป็นทะเลโปร่งใส — แต่สามเหลี่ยมพวกนั้น "ยังถูกวาดอยู่ครบ" ทั้ง vertex
+//   และ fragment (วัสดุ transparent จึงข้าม early-Z ไม่ได้) เท่ากับจ่ายค่าเรนเดอร์
+//   ให้พิกเซลที่มองไม่เห็นราวครึ่งแผ่น
+//   ทางแก้: สร้าง index ใหม่ที่เก็บเฉพาะสามเหลี่ยมซึ่งมีมุมอย่างน้อยหนึ่งมุมเป็นแผ่นดิน
+//   ★ ไม่ตัดเป็น bounding box ★ — วัดจริงแล้วแผ่นดินในกรอบนี้กระจายชนขอบทั้งสี่ด้าน
+//     (แผ่นดินใหญ่ + เกาะคราม) bbox จึงเท่ากับทั้งแผ่น ไม่มีกำไร · การกรองราย
+//     สามเหลี่ยมคือวิธีเดียวที่ให้กำไรจริงกับภูมิประเทศแบบนี้
+//   ★ ใช้ BufferAttribute "ชุดเดียวกัน" กับพื้นทะเล ★ — ไม่กิน VRAM เพิ่มแม้แต่ไบต์เดียว
+//     และพิกัด vertex เท่ากันบิตต่อบิต จึงไม่เกิด z-fighting ใหม่ระหว่างสองแผ่น
+function _d3LandDrapeGeo(){
+    if (!d3_bedGeo || !d3_bedGeo.index || typeof sampleLandness !== 'function') return null;
+    const pos = d3_bedGeo.attributes.position;
+    const idx = d3_bedGeo.index.array;
+    const nV  = pos.count;
+    // ๑) หา landness ต่อ vertex — ใช้เกณฑ์เดียวกับที่ alphaMap ใช้ ผลจึงตรงกันเป๊ะ
+    const lnd = new Uint8Array(nV);
+    for (let v = 0; v < nV; v++){
+        const nx = _d3nx(pos.getX(v)), ny = _d3ny(pos.getZ(v));
+        lnd[v] = (nx >= 0 && nx <= 1 && ny >= 0 && ny <= 1 && sampleLandness(nx, ny) > 0) ? 1 : 0;
+    }
+    // ๒) เก็บสามเหลี่ยมที่มี "อย่างน้อยหนึ่งมุม" เป็นแผ่นดิน
+    //    ใช้ OR ไม่ใช่ AND เพื่อไม่ให้ชายฝั่งขาดหาย — alphaMap ไล่จางแบบ smoothstep
+    //    ค่าที่ >0 ทุกค่ายังมองเห็นได้ จึงต้องคงสามเหลี่ยมริมขอบไว้ทั้งหมด
+    const keep = [];
+    for (let t = 0; t < idx.length; t += 3){
+        const a = idx[t], b = idx[t+1], c = idx[t+2];
+        if (lnd[a] || lnd[b] || lnd[c]) keep.push(a, b, c);
+    }
+    if (!keep.length || keep.length >= idx.length) return null;   // ไม่มีกำไร → ใช้ของเดิม
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', d3_bedGeo.attributes.position);
+    g.setAttribute('normal',   d3_bedGeo.attributes.normal);
+    g.setAttribute('uv',       d3_bedGeo.attributes.uv);
+    g.setIndex(new THREE.BufferAttribute(
+        nV > 65535 ? new Uint32Array(keep) : new Uint16Array(keep), 1));
+    if (d3_bedGeo.boundingSphere) g.boundingSphere = d3_bedGeo.boundingSphere.clone();
+    g.userData.tris = keep.length / 3;
+    g.userData.trisFull = idx.length / 3;
+    return g;
+}
+
 function _d3BuildSatOverlay(){
     if (!d3_bedGeo || !d3_scene) return;
     // build token — กันเคสเปิด/ปิด 3D ซ้อนกันระหว่าง tile ยังโหลดไม่เสร็จ
@@ -26165,7 +26763,12 @@ function _d3BuildSatOverlay(){
         d3_scene.remove(d3_satMesh);
         const m = d3_satMesh.material;
         if (m){ if (m.map) m.map.dispose(); if (m.alphaMap) m.alphaMap.dispose(); m.dispose(); }
-        d3_satMesh = null;   // geometry แชร์กับ bed — ห้าม dispose
+        // [v17.39.0 D3-1b] ห้าม dispose geometry ทั้งสองกรณี —
+        //   กรณีเดิม: เป็น d3_bedGeo ของพื้นทะเลโดยตรง
+        //   กรณีใหม่: เป็น d3_satGeo ที่ "ใช้ BufferAttribute ตัวเดียวกับพื้นทะเล"
+        //   dispose() จะสั่งลบ GPU buffer ของ attribute ที่แชร์อยู่ ทำให้พื้นทะเลต้องอัปโหลดใหม่
+        //   d3_satGeo ถูกแคชไว้และล้างทิ้งเองตอนพื้นทะเลถูกสร้างใหม่เท่านั้น
+        d3_satMesh = null;
     }
     // ── bbox ภูมิศาสตร์ของแผ่นพื้น (กว้าง 1.06× ของ D3_CROP — อิง helper เดิมให้ตรงเป๊ะ) ──
     const HW = D3_W*0.53;
@@ -26242,14 +26845,21 @@ function _d3BuildSatOverlay(){
         const mat = new THREE.MeshLambertMaterial({
             map: tex, alphaMap: atex, transparent: true, depthWrite: false,
             polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
-        d3_satMesh = new THREE.Mesh(d3_bedGeo, mat);          // แชร์ geometry displaced เดิม — เกาะ/เนินตรงกันเป๊ะ
+        // [v17.39.0 D3-1b] ใช้ index ที่กรองแล้ว (แคชไว้ ใช้ซ้ำได้ทุกครั้งที่ rebuild drape)
+        //   ถ้าสร้างไม่สำเร็จด้วยเหตุใดก็ตาม ตกกลับไปใช้ geometry พื้นทะเลเต็มแผ่นตามเดิม
+        if (!d3_satGeo) d3_satGeo = _d3LandDrapeGeo();
+        const _dg = d3_satGeo || d3_bedGeo;
+        d3_satMesh = new THREE.Mesh(_dg, mat);                // แชร์ attribute กับพื้นทะเล — เกาะ/เนินตรงกันเป๊ะ
         d3_satMesh.position.y = 0.15;                         // ยกเล็กน้อยเสริม polygonOffset กัน z-fight
         d3_satMesh.renderOrder = 1;
         d3_satMesh.visible = d3_satOn;
         d3_scene.add(d3_satMesh);
         const btn = document.getElementById('d3satBtn');
         if (btn) btn.classList.toggle('active', d3_satOn);
-        console.log('[SAT] satellite drape พร้อม — '+d3_satInfo+' · '+okCount+' tiles ('+failCount+' fail) · '+cw+'×'+ch+'px');
+        const _tinfo = (_dg.userData && _dg.userData.tris)
+            ? ' · ' + _dg.userData.tris.toLocaleString() + '/' + _dg.userData.trisFull.toLocaleString() + ' tri'
+            : '';
+        console.log('[SAT] satellite drape พร้อม — '+d3_satInfo+' · '+okCount+' tiles ('+failCount+' fail) · '+cw+'×'+ch+'px'+_tinfo);
     });
 }
 
@@ -26335,10 +26945,10 @@ function buildFish3D(color) {
     const pec = new THREE.Mesh(new THREE.ConeGeometry(0.9,1.8,3), mat);
     pec.rotation.x=Math.PI/2; pec.position.set(2.0,-0.6,1.4); pec.scale.set(1,1,0.2);
     g.add(pec);
-    // ดวงตา
+    // ดวงตา — [v17.39.0 D3-1e] วัสดุร่วม (ปลา 14 ตัว × 2 ตา ใช้สีดำตัวเดียวกัน ไม่เคยแก้ตอน runtime)
     [0.95,-0.95].forEach(ez=>{
         const eye=new THREE.Mesh(new THREE.SphereGeometry(0.42,6,6),
-            new THREE.MeshBasicMaterial({color:0x0a0a0a}));
+            _d3sm('eye-0a', ()=> new THREE.MeshBasicMaterial({color:0x0a0a0a})));
         eye.position.set(4.0,0.55,ez); g.add(eye);
     });
     g.userData.tail = tail;
@@ -26368,7 +26978,7 @@ function buildShark3D() {
     // ── gill slits — 4 ขีดแต่ละข้าง ──
     [-1,1].forEach(s=>{ for(let k=0;k<4;k++){
         const gs=new THREE.Mesh(new THREE.BoxGeometry(0.24,1.7,0.32),
-            new THREE.MeshBasicMaterial({color:0x232930}));
+            _d3sm('gill', ()=> new THREE.MeshBasicMaterial({color:0x232930})));
         gs.position.set(5.0-k*0.95, 0.05, s*2.35); gs.rotation.z=0.3; g.add(gs);
     }});
     // ── 1st dorsal fin — สูง โค้งไปหลัง ──
@@ -26396,7 +27006,7 @@ function buildShark3D() {
     // ── ดวงตา ──
     [-1,1].forEach(s=>{
         const e=new THREE.Mesh(new THREE.SphereGeometry(0.5,8,7),
-            new THREE.MeshBasicMaterial({color:0x070707}));
+            _d3sm('eye-07', ()=> new THREE.MeshBasicMaterial({color:0x070707})));
         e.position.set(8.2,0.6,s*2.0); g.add(e);
     });
     // ── caudal fin — heterocercal (กลีบบนยาว) · group หมุนพัด ──
@@ -26434,7 +27044,7 @@ function buildDolphin3D() {
     // ดวงตา
     [-1,1].forEach(s=>{
         const e=new THREE.Mesh(new THREE.SphereGeometry(0.42,6,6),
-            new THREE.MeshBasicMaterial({color:0x0a0a0a}));
+            _d3sm('eye-0a', ()=> new THREE.MeshBasicMaterial({color:0x0a0a0a})));
         e.position.set(8.4,0.5,s*2.0); g.add(e);
     });
     // fluke (หางแนวนอน) — group หมุนพัดขึ้นลง
@@ -27158,8 +27768,15 @@ function update3DEntities() {
     }
     const tE=document.getElementById('d3-threats');
     if(tE && typeof threats!=='undefined'){
-        const s=''+threats.filter(t=>t.active).length;
-        if(tE.textContent!==s) tE.textContent=s;
+        const n=threats.filter(t=>t.active).length;
+        const s=''+n;
+        if(tE.textContent!==s){
+            tE.textContent=s;
+            // [v17.39.0 D3-1h] มีภัยคุกคามอยู่ = สัญญาณเดียวใน HUD ที่ "เปลี่ยน
+            // การตัดสินใจ" ได้ทันที จึงยกเป็นสีวิกฤต + เรืองแสงเมื่อ >0
+            // สลับคลาสในบล็อกเดียวกับที่เขียนข้อความ เพื่อไม่ให้แตะ DOM ทุกเฟรม
+            tE.classList.toggle('d3-alert', n>0);
+        }
     }
     const ssE=document.getElementById('d3-seastate');
     if(ssE && typeof seaState!=='undefined'){
@@ -27370,7 +27987,12 @@ function render3DLoop() {
         const tC = el ? parseFloat(el.textContent) : NaN;
         if(!isNaN(tC)){
             d3_udcTempC = tC;
-            const col = tC>=40 ? '#ff6b6b' : tC>=37 ? '#ffb454' : '#7dffb0';
+            // [v17.39.0 D3-1h] เดิมฝัง #ff6b6b / #ffb454 / #7dffb0 ดิบ — เป็น
+            // "ระดับความรุนแรง" ซึ่งในระบบนี้ผูกธีม (ทุกธีมนิยาม --crit/--warn/--ok เอง)
+            // ไม่ใช่กลุ่ม --sym-* ที่ยกเว้นธีม จึงต้องใช้โทเคน
+            // หมายเหตุ: ทั้งสามค่าเปลี่ยนเฉดจริง (แดงเข้มขึ้น/ส้มเหลืองขึ้น/เขียวเข้มขึ้น)
+            // ไม่ใช่การแทนค่าเท่าเดิม — เป็นการเปลี่ยนที่ตั้งใจให้ตรงกับระบบสีส่วนอื่น
+            const col = tC>=40 ? 'var(--crit-hi)' : tC>=37 ? 'var(--warn-hi)' : 'var(--ok-hi)';
             const he = document.getElementById('d3-temp');
             if(he){ he.textContent = tC.toFixed(1)+' °C'; he.style.color = col; }
         }
@@ -27552,24 +28174,11 @@ function toggle3DView() {
         d3_camera.aspect = window.innerWidth/window.innerHeight;
         d3_camera.updateProjectionMatrix();
         d3_renderer.setSize(window.innerWidth, window.innerHeight);
-        if(d3_composer) {
-            d3_composer.setSize(window.innerWidth, window.innerHeight);
-            // [v09.3] อัปเดต resolution uniform ของ sharpen shader
-            if (d3_composer.userData && d3_composer.userData.scanPass &&
-                d3_composer.userData.scanPass.uniforms &&
-                d3_composer.userData.scanPass.uniforms.resolution) {
-                d3_composer.userData.scanPass.uniforms.resolution.value.set(
-                    window.innerWidth, window.innerHeight);
-            }
-            // [v16.0.5 W5-Q6] อัปเดต resolution ของ FXAA (หน่วย 1/พิกเซลจริง รวม pixelRatio)
-            if (d3_composer.userData && d3_composer.userData.fxaaPass) {
-                const _fpr = d3_renderer.getPixelRatio();
-                d3_composer.userData.fxaaPass.material.uniforms['resolution'].value.set(
-                    1 / (window.innerWidth * _fpr), 1 / (window.innerHeight * _fpr));
-            }
-        }
+        _d3ResizeComposer();   // [v17.39.0 D3-1a] คิด pixelRatio ให้ครบทุก target
         ov.classList.add('active');
-        if(btn) btn.style.background='rgba(34,211,238,.32)';
+        // [v17.39.0 D3-1g] เดิมฝัง rgba(34,211,238,.32) ดิบ ทับ .dive3d-btn ที่เพิ่งผูกธีมไป
+        // ปุ่มจึงค้างฟ้าเฉดเดิมทุกธีมหลังกดเข้า ๓ มิติ · ใช้ rgb(var(--cyan-rgb)/…) ให้ตรงกัน
+        if(btn) btn.style.background='rgb(var(--cyan-rgb) / .32)';
         if(typeof addLog==='function') addLog('[3D] 🌐 เข้าสู่ 3D Underwater Dive View','var(--cyan-mid)');
         if(typeof startOceanAmbience==='function') startOceanAmbience();
         _d3LastInput = performance.now(); // [v16.0.6 W5S2-2] เปิด 3D นับเป็น input — ไม่ orbit ทันที
