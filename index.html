@@ -1,6 +1,81 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.35.1 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.36.0 · 7-Domain + AI Staff)
+  · [v17.36.0] SCENARIO INJECT — ยกเครื่องแผงจำลองภัยคุกคาม (P6-A ถึง P6-C)
+      ผู้ใช้สรุปอาการไว้สามข้อ: "เหมือนจับปุ่มต่างๆ ยัดใส่" · "ขนาดใหญ่เล็ก สีสันต่างๆ กัน" ·
+      "เหมือนมี case ไม่ครบถ้วนเลย" ตรวจแล้วทั้งสามข้อเป็นอาการของโรคเดียวกัน คือแผงนี้
+      โตขึ้นทีละปุ่มตลอด ๑๗ รุ่นโดยไม่เคยมีคอมโพเนนต์กลาง จึงให้คะแนน ๓๘/๑๐๐ · ๑๑ ปุ่ม · ๑๔ ข้อบกพร่อง
+
+      P6-A · สีของภัยคุกคามคือ "ข้อมูล" ไม่ใช่ "ของตกแต่ง"  (แก้บั๊กจริง ไม่ใช่ความสวย)
+        ปุ่มในแผงนี้ทำหน้าที่เป็นคำอธิบายสัญลักษณ์ของแผนที่ไปในตัว ผู้ฝึกจึงเรียนรู้ว่า
+        "สีนี้คือภัยชนิดนี้" จากปุ่ม แล้วเอาไปใช้อ่านหมุดบนแผนที่ · ๕ ใน ๑๑ ปุ่มสอนผิด
+          เรือดำน้ำดีเซล-ไฟฟ้า ปุ่ม #7f1d1d  ↔ หมุด #f87171
+          วางทุ่นระเบิดลับ    ปุ่ม #ff6b35  ↔ หมุด #a855f7
+          เรือผิวน้ำไร้คนขับ  ปุ่ม #ef4444  ↔ หมุด #fbbf24
+          เรือประมงพราง AIS   กรอบ #fbbf24 (สีของ USV) ↔ หมุด #cbd5e1
+          โดรน / โจมตีทางอากาศ ใช้ var(--cyan) = #00d4ff ซึ่งเท่ากับ --sym-guuv
+            คือยานใต้น้ำไร้คนขับ "ฝ่ายเรา" — สอนสีข้าศึกด้วยสีฝ่ายเดียวกัน
+        สองรายการหลังเป็นของค้างจาก v17.27.0 (IFF-1) ที่แก้ฝั่งหมุดแล้วแต่ลืมฝั่งปุ่ม
+        ซ้ำร้ายกว่านั้น: ปุ่มผูกกับโทเคน "ตกแต่ง" จึงเปลี่ยนตามธีมทั้งที่หมุดไม่เปลี่ยน
+          ธีม Stealth ทำให้กรอบปุ่ม UUV กลายเป็น #dc2626 ซึ่งเป็นสีของเรือดำน้ำจิ๋ว
+          ธีม Royal Thai Navy ทำให้ปุ่มโดรนกลายเป็นสีทอง #d3a027
+        ที่แก้ — เพิ่มโทเคน --sym-cyber #bd93f9 (เดิมมีแต่ค่าคงที่ในจาวาสคริปต์ ฝั่ง CSS
+        จึงต้องยืม --purple ซึ่งฟังธีม) แล้วผูกทุกการ์ดเข้ากับโทเคน --sym-* ตัวเดียวผ่าน
+        คุณสมบัติ --si ตามกฎ governance ของ P1 ที่ว่า "ตกแต่ง → ต้องฟังธีม · เป็นข้อมูล → ห้ามฟังธีม"
+        แก้สีหัวแผ่นชี้แจง (BRIEFINGS) ที่หลุดจากหมุดอีก ๕ จุดด้วยเหตุผลเดียวกัน และเปลี่ยน
+        พื้นแถบท้ายให้ผสมจาก b.color ค่าเดียว แทนที่จะเขียน rgba() ชุดที่สองซึ่งหลุดจากกันได้
+
+      P6-B · คอมโพเนนต์ .si-card — ขนาดเดียว รูปแบบเดียว  (จบเรื่อง "จับปุ่มยัดใส่")
+        ของเดิมมีสองขนาดอยู่ปนกัน · ความยาวป้ายต่างกันถึง ๒๐ เท่า · ๖ ใน ๑๑ ปุ่มเขียน
+        style= ทับคลาสของตัวเอง · ใช้ไอคอนสามแบบปนกัน · ไม่มีสถานะกำลังทำงาน ปิดใช้งาน
+        หรือวงแหวนโฟกัสเลย · hover เป็น box-shadow 0 0 10px currentColor ซึ่งดังเกินกว่า
+        มาตรฐาน OPERATIONAL CALM ที่วางไว้ตั้งแต่ P2
+        ที่แก้ — ลบตระกูล .btn ทั้งชุดทิ้ง (พิสูจน์แล้วว่ามีแค่ ๑๑ ปุ่มนี้ใช้ ไม่มีการเติมคลาส
+        ด้วยจาวาสคริปต์ที่ไหน) แล้วสร้าง .si-card เป็นกริด ๓ ช่อง 16px / เนื้อหา / ป้ายโดเมน
+        สีปรากฏเฉพาะที่ราง ๓px ด้านซ้าย ตัวอักษรเป็นกลางทั้งหมด · มีครบทั้ง hover · active ·
+        focus-visible · กำลังเดิน · ปิดใช้งาน · เพิ่มสัญลักษณ์ i-submarine เข้าชุดสไปรท์
+        (ชุดเดิม ๘๘ ตัวไม่มีรูปเรือดำน้ำเลย ทั้งที่ ๔ ฉากเป็นเรือดำน้ำ) รวมเป็น ๘๙
+
+      P6-C · ต่อสายฉากที่กำพร้า + เพิ่มเคสที่ "ไม่ใช่ภัย"  (จบเรื่อง case ไม่ครบ)
+        ๖ ฉากถูกเขียนไว้ครบและเรียกผ่าน launchScenario() ได้จริง แต่ไม่มีปุ่มในหน้าจอ —
+        gnss-spoof · cyber · ew · cyber-physical · singsiam · community-fishery
+        ผลคือโดเมน CYB / LIT / C2 ไม่มีทางเข้าเลยแม้แต่ทางเดียว ทั้งที่ประกาศเป็น ๑ ใน ๗
+        และแผงนี้ไม่เคยมีเคสที่คำตอบถูกคือ "ไม่ยิง" ผู้ฝึกจึงไม่เคยถูกทดสอบเรื่องการแยกแยะ
+        ที่แก้ — ๑๗ การ์ด ครบทั้ง ๗ โดเมน · แท็บตามแกนรู้จำ RED ๑๔ / GREY ๑ / WHITE ๒
+        (ใช้ค่า recognition ที่มีอยู่แล้วในทุกเป้า ไม่ได้ประดิษฐ์การจัดหมวดใหม่) ·
+        ชิปกรองโดเมน ๘ ตัว · การ์ดที่โมดูลรองรับหลายโดเมนติดป้าย MULTI · เติมแผ่นชี้แจง
+        BRIEFINGS อีก ๑๐ รายการให้ครบทั้ง ๑๗ (เดิมมี ๗ อีก ๑๐ ฉากกดแล้วแผ่นไม่ขึ้นเงียบ ๆ
+        ซึ่งอ่านได้ว่า "ระบบเสีย" มากกว่า "ฉากนี้ไม่มีข้อมูล")
+        การ์ดที่ไม่มีโมดูลรองรับจะถูกปิดพร้อมบอกเหตุผลใน title ตามหลัก SIM ซื่อสัตย์
+
+      สัญญาณ "กำลังเดิน" ที่เลือกผิดรอบแรก แล้วแก้จากการวัด
+        ตอนแรกใช้แถบ #tlActive เหมือน UDCThreatChoreo ทดสอบจริงแล้วผิด — ค่านั้นสะท้อน
+        เพียงว่ามีเป้ากายภาพอยู่ใน threats[] ซึ่ง ๔ ฉากไซเบอร์และ ๒ ฉากไม่ใช่ภัยไม่เคยสร้าง
+        และยังอัปเดตในลูป animate() จึงค้างเมื่อแท็บถูกซ่อน · รวม ๖ ใน ๑๗ การ์ดจะติดสถานะ
+        ไม่ถึงวินาทีแล้วดีดกลับ (วัดได้: data-run กลายเป็น null ภายในหนึ่งรอบนาฬิกา)
+        เปลี่ยนไปใช้ window._lastScenarioType ซึ่ง launchScenario() เขียนแบบ synchronous
+        ที่บรรทัดแรกเหมือนกันหมดทุกฉาก ไม่ขึ้นกับชนิดเป้าหรือลูปวาดภาพ
+
+      พิสูจน์ด้วยการวัด (อ่าน DOM จริงในเบราว์เซอร์ ไม่ใช่การอ่านโค้ด)
+        การ์ด ๑๗ ใบ · สไปรท์ ๘๙ สัญลักษณ์ · BRIEFINGS ครบทุกคีย์ (missing: [])
+        รางสีอ่านค่าจริงได้ตรงหมุด: uuv rgb(255,65,54) · cyber rgb(189,147,249) ·
+          greytrawler rgb(203,213,225)
+        ตัวกรองแกนรู้จำ ALL ๑๗ / RED ๑๔ / GREY ๑ / WHITE ๒
+        ตัวกรองโดเมน AIR ๓ · SUR ๕ · SUB ๖ · SEA ๒ · CYB ๔ · LIT ๑ · C2 ๑ — ไม่มีโดเมนใดเป็นศูนย์
+        กรองซ้อน RED+CYB ได้ ๔ ฉากถูกต้อง · WHITE+CYB ได้ ๐ และกล่องความว่างขึ้นแทน
+        ขนาดตัวอักษรทุกชั้นผ่านพื้นล่าง ๙px: ชื่อฉาก ๑๑ · คำอธิบาย ๙ · ป้าย/แท็บ/ชิป/ตัวนับ ๙
+
+      ยังไม่ทำ (เป็นการตัดสินใจ ไม่ใช่การข้าม)
+        · P6-D คือการ "เขียนฉากใหม่" ให้ LIT / C2 / SEA ผู้ใช้สั่งทำถึง P6-C เท่านั้น
+          รอบนี้จึงต่อสายเฉพาะฉากที่มีอยู่จริงแล้ว ไม่ประดิษฐ์ฉากใหม่ขึ้นมาเอง
+        · _spawnCyberTrack() ยังเขียน '#bd93f9' เป็นค่าคงที่ในจาวาสคริปต์ ไม่ได้อ่านจาก
+          --sym-cyber — เพราะ TOK-3 ตัดสินใจไว้แล้วว่าจะไม่สร้างสะพานโทเคนฝั่ง JS
+          ค่าทั้งสองเท่ากันโดยการก่อสร้าง และมีหมายเหตุกำกับไว้ทั้งสองฝั่ง
+        · b.color ใน BRIEFINGS ยังเป็น hex ไม่ใช่ var(--sym-*) ด้วยเหตุผลเดียวกัน
+          บวกข้อจำกัดทางเทคนิค: showBriefing() ต่อสตริงเป็น b.color+'66' ซึ่ง var() ทำไม่ได้
+        · นาฬิกา T+ นับต่อไปจนกว่าจะปล่อยฉากใหม่ ไม่หยุดเมื่อภารกิจจบ เพราะ missionEnded
+          ประกาศด้วย let ในสคริปต์แบบคลาสสิก จึงไม่อยู่บน window และอ่านจากโมดูลนี้ไม่ได้
+          ความหมายของ T+ คือ "เวลาที่ผ่านไปนับจากปล่อยฉาก" ซึ่งยังถูกต้องอยู่
   · [v17.35.1] กล่อง AI DECISION · 7-DOMAIN THREAT — กรอบชมพู hex ดิบ → โทเคนตามธีม
       ผู้ใช้ถามว่ากรอบชมพูรอบกล่องนี้ตั้งใจหรือเปล่า คำตอบคือ "ตั้งใจตอน v17.5.4
       แต่เป็นของค้างแล้ว" — สีชมพู #ec4899 คือสีประจำโดเมนที่ ๗ (AI-การตัดสินใจ · ศรชล.)
@@ -1325,12 +1400,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.35.1 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.36.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.35.1';
+        const APP_VERSION = '17.36.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -1699,6 +1774,11 @@
             --sym-sdv:       #a855f7;   /* ยานส่งนักประดาน้ำ · ลึก ๘ ม. */
             --sym-midget:    #dc2626;   /* เรือดำน้ำจิ๋ว · ลึก ๑๕ ม. */
             --sym-ssk:       #f87171;   /* เรือดำน้ำดีเซล-ไฟฟ้า · ลึก ๓๕ ม. */
+            /* [v17.36.0 P6-A] เป้าไซเบอร์/สงครามอิเล็กทรอนิกส์ — ไม่มีตัวตนทางกายภาพ
+               ค่านี้ตรงกับสีหมุดจริงที่ MDA.CyberScenarios._spawnCyberTrack() ใช้ (#bd93f9)
+               เดิมมีแต่ค่าคงที่ในจาวาสคริปต์ ไม่มีโทเคน ทำให้ฝั่ง CSS ต้องยืม --purple
+               ซึ่งเป็นโทเคนตกแต่ง (ธีม Stealth เปลี่ยนเป็นเทา) หมุดกับปุ่มจึงหลุดจากกัน */
+            --sym-cyber:     #bd93f9;   /* โหนดไซเบอร์ · แหล่งกำเนิดคลื่นรบกวน (EW) */
             /* — โครงสร้างพื้นฐาน / เส้นทางเดินเรือ — */
             --sym-das:       #f97316;   /* สายใยแก้วตรวจจับการรบกวน */
             --sym-tss1:      #fb923c;   /* TSS ๑ แหลมฉบัง/สีชัง */
@@ -2710,41 +2790,119 @@
         /* สัญลักษณ์จริงบนแผนที่ (▲ = ทีม สอ.รฝ. · ✕ = โดรน ISR) — ใช้แทนจุดกลม
            เพราะสองหน่วยนี้ใช้สีเดียวกัน แยกกันด้วยรูปทรงเท่านั้น */
         .iff-glyph { width:9px; flex-shrink:0; text-align:center; font-size:var(--text-xs); line-height:1; }
-        .btn {
-            width:100%; padding:var(--space-1) var(--space-2); border-radius:var(--radius-sm); border:1px solid;
-            font-family:var(--font-body), sans-serif; font-size:var(--text-sm); font-weight:600;
-            cursor:pointer; display:flex; align-items:center; gap:var(--space-1-5);
-            transition: background 0.25s, border-color 0.25s, box-shadow 0.25s, transform 0.15s;
+        /* ══ SCENARIO INJECT — คลังสถานการณ์ฝึก [v17.36.0 P6-A/P6-B] ═══════════════
+           แทนที่ตระกูล .btn/.btn-uuv/.btn-surf/.btn-drone/.btn-combo/.ctrl-* ทั้งชุด
+           (ตรวจแล้วว่าถูกใช้เฉพาะในหน้าต่างนี้ ๑๑ จุด ไม่มีที่อื่น จึงลบได้หมด)
+
+           ปัญหาเดิมที่แก้:
+             ๑) ปุ่มทำหน้าที่เป็นคำอธิบายสัญลักษณ์ไปในตัว แต่ ๕ ใน ๑๑ ปุ่มสอนสีผิด
+                — SSK ปุ่ม #7f1d1d ทั้งที่หมุดเป็น #f87171 (สีที่ v17.27.0 IFF-1
+                  ทิ้งไปแล้วเพราะค่าความต่างสว่างราว ๑.๘:๑)
+                — Covert Mining ปุ่ม #ff6b35 ทั้งที่หมุดเป็นสี SDV #a855f7
+                — USV ปุ่ม #ef4444 ทั้งที่หมุดเป็น #fbbf24
+                — Grey Trawler ขอบ #fbbf24 ซึ่งเป็นสีของ USV
+                — Drone/Air Raid ปุ่ม var(--cyan) = #00d4ff ซึ่งเท่ากับ --sym-guuv
+                  (ยานใต้น้ำไร้คนขับ "ฝ่ายเรา") ทั้งที่หมุดเป็น #ff4136
+             ๒) ปุ่มผูกกับโทเคน "ธีม" จึงเลื่อนไหลตามธีมทั้งที่หมุดบนแผนที่ไม่เลื่อน
+                — ธีม Stealth ดัน --red เป็น #dc2626 = สีเรือดำน้ำจิ๋ว
+                — ธีม ราชนาวี ดัน --cyan เป็นทอง #d3a027
+             ๓) ขนาด/รูปทรงไม่เป็นระบบ (๒ ขนาด · ๓ สำนวนไอคอน · inline style ๖ จุด)
+
+           กฎที่ใช้ (ตั้งไว้ตั้งแต่ P1): ตกแต่ง → ต้องฟังธีม · เป็นข้อมูล → ห้ามฟังธีม
+           ดังนั้นสีประจำตัวของสถานการณ์เป็น "ข้อมูล" อยู่ที่ --si (รับค่าจาก --sym-*
+           ซึ่งยกเว้นธีม) และปรากฏที่เดียวคือแถบซ้าย ๓ จุดภาพ ส่วนที่เหลือ — พื้น ขอบ
+           ตัวอักษร วงโฟกัส — เป็น "ตกแต่ง" ทั้งหมด ผูกกับโทเคนธีมล้วน ๆ */
+        .si-tabs { display:flex; gap:var(--space-px); margin-top:var(--space-1); }
+        .si-tab {
+            flex:1; padding:var(--space-0-5) 0; background:transparent;
+            border:1px solid var(--border-dim); border-radius:var(--radius-sm);
+            color:var(--text-dim); font-family:var(--font-mono), monospace;
+            font-size:var(--text-2xs); font-weight:700; letter-spacing:1px; cursor:pointer;
+            transition:background .2s, color .2s, border-color .2s;
         }
-        .btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 10px currentColor;
+        .si-tab:hover { color:var(--text-main); }
+        .si-tab:focus-visible { outline:2px solid var(--focus); outline-offset:1px; }
+        .si-tab[aria-selected="true"] {
+            color:var(--text-main);
+            background:color-mix(in srgb, var(--tc, var(--text-dim)) 16%, transparent);
+            border-color:color-mix(in srgb, var(--tc, var(--text-dim)) 60%, var(--border-dim));
         }
-        .btn:active {
-            transform: scale(0.98);
+        .si-doms { display:flex; flex-wrap:wrap; gap:var(--space-px); margin-top:var(--space-1); }
+        .si-dchip {
+            padding:1px 5px; background:transparent; border:1px solid var(--border-dim);
+            border-radius:999px; color:var(--text-dim);
+            font-family:var(--font-mono), monospace; font-size:var(--text-2xs);
+            font-weight:700; letter-spacing:.5px; cursor:pointer;
+            transition:background .2s, color .2s, border-color .2s;
         }
-        .btn-uuv   { background:rgba(255,65,54,.08);  border-color:var(--red); color:#ff7a74; }
-        .btn-uuv:hover   { background:rgba(255,65,54,.2); }
-        .btn-surf  { background:rgba(255,215,0,.08);  border-color:var(--yellow); color:var(--yellow); }
-        .btn-surf:hover  { background:rgba(255,215,0,.2); }
-        .btn-drone { background:rgb(var(--cyan-rgb) / .08);  border-color:var(--cyan); color:var(--cyan); }
-        .btn-drone:hover { background:rgb(var(--cyan-rgb) / .2); }
-        .btn-combo { background:rgba(189,147,249,.08); border-color:var(--purple); color:var(--purple); }
-        .btn-combo:hover { background:rgba(189,147,249,.2); }
-        .btn-reset { background:rgb(var(--teal-rgb) / .08); border-color:var(--teal); color:var(--teal); justify-content:center; }
-        .btn-reset:hover { background:rgb(var(--teal-rgb) / .2); }
-        .btn-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-        /* ── การจัดวางกลุ่มปุ่มควบคุม (หน้าต่างฝ่ายแดง/ฝ่ายน้ำเงิน) ── */
-        .ctrl-grp {
-            font-size:var(--text-2xs); color:var(--n-500); letter-spacing:1px;
-            margin-top:var(--space-1-5); margin-bottom:var(--space-px); font-weight:700;
-            text-transform:uppercase;
+        .si-dchip:hover { color:var(--text-main); }
+        .si-dchip:focus-visible { outline:2px solid var(--focus); outline-offset:1px; }
+        .si-dchip[aria-pressed="true"] {
+            color:var(--text-main); border-color:var(--focus);
+            background:color-mix(in srgb, var(--focus) 14%, transparent);
         }
-        .ctrl-grp:first-of-type { margin-top:var(--space-0-5); }
-        .ctrl-row { display:flex; gap:var(--space-1); }
-        .ctrl-row .btn {
-            flex:1; width:auto; padding:var(--space-1) var(--space-1); font-size:var(--text-xs);
-            justify-content:center; gap:var(--space-0-5);
+        .si-count {
+            margin-top:var(--space-1); font-family:var(--font-mono), monospace;
+            font-size:var(--text-2xs); color:var(--text-dim); letter-spacing:.5px;
+        }
+        .si-list { display:flex; flex-direction:column; gap:var(--space-px); margin-top:var(--space-0-5); }
+        /* การ์ดสถานการณ์ — ขนาดเดียว รูปทรงเดียว ทุกใบ
+           คอลัมน์: ไอคอน (๑๖) · ชื่อ+คำอธิบาย (ยืด) · ป้ายโดเมน (พอดีเนื้อหา) */
+        .si-card {
+            display:grid; grid-template-columns:16px minmax(0,1fr) auto;
+            align-items:center; column-gap:var(--space-1-5);
+            width:100%; text-align:left; padding:var(--space-1) var(--space-1-5);
+            background:var(--bg-deeper); border:1px solid var(--border-dim);
+            border-left:3px solid var(--si, var(--border-dim));
+            border-radius:var(--radius-sm); color:var(--text-main); cursor:pointer;
+            transition:background .2s, border-color .2s;
+        }
+        .si-card:hover {
+            background:color-mix(in srgb, var(--si) 12%, var(--bg-deeper));
+            border-color:color-mix(in srgb, var(--si) 45%, var(--border-dim));
+            border-left-color:var(--si);
+        }
+        .si-card:hover .si-ico { color:var(--si); }
+        .si-card:focus-visible { outline:2px solid var(--focus); outline-offset:1px; }
+        .si-card:active { background:color-mix(in srgb, var(--si) 20%, var(--bg-deeper)); }
+        /* กำลังเดินสถานการณ์ — แถบซ้ายและป้ายขวาติดสีประจำตัว ป้ายโดเมนกลายเป็นนาฬิกา T+ */
+        .si-card[data-run="1"] {
+            background:color-mix(in srgb, var(--si) 16%, var(--bg-deeper));
+            border-color:color-mix(in srgb, var(--si) 55%, var(--border-dim));
+            border-left-color:var(--si);
+        }
+        .si-card[data-run="1"] .si-ico { color:var(--si); }
+        .si-card[data-run="1"] .si-dom {
+            color:var(--si); border-color:color-mix(in srgb, var(--si) 60%, var(--border-dim));
+        }
+        /* ปิดใช้งาน — ใช้เมื่อโมดูลเบื้องหลังไม่ได้โหลด บอกเหตุผลจริงใน title */
+        .si-card[disabled] { opacity:.42; cursor:not-allowed; }
+        .si-card[disabled]:hover {
+            background:var(--bg-deeper); border-color:var(--border-dim);
+            border-left-color:var(--si);
+        }
+        .si-card[disabled]:hover .si-ico { color:var(--text-dim); }
+        .si-card.si-hide { display:none; }
+        .si-ico { font-size:13px; color:var(--text-dim); transition:color .2s; }
+        .si-body { min-width:0; display:flex; flex-direction:column; gap:1px; }
+        .si-name {
+            font-family:var(--font-body), sans-serif; font-size:var(--text-sm); font-weight:700;
+            line-height:1.25; color:var(--text-main); overflow-wrap:anywhere;
+        }
+        .si-desc {
+            font-size:var(--text-2xs); line-height:1.35; color:var(--text-muted);
+            overflow-wrap:anywhere;
+        }
+        .si-dom {
+            flex-shrink:0; padding:1px 4px; border-radius:var(--radius-xs);
+            border:1px solid var(--border-dim); background:transparent;
+            font-family:var(--font-mono), monospace; font-size:var(--text-2xs);
+            font-weight:700; letter-spacing:.5px; color:var(--text-dim);
+            transition:color .2s, border-color .2s;
+        }
+        .si-empty {
+            padding:var(--space-2); text-align:center; color:var(--text-dim);
+            font-size:var(--text-2xs); line-height:1.6;
         }
         .domain-strip { grid-column:1/-1; display:grid; grid-template-columns:repeat(4,1fr); gap:var(--space-2); }
         .bar-fill { height:100%; width:100%; border-radius:var(--radius-xs); transition:width .5s,background .5s; }
@@ -8095,6 +8253,25 @@
 
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true" data-svg-sprite="udc"><defs><symbol id="i-anchor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V8" /><path d="M5 12H2a10 10 0 0 0 20 0h-3" /><circle cx="12" cy="5" r="3" /></symbol><symbol id="i-ban" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.929 4.929 19.07 19.071" /><circle cx="12" cy="12" r="10" /></symbol><symbol id="i-bar-chart-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16" /><path d="M18 17V9" /><path d="M13 17V5" /><path d="M8 17v-3" /></symbol><symbol id="i-bomb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="13" r="9" /><path d="M14.35 4.65 16.3 2.7a2.41 2.41 0 0 1 3.4 0l1.6 1.6a2.4 2.4 0 0 1 0 3.4l-1.95 1.95" /><path d="m22 2-1.5 1.5" /></symbol><symbol id="i-book-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14" /><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" /></symbol><symbol id="i-bot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8" /><rect width="16" height="12" x="4" y="8" rx="2" /><path d="M2 14h2" /><path d="M20 14h2" /><path d="M15 13v2" /><path d="M9 13v2" /></symbol><symbol id="i-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18V5" /><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4" /><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5" /><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77" /><path d="M18 18a4 4 0 0 0 2-7.464" /><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517" /><path d="M6 18a4 4 0 0 1-2-7.464" /><path d="M6.003 5.125a4 4 0 0 0-2.526 5.77" /></symbol><symbol id="i-brush-cleaning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 22-1-4" /><path d="M19 13.99a1 1 0 0 0 1-1V12a2 2 0 0 0-2-2h-3a1 1 0 0 1-1-1V4a2 2 0 0 0-4 0v5a1 1 0 0 1-1 1H6a2 2 0 0 0-2 2v.99a1 1 0 0 0 1 1" /><path d="M5 14h14l1.973 6.767A1 1 0 0 1 20 22H4a1 1 0 0 1-.973-1.233z" /><path d="m8 22 1-4" /></symbol><symbol id="i-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4" /><path d="M16 2v4" /><rect width="18" height="18" x="3" y="4" rx="2" /><path d="M3 10h18" /></symbol><symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z" /><circle cx="12" cy="13" r="3" /></symbol><symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></symbol><symbol id="i-circle-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></symbol><symbol id="i-clipboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /></symbol><symbol id="i-cloud-fog" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" /><path d="M16 17H7" /><path d="M17 21H9" /></symbol><symbol id="i-cloud-lightning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973" /><path d="m13 12-3 5h4l-3 5" /></symbol><symbol id="i-cloud-rain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" /><path d="M16 14v6" /><path d="M8 14v6" /><path d="M12 16v6" /></symbol><symbol id="i-cloud-snow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" /><path d="M8 15h.01" /><path d="M8 19h.01" /><path d="M12 17h.01" /><path d="M12 21h.01" /><path d="M16 15h.01" /><path d="M16 19h.01" /></symbol><symbol id="i-cloud-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="M20 12h2" /><path d="m19.07 4.93-1.41 1.41" /><path d="M15.947 12.65a4 4 0 0 0-5.925-4.128" /><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z" /></symbol><symbol id="i-cloud-sun-rain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="M20 12h2" /><path d="m19.07 4.93-1.41 1.41" /><path d="M15.947 12.65a4 4 0 0 0-5.925-4.128" /><path d="M3 20a5 5 0 1 1 8.9-4H13a3 3 0 0 1 2 5.24" /><path d="M11 20v2" /><path d="M7 19v2" /></symbol><symbol id="i-compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" /><circle cx="12" cy="12" r="10" /></symbol><symbol id="i-diamond" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41l-7.59-7.59a2.41 2.41 0 0 0-3.41 0Z" /></symbol><symbol id="i-ear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8.5a6.5 6.5 0 1 1 13 0c0 6-6 6-6 10a3.5 3.5 0 1 1-7 0" /><path d="M15 8.5a2.5 2.5 0 0 0-5 0v1a2 2 0 1 1 0 4" /></symbol><symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /><circle cx="12" cy="12" r="3" /></symbol><symbol id="i-fish" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z" /><path d="M18 12v.5" /><path d="M16 17.93a9.77 9.77 0 0 1 0-11.86" /><path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5-.23 6.5C5.58 18.03 7 16 7 13.33" /><path d="M10.46 7.26C10.2 5.88 9.17 4.24 8 3h5.8a2 2 0 0 1 1.98 1.67l.23 1.4" /><path d="m16.01 17.93-.23 1.4A2 2 0 0 1 13.8 21H9.5a5.96 5.96 0 0 0 1.49-3.98" /></symbol><symbol id="i-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" /></symbol><symbol id="i-folder-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" /></symbol><symbol id="i-folders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 5a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2.5a1.5 1.5 0 0 1 1.2.6l.6.8a1.5 1.5 0 0 0 1.2.6z" /><path d="M3 8.268a2 2 0 0 0-1 1.738V19a2 2 0 0 0 2 2h11a2 2 0 0 0 1.732-1" /></symbol><symbol id="i-fuel" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 4 0v-6.998a2 2 0 0 0-.59-1.42L18 5" /><path d="M14 21V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v16" /><path d="M2 21h13" /><path d="M3 9h11" /></symbol><symbol id="i-gem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 3 8 9l4 13 4-13-2.5-6" /><path d="M17 3a2 2 0 0 1 1.6.8l3 4a2 2 0 0 1 .013 2.382l-7.99 10.986a2 2 0 0 1-3.247 0l-7.99-10.986A2 2 0 0 1 2.4 7.8l2.998-3.997A2 2 0 0 1 7 3z" /><path d="M2 9h20" /></symbol><symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></symbol><symbol id="i-handshake" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 2 2a1 1 0 1 0 3-3" /><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4" /><path d="m21 3 1 11h-2" /><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3" /><path d="M3 4h8" /></symbol><symbol id="i-hourglass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14" /><path d="M5 2h14" /><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></symbol><symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></symbol><symbol id="i-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4" /><path d="m21 2-9.6 9.6" /><circle cx="7.5" cy="15.5" r="5.5" /></symbol><symbol id="i-keyboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 8h.01" /><path d="M12 12h.01" /><path d="M14 8h.01" /><path d="M16 12h.01" /><path d="M18 8h.01" /><path d="M6 8h.01" /><path d="M7 16h10" /><path d="M8 12h.01" /><rect width="20" height="16" x="2" y="4" rx="2" /></symbol><symbol id="i-library" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 6 4 14" /><path d="M12 6v14" /><path d="M8 8v12" /><path d="M4 4v16" /></symbol><symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></symbol><symbol id="i-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z" /><path d="M15 5.764v15" /><path d="M9 3.236v15" /></symbol><symbol id="i-map-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /><circle cx="12" cy="10" r="3" /></symbol><symbol id="i-maximize" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /></symbol><symbol id="i-microscope" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18h8" /><path d="M3 22h18" /><path d="M14 22a7 7 0 1 0 0-14h-1" /><path d="M9 14h2" /><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z" /><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3" /></symbol><symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" /></symbol><symbol id="i-mountain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z" /></symbol><symbol id="i-mountain-snow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z" /><path d="M4.14 15.08c2.62-1.57 5.24-1.43 7.86.42 2.74 1.94 5.49 2 8.23.19" /></symbol><symbol id="i-mouse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="7" /><path d="M12 6v4" /></symbol><symbol id="i-newspaper" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18h-5" /><path d="M18 14h-8" /><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0v-9a2 2 0 0 1 2-2h2" /><rect width="8" height="4" x="10" y="6" rx="1" /></symbol><symbol id="i-palette" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" /><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></symbol><symbol id="i-paperclip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551" /></symbol><symbol id="i-pencil-ruler" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 7 8.7 2.7a2.41 2.41 0 0 0-3.4 0L2.7 5.3a2.41 2.41 0 0 0 0 3.4L7 13" /><path d="m8 6 2-2" /><path d="m18 16 2-2" /><path d="m17 11 4.3 4.3c.94.94.94 2.46 0 3.4l-2.6 2.6c-.94.94-2.46.94-3.4 0L11 17" /><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /><path d="m15 5 4 4" /></symbol><symbol id="i-plane" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" /></symbol><symbol id="i-radar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.07 4.93A10 10 0 0 0 6.99 3.34" /><path d="M4 6h.01" /><path d="M2.29 9.62A10 10 0 1 0 21.31 8.35" /><path d="M16.24 7.76A6 6 0 1 0 8.23 16.67" /><path d="M12 18h.01" /><path d="M17.99 11.66A6 6 0 0 1 15.77 16.67" /><circle cx="12" cy="12" r="2" /><path d="m13.41 10.59 5.66-5.66" /></symbol><symbol id="i-radio" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.247 7.761a6 6 0 0 1 0 8.478" /><path d="M19.075 4.933a10 10 0 0 1 0 14.134" /><path d="M4.925 19.067a10 10 0 0 1 0-14.134" /><path d="M7.753 16.239a6 6 0 0 1 0-8.478" /><circle cx="12" cy="12" r="2" /></symbol><symbol id="i-refresh-cw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M8 16H3v5" /></symbol><symbol id="i-rocket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" /><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" /><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" /><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /></symbol><symbol id="i-ruler" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" /><path d="m14.5 12.5 2-2" /><path d="m11.5 9.5 2-2" /><path d="m8.5 6.5 2-2" /><path d="m17.5 15.5 2-2" /></symbol><symbol id="i-sailboat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v15" /><path d="M7 22a4 4 0 0 1-4-4 1 1 0 0 1 1-1h16a1 1 0 0 1 1 1 4 4 0 0 1-4 4z" /><path d="M9.159 2.46a1 1 0 0 1 1.521-.193l9.977 8.98A1 1 0 0 1 20 13H4a1 1 0 0 1-.824-1.567z" /></symbol><symbol id="i-satellite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m13.5 6.5-3.148-3.148a1.205 1.205 0 0 0-1.704 0L6.352 5.648a1.205 1.205 0 0 0 0 1.704L9.5 10.5" /><path d="M16.5 7.5 19 5" /><path d="m17.5 10.5 3.148 3.148a1.205 1.205 0 0 1 0 1.704l-2.296 2.296a1.205 1.205 0 0 1-1.704 0L13.5 14.5" /><path d="M9 21a6 6 0 0 0-6-6" /><path d="M9.352 10.648a1.205 1.205 0 0 0 0 1.704l2.296 2.296a1.205 1.205 0 0 0 1.704 0l4.296-4.296a1.205 1.205 0 0 0 0-1.704l-2.296-2.296a1.205 1.205 0 0 0-1.704 0z" /></symbol><symbol id="i-satellite-dish" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a7.31 7.31 0 0 0 10 10Z" /><path d="m9 15 3-3" /><path d="M17 13a6 6 0 0 0-6-6" /><path d="M21 13A10 10 0 0 0 11 3" /></symbol><symbol id="i-scale" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" /><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" /><path d="M7 21h10" /><path d="M12 3v18" /><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" /></symbol><symbol id="i-scissors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3" /><path d="M8.12 8.12 12 12" /><path d="M20 4 8.12 15.88" /><circle cx="6" cy="18" r="3" /><path d="M14.8 14.8 20 20" /></symbol><symbol id="i-scroll" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17V5a2 2 0 0 0-2-2H4" /><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3" /></symbol><symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34" /><circle cx="11" cy="11" r="8" /></symbol><symbol id="i-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" /><circle cx="12" cy="12" r="3" /></symbol><symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /></symbol><symbol id="i-shield-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L21 5.5 V11 C21 16.5 17.2 20.6 12 22 C6.8 20.6 3 16.5 3 11 V5.5 Z" stroke-width="1.9" /><circle cx="12" cy="11" r="3" stroke-width="1.5" /><circle cx="12" cy="11" r="6.2" stroke-width="1" opacity=".5" /></symbol><symbol id="i-ship" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10.189V14" /><path d="M12 2v3" /><path d="M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6" /><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-8.188-3.639a2 2 0 0 0-1.624 0L3 14a11.6 11.6 0 0 0 2.81 7.76" /><path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1s1.2 1 2.5 1c2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" /></symbol><symbol id="i-siren" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18v-6a5 5 0 1 1 10 0v6" /><path d="M5 21a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z" /><path d="M21 12h1" /><path d="M18.5 4.5 18 5" /><path d="M2 12h1" /><path d="M12 2v1" /><path d="m4.929 4.929.707.707" /><path d="M12 12v6" /></symbol><symbol id="i-sparkles" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z" /><path d="M20 2v4" /><path d="M22 4h-4" /><circle cx="4" cy="20" r="2" /></symbol><symbol id="i-sprout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9.536V7a4 4 0 0 1 4-4h1.5a.5.5 0 0 1 .5.5V5a4 4 0 0 1-4 4 4 4 0 0 0-4 4c0 2 1 3 1 5a5 5 0 0 1-1 3" /><path d="M4 9a5 5 0 0 1 8 4 5 5 0 0 1-8-4" /><path d="M5 21h14" /></symbol><symbol id="i-square-terminal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 11 2-2-2-2" /><path d="M11 13h4" /><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /></symbol><symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></symbol><symbol id="i-swords" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" /><line x1="13" x2="19" y1="19" y2="13" /><line x1="16" x2="20" y1="16" y2="20" /><line x1="19" x2="21" y1="21" y2="19" /><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5" /><line x1="5" x2="9" y1="14" y2="18" /><line x1="7" x2="4" y1="17" y2="20" /><line x1="3" x2="5" y1="19" y2="21" /></symbol><symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></symbol><symbol id="i-thermometer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z" /></symbol><symbol id="i-timer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2" /><line x1="12" x2="15" y1="14" y2="11" /><circle cx="12" cy="14" r="8" /></symbol><symbol id="i-tornado" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H3" /><path d="M18 8H6" /><path d="M19 12H9" /><path d="M16 16h-6" /><path d="M11 20H9" /></symbol><symbol id="i-trash-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 11v6" /><path d="M14 11v6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></symbol><symbol id="i-tree-palm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8c0-2.76-2.46-5-5.5-5S2 5.24 2 8h2l1-1 1 1h4" /><path d="M13 7.14A5.82 5.82 0 0 1 16.5 6c3.04 0 5.5 2.24 5.5 5h-3l-1-1-1 1h-3" /><path d="M5.89 9.71c-2.15 2.15-2.3 5.47-.35 7.43l4.24-4.25.7-.7.71-.71 2.12-2.12c-1.95-1.96-5.27-1.8-7.42.35" /><path d="M11 15.5c.5 2.5-.17 4.5-1 6.5h4c2-5.5-.5-12-1-14" /></symbol><symbol id="i-trending-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6" /><path d="m22 7-8.5 8.5-5-5L2 17" /></symbol><symbol id="i-triangle-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /><path d="M12 9v4" /><path d="M12 17h.01" /></symbol><symbol id="i-type" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16" /><path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2" /><path d="M9 20h6" /></symbol><symbol id="i-volume-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z" /><path d="M16 9a5 5 0 0 1 0 6" /><path d="M19.364 18.364a9 9 0 0 0 0-12.728" /></symbol><symbol id="i-volume-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z" /><line x1="22" x2="16" y1="9" y2="15" /><line x1="16" x2="22" y1="9" y2="15" /></symbol><symbol id="i-waves" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" /><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" /><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" /></symbol><symbol id="i-wind" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.8 19.6A2 2 0 1 0 14 16H2" /><path d="M17.5 8a2.5 2.5 0 1 1 2 4H2" /><path d="M9.8 4.4A2 2 0 1 1 11 8H2" /></symbol><symbol id="i-wrench" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z" /></symbol><symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></symbol><symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" /></symbol></defs></svg>
 
+<!-- ── [v17.36.0 P6-B] สไปรท์เสริม — สัญลักษณ์ที่ชุดหลัก ๘๘ ตัวไม่มี ──────────
+     แยกเป็นก้อนที่สองโดยตั้งใจ: สไปรท์หลักด้านบนเป็นบรรทัดเดียวยาวมาก การแก้
+     ตรงนั้นเสี่ยงทำทั้งชุดพัง ก้อนนี้ต่อท้ายได้อย่างปลอดภัยและอ่านออก
+     ยึดข้อกำหนดเดียวกับชุดหลัก (Lucide): viewBox 24 · fill:none · stroke:currentColor
+     · stroke-width 2 · linecap/linejoin round เพื่อให้ .ico และ udcIco() ใช้ได้ทันที -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true" data-svg-sprite="udc-ext">
+  <!-- เรือดำน้ำ — ใช้กับการ์ดสถานการณ์ใต้น้ำ ๔ ใบ (UUV/SDV/Midget/SSK)
+       ชุดหลักไม่มีสัญลักษณ์ใต้น้ำเลย เดิมต้องยืม i-ship ซึ่งสอนผิดโดเมน -->
+  <symbol id="i-submarine" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2 14h11a5 5 0 0 0 5-5"/>
+    <path d="M2 14a3 3 0 0 0 3 3h9a5 5 0 0 0 5-5V9"/>
+    <path d="M18 9h2a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-2"/>
+    <path d="M11 9V6"/>
+    <path d="M9 6h4"/>
+    <circle cx="6" cy="14" r="1"/>
+    <circle cx="10" cy="14" r="1"/>
+  </symbol>
+</svg>
+
 <script>
 /* ── [v17.29.0 ICON-1] ตัวช่วยสร้างไอคอนฝั่ง JS ──────────────────────────────
    v17.7.0 แปลงไอคอนใน "มาร์กอัปนิ่ง" ไปเป็นสไปรท์เวกเตอร์ไว้แล้ว ๔๒๒ จุด แต่ปุ่มที่
@@ -8957,7 +9134,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.35.1 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.36.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9427,7 +9604,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.35.1 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.36.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9445,7 +9622,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.35.1 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.36.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -10418,7 +10595,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.35.1 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.36.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -10542,34 +10719,141 @@ window.udcHdrAnchor = udcHdrAnchor;
             </button>
         </div>
 
-        <!-- 🔴 RED FORCE — Threat Injection -->
-        <!-- [v16.0.4 W4-UX13] regroup เป็น ๓ กลุ่มตาม taxonomy งานวิจัย (ใต้น้ำ / ผิวน้ำ-Grey-zone / อากาศ-ผสม)
-             + ป้าย greytrawler อ้างกรณี Yi Peng 3 + id="redforce-panel" เป็น scroll target ของ #tlIdle (UX18) -->
+        <!-- ⬢ SCENARIO INJECT — คลังสถานการณ์ฝึก -->
+        <!-- [v17.36.0 P6-B/P6-C] เดิมชื่อ "Threat Injection" มี ๑๑ ปุ่มสองขนาด สามสำนวนไอคอน
+             และ inline style ๖ จุด เขียนทับคลาสตัวเอง — ตอนนี้เป็นการ์ด .si-card ขนาดเดียวทั้ง ๑๗ ใบ
+
+             เปลี่ยนชื่อแผงเป็น SCENARIO INJECT เพราะ P6-C พาฉาก "ไม่ใช่ภัย" เข้ามาด้วย
+             (สิงห์สยาม = หมู่เรือมิตร · ประมงพื้นบ้าน = เรือถูกกฎหมาย) ชื่อเดิมจะกลายเป็นการ
+             บอกใบ้คำตอบให้ผู้ฝึกก่อนพิสูจน์ฝ่าย ซึ่งขัดกับแก่นของการรู้สถานการณ์ทางทะเล
+
+             ต่อสาย ๖ ฉากที่เขียนไว้แล้วแต่ไม่มีปุ่ม: gnss-spoof · cyber · ew · cyber-physical
+             (MDA.CyberScenarios) · singsiam · community-fishery (MDA.FisherMSP)
+             ทั้งหมดเรียกผ่าน launchScenario() เดิมได้เลย ไม่ต้องแก้ตัวกระจายงาน
+
+             id="redforce-panel" คงไว้ตามเดิม — เป็น scroll target ของ #tlIdle (UX18)
+             และเป็นสมาชิกใน MAP ของ UDCThreatChoreo (P4) ห้ามเปลี่ยน -->
         <div class="panel" id="redforce-panel" style="--dc:var(--red);">
-            <div class="panel-title" style="color:var(--dc);"><span class="dot dot--crit"></span> Threat Injection</div>
-            <div class="panel-sub" style="color:var(--red);">จำลองภัยข้าศึก — RED FORCE</div>
-            <div class="ctrl-grp">▾ ภัยใต้น้ำ — UUV / เรือดำน้ำ / ทุ่นระเบิด</div>
-            <div class="ctrl-row">
-                <button class="btn btn-uuv"   onclick="launchScenario('uuv')"><span class="dot dot--crit"></span> UUV</button>
+            <div class="panel-title" style="color:var(--dc);"><svg class="ico" aria-hidden="true"><use href="#i-swords"/></svg> Scenario Inject</div>
+            <div class="panel-sub">คลังสถานการณ์ฝึก ๑๗ ฉาก — มีทั้งที่เป็นภัยและไม่ใช่ภัย</div>
+
+            <!-- แท็บจำแนกฝ่าย — ใช้ค่า recognition ของหลักนิยมที่ทุกเป้าในระบบมีอยู่แล้ว
+                 ไม่ได้สร้างการจัดหมวดใหม่ขึ้นมาซ้อน -->
+            <div class="si-tabs" role="tablist" aria-label="กรองตามการจำแนกฝ่าย">
+                <button type="button" class="si-tab" role="tab" aria-selected="true"  data-rec="ALL"   style="--tc:var(--text-dim);"      onclick="siFilterRec(this)" title="แสดงทุกฉาก">ALL</button>
+                <button type="button" class="si-tab" role="tab" aria-selected="false" data-rec="RED"   style="--tc:var(--sym-hostile);"   onclick="siFilterRec(this)" title="ฝ่ายตรงข้าม — พิสูจน์แล้วว่าเป็นภัย">RED</button>
+                <button type="button" class="si-tab" role="tab" aria-selected="false" data-rec="GREY"  style="--tc:var(--sym-greyzone);"  onclick="siFilterRec(this)" title="พื้นที่สีเทา — พฤติกรรมน่าสงสัยแต่ยังไม่ถึงขั้นเป็นภัย">GREY</button>
+                <button type="button" class="si-tab" role="tab" aria-selected="false" data-rec="WHITE" style="--tc:var(--sym-friendly);"  onclick="siFilterRec(this)" title="ฝ่ายเราหรือเรือพลเรือน — ต้องไม่ใช้อาวุธ">WHITE</button>
             </div>
-            <div class="ctrl-row">
-                <button class="btn btn-uuv" style="background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.5);color:#c084fc;" onclick="launchScenario('sdv')">SDV</button>
-                <button class="btn btn-uuv" style="background:rgba(220,38,38,.12);border-color:rgba(220,38,38,.5);color:var(--crit-hi);" onclick="launchScenario('midget')">Midget</button>
-                <button class="btn btn-uuv" style="background:rgba(127,29,29,.25);border-color:rgba(127,29,29,.6);color:var(--crit-hi);" onclick="launchScenario('ssk')">SSK</button>
+
+            <!-- ตัวกรองโดเมน — ครบทั้ง ๗ โดเมนหลักตามอนุกรมวิธานที่ตกลงไว้ -->
+            <div class="si-doms" role="group" aria-label="กรองตามโดเมน">
+                <button type="button" class="si-dchip" data-dfil="ALL" aria-pressed="true"  onclick="siFilterDom(this)" title="ทุกโดเมน">ALL</button>
+                <button type="button" class="si-dchip" data-dfil="AIR" aria-pressed="false" onclick="siFilterDom(this)" title="ทางอากาศ">AIR</button>
+                <button type="button" class="si-dchip" data-dfil="SUR" aria-pressed="false" onclick="siFilterDom(this)" title="ผิวน้ำ">SUR</button>
+                <button type="button" class="si-dchip" data-dfil="SUB" aria-pressed="false" onclick="siFilterDom(this)" title="ใต้น้ำ">SUB</button>
+                <button type="button" class="si-dchip" data-dfil="SEA" aria-pressed="false" onclick="siFilterDom(this)" title="พื้นท้องทะเล — เคเบิล ทุ่นระเบิด แผ่นดินไหว">SEA</button>
+                <button type="button" class="si-dchip" data-dfil="CYB" aria-pressed="false" onclick="siFilterDom(this)" title="ไซเบอร์และสงครามอิเล็กทรอนิกส์">CYB</button>
+                <button type="button" class="si-dchip" data-dfil="LIT" aria-pressed="false" onclick="siFilterDom(this)" title="ชายฝั่งและเขตน้ำตื้น">LIT</button>
+                <button type="button" class="si-dchip" data-dfil="C2"  aria-pressed="false" onclick="siFilterDom(this)" title="การบังคับบัญชาและควบคุม">C2</button>
             </div>
-            <button class="btn btn-uuv" style="background:rgba(255,107,53,.12);border-color:rgba(255,107,53,.5);color:#ff8c5a;justify-content:center;" onclick="launchScenario('mining')"><svg class="ico" aria-hidden="true"><use href="#i-bomb"/></svg> Covert Mining (SDV)</button>
-            <div class="ctrl-grp">▾ ภัยผิวน้ำ / Grey-zone</div>
-            <div class="ctrl-row">
-                <button class="btn btn-surf"  onclick="launchScenario('surface')"><span class="dot dot--warn"></span> Surface</button>
+
+            <div class="si-count" id="siCount">แสดง ๑๗ จาก ๑๗ ฉาก</div>
+
+            <div class="si-list" id="siList">
+                <!-- ── ใต้น้ำ ── -->
+                <button type="button" class="si-card" style="--si:var(--sym-hostile);" data-key="uuv" data-rec="RED" data-dom="SUB" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-submarine"/></svg>
+                    <span class="si-body"><span class="si-name">UUV ลอบเข้าพื้นที่</span><span class="si-desc">ยานใต้น้ำไร้คนขับลอดแนวตรวจจับ มุ่งจุดจอดเรือ</span></span>
+                    <span class="si-dom">SUB</span>
+                </button>
+                <button type="button" class="si-card" style="--si:var(--sym-sdv);" data-key="sdv" data-rec="RED" data-dom="SUB" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-submarine"/></svg>
+                    <span class="si-body"><span class="si-name">SDV — ยานพานักประดาน้ำ</span><span class="si-desc">นำหน่วยจู่โจมเข้าฝั่ง ความลึกราว ๑๕ ม.</span></span>
+                    <span class="si-dom">SUB</span>
+                </button>
+                <button type="button" class="si-card" style="--si:var(--sym-midget);" data-key="midget" data-rec="RED" data-dom="SUB" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-submarine"/></svg>
+                    <span class="si-body"><span class="si-name">เรือดำน้ำจิ๋ว (Midget)</span><span class="si-desc">ระวางต่ำ เสียงเบา ความลึกราว ๒๕ ม.</span></span>
+                    <span class="si-dom">SUB</span>
+                </button>
+                <button type="button" class="si-card" style="--si:var(--sym-ssk);" data-key="ssk" data-rec="RED" data-dom="SUB" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-submarine"/></svg>
+                    <span class="si-body"><span class="si-name">เรือดำน้ำดีเซล-ไฟฟ้า (SSK)</span><span class="si-desc">ภัยระดับรัฐ ยิงตอร์ปิโดได้ ความลึกราว ๓๕ ม.</span></span>
+                    <span class="si-dom">SUB</span>
+                </button>
+                <!-- ── พื้นท้องทะเล ── -->
+                <button type="button" class="si-card" style="--si:var(--sym-sdv);" data-key="mining" data-rec="RED" data-dom="SEA" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-bomb"/></svg>
+                    <span class="si-body"><span class="si-name">วางทุ่นระเบิดลับ</span><span class="si-desc">SDV วางทุ่นในร่องน้ำเข้า — ปิดเส้นทางเดินเรือ</span></span>
+                    <span class="si-dom">SEA</span>
+                </button>
+                <!-- ── ผิวน้ำ ── -->
+                <button type="button" class="si-card" style="--si:var(--sym-suspect);" data-key="surface" data-rec="RED" data-dom="SUR" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-ship"/></svg>
+                    <span class="si-body"><span class="si-name">เรือผิวน้ำต้องสงสัย</span><span class="si-desc">เข้าเขตหวงห้ามโดยไม่แจ้ง ยังพิสูจน์ฝ่ายไม่ได้</span></span>
+                    <span class="si-dom">SUR</span>
+                </button>
+                <button type="button" class="si-card" style="--si:var(--sym-greyzone);" data-key="greytrawler" data-rec="GREY" data-dom="SUR SEA" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-fish"/></svg>
+                    <span class="si-body"><span class="si-name">เรือประมงปลอมสัญญาณ AIS</span><span class="si-desc">ลากสมอตัดเคเบิลใต้ทะเล — แบบกรณี Yi Peng 3 ทะเลบอลติก</span></span>
+                    <span class="si-dom" title="ผิวน้ำ + พื้นท้องทะเล">MULTI</span>
+                </button>
+                <button type="button" class="si-card" style="--si:var(--sym-hostile-u);" data-key="usv" data-rec="RED" data-dom="SUR" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-target"/></svg>
+                    <span class="si-body"><span class="si-name">USV เรือระเบิดไร้คนขับ</span><span class="si-desc">พุ่งชนแบบจลน์ ความเร็วสูง เวลาตัดสินใจสั้นมาก</span></span>
+                    <span class="si-dom">SUR</span>
+                </button>
+                <!-- ── ทางอากาศ ── -->
+                <button type="button" class="si-card" style="--si:var(--sym-hostile);" data-key="drone" data-rec="RED" data-dom="AIR" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-plane"/></svg>
+                    <span class="si-body"><span class="si-name">อากาศยานไร้คนขับลาดตระเวน</span><span class="si-desc">บินสำรวจเหนือพื้นที่ปฏิบัติการ เก็บภาพที่ตั้ง</span></span>
+                    <span class="si-dom">AIR</span>
+                </button>
+                <button type="button" class="si-card" style="--si:var(--sym-hostile);" data-key="airraid" data-rec="RED" data-dom="AIR" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-plane"/></svg>
+                    <span class="si-body"><span class="si-name">โจมตีทางอากาศ — ฝูงโดรน</span><span class="si-desc">UAV และ sUAS เข้าพร้อมกันหลายทิศ ทดสอบการจัดลำดับเป้า</span></span>
+                    <span class="si-dom">AIR</span>
+                </button>
+                <button type="button" class="si-card" style="--si:var(--sym-hostile);" data-key="combined" data-rec="RED" data-dom="AIR SUR SUB" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-swords"/></svg>
+                    <span class="si-body"><span class="si-name">ภัยผสมหลายโดเมนพร้อมกัน</span><span class="si-desc">ใต้น้ำ ผิวน้ำ และอากาศเข้าพร้อมกัน — ทดสอบการแบ่งทรัพยากร</span></span>
+                    <span class="si-dom" title="อากาศ + ผิวน้ำ + ใต้น้ำ">MULTI</span>
+                </button>
+                <!-- ── ไซเบอร์ / สงครามอิเล็กทรอนิกส์ ── -->
+                <button type="button" class="si-card" style="--si:var(--sym-cyber);" data-key="gnss-spoof" data-rec="RED" data-dom="CYB" data-mod="cyber" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-satellite"/></svg>
+                    <span class="si-body"><span class="si-name">ลวงสัญญาณดาวเทียมนำหน</span><span class="si-desc">ตำแหน่ง GNSS เพี้ยน ระบบเดินเรือเชื่อถือไม่ได้</span></span>
+                    <span class="si-dom">CYB</span>
+                </button>
+                <button type="button" class="si-card" style="--si:var(--sym-cyber);" data-key="cyber" data-rec="RED" data-dom="CYB" data-mod="cyber" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-square-terminal"/></svg>
+                    <span class="si-body"><span class="si-name">บุกรุกไซเบอร์ระบบบัญชาการ</span><span class="si-desc">แทรกซึมเครือข่ายควบคุมบังคับบัญชา ความน่าเชื่อถือข้อมูลลด</span></span>
+                    <span class="si-dom">CYB</span>
+                </button>
+                <button type="button" class="si-card" style="--si:var(--sym-cyber);" data-key="ew" data-rec="RED" data-dom="CYB" data-mod="cyber" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-radio"/></svg>
+                    <span class="si-body"><span class="si-name">สงครามอิเล็กทรอนิกส์ — รบกวนคลื่น</span><span class="si-desc">แหล่งกำเนิดคลื่นรบกวนเรดาร์และวิทยุสื่อสาร</span></span>
+                    <span class="si-dom">CYB</span>
+                </button>
+                <button type="button" class="si-card" style="--si:var(--sym-cyber);" data-key="cyber-physical" data-rec="RED" data-dom="CYB SUB" data-mod="cyber" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-zap"/></svg>
+                    <span class="si-body"><span class="si-name">ไซเบอร์-กายภาพผสม</span><span class="si-desc">ทำเซนเซอร์บอดด้วยไซเบอร์ แล้วส่ง UUV เข้าจริง — เข้าเกณฑ์กฎ R6 ภัยผสม</span></span>
+                    <span class="si-dom" title="ไซเบอร์ + ใต้น้ำ">MULTI</span>
+                </button>
+                <!-- ── ไม่ใช่ภัย — ใช้ทดสอบการแยกแยะ ซึ่งเป็นแก่นของการรู้สถานการณ์ทางทะเล ── -->
+                <button type="button" class="si-card" style="--si:var(--sym-partner);" data-key="singsiam" data-rec="WHITE" data-dom="SUR C2" data-mod="singsiam" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-handshake"/></svg>
+                    <span class="si-body"><span class="si-name">สิงห์สยาม — การฝึกร่วมฝ่ายเดียวกัน</span><span class="si-desc">หมู่เรือมิตรเข้าพื้นที่ตามแผน ไม่ใช่ภัย — ต้องไม่ใช้อาวุธ</span></span>
+                    <span class="si-dom" title="ผิวน้ำ + การบังคับบัญชา">MULTI</span>
+                </button>
+                <button type="button" class="si-card" style="--si:var(--sym-friendly);" data-key="community-fishery" data-rec="WHITE" data-dom="LIT" data-mod="fisher" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-sailboat"/></svg>
+                    <span class="si-body"><span class="si-name">ประมงพื้นบ้านออกทำการประมง</span><span class="si-desc">เรือถูกกฎหมาย ๓ ลำ ติด AIS ครบ ไม่ใช่ภัย — ต้องไม่ใช้อาวุธ</span></span>
+                    <span class="si-dom">LIT</span>
+                </button>
             </div>
-            <button class="btn btn-surf" style="background:rgba(203,213,225,.10);border-color:rgba(251,191,36,.55);color:var(--warn-hi);justify-content:center;" onclick="launchScenario('greytrawler')"><span class="dot dot--neutral"></span>→<span class="dot dot--crit"></span> เรือประมงปลอม AIS — ลากสมอตัดเคเบิล (แบบกรณี Yi Peng 3 ทะเลบอลติก)</button>
-            <button class="btn btn-surf" style="background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.55);color:var(--crit-hi);justify-content:center;" onclick="launchScenario('usv')">⬡→<span class="dot dot--crit"></span> USV เรือระเบิดไร้คนขับ — พุ่งชน (Kinetic)</button>
-            <div class="ctrl-grp">▾ ภัยทางอากาศ / หลายโดเมนผสม</div>
-            <div class="ctrl-row">
-                <button class="btn btn-drone" onclick="launchScenario('drone')"><span class="dot dot--info"></span> Drone</button>
-                <button class="btn btn-combo" onclick="launchScenario('combined')"><span class="dot dot--special"></span> Combined</button>
-            </div>
-            <button class="btn btn-drone" style="justify-content:center;" onclick="launchScenario('airraid')"><svg class="ico" aria-hidden="true"><use href="#i-plane"/></svg> Air Raid — ฝูงโดรน UAV + sUAS</button>
+            <div class="si-empty" id="siEmpty" style="display:none;">ไม่มีฉากที่ตรงกับตัวกรองนี้<br>ลองเลือกฝ่ายเป็น ALL หรือเปลี่ยนโดเมน</div>
         </div>
 
         <!-- v12.5: Blue Force Command panel merged into Deploy · Blue Force Operations panel (right-side floating).
@@ -29548,10 +29832,140 @@ let iffCollapsed   = false;  // QW-3: default expanded per UI/UX audit
 let thermCollapsed = false;
 
 // ── ข้อมูลชี้แจงของแต่ละสถานการณ์ ─────────────────────────────────
+// [v17.36.0 P6-C] เดิมมีเพียง ๗ คีย์จาก ๑๗ ฉาก — showBriefing() จึงคืนค่าเงียบ ๆ
+// (`if (!b || !panel) return;`) กับอีก ๑๐ ฉาก ผู้ฝึกกดแล้วสถานการณ์เดิน แต่แผ่นชี้แจง
+// ไม่ขึ้น ซึ่งอ่านได้ว่า "ระบบเสีย" มากกว่า "ฉากนี้ไม่มีข้อมูล" ตอนนี้ครบทั้ง ๑๗ คีย์
+//
+// [v17.36.0 P6-A] แก้สีหัวแผ่นที่หลุดจากสีหมุดจริง ๕ จุด — ค่าทุกค่าในนี้ต้องเท่ากับ
+// โทเคน --sym-* ที่คู่กัน (คัดลอกค่ามาเป็นตัวอักษรเพราะ b.color ถูกนำไปต่อสตริง
+// เป็น b.color+'66' ซึ่ง var() ทำไม่ได้ · TOK-3 ตัดสินใจไม่สร้างสะพานโทเคนฝั่ง JS ไว้แล้ว)
+//   airraid  #00d4ff → #ff4136   เดิมเท่ากับ --sym-guuv คือยานใต้น้ำไร้คนขับ "ฝ่ายเรา"
+//   drone    #00d4ff → #ff4136   เช่นเดียวกัน — ตกค้างจาก v17.27.0 IFF-1 ที่แก้ฝั่งหมุดแล้ว
+//   usv      #ef4444 → #fbbf24   หมุดจริงเป็น --sym-hostile-u (ไร้คนขับ)
+//   combined #bd93f9 → #ff4136   #bd93f9 ถูกจองเป็น --sym-cyber แล้วในรุ่นนี้
+//   greytrawler #fbbf24 → #cbd5e1  เดิมยืมสีของ USV มาใช้ ทั้งที่หมุดเป็น --sym-greyzone
+//
+// เอา emoji ออกจากหัวแผ่นทั้งหมด — ช่องนี้เขียนด้วย textContent จึงใส่สไปรท์ไม่ได้
+// การเติม emoji เพิ่มอีก ๑๐ จุดคือการต่อหนี้ ICON-2 ให้ยาวขึ้น สีหัวแผ่นทำหน้าที่
+// จำแนกฝ่ายอยู่แล้วและตรงกับหมุดบนแผนที่ จึงไม่ต้องพึ่งรูปสัญลักษณ์ซ้ำ
 const BRIEFINGS = {
+    // ── ใต้น้ำ ──────────────────────────────────────────────────
+    uuv: {
+        header: 'THREAT — UNDERWATER INFILTRATION',
+        color: '#ff4136',                       // --sym-hostile
+        rows: [
+            ['ประเภทภัย',    'Hostile UUV (Autonomous Underwater Vehicle)'],
+            ['แนวทางเข้า',  'ทิศใต้ ใต้ Thermocline ลึก 35–60m'],
+            ['ความเร็ว',    '~8 kt | Electric Motor (Quiet signature)'],
+            ['ตรวจจับ',     'DAS Tripwire → Hydrophone Array → Active Sonar'],
+            ['ROE',          'Phase 2 — GUUV Intercept Authorized'],
+        ],
+        footer: '⚡ ROE PHASE 2 — INTERCEPT AUTHORIZED',
+    },
+    sdv: {
+        header: 'THREAT — SWIMMER DELIVERY VEHICLE',
+        color: '#a855f7',                       // --sym-sdv
+        rows: [
+            ['ประเภทภัย',   'SDV — ยานพานักประดาน้ำเข้าฝั่ง (มีคนบังคับ)'],
+            ['แนวทางเข้า', 'เกาะแนวร่องน้ำ ความลึกราว ๑๕ ม.'],
+            ['ความเร็ว',   '~4–6 kt · ขับเคลื่อนไฟฟ้า เสียงต่ำมาก'],
+            ['ตรวจจับ',    'DAS + Hydrophone — สัญญาณอ่อน ต้องยืนยันซ้ำ'],
+            ['ROE',         'Phase 2 — สกัดกั้นก่อนถึงแนวหาด'],
+        ],
+        footer: '⚡ INTERCEPT — ก่อนปล่อยนักประดาน้ำ',
+    },
+    midget: {
+        header: 'THREAT — MIDGET SUBMARINE',
+        color: '#dc2626',                       // --sym-midget
+        rows: [
+            ['ประเภทภัย',   'เรือดำน้ำจิ๋ว — ระวางต่ำ พานักประดาน้ำ/ตอร์ปิโดขนาดเล็ก'],
+            ['แนวทางเข้า', 'ทิศใต้ ความลึกราว ๒๕ ม.'],
+            ['ความเร็ว',   '~6–8 kt · เสียงเบา แยกจากพื้นหลังได้ยาก'],
+            ['ตรวจจับ',    'Hydrophone Array → Active Sonar ยืนยัน'],
+            ['ROE',         'Phase 2 — GUUV Intercept Authorized'],
+        ],
+        footer: '⚡ ROE PHASE 2 — INTERCEPT AUTHORIZED',
+    },
+    ssk: {
+        header: 'THREAT — DIESEL-ELECTRIC SUBMARINE (SSK)',
+        color: '#f87171',                       // --sym-ssk
+        rows: [
+            ['ประเภทภัย',   'เรือดำน้ำดีเซล-ไฟฟ้า — ภัยระดับรัฐ ยิงตอร์ปิโดได้'],
+            ['แนวทางเข้า', 'ทิศใต้ ใต้ Thermocline ความลึกราว ๓๕ ม.'],
+            ['ความเร็ว',   '~10–14 kt · ดำเงียบด้วยแบตเตอรี่'],
+            ['ตรวจจับ',    'DAS + Hydrophone + Active Sonar (ต้องครบทั้งสาม)'],
+            ['ROE',         'Phase 2 — แจ้ง ทร. ส่วนกลาง · เตรียม ปตอ.ผิวน้ำ'],
+        ],
+        footer: '⚠ ภัยระดับสูงสุดของโดเมนใต้น้ำ',
+    },
+    // ── พื้นท้องทะเล ────────────────────────────────────────────
+    mining: {
+        header: 'THREAT — COVERT MINELAYING',
+        color: '#a855f7',                       // --sym-sdv (ผู้วางคือ SDV)
+        rows: [
+            ['ประเภทภัย',   'วางทุ่นระเบิดลับในร่องน้ำเข้า — ปิดเส้นทางเดินเรือ'],
+            ['ผู้กระทำ',    'SDV — วางแล้วถอนตัว ไม่ปะทะ'],
+            ['ผลกระทบ',    'ปิดร่องน้ำจนกว่าจะกวาดเสร็จ · กระทบทั้งทหารและพลเรือน'],
+            ['ตรวจจับ',    'DAS micro-vibration + ตรวจซ้ำด้วยโซนาร์ค้นหาทุ่น'],
+            ['ROE',         'MONITOR → ยืนยันตำแหน่งทุ่น → ประกาศปิดร่องน้ำ'],
+        ],
+        footer: '⚠ SEABED DENIAL — ยืนยันจุดวางให้ครบก่อนเปิดร่องน้ำ',
+    },
+    // ── ผิวน้ำ ──────────────────────────────────────────────────
+    surface: {
+        header: 'CONTACT — SURFACE VESSEL INTRUSION',
+        color: '#ffd700',                       // --sym-suspect
+        rows: [
+            ['ประเภทภัย',  'Suspect Surface Vessel (Unclassified)'],
+            ['แนวทางเข้า','ทิศตะวันออก ความเร็ว ~12 kt'],
+            ['IFF',        'ไม่ตอบสนอง Mode-3 — ยังไม่จำแนก'],
+            ['ตรวจจับ',   'Coastal Radar + Patrol Vessel Visual'],
+            ['ROE',        '3-Phase: Radio Warning → Warning Shot → Boarding'],
+        ],
+        footer: '📻 ROE PHASE 1 — RADIO WARNING ACTIVE',
+    },
+    // [v15.14] Grey-zone — เรือประมงปลอม AIS ลากสมอตัดเคเบิล
+    greytrawler: {
+        header: 'GREY-ZONE — AIS-SPOOF TRAWLER (CABLE SABOTAGE)',
+        color: '#cbd5e1',                       // --sym-greyzone
+        rows: [
+            ['ประเภทภัย',  'เรือประมงพราง AIS — ลากสมอตัดสายเคเบิล (Hybrid/Sabotage)'],
+            ['แกนรู้จำ',   'WHITE (พลเรือน) → GREY (น่าสงสัย) → RED (ยืนยัน)'],
+            ['แกนมิติ',    'SURFACE (มีคนบังคับ) + ผลกระทบ SEABED (สายเคเบิล)'],
+            ['ตัวชี้วัด',  'AIS-Radar mismatch · วนเหนือแนวสาย · DAS micro-vibration'],
+            ['ROE',        'MONITOR → CHALLENGE+SHADOW → DETAIN (ศรชล. รับช่วง)'],
+        ],
+        footer: '⚠ GREY-ZONE — จำแนกให้ทันก่อนเกิดผล',
+    },
+    // [v15.14] Grey-zone — USV เรือระเบิดไร้คนขับ
+    usv: {
+        header: 'THREAT — USV EXPLOSIVE BOAT (KINETIC)',
+        color: '#fbbf24',                       // --sym-hostile-u (ไร้คนขับ)
+        rows: [
+            ['ประเภทภัย',  'USV เรือผิวน้ำไร้คนขับติดวัตถุระเบิด (Suicide Craft)'],
+            ['แกนรู้จำ',   'GREY → RED (radar-only · ไม่มี AIS/IFF)'],
+            ['แกนมิติ',    'SURFACE · ⬡ UNMANNED'],
+            ['ลักษณะ',     'เป้าเล็ก ความเร็วสูง ~35 kt · พุ่งตรงเข้า UDC'],
+            ['ROE',        'DETECT → TRACK → CHALLENGE → ENGAGE (WCS FREE)'],
+        ],
+        footer: '🔫 WEAPONS FREE — ทำลายก่อนถึง MEZ 5nm',
+    },
+    // ── ทางอากาศ ────────────────────────────────────────────────
+    drone: {
+        header: 'THREAT — HOSTILE UAV INBOUND',
+        color: '#ff4136',                       // --sym-hostile
+        rows: [
+            ['ประเภทภัย',  'Hostile Drone / UAV (High-Speed)'],
+            ['แนวทางเข้า','ทิศเหนือ ระดับต่ำ ความเร็ว ~60 kt'],
+            ['IFF',        'ไม่ตอบรหัส Mode-3 — HOSTILE Classified'],
+            ['ตรวจจับ',   'Coastal Radar + Air Defense Tracking'],
+            ['ROE',        'Phase 2 — Engage Authorized'],
+        ],
+        footer: '🚀 AD SYSTEM — ENGAGE AUTHORIZED',
+    },
     airraid: {
-        header: '🛩️ THREAT — AIR RAID / DRONE SWARM',
-        color: '#00d4ff',
+        header: 'THREAT — AIR RAID / DRONE SWARM',
+        color: '#ff4136',                       // --sym-hostile
         rows: [
             ['ประเภทภัย',  'ฝูงโดรน — UAV ขนาดกลาง + sUAS โดรนเล็ก'],
             ['แนวทางเข้า', 'หลายทิศจากทางเหนือ — saturation attack'],
@@ -29561,48 +29975,9 @@ const BRIEFINGS = {
         ],
         footer: '🛡️ AIR DEFENCE — 2-LAYER ENGAGE',
     },
-    uuv: {
-        header: '🔴 THREAT — UNDERWATER INFILTRATION',
-        color: '#ff4136',
-        rows: [
-            ['ประเภทภัย',    'Hostile UUV (Autonomous Underwater Vehicle)'],
-            ['แนวทางเข้า',  'ทิศใต้ ใต้ Thermocline ลึก 35–60m'],
-            ['ความเร็ว',    '~8 kt | Electric Motor (Quiet signature)'],
-            ['ตรวจจับ',     'DAS Tripwire → Hydrophone Array → Active Sonar'],
-            ['ROE',          'Phase 2 — GUUV Intercept Authorized'],
-        ],
-        footer: '⚡ ROE PHASE 2 — INTERCEPT AUTHORIZED',
-        footerBg: 'rgba(255,65,54,.18)',
-    },
-    surface: {
-        header: '🟡 CONTACT — SURFACE VESSEL INTRUSION',
-        color: '#ffd700',
-        rows: [
-            ['ประเภทภัย',  'Suspect Surface Vessel (Unclassified)'],
-            ['แนวทางเข้า','ทิศตะวันออก ความเร็ว ~12 kt'],
-            ['IFF',        'ไม่ตอบสนอง Mode-3 — ยังไม่จำแนก'],
-            ['ตรวจจับ',   'Coastal Radar + Patrol Vessel Visual'],
-            ['ROE',        '3-Phase: Radio Warning → Warning Shot → Boarding'],
-        ],
-        footer: '📻 ROE PHASE 1 — RADIO WARNING ACTIVE',
-        footerBg: 'rgba(255,215,0,.14)',
-    },
-    drone: {
-        header: '🔵 THREAT — HOSTILE UAV INBOUND',
-        color: '#00d4ff',
-        rows: [
-            ['ประเภทภัย',  'Hostile Drone / UAV (High-Speed)'],
-            ['แนวทางเข้า','ทิศเหนือ ระดับต่ำ ความเร็ว ~60 kt'],
-            ['IFF',        'ไม่ตอบรหัส Mode-3 — HOSTILE Classified'],
-            ['ตรวจจับ',   'Coastal Radar + Air Defense Tracking'],
-            ['ROE',        'Phase 2 — Engage Authorized'],
-        ],
-        footer: '🚀 AD SYSTEM — ENGAGE AUTHORIZED',
-        footerBg: 'rgba(0,212,255,.14)',
-    },
     combined: {
-        header: '🟣 ALERT — COMBINED ARMS ATTACK',
-        color: '#bd93f9',
+        header: 'ALERT — COMBINED ARMS ATTACK',
+        color: '#ff4136',                       // --sym-hostile
         rows: [
             ['ประเภทภัย',   'Multi-Domain: UUV + Surface Vessel + Drone'],
             ['แนวทางเข้า', 'ตะวันออก (UUV) · ตะวันออกเฉียงเหนือ (เรือ) · เหนือ (Drone)'],
@@ -29611,35 +29986,80 @@ const BRIEFINGS = {
             ['ROE',         'All-Domain ROE Authorized — THE SHIELD'],
         ],
         footer: '🚨 ALERT LV.1 — ALL ROE AUTHORIZED',
-        footerBg: 'rgba(189,147,249,.18)',
     },
-    // [v15.14] Grey-zone — เรือประมงปลอม AIS ลากสมอตัดเคเบิล
-    greytrawler: {
-        header: '⚪→🔴 GREY-ZONE — AIS-SPOOF TRAWLER (CABLE SABOTAGE)',
-        color: '#fbbf24',
+    // ── ไซเบอร์ / สงครามอิเล็กทรอนิกส์ ──────────────────────────
+    'gnss-spoof': {
+        header: 'THREAT — GNSS SPOOFING',
+        color: '#bd93f9',                       // --sym-cyber
         rows: [
-            ['ประเภทภัย',  'เรือประมงพราง AIS — ลากสมอตัดสายเคเบิล (Hybrid/Sabotage)'],
-            ['แกนรู้จำ',   'WHITE (พลเรือน) → GREY (น่าสงสัย) → RED (ยืนยัน)'],
-            ['แกนมิติ',    'SURFACE (มีคนบังคับ) + ผลกระทบ SEABED (สายเคเบิล)'],
-            ['ตัวชี้วัด',  'AIS-Radar mismatch · วนเหนือแนวสาย · DAS micro-vibration'],
-            ['ROE',        'MONITOR → CHALLENGE+SHADOW → DETAIN (ศรชล. รับช่วง)'],
+            ['ประเภทภัย',   'ลวงสัญญาณดาวเทียมนำหน — ฉีดพิกัดเท็จทับสัญญาณจริง'],
+            ['ผลกระทบ',    'ตำแหน่งเรือและอากาศยานเพี้ยน · ระบบเดินเรืออัตโนมัติเชื่อถือไม่ได้'],
+            ['ตัวชี้วัด',   'ค่าคลาดเคลื่อนพิกัดพุ่งขึ้น · ตำแหน่ง AIS ขัดกับเรดาร์'],
+            ['ตรวจจับ',    'เฝ้าค่า jitter ของ GNSS + เทียบพิกัดข้ามเซนเซอร์'],
+            ['ROE',         'ไม่ใช้อาวุธ — สลับไปเดินเรือด้วยเรดาร์/ตาเปล่า แล้วชี้ตัวผู้ปล่อย'],
         ],
-        footer: '⚠ GREY-ZONE — จำแนกให้ทันก่อนเกิดผล',
-        footerBg: 'rgba(251,191,36,.16)',
+        footer: '⚠ NAV DEGRADED — อย่าไว้ใจพิกัดจนกว่าจะยืนยันข้ามเซนเซอร์',
     },
-    // [v15.14] Grey-zone — USV เรือระเบิดไร้คนขับ
-    usv: {
-        header: '⬡ THREAT — USV EXPLOSIVE BOAT (KINETIC)',
-        color: '#ef4444',
+    cyber: {
+        header: 'THREAT — CYBER INTRUSION (C2 NETWORK)',
+        color: '#bd93f9',                       // --sym-cyber
         rows: [
-            ['ประเภทภัย',  'USV เรือผิวน้ำไร้คนขับติดวัตถุระเบิด (Suicide Craft)'],
-            ['แกนรู้จำ',   'GREY → RED (radar-only · ไม่มี AIS/IFF)'],
-            ['แกนมิติ',    'SURFACE · ⬡ UNMANNED'],
-            ['ลักษณะ',     'เป้าเล็ก ความเร็วสูง ~35 kt · พุ่งตรงเข้า UDC'],
-            ['ROE',        'DETECT → TRACK → CHALLENGE → ENGAGE (WCS FREE)'],
+            ['ประเภทภัย',   'แทรกซึมเครือข่ายบังคับบัญชาและควบคุม'],
+            ['ผลกระทบ',    'ความน่าเชื่อถือของภาพสถานการณ์ลด · คำสั่งอาจถูกแก้ระหว่างทาง'],
+            ['ตัวชี้วัด',   'โหนดแปลกปลอมใกล้โครงข่าย · ปริมาณข้อมูลผิดรูปแบบ'],
+            ['ตรวจจับ',    'เฝ้าระวังเครือข่าย + เทียบภาพสถานการณ์กับเซนเซอร์ดิบ'],
+            ['ROE',         'ตัดการเชื่อมต่อส่วนที่ต้องสงสัย → ใช้ช่องทางสำรอง → แจ้ง ศซบ.ทร.'],
         ],
-        footer: '🔫 WEAPONS FREE — ทำลายก่อนถึง MEZ 5nm',
-        footerBg: 'rgba(239,68,68,.16)',
+        footer: '⚠ C2 INTEGRITY — ยืนยันคำสั่งด้วยช่องทางที่สอง',
+    },
+    ew: {
+        header: 'THREAT — ELECTRONIC WARFARE (JAMMING)',
+        color: '#bd93f9',                       // --sym-cyber
+        rows: [
+            ['ประเภทภัย',   'แหล่งกำเนิดคลื่นรบกวนเรดาร์และวิทยุสื่อสาร'],
+            ['ผลกระทบ',    'ระยะตรวจจับหด · การสื่อสารขาดช่วง · เสี่ยงถูกใช้บังหน้าการเข้าตี'],
+            ['ตัวชี้วัด',   'ระดับสัญญาณรบกวนสูงผิดปกติในย่านที่ใช้งาน'],
+            ['ตรวจจับ',    'ค้นหาทิศทางแหล่งกำเนิด (DF) + เทียบหลายสถานีรับ'],
+            ['ROE',         'สลับความถี่ → ใช้เซนเซอร์เชิงรับ → ชี้ตัวและรายงานที่ตั้ง'],
+        ],
+        footer: '⚠ EMCON — สมมุติว่าถูกรบกวนคือถูกเฝ้ามองด้วย',
+    },
+    'cyber-physical': {
+        header: 'ALERT — CYBER-PHYSICAL HYBRID',
+        color: '#bd93f9',                       // --sym-cyber
+        rows: [
+            ['ประเภทภัย',   'ไซเบอร์ทำเซนเซอร์บอด แล้วส่งเป้าใต้น้ำจริงเข้าในจังหวะเดียวกัน'],
+            ['ลำดับเหตุการณ์','inject ไซเบอร์ → ค่าความเชื่อมั่นตก → UUV เข้าในช่องที่มืด'],
+            ['กฎที่เข้าเกณฑ์','R6 HYBRID — เหตุไซเบอร์และเหตุกายภาพเกิดพร้อมกัน'],
+            ['ตรวจจับ',    'ต้องเชื่อมโยงข้ามโดเมน — ดูทีละโดเมนจะไม่เห็นภาพนี้'],
+            ['ROE',         'ยกระดับทันที · อย่ารอให้โดเมนใดโดเมนหนึ่งชัดก่อน'],
+        ],
+        footer: '🚨 HYBRID — ความบังเอิญข้ามโดเมนคือสัญญาณ ไม่ใช่เรื่องบังเอิญ',
+    },
+    // ── ไม่ใช่ภัย — ฉากทดสอบการแยกแยะ ──────────────────────────
+    singsiam: {
+        header: 'FRIENDLY — COMBINED EXERCISE "SINGSIAM"',
+        color: '#64ffda',                       // --sym-partner
+        rows: [
+            ['ประเภทเป้า',  'หมู่เรือฝ่ายเดียวกัน/มิตรประเทศ เข้าพื้นที่ตามแผนการฝึก'],
+            ['แกนรู้จำ',    'WHITE — แจ้งแผนล่วงหน้า ตอบรหัสพิสูจน์ฝ่ายครบ'],
+            ['แกนมิติ',     'SURFACE + ประสานผ่านสายการบังคับบัญชา'],
+            ['สิ่งที่ต้องระวัง','ความเคยชินจากฉากภัย — การยิงมิตรเริ่มจากการเดาแทนการพิสูจน์'],
+            ['ROE',          'ไม่ใช้อาวุธ · พิสูจน์ฝ่ายให้ครบแล้วบันทึกเป็นเป้าฝ่ายเดียวกัน'],
+        ],
+        footer: '✔ NOT A THREAT — พิสูจน์ให้ครบ อย่าใช้อาวุธ',
+    },
+    'community-fishery': {
+        header: 'CIVILIAN — COMMUNITY FISHERY ACTIVITY',
+        color: '#39ff14',                       // --sym-friendly
+        rows: [
+            ['ประเภทเป้า',  'เรือประมงพื้นบ้านถูกกฎหมาย ๓ ลำ ออกทำการประมงตามปกติ'],
+            ['แกนรู้จำ',    'WHITE — ติด AIS ครบ ชื่อและเลขทะเบียนตรงกับทะเบียนเรือ'],
+            ['แกนมิติ',     'LITTORAL — เขตน้ำตื้นชายฝั่ง ความเร็วราว ๖ นอต'],
+            ['สิ่งที่ต้องระวัง','รูปแบบการเดินเรือคล้ายฉากเรือประมงพราง AIS — ต่างกันที่หลักฐาน'],
+            ['ROE',          'ไม่ใช้อาวุธ · เฝ้าดูตามปกติ ประสาน ศรชล. หากต้องตรวจสอบ'],
+        ],
+        footer: '✔ NOT A THREAT — สิทธิทำกินโดยชอบด้วยกฎหมาย',
     },
 };
 
@@ -29664,7 +30084,11 @@ function showBriefing(type) {
     // ใส่ข้อมูลส่วนท้าย
     const foot = document.getElementById('bp-footer');
     foot.textContent = b.footer;
-    foot.style.background = b.footerBg || '';   // [v16.0.4 W4-Bug44] กัน footerBg ของ briefing ก่อนหน้าค้าง เมื่อ entry ไม่กำหนด (เช่น airraid)
+    // [v16.0.4 W4-Bug44] กัน footerBg ของ briefing ก่อนหน้าค้าง เมื่อ entry ไม่กำหนด
+    // [v17.36.0 P6-A] เดิมแต่ละ entry เขียน rgba() ของตัวเอง ซึ่งเป็นค่าสีชุดที่สอง
+    //   ที่หลุดจาก color ได้ง่าย (usv เคยเป็น rgba(239,68,68) ทั้งที่หมุดเป็น #fbbf24)
+    //   ตอนนี้ผสมจาก b.color ค่าเดียว พื้นท้ายจึงตรงกับหัวแผ่นและหมุดเสมอ
+    foot.style.background = b.footerBg || (b.color + '2b');
     foot.style.color = b.color;
 
     // แสดงผลแบบค่อย ๆ ปรากฏ
@@ -51821,6 +52245,175 @@ window.CommandCore = (function () {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
     else start();
     window.UDCThreatChoreo = { apply: apply, map: MAP };   /* ให้ทดสอบ/บังคับรีเฟรชได้ */
+})();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     SCENARIO INJECT · ตัวควบคุมคลังสถานการณ์ฝึก [v17.36.0 P6-C]
+     ทำ ๔ อย่าง ไม่มากกว่านี้:
+       ๑) siRun()        — ส่งงานต่อให้ launchScenario() ตัวเดิม แล้วทำเครื่องหมาย
+                            การ์ดที่กำลังเดิน พร้อมนาฬิกา T+ ในช่องป้ายโดเมน
+       ๒) siFilterRec()  — กรองด้วยการจำแนกฝ่าย RED / GREY / WHITE
+       ๓) siFilterDom()  — กรองด้วยโดเมนหลัก ๗ โดเมน
+       ๔) probe()        — ปิดการ์ดที่โมดูลเบื้องหลังไม่ได้โหลด พร้อมบอกเหตุผลจริง
+                            ใน title (ตามหลัก "SIM ซื่อสัตย์" — ปุ่มที่กดแล้วเงียบ
+                            หลอกผู้ฝึกยิ่งกว่าปุ่มที่บอกตรง ๆ ว่าใช้ไม่ได้)
+     ตัวจบสถานการณ์ใช้สัญญาณเดียวกับ UDCThreatChoreo คือแถบ #tlActive ซึ่ง
+     clearOutcome() เป็นผู้ซ่อน — ไม่สร้างตัวแปรสถานะคู่ขนานขึ้นมาให้หลุดจากกัน
+     ════════════════════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+    'use strict';
+
+    var list = null, empty = null, countEl = null;
+    var recSel = 'ALL', domSel = 'ALL';
+    var running = null, runT0 = 0, tick = null;
+
+    function cards() {
+        return list ? Array.prototype.slice.call(list.querySelectorAll('.si-card')) : [];
+    }
+
+    /* ── กรอง ─────────────────────────────────────────────────────────── */
+    function applyFilter() {
+        var shown = 0, all = cards();
+        all.forEach(function (c) {
+            var okRec = (recSel === 'ALL') || (c.getAttribute('data-rec') === recSel);
+            var doms  = (c.getAttribute('data-dom') || '').split(/\s+/);
+            var okDom = (domSel === 'ALL') || (doms.indexOf(domSel) !== -1);
+            var show  = okRec && okDom;
+            c.classList.toggle('si-hide', !show);
+            if (show) shown++;
+        });
+        if (empty)   empty.style.display = shown ? 'none' : '';
+        if (countEl) countEl.textContent = 'แสดง ' + thai(shown) + ' จาก ' + thai(all.length) + ' ฉาก';
+    }
+
+    /* เลขไทย — ให้ตรงกับที่ใช้ทั่วทั้งเอกสาร */
+    var TH = '๐๑๒๓๔๕๖๗๘๙';
+    function thai(n) {
+        return String(n).replace(/\d/g, function (d) { return TH.charAt(+d); });
+    }
+
+    window.siFilterRec = function (btn) {
+        if (!btn) return;
+        recSel = btn.getAttribute('data-rec') || 'ALL';
+        var tabs = btn.parentNode.querySelectorAll('.si-tab');
+        Array.prototype.forEach.call(tabs, function (t) {
+            t.setAttribute('aria-selected', t === btn ? 'true' : 'false');
+        });
+        applyFilter();
+    };
+
+    window.siFilterDom = function (btn) {
+        if (!btn) return;
+        domSel = btn.getAttribute('data-dfil') || 'ALL';
+        var chips = btn.parentNode.querySelectorAll('.si-dchip');
+        Array.prototype.forEach.call(chips, function (t) {
+            t.setAttribute('aria-pressed', t === btn ? 'true' : 'false');
+        });
+        applyFilter();
+    };
+
+    /* ── นาฬิกา T+ ในช่องป้ายโดเมน ───────────────────────────────────────
+       ใช้ที่ว่างเดิมของป้ายโดเมนแทนการเพิ่มคอลัมน์ที่สี่ ตารางกริดจึงคงที่
+       ค่าเดิมเก็บไว้ใน dataset.domlabel แล้วคืนกลับเมื่อจบ */
+    function stamp() {
+        if (!running) return;
+        var d = running.querySelector('.si-dom'); if (!d) return;
+        var s = Math.max(0, Math.floor((Date.now() - runT0) / 1000));
+        d.textContent = 'T+' + String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+    }
+
+    function clearRun() {
+        if (!running) return;
+        var d = running.querySelector('.si-dom');
+        if (d && d.dataset.domlabel != null) { d.textContent = d.dataset.domlabel; delete d.dataset.domlabel; }
+        running.removeAttribute('data-run');
+        running = null;
+    }
+
+    /* ── การ์ดใบไหนคือฉากที่กำลังเดินอยู่ ────────────────────────────────
+       ตอนแรกใช้สัญญาณเดียวกับ UDCThreatChoreo คือแถบ #tlActive แต่ทดสอบจริงแล้วผิด
+       #tlActive สะท้อนเพียงว่า "มีเป้ากายภาพอยู่ในอาร์เรย์ threats[]" ซึ่ง
+         · ฉากไซเบอร์/สงครามอิเล็กทรอนิกส์ทั้ง ๔ ไม่เคยสร้างเป้ากายภาพ
+         · ฉากไม่ใช่ภัยอีก ๒ ก็ไม่สร้างเช่นกัน
+         · ค่านี้อัปเดตในลูป animate() จึงหยุดค้างเมื่อแท็บถูกซ่อน (VIS-1)
+       รวม ๖ จาก ๑๗ การ์ดจะติดสถานะ "กำลังเดิน" ไม่ถึงวินาทีแล้วดีดกลับ — บอกความจริงผิด
+       สัญญาณที่ซื่อสัตย์กว่าคือ window._lastScenarioType ซึ่ง launchScenario() เขียนทันที
+       ที่บรรทัดแรกแบบ synchronous เหมือนกันหมดทุกฉาก ไม่ขึ้นกับชนิดเป้าหรือลูปวาดภาพ */
+    function live() {
+        return !!running && window._lastScenarioType === running.getAttribute('data-key');
+    }
+
+    window.siRun = function (btn) {
+        if (!btn || btn.disabled) return;
+        var key = btn.getAttribute('data-key'); if (!key) return;
+        clearRun();
+        try {
+            if (typeof window.launchScenario === 'function') window.launchScenario(key);
+        } catch (e) {
+            try { if (typeof window.addLog === 'function') addLog('[SIM] เรียกฉาก ' + key + ' ไม่สำเร็จ: ' + e.message, 'var(--red)'); } catch (_) {}
+            return;
+        }
+        running = btn; runT0 = Date.now();
+        var d = btn.querySelector('.si-dom');
+        if (d && d.dataset.domlabel == null) d.dataset.domlabel = d.textContent;
+        btn.setAttribute('data-run', '1');
+        stamp();
+    };
+
+    /* ── ปิดการ์ดที่ไม่มีโมดูลรองรับ ──────────────────────────────────── */
+    var NEED = {
+        cyber:    { ok: function () { return !!(window.MDA && window.MDA.CyberScenarios && typeof window.MDA.CyberScenarios.run === 'function'); },
+                    why: 'โมดูล MDA.CyberScenarios ไม่ได้โหลด — ฉากไซเบอร์/สงครามอิเล็กทรอนิกส์ใช้ไม่ได้ในหน้านี้' },
+        fisher:   { ok: function () { return typeof window.scenarioCommunityFishery === 'function' || !!(window.MDA && window.MDA.FisherMSP); },
+                    why: 'โมดูล MDA.FisherMSP ไม่ได้โหลด — ฉากประมงพื้นบ้านใช้ไม่ได้ในหน้านี้' },
+        singsiam: { ok: function () { return typeof window.scenarioSingsiam === 'function'; },
+                    why: 'ยังไม่พบฟังก์ชัน scenarioSingsiam — ฉากการฝึกร่วมใช้ไม่ได้ในหน้านี้' }
+    };
+
+    function probe() {
+        cards().forEach(function (c) {
+            var m = c.getAttribute('data-mod'); if (!m || !NEED[m]) return;
+            var ok = false;
+            try { ok = NEED[m].ok(); } catch (_) { ok = false; }
+            if (ok) { c.disabled = false; c.removeAttribute('title'); }
+            else    { c.disabled = true;  c.setAttribute('title', NEED[m].why); }
+        });
+    }
+
+    function start() {
+        list    = document.getElementById('siList');
+        empty   = document.getElementById('siEmpty');
+        countEl = document.getElementById('siCount');
+        if (!list) return;
+        applyFilter();
+        probe();
+        /* ตรวจซ้ำอีกครั้ง — บางโมดูลผูก window.* หลัง DOMContentLoaded หนึ่งเฟรม */
+        setTimeout(probe, 1500);
+        tick = setInterval(function () {
+            if (!running) return;
+            if (!live()) { clearRun(); return; }
+            if (document.hidden) return;                 /* ตาม VIS-1 */
+            stamp();
+        }, 1000);
+        /* กลับมาดูแท็บแล้วต้องเห็นเวลาที่ถูกต้องทันที ไม่ต้องรอรอบถัดไปอีกหนึ่งวินาที
+           ทำได้เพราะ stamp() คำนวณจาก runT0 ซึ่งเป็นเวลาสัมบูรณ์ ไม่ใช่การนับสะสม
+           การถูกซ่อนจึงทำให้ "ค้าง" ได้ แต่ทำให้ "เพี้ยน" ไม่ได้ */
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) stamp();
+        });
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+    else start();
+
+    window.UDCScenarioInject = {
+        filter:  function () { return { rec: recSel, dom: domSel }; },
+        running: function () { return running ? running.getAttribute('data-key') : null; },
+        probe:   probe,
+        count:   function () { return cards().filter(function (c) { return !c.classList.contains('si-hide'); }).length; }
+    };
 })();
 </script>
 
