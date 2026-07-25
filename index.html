@@ -1,6 +1,37 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.31.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.31.1 · 7-Domain + AI Staff)
+  · [v17.31.1 FIX-1..2] แก้บัก ๒ จุดที่ผู้ใช้ชี้ — บันได 4S ROE และตาราง RMP
+      FIX-1 · บันได 4S ROE ขึ้นคำซ้ำในโหมด EN (SHOUT/SHOUT · SHOW/SHOW · SHOVE/SHOVE
+      · SHOOT/SHOOT) — ต้นเหตุอยู่ที่โครงข้อมูล ไม่ใช่ที่หน้าตา: อาร์เรย์ RUNGS มีแค่
+      ช่อง en (รหัสย่อ) กับ th (ไทย) ไม่มีช่อง "คำขยายภาษาอังกฤษ" เลย เวลาสร้างมาร์กอัป
+      จึงจำใจใส่ data-en = RUNGS[i].en ให้ .roe-th ซึ่งเป็นค่าเดียวกับที่ .roe-en
+      แสดงอยู่แล้ว พอ applyLanguage() สลับ TH→EN สองบรรทัดจึงกลายเป็นคำเดียวกัน
+      → เพิ่มช่อง gl (gloss) เป็นช่องที่สาม ถ้อยคำอิงคลังศัพท์ STATE[].foot_en ในไฟล์
+      เดียวกัน เพื่อให้แผง ROE กับแผงสถานะพูดภาษาเดียวกัน: Radio Warning · Show of
+      Force · Block / Warn Shot · Disabling Fire และเติม data-en-title ให้ tooltip
+      แปลตามด้วย (ตรวจแล้วว่า applyLangTo() รองรับ data-en-title อยู่แล้ว)
+      ผลวัดในโหมด EN: ทั้งสี่ขั้น duplicate=false, ไม่มีข้อความถูกตัด (clipped=false),
+      บันไดไม่ล้นกรอบ (scrollWidth 926 = clientWidth 926)
+      FIX-1b · ระหว่างวัดพบข้อบกพร่องซ้อนที่ไม่ได้อยู่ในคำร้อง: ที่ขั้น 0 (HOLD FIRE)
+      ไม่มีขั้นใดเป็น .active หรือ .passed บันไดทั้งแถบจึงจมอยู่ที่ opacity .42
+      วัดได้ 2.05:1 (.roe-th) และ 3.16:1 (.roe-en) ต่ำกว่าเกณฑ์ WCAG AA 4.5:1 ทั้งคู่
+      — คือ "อ่านไม่ออกจริง" ไม่ใช่แค่จาง ทางแก้ที่ไม่เลือกคือดัน opacity อย่างเดียว
+      เพราะต้องขึ้นถึง ~.83 จนขั้น dim กับ active แยกกันไม่ออก จึงใช้ opacity .62
+      คู่กับ --text-muted → --n-200 ได้ 5.50:1 / 5.62:1 ผ่านทั้งคู่ ลำดับความสำคัญ
+      ยังอยู่ครบเพราะ .s1..s4.active มีพื้นสี + เรืองแสงของตัวเอง (s4 มี roePulse ด้วย)
+      ขนาดฟอนต์คงเดิม 10px/9px ตามพื้นฟอนต์ ๙ พิกเซลที่ผู้ใช้กำหนด
+      FIX-2 · ตาราง RECOGNIZED MARITIME PICTURE ว่างทั้งตาราง (๑๕ ช่อง) ทั้งที่คอลัมน์
+      Σ แถวเดียวกันขึ้น 0 ตามปกติ — ต้นเหตุคือ refresh() เขียน c.textContent = n||''
+      ทำให้ "ศูนย์จริง" ถูกกลืนเป็นสตริงว่าง ขัดกับคำอธิบายใต้ตารางเองที่ว่า "ตัวเลข =
+      จำนวนเป้า" และทำให้ผู้บังคับบัญชาแยกไม่ออกว่า "ยืนยันว่าไม่มีเป้า" ต่างจาก
+      "แผงไม่ทำงาน" อย่างไร ซึ่งเป็นคนละความหมายกันโดยสิ้นเชิงในทางยุทธการ
+      → พิมพ์ 0 ตรง ๆ โดยคงคลาส .rmp-dim ไว้หรี่ตามเดิม (วัด 5.65:1 ที่ 10px ผ่าน AA
+      อยู่แล้ว ไม่ต้องแก้สี) และให้ buildMatrix() หว่านช่องเริ่มต้นเป็น 0 แทนช่องว่าง
+      กันตารางกะพริบในจังหวะระหว่าง buildMatrix() กับ refresh() รอบแรก
+      ผลวัด: สถานะศูนย์ ๑๕ ช่องขึ้น "0" ครบ ไม่มีช่องว่าง · สถานะมีเป้า (ฉีด UAV ๒ ลำ)
+      GREY-AIR = "2" ไม่หรี่ Σ = 2 total = 2 ช่องอื่นยัง "0" — ทางเดินค่าไม่ศูนย์ไม่ถูกแตะ
+      หมายเหตุ: แถว GREY ที่ขึ้นสีเหลืองอำพันเป็นหลักนิยม ไม่ใช่บัก — ห้าม "แก้"
   · [v17.31.0 TOK-1..6] ชั้น token สีเต็มระบบ + เขตสงวน SYMBOLOGY + พื้นฟอนต์ ๙ พิกเซล
       บริบท: ผู้ใช้ทักว่าธีม Stealth Mono "ยังมีสีสันมากเกินไป" คำถามคือแก้เฉพาะธีมนั้น
       หรือแก้ทั้งระบบ — คำตอบจากการวัดคือ "ทั้งระบบ" เพราะธีมไม่ได้ล้มเหลว แต่ธีม
@@ -969,12 +1000,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.31.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.31.1 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.31.0';
+        const APP_VERSION = '17.31.1';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -3212,12 +3243,17 @@
             gap:0; padding:2px 1px; border-radius:var(--radius-sm); min-width:0;
             background:rgba(148,163,184,.06); border:1px solid rgba(148,163,184,.20);
             font-family:var(--font-mono), monospace; line-height:1.05;
-            opacity:.42; transition:all .25s;
+            /* [v17.31.1] เดิม .42 — ที่ขั้น 0 (HOLD FIRE) ไม่มีขั้นใด active/passed
+               บันไดทั้งแถบจึงจมอยู่ที่ .42 วัดได้ 2.05:1 (roe-th) และ 3.16:1 (roe-en)
+               ต่ำกว่าเกณฑ์ WCAG AA 4.5:1 ทั้งคู่ · .62 ยกเป็น ~5.4:1 / ~5.5:1
+               ลำดับความสำคัญยังอยู่ครบเพราะ .active มีพื้นสี + เรืองแสงของตัวเอง */
+            opacity:.62; transition:all .25s;
         }
         .roe-rung .roe-ic { font-size:12px; }
         .roe-rung .roe-en { font-size:9px; font-weight:700; letter-spacing:.3px; color:var(--text-main); }
-        .roe-rung .roe-th { font-size:var(--text-xs); color:var(--text-muted); font-family:var(--font-body),sans-serif; white-space:nowrap; }
-        .roe-rung.passed { opacity:.78; }
+        .roe-rung .roe-th { font-size:var(--text-xs); color:var(--n-200); font-family:var(--font-body),sans-serif;
+            white-space:nowrap; max-width:100%; overflow:hidden; text-overflow:ellipsis; }
+        .roe-rung.passed { opacity:.85; }
         .roe-rung.active { opacity:1; }
         .roe-rung.s1.active { background:rgba(255,215,0,.16);  border-color:var(--yellow); box-shadow:0 0 8px rgba(255,215,0,.40); }
         .roe-rung.s2.active { background:rgb(var(--amber-rgb) / .16); border-color:var(--amber);       box-shadow:0 0 8px rgb(var(--amber-rgb) / .42); }
@@ -8370,7 +8406,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.31.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.31.1 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -8840,7 +8876,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.31.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.31.1 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -8858,7 +8894,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.31.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.31.1 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -9830,7 +9866,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.31.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.31.1 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -41318,7 +41354,9 @@ window.selectCOA = selectCOA;
     h+='<div class="rmp-mh" title="รวม" style="color:var(--n-300)">Σ</div>';
     RECOG.forEach(r=>{
       h+=`<div class="rmp-bl" style="color:${r.col};border-color:${r.col}" title="${esc(r.th)}">${r.key}</div>`;
-      DOMAINS.forEach(d=>{ h+=`<div class="rmp-cell rmp-dim" id="rmp-c-${r.key}-${d.key}" style="--bc:${r.col}"></div>`; });
+      /* [v17.31.1] เริ่มที่ 0 ให้ตรงกับคอลัมน์ Σ ด้านขวา — กันตารางกะพริบเป็นช่องว่าง
+         ในจังหวะระหว่าง buildMatrix() กับ refresh() รอบแรก */
+      DOMAINS.forEach(d=>{ h+=`<div class="rmp-cell rmp-dim" id="rmp-c-${r.key}-${d.key}" style="--bc:${r.col}">0</div>`; });
       h+=`<div class="rmp-bt" id="rmp-bt-${r.key}" style="color:${r.col}">0</div>`;
     });
     return h+'</div>';
@@ -41333,7 +41371,11 @@ window.selectCOA = selectCOA;
       DOMAINS.forEach(d=>{
         const n=s.counts[r.key+'_'+d.key]; sum+=n;
         const c=document.getElementById('rmp-c-'+r.key+'-'+d.key);
-        if(c){ c.textContent=n||''; c.classList.toggle('rmp-dim', !n); }
+        /* [v17.31.1] เดิม n||'' — ศูนย์จริงถูกกลืนเป็นสตริงว่าง ทั้งตารางจึงว่างเปล่า
+           ทั้งที่คอลัมน์ Σ แถวเดียวกันขึ้น 0 ตามปกติ ขัดกับคำอธิบายใต้ตารางเองที่ว่า
+           "ตัวเลข = จำนวนเป้า" และทำให้แยกไม่ออกว่า "ยืนยันว่าไม่มีเป้า" กับ
+           "แผงไม่ทำงาน" ต่างกันอย่างไร · พิมพ์ 0 ตรง ๆ โดยคง .rmp-dim ไว้หรี่ตามเดิม */
+        if(c){ c.textContent=n; c.classList.toggle('rmp-dim', !n); }
       });
       const bt=document.getElementById('rmp-bt-'+r.key); if(bt) bt.textContent=sum;
     });
@@ -48082,11 +48124,15 @@ window.MDA.StrategicAnalysis = (function () {
 (function(){
   'use strict';
   try {
+    /* [v17.31.1] gl = คำขยายภาษาอังกฤษ (gloss) ของแต่ละขั้น — คนละช่องกับ en ซึ่งเป็น
+       รหัสย่อ (brevity code) โดยเจตนา  ก่อนหน้านี้ .roe-th ใช้ data-en = RUNGS[i].en
+       ทำให้โหมด EN แสดงซ้ำเป็น SHOUT/SHOUT · SHOW/SHOW · SHOVE/SHOVE · SHOOT/SHOOT
+       ถ้อยคำอิงคลังศัพท์ STATE[].foot_en ในไฟล์นี้เพื่อให้สองแผงพูดภาษาเดียวกัน */
     var RUNGS = [
-      { en:'SHOUT', th:'ประกาศเตือน',     ic:udcIco('radio'),  cls:'s1' },
-      { en:'SHOW',  th:'แสดงกำลัง',        ic:udcIco('eye'),    cls:'s2' },
-      { en:'SHOVE', th:'ขัดขวาง/ยิงเตือน', ic:udcIco('ban'),    cls:'s3' },
-      { en:'SHOOT', th:'ใช้กำลังหยุดยั้ง',  ic:udcIco('target'), cls:'s4' }
+      { en:'SHOUT', th:'ประกาศเตือน',     gl:'Radio Warning',    ic:udcIco('radio'),  cls:'s1' },
+      { en:'SHOW',  th:'แสดงกำลัง',        gl:'Show of Force',    ic:udcIco('eye'),    cls:'s2' },
+      { en:'SHOVE', th:'ขัดขวาง/ยิงเตือน', gl:'Block / Warn Shot', ic:udcIco('ban'),    cls:'s3' },
+      { en:'SHOOT', th:'ใช้กำลังหยุดยั้ง',  gl:'Disabling Fire',   ic:udcIco('target'), cls:'s4' }
     ];
     var STATE = [
       { lbl_th:'HOLD FIRE · เฝ้าตรวจ', lbl_en:'HOLD FIRE · Monitor', col:'#7dd3fc',
@@ -48122,10 +48168,12 @@ window.MDA.StrategicAnalysis = (function () {
       h += '</div>';
       h += '<div class="roe-ladder" id="roeLadder">';
       for (var i=0;i<RUNGS.length;i++){
-        h += '<div class="roe-rung '+RUNGS[i].cls+'" data-step="'+(i+1)+'" title="'+RUNGS[i].en+' — '+RUNGS[i].th+'">'
+        h += '<div class="roe-rung '+RUNGS[i].cls+'" data-step="'+(i+1)+'"'
+           +   ' title="'+RUNGS[i].en+' — '+RUNGS[i].th+'"'
+           +   ' data-en-title="'+RUNGS[i].en+' — '+RUNGS[i].gl+'">'
            +   '<span class="roe-ic">'+RUNGS[i].ic+'</span>'
            +   '<span class="roe-en">'+RUNGS[i].en+'</span>'
-           +   '<span class="roe-th" data-en="'+RUNGS[i].en+'">'+RUNGS[i].th+'</span>'
+           +   '<span class="roe-th" data-en="'+RUNGS[i].gl+'">'+RUNGS[i].th+'</span>'
            + '</div>';
       }
       h += '</div>';
