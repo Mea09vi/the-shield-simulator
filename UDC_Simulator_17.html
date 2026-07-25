@@ -1,6 +1,37 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.33.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.33.1 · 7-Domain + AI Staff)
+  · [v17.33.1] การ์ดไซเบอร์-สเปกตรัมในแผง MULTI-DOMAIN SENSING ม่วงอยู่คนเดียว — แก้ที่ต้นทาง
+      อาการที่ผู้ใช้รายงาน: เปิดธีม Stealth Mono แล้วการ์ดโดเมนหกใบจางลงเป็นเทาตามธีม
+      แต่การ์ด "ไซเบอร์-สเปกตรัม" ยังมีแถบซ้ายสีม่วงสดใบเดียว — ไม่เข้าพวก
+
+      รากปัญหา: ผังสีประจำโดเมนมีเจ็ดบรรทัด หกบรรทัดชี้ไปที่ token (--cyan / --cyan-dim /
+      --teal-dim / --amber / --green / --n-300) แต่บรรทัดไซเบอร์เขียน hex ตรง #8b5cf6
+      ค่าที่เขียนตรงคือค่าที่ธีมสั่งไม่ได้ พอ Stealth Mono กด --purple ลงเป็น #a3a3a3
+      อีกหกใบจึงจางตาม ส่วนใบที่เขียน hex ไว้ไม่ได้ยินคำสั่งนั้นเลย → ตรงตามกติกา
+      "ตกแต่ง → ต้องฟังธีม · เป็นข้อมูล → ห้ามฟังธีม" ที่วางไว้ตั้งแต่ P1 ข้อนี้คือของตกแต่ง
+      จึงต้องฟังธีม การแก้ที่ถูกคือทำให้ได้ยินคำสั่ง ไม่ใช่เลือกม่วงเฉดใหม่ให้ดูจางลง
+
+      สิ่งที่แก้ (จุดเดียวกันทั้งชุด ไม่ใช่เฉพาะไซเบอร์)
+      ๑) ผังสีโดเมน: cyber #8b5cf6 → var(--purple)  ตอนนี้ทั้งเจ็ดใบเป็น token ครบ
+      ๒) style ฝังในแท็ก .mda-lp-group-name / .mda-lp-chev หกคู่ (๑๒ จุด) ที่เขียน hex ตรง
+         → var(--dc) ทั้งหมด ชื่อโดเมนกับแถบขอบจึงมาจากแหล่งเดียวกัน ไม่หลุดคู่กันอีก
+         (ของเดิม style ฝังในแท็กยังทับกฎ :hover ทำให้ไฟ hover ของหกใบนั้นตายไปด้วย)
+      ๓) ปุ่มรางโดเมน DOM_COL ห้าในเจ็ดค่าเป็น hex ตรง → token ครบเจ็ด
+      ๔) ค่าตั้งต้นของ .mda-lp-group-name / .mda-lp-chev: var(--cyan) → var(--dc, var(--cyan))
+         การ์ด TOOLS·SYSTEM เดิมขอบเทาแต่ชื่อฟ้า — ตอนนี้ตรงกันแล้ว
+
+      วัดผลจริง (computed style ทั้งสี่ธีม): Stealth Mono ทั้งเจ็ดใบเหลือเทาชุดเดียวกัน
+      cyber = rgb(163,163,163) เท่ากับ air/sub/seabed/tools · Classified cyber เป็นเทาเช่นกัน
+      · Royal Thai Navy cyber เป็นน้ำเงินตระกูลกรมท่า · ธีมปริยายไม่ขยับผัง (ม่วง #bd93f9)
+
+      ยังไม่ทำในเฟสนี้ (เป็นการตัดสินใจ ไม่ใช่การข้าม)
+      · จุด swatch/bullet รายชั้นในตัวแผง ~๔๘ จุด ยังเป็น hex ตรง — เป็นสีประจำชั้นข้อมูล
+        คนละชนิดกับกรอบการ์ด และเป็นหนี้ก้อนเดียวกับ "๑๕๙ จุด / ๕๐ ค่า" ที่บันทึกไว้แล้ว → P4
+      · #8b5cf6 ที่เหลืออีกสองจุดนอกแผงนี้ (วัดจาก DOM แล้ว): bf-tb-dot ใน #bf-deploy-panel
+        และหัวคอลัมน์ .rmp-mh ใน #rmp-pane-matrix — ทั้งสองแผงเขียน hex ตรงครบทั้งเจ็ดโดเมน
+        จึงสม่ำเสมอกันเอง ไม่มีใบไหนโดดออกมา ไม่ใช่อาการเดียวกับที่รายงาน → รวมแก้ใน P4
+
   · [v17.33.0 OPERATIONAL CALM · เฟส P3] ตารางกริด ๘px — บันไดตัวอักษร · มุม · ระยะ
       รากปัญหาที่วัดเจอ (และเป็นเหตุผลที่บันไดของ P1 มีคนใช้ ๐ ครั้ง): บันไดชุดเดิม
       "ไม่มีขั้นตรงที่คนเหยียบจริง" ค่าระยะที่ใช้มากที่สุดทั้งไฟล์คือ ๖px (๒๕๖ จุด)
@@ -1129,12 +1160,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.33.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.33.1 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.33.0';
+        const APP_VERSION = '17.33.1';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -4192,7 +4223,7 @@
         #mda-layerpanel .mda-lp-group[data-domain="surface"] { --dc: var(--cyan-dim); }
         #mda-layerpanel .mda-lp-group[data-domain="sub"]     { --dc: var(--teal-dim); }
         #mda-layerpanel .mda-lp-group[data-domain="seabed"]  { --dc: var(--amber); }
-        #mda-layerpanel .mda-lp-group[data-domain="cyber"]   { --dc: #8b5cf6; }
+        #mda-layerpanel .mda-lp-group[data-domain="cyber"]   { --dc: var(--purple); }   /* [v17.33.1] เดิมเป็น hex ตรง #8b5cf6 → ธีมสั่งไม่ได้ การ์ดไซเบอร์เลยม่วงอยู่คนเดียว */
         #mda-layerpanel .mda-lp-group[data-domain="litt"]    { --dc: var(--green); }
         #mda-layerpanel .mda-lp-group[data-domain="tools"]   { --dc: var(--n-300); }
 
@@ -4482,13 +4513,13 @@
             #mda-layerpanel .mda-lp-group[data-domain]::after { transition: none; }
         }
         #mda-layerpanel .mda-lp-group-name {
-            font-size:var(--text-xs); letter-spacing: 1.3px; color: var(--cyan);
+            font-size:var(--text-xs); letter-spacing: 1.3px; color: var(--dc, var(--cyan));
             text-transform: uppercase; display: flex; align-items: center; gap:var(--space-1-5);
             white-space: nowrap; min-width: 0; overflow: hidden;
         }
         #mda-layerpanel .mda-lp-chev {
             display: inline-block; width: 9px; transition: transform .25s;
-            color: var(--cyan); font-size:var(--text-2xs);
+            color: var(--dc, var(--cyan)); font-size:var(--text-2xs);
         }
         #mda-layerpanel .mda-lp-group.collapsed .mda-lp-chev { transform: rotate(-90deg); }
         #mda-layerpanel .mda-lp-group-body {
@@ -7828,7 +7859,7 @@ window.udcIco = udcIco;
     <!-- ═══════════ [v15] DOMAIN 1 · AIR & SPACE — อากาศ-อวกาศ ═══════════ -->
     <div class="mda-lp-group" data-group="air-space" data-domain="air">
         <div class="mda-lp-group-head">
-            <span class="mda-lp-group-name" style="color:var(--cyan);"><span class="mda-lp-chev" style="color:var(--cyan);">▾</span> <svg class="ico" aria-hidden="true"><use href="#i-satellite"/></svg> อากาศ-อวกาศ <small>Air &amp; Space</small></span>
+            <span class="mda-lp-group-name" style="color:var(--dc);"><span class="mda-lp-chev" style="color:var(--dc);">▾</span> <svg class="ico" aria-hidden="true"><use href="#i-satellite"/></svg> อากาศ-อวกาศ <small>Air &amp; Space</small></span>
         </div>
         <div class="mda-lp-org"><span class="lead">ทอ. / ทร.</span> · GISTDA · กสทช. · บวท.</div>
         <div class="mda-lp-group-body">
@@ -7880,7 +7911,7 @@ window.udcIco = udcIco;
     <!-- ═══════════ [v15] DOMAIN 2 · SURFACE — ผิวน้ำ ═══════════ -->
     <div class="mda-lp-group" data-group="surface" data-domain="surface">
         <div class="mda-lp-group-head">
-            <span class="mda-lp-group-name" style="color:#06b6d4;"><span class="mda-lp-chev" style="color:#06b6d4;">▾</span> <svg class="ico" aria-hidden="true"><use href="#i-ship"/></svg> ผิวน้ำ <small>Surface</small></span>
+            <span class="mda-lp-group-name" style="color:var(--dc);"><span class="mda-lp-chev" style="color:var(--dc);">▾</span> <svg class="ico" aria-hidden="true"><use href="#i-ship"/></svg> ผิวน้ำ <small>Surface</small></span>
         </div>
         <div class="mda-lp-org"><span class="lead">ทรภ.1 / ศรชล.ภาค 1</span> · เจ้าท่า · ประมง · ศุลกากร · ตร.น้ำ · ทช.</div>
         <div class="mda-lp-group-body">
@@ -7957,7 +7988,7 @@ window.udcIco = udcIco;
     <!-- ═══════════ [v15] DOMAIN 3 · SUBSURFACE — ใต้ผิวน้ำ ═══════════ -->
     <div class="mda-lp-group collapsed" data-group="subsurface" data-domain="sub">
         <div class="mda-lp-group-head">
-            <span class="mda-lp-group-name" style="color:#14b8a6;"><span class="mda-lp-chev" style="color:#14b8a6;">▾</span> <svg class="ico" aria-hidden="true"><use href="#i-waves"/></svg> ใต้ผิวน้ำ <small>Subsurface</small></span>
+            <span class="mda-lp-group-name" style="color:var(--dc);"><span class="mda-lp-chev" style="color:var(--dc);">▾</span> <svg class="ico" aria-hidden="true"><use href="#i-waves"/></svg> ใต้ผิวน้ำ <small>Subsurface</small></span>
         </div>
         <div class="mda-lp-org"><span class="lead">ทร. (กองเรือดำน้ำ) / นสร.</span> · กรมอุทกศาสตร์ (อศ.)</div>
         <div class="mda-lp-group-body">
@@ -8009,7 +8040,7 @@ window.udcIco = udcIco;
     <!-- ═══════════ [v15] DOMAIN 4 · SEABED — พื้นท้องทะเล ═══════════ -->
     <div class="mda-lp-group" data-group="seabed" data-domain="seabed">
         <div class="mda-lp-group-head">
-            <span class="mda-lp-group-name" style="color:#f59e0b;"><span class="mda-lp-chev" style="color:#f59e0b;">▾</span> <svg class="ico" aria-hidden="true"><use href="#i-anchor"/></svg> พื้นท้องทะเล <small>Seabed</small></span>
+            <span class="mda-lp-group-name" style="color:var(--dc);"><span class="mda-lp-chev" style="color:var(--dc);">▾</span> <svg class="ico" aria-hidden="true"><use href="#i-anchor"/></svg> พื้นท้องทะเล <small>Seabed</small></span>
         </div>
         <div class="mda-lp-org"><span class="lead">ทร. (อศ.) / ทรภ.1 + UDC</span> · MDES · กสทช. · ปตท.สผ. · กฟผ.</div>
         <div class="mda-lp-group-body">
@@ -8077,7 +8108,7 @@ window.udcIco = udcIco;
     <!-- ═══════════ [v15] DOMAIN 5 · CYBER-EM — ไซเบอร์-สเปกตรัม ═══════════ -->
     <div class="mda-lp-group collapsed" data-group="cyber-em" data-domain="cyber">
         <div class="mda-lp-group-head">
-            <span class="mda-lp-group-name" style="color:#8b5cf6;"><span class="mda-lp-chev" style="color:#8b5cf6;">▾</span> <svg class="ico" aria-hidden="true"><use href="#i-satellite-dish"/></svg> ไซเบอร์-สเปกตรัม <small>Cyber-EM</small></span>
+            <span class="mda-lp-group-name" style="color:var(--dc);"><span class="mda-lp-chev" style="color:var(--dc);">▾</span> <svg class="ico" aria-hidden="true"><use href="#i-satellite-dish"/></svg> ไซเบอร์-สเปกตรัม <small>Cyber-EM</small></span>
         </div>
         <div class="mda-lp-org"><span class="lead">สกมช. / ทร. (EW)</span> · MDES · กสทช. · DC SOC</div>
         <div class="mda-lp-group-body">
@@ -8143,7 +8174,7 @@ window.udcIco = udcIco;
     <!-- ═══════════ [v15] DOMAIN 6 · LITTORAL / LANDING — ฝั่ง-ชายฝั่ง ═══════════ -->
     <div class="mda-lp-group collapsed" data-group="littoral" data-domain="litt">
         <div class="mda-lp-group-head">
-            <span class="mda-lp-group-name" style="color:#22c55e;"><span class="mda-lp-chev" style="color:#22c55e;">▾</span> <svg class="ico" aria-hidden="true"><use href="#i-tree-palm"/></svg> ฝั่ง-ชายฝั่ง <small>Littoral</small></span>
+            <span class="mda-lp-group-name" style="color:var(--dc);"><span class="mda-lp-chev" style="color:var(--dc);">▾</span> <svg class="ico" aria-hidden="true"><use href="#i-tree-palm"/></svg> ฝั่ง-ชายฝั่ง <small>Littoral</small></span>
         </div>
         <div class="mda-lp-org"><span class="lead">นย. / ฐานทัพเรือสัตหีบ</span> · ปกครอง · ตม. · ตำรวจ · ทช.</div>
         <div class="mda-lp-group-body">
@@ -8610,7 +8641,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.33.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.33.1 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9080,7 +9111,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.33.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.33.1 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9098,7 +9129,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.33.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.33.1 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -10070,7 +10101,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.33.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.33.1 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -41130,7 +41161,8 @@ window.selectCOA = selectCOA;
     if (document.getElementById('mda-lp-layoutbar')) return; // idempotent
 
     const DOM_ICON = {air:udcIco('satellite'),surface:udcIco('ship'),sub:udcIco('waves'),seabed:udcIco('anchor'),cyber:udcIco('radar'),litt:udcIco('tree-palm'),tools:udcIco('settings')};
-    const DOM_COL  = {air:'var(--cyan)',surface:'#06b6d4',sub:'#14b8a6',seabed:'var(--amber)',cyber:'#8b5cf6',litt:'#22c55e',tools:'#94a3b8'};
+    /* [v17.33.1] ปุ่มรางโดเมนใช้ token ล้วน — เดิม ๕ ใน ๗ เป็น hex ตรง ธีมสั่งไม่ได้ */
+    const DOM_COL  = {air:'var(--cyan)',surface:'var(--cyan-dim)',sub:'var(--teal-dim)',seabed:'var(--amber)',cyber:'var(--purple)',litt:'var(--green)',tools:'var(--n-300)'};
     const SEGS = [
       ['A','▤','การ์ดมีกรอบ + badge นับ active'],
       ['B','▥','แถบไอคอนโดเมน (ดูทีละโดเมน)'],
