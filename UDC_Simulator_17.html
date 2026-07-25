@@ -1,6 +1,75 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.31.1 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.32.0 · 7-Domain + AI Staff)
+  · [v17.32.0 OPERATIONAL CALM · เฟส P2] ระนาบความลึก · ลดชั้นการ์ด · ลดความจัดจ้านของเปลือก
+      กติกาเดียวที่ใช้ตัดสินทุกข้อในเฟสนี้: "ตกแต่ง → ต้องฟังธีม · เป็นข้อมูล → ห้ามฟังธีม"
+      โดย "เป็นข้อมูล" หมายถึงสัญลักษณ์ตามหลักนิยม (MIL-STD-2525 / STANAG APP-6 IFF /
+      ทุ่น IALA / แถบชั้นความลับ) ซึ่งถ้าเปลี่ยนสีตามธีมจะกลายเป็นการแจ้งข้อมูลที่ผิด
+
+      P2-A · ย้อมสีบล็อก CSS ที่อยู่ใน template literal ให้ฟังธีม (๔ บล็อก)
+      รากปัญหา: การแปลงสีเป็นโทเคนสี่รอบก่อนหน้า (TOK-4a..4d) ทุกรอบบังคับว่าต้องมี
+      เครื่องหมายคำพูดอยู่ "บรรทัดเดียวกัน" กับกฎ CSS — จริงสำหรับ CSS ที่ต่อสตริง
+      ('.x{...}'+) แต่ไม่จริงสำหรับ template literal ซึ่งมี backtick แค่บรรทัดแรก
+      บรรทัดที่ ๒ เป็นต้นไปจึงถูกข้ามเงียบ ๆ ทั้งหมด ขอบเขตที่วัดได้ก่อนแก้: ๔ บล็อก
+      · ๓๙ hex ดิบ · ๕๖ rgba ดิบ · ๕๘ var() หลังแก้: ๕ hex · ๑๘ rgba · ๑๔๔ var()
+      โดยของที่เหลือเป็นคำอธิบายในหมายเหตุ หรือข้อยกเว้นที่จงใจและเขียนเหตุผลกำกับไว้
+      บล็อกที่แก้: แผง RMP · แท็บลิ้นชักข้อมูล MDA · LAYERS & TOOLS · ป้ายเรือ AIS
+      พิสูจน์ตอนรัน: .rmp-title / .rr-head / พื้นป้าย bathy เปลี่ยนค่าครบทั้ง ๗ สถานะธีม
+      (เดิมค้างที่ค่าตั้งต้นทุกธีม — นี่คือเหตุผลที่แถบ RMP สีไม่เหมือนแถบอื่น)
+      คงดิบไว้โดยเจตนา: #7da77d เขียวแถบชั้นความลับ · ขอบ .mda-cyber-popup ที่บอก
+      แหล่งข่าว (rose/amber) · พื้นสัญลักษณ์ seamark · เงาดำล้วน
+
+      P2-B · ตรวจแล้วไม่มีช่องว่างโทเคน — อ่านค่าจริง ๑๖ โทเคน × ๗ ธีม ทุกตัวขยับครบ
+      รายงานเก่าที่ว่าขาด ๑๑ โทเคนนั้นล้าสมัยไปแล้วตั้งแต่ TOK-6 (v17.31.0)
+      ข้อสังเกตที่พบและ ตัดสินใจปล่อยไว้: ในธีม royal-thai-navy สูตร --text-label
+      = color-mix(--text-muted 85%, --n-300) กลายเป็นการผสมกับตัวเอง เพราะธีมนั้น
+      ตั้ง --text-muted เท่ากับ --n-300 พอดี ส่วนต่างที่หายไปคือ ๑๕% ของหนึ่งขั้นบันได
+      สีเทา = ต่ำกว่าที่ตาแยกออก จึงคงสูตรให้เหมือนกันทั้ง ๖ ธีมไว้ดีกว่าแตกเป็นกรณีพิเศษ
+
+      P2-C · ตั้งมาตราส่วนระนาบความลึก (--plane-1..3-bg / --elev-1..3 / --hairline / --ring-accent)
+      สิ่งที่วัดได้ก่อนแก้: ทั้งไฟล์มี box-shadow ๓๕๕ จุด · border:1px solid ๓๑๔ จุด ·
+      เงาสีเรืองแสง (ไม่ใช่สีดำ) ๑๔๘ จุด และโทเคน --shadow-panel / --shadow-modal ที่
+      ประกาศไว้แต่ ไม่เคยถูกใช้เลยแม้แต่ครั้งเดียว ผลรวมคือไม่มีมาตราส่วนใด ๆ ทุกแผง
+      ประกาศเงาของตัวเองแบบสุ่ม สายตาจึงแยกไม่ออกว่าอะไรอยู่ชั้นบนกว่ากัน
+      แนวคิดจาก Gotham / Lattice / 9LV: ความลึกมาจากค่าความสว่างของพื้นเป็นหลัก
+      เงาเป็นแค่ตัวช่วย และห้ามใช้เงาสีเรืองแสงบอกชั้น — สีสงวนไว้ให้สถานะภัยคุกคาม
+      ผูก --shadow-panel/--shadow-modal เข้ากับมาตราส่วนนี้แทนการทิ้งโทเคนตาย
+
+      P2-D · ลดชั้นการ์ด
+      .panel (พื้นผิวที่ใช้ซ้ำมากที่สุด): ตัดชั้นไล่สี 115deg "ประกายกระจก" สีขาวทิ้ง ·
+      ขอบ cyan ๒๕% → เส้นบาง --hairline · เงา ๕ ชั้น → --elev-1 ชั้นเดียว ·
+      ยกเลิก translateY(-2px) ตอน hover (มีแผงหลายสิบใบในรางเดียว การกระเพื่อมทุกครั้ง
+      ที่เมาส์ผ่านคือสัญญาณรบกวน ไม่ใช่ข้อมูล) hover เหลือแค่ขอบสว่างขึ้น
+      วงแหวน electric: ลดความทึบ ๙๐% → ๕๕% และชะลอ ๒.๔ วิ → ๕ วิ (ลดความแรง ไม่ใช่ลบ)
+      .rr-section: จากการ์ดซ้อนการ์ด → หมวดที่คั่นด้วยเส้นบาง ไม่มีพื้น ไม่มีขอบรอบ
+      พร้อมถอด --aug-border-all ของกฎ augmented-ui ที่จะดึงกรอบซ้อนกลับมาชนะกฎด้านบน
+
+      P2-F · สองข้อที่พบตอนพิสูจน์ผล ถ้าไม่แก้ P2-C/P2-D จะไม่มีผลจริงเลย
+      (๑) ค่าตั้งต้นของ "รูปแบบหน้าต่าง" คือ glass ซึ่งประกาศ background / border /
+          box-shadow / backdrop-filter ทับ .panel ด้วย !important ทั้งชุด กฎ .panel ที่
+          จัดระนาบใหม่จึง ไม่เคยถูกมองเห็น ในสภาพเปิดโปรแกรมครั้งแรก → เปลี่ยนค่าตั้งต้น
+          เป็น Flat (Default) แบบกระจก/Liquid ยังอยู่ครบในตัวเลือกและยังจำค่าไว้เหมือนเดิม
+          พร้อมกันนั้นถอด saturate(180%) ของ glass และ saturate(220%) brightness(1.05)
+          ของ liquid ออก — ตัวคูณเหล่านี้ไม่ได้ย้อมตัวแผง แต่ย้อม "แผนที่ที่อยู่ข้างหลังแผง"
+          ผู้ใช้จึงเห็นแผนที่สองเวอร์ชันในจอเดียว และอ่านความอิ่มสีเป็นสัญญาณผิด ๆ
+          (คงความเบลอไว้ครบ — เบลอคือเอกลักษณ์ของสองแบบนี้) เงาเฉพาะกิจ → --elev-2/3
+      (๒) .rr-section:first-of-type ไม่เคยตรงกับอะไรเลย เพราะ :first-of-type นับตาม
+          ชนิดแท็ก ไม่ใช่คลาส และในรางนี้มี div หัวแผงนำหน้าอยู่ หมวดแรกจึงเป็น div
+          ลำดับที่ ๒ เสมอ → เปลี่ยนเป็นตัวเชื่อมพี่น้อง .rr-section + .rr-section
+          เส้นคั่นจึงอยู่ "ระหว่าง" หมวดเท่านั้น หมวดแรกไม่ชนหัวแผงอีก
+
+      พิสูจน์ตอนรัน (สภาพเปิดครั้งแรก ล้าง localStorage ของรูปแบบหน้าต่างแล้ว):
+      .panel → พื้น rgba(8,21,37,.74) = ระนาบ ๑ · ไม่มีไล่สี · blur(12px) ไม่มี saturate
+      · เงา = --elev-1 · มุม 8px | รางแผง → พื้น .97 = ระนาบ ๓ · ขอบ --ring-accent
+      · เงา = --elev-3 | .rr-section → พื้นโปร่ง มุม 0 หมวดแรกไม่มีเส้น หมวดที่ ๒-๔ มีเส้นบาง
+      ไม่มี error ใหม่ในคอนโซล (ที่เหลือเป็นเรื่องพร็อกซี ADS-B ติด rate-limit ของเดิม)
+
+      ยังไม่ทำในเฟสนี้ (ยกไปเฟสถัดไปโดยตั้งใจ ไม่ใช่ตกหล่น):
+      · #rmp-panel ยังใช้ border-radius:9px ซึ่งหลุดมาตราส่วน (--radius-lg 8 / --radius-xl 10) → P3
+      · โทเคน --text-sm/base/md/lg/xl และ --space-1..8 ยังไม่มีที่ใช้เลย → P3
+      · แผง ๑๒ ใบถือสีขอบต่างกันถึง ๘ สี (ส้ม ๒ · ฟ้า cyan ๓ · แดง · ส้มอ่อน · น้ำเงินเข้ม
+        · teal) ซึ่งขัดหลัก "สีสงวนไว้ให้สถานะ" โดยตรง แต่การถอดสีประจำแผงทิ้งเป็นการ
+        ตัดสินใจที่ใหญ่กว่าขอบเขต P2 → ยกไป P4 พร้อมกับ data-threat
   · [v17.31.1 FIX-1..2] แก้บัก ๒ จุดที่ผู้ใช้ชี้ — บันได 4S ROE และตาราง RMP
       FIX-1 · บันได 4S ROE ขึ้นคำซ้ำในโหมด EN (SHOUT/SHOUT · SHOW/SHOW · SHOVE/SHOVE
       · SHOOT/SHOOT) — ต้นเหตุอยู่ที่โครงข้อมูล ไม่ใช่ที่หน้าตา: อาร์เรย์ RUNGS มีแค่
@@ -1000,12 +1069,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.31.1 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.32.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.31.1';
+        const APP_VERSION = '17.32.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -1172,9 +1241,34 @@
             --opacity-muted:  0.60;
             --opacity-subtle: 0.80;
 
-            /* ── ค่ากำหนดเงาและระดับความลอยของหน้าต่าง ───────────── */
-            --shadow-panel: 0 2px 8px rgba(0,0,0,.5);
-            --shadow-modal: 0 8px 32px rgba(0,0,0,.8);
+            /* ══════════════════════════════════════════════════════════════
+               [v17.32.0 P2-C] ระนาบความลึก (Depth planes)
+               ──────────────────────────────────────────────────────────────
+               ปัญหาที่วัดได้: ทั้งไฟล์มี box-shadow ๓๕๕ จุด และ border:1px
+               solid ๓๑๔ จุด แต่ไม่มี "มาตราส่วน" ใด ๆ ทุกแผงจึงประกาศเงา
+               ของตัวเองแบบสุ่ม ผลคือสายตาแยกไม่ออกว่าอะไรอยู่ชั้นบนกว่ากัน
+               ทุกอย่างดูลอยเท่ากันหมด (= "ทุกบล็อกเป็นการ์ดมีขอบ")
+               แนวคิดจาก Gotham / Lattice / 9LV: ความลึกมาจาก "ค่าความสว่าง
+               ของพื้น" เป็นหลัก เงาเป็นแค่ตัวช่วย และ ห้าม ใช้เงาสีเรืองแสง
+               เป็นตัวบอกชั้น — สีสงวนไว้ให้สถานะภัยคุกคามเท่านั้น
+                 ระนาบ ๐  แผนที่/ผืนผ้าใบ            — ไม่มีเงา
+                 ระนาบ ๑  แผงที่เทียบท่าอยู่ในราง     — เงาบางที่สุด
+                 ระนาบ ๒  แผงลอย/popup/tooltip      — เงากลาง
+                 ระนาบ ๓  modal/drawer ที่กินความสนใจ — เงาลึก
+               --shadow-panel / --shadow-modal เดิมประกาศไว้แต่ ไม่เคยถูกใช้
+               แม้แต่ครั้งเดียว (๐ usage) จึงผูกเข้ากับมาตราส่วนนี้แทนการทิ้ง */
+            --plane-1-bg: rgb(var(--bg-panel-rgb) / .74);
+            --plane-2-bg: rgb(var(--bg-panel-rgb) / .93);
+            --plane-3-bg: rgb(var(--bg-panel-rgb) / .97);
+            --elev-1: 0 1px 3px rgba(0,0,0,.38);
+            --elev-2: 0 4px 16px rgba(0,0,0,.46);
+            --elev-3: 0 12px 40px rgba(0,0,0,.62);
+            /* เส้นแบ่งบางที่สุดที่ยังมองเห็น — ใช้แทน "ขอบการ์ด" ในบล็อกซ้อนใน */
+            --hairline: 1px solid color-mix(in srgb, var(--n-700) 70%, transparent);
+            /* วงแหวนเน้นเมื่อชี้/โฟกัส — บางกว่ากรอบเดิมมาก จงใจให้ "เอ่ย" ไม่ใช่ "ตะโกน" */
+            --ring-accent: color-mix(in srgb, var(--cyan-mid) 46%, transparent);
+            --shadow-panel: var(--elev-1);
+            --shadow-modal:  var(--elev-3);
 
             /* ══════════════════════════════════════════════════════════════
                [v17.31.0 TOK-1] ชั้นโทนสีเชิงความหมาย (Semantic ramps)
@@ -1737,44 +1831,36 @@
             color:var(--teal); border-radius:4px; padding:2px 7px; cursor:pointer;
         }
         #uiZoomCtl .uz-btn:hover { background:rgb(var(--teal-rgb) / .22); }
+        /* ══ [v17.32.0 P2-C/P2-D] .panel — พื้นผิวที่ใช้ซ้ำมากที่สุดในระบบ ══
+           เดิมทุกแผงถือ ๓ สิ่งพร้อมกัน: (๑) ชั้นไล่สี 115deg "ประกายกระจก"
+           สีขาว (๒) ขอบสีฟ้า cyan ๒๕% (๓) กองเงิน ๕ ชั้น — ผลรวมคือ "ทุก
+           บล็อกเป็นการ์ดเรืองแสงเท่ากันหมด" สายตาจึงไล่ลำดับความสำคัญไม่ได้
+           แก้ตามหลักระนาบความลึก:
+           · ตัดชั้นประกายกระจกสีขาวทิ้ง — เป็นภาษา consumer glassmorphism
+             ไม่ใช่ภาษาห้องยุทธการ เหลือพื้นทึบระนาบ ๑ ชั้นเดียว
+           · ขอบ cyan → เส้นบางกลาง (--hairline) สี "ประจำการ" สงวนไว้ให้
+             สถานะเท่านั้น (เฟส P4 จะเอาไปผูกกับ data-threat)
+           · เงา ๕ ชั้น → --elev-1 หนึ่งชั้น + เส้นสว่างบนสุดไว้บอกขอบฟ้าแผง
+           · ยกเลิก translateY(-2px) ตอน hover — มีแผงหลายสิบใบในรางเดียวกัน
+             การกระเพื่อมขึ้นลงทุกครั้งที่เมาส์ผ่านคือสัญญาณรบกวน ไม่ใช่ข้อมูล
+             hover เหลือแค่ "ขอบสว่างขึ้น" ซึ่งเพียงพอต่อการบอกว่าชี้อยู่ตรงไหน */
         .panel {
-            background:
-                linear-gradient(115deg,
-                    rgba(255, 255, 255, 0.085) 0%,
-                    rgba(255, 255, 255, 0.025) 14%,
-                    rgba(255, 255, 255, 0.00) 30%,
-                    rgba(132, 180, 216, 0.055) 46%,
-                    rgba(255, 255, 255, 0.00) 62%,
-                    rgba(0, 0, 0, 0.14) 100%),
-                linear-gradient(165deg,
-                    rgb(var(--bg-panel-rgb) / 0.74) 0%,
-                    rgba(4, 12, 22, 0.72) 48%,
-                    rgba(2, 7, 14, 0.87) 100%);
-            border-radius:var(--radius-lg); border: 1px solid rgb(var(--cyan-rgb) / 0.25);
+            background: var(--plane-1-bg);
+            border-radius:var(--radius-lg); border: var(--hairline);
             padding: 8px 10px; display: flex; flex-direction: column; gap: 5px; overflow: hidden;
             position: relative; /* [v17.7.6 PANEL-HOVER-ELECTRIC-1] จุดอ้างอิงให้ ::before วางกรอบ electric */
             /* [v16.0.5 W5-Q11] entrance นุ่มๆ ตอน mount/แสดงผล */
             animation: udc-panel-in var(--dur-med) var(--ease-out);
-            /* เพิ่มผิวกระจกฝ้าให้พื้นหลัง */
-            backdrop-filter: blur(12px) saturate(180%);
-            -webkit-backdrop-filter: blur(12px) saturate(180%);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10),
-                        inset 0 -1px 0 rgba(0, 0, 0, 0.42),
-                        inset 1px 0 0 rgba(255, 255, 255, 0.035),
-                        inset -1px 0 0 rgba(0, 0, 0, 0.22),
-                        0 8px 32px 0 rgba(0, 0, 0, 0.45);
-            transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1),
-                        box-shadow 0.25s cubic-bezier(0.25, 0.8, 0.25, 1),
+            /* เพิ่มผิวกระจกฝ้าให้พื้นหลัง (คง blur ไว้ ตัด saturate ที่ดันสีใต้แผงให้จัดเกินจริง) */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), var(--elev-1);
+            transition: box-shadow 0.25s cubic-bezier(0.25, 0.8, 0.25, 1),
                         border-color 0.25s ease;
         }
         .panel:hover {
-            transform: translateY(-2px);
-            border-color: rgb(var(--cyan-rgb) / 0.50);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
-                        inset 0 -1px 0 rgba(0, 0, 0, 0.42),
-                        inset 1px 0 0 rgba(255, 255, 255, 0.045),
-                        inset -1px 0 0 rgba(0, 0, 0, 0.22),
-                        0 12px 38px 0 rgb(var(--cyan-rgb) / 0.20);
+            border-color: var(--ring-accent);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), var(--elev-2);
         }
         /* [v17.7.6 PANEL-HOVER-ELECTRIC-1] hover panel/block (.panel) ใดก็ตาม → กรอบ "electric" วิ่งรอบขอบ
            เทคนิค mask-composite:exclude เดียวกับ header (ring-only, ไม่ทับเนื้อหา) แต่ใช้ repeating-conic-gradient
@@ -1790,10 +1876,16 @@
             position: absolute; inset: 0;
             padding: 1.4px;
             border-radius: inherit;
+            /* [v17.32.0 P2-C] ลดความแรงของวงแหวน electric ไม่ใช่ลบทิ้ง —
+               ยังเป็นเอกลักษณ์ของระบบ แต่เดิม ๙๐% ความทึบ + หมุน ๒.๔ วินาที
+               ทำให้ทุกครั้งที่เมาส์ผ่านแผงใดก็ตามในรางที่มีหลายสิบใบ เกิดวัตถุ
+               เคลื่อนไหวความคมสูงกลางสายตา เหลือ ๕๕% + ๕ วินาที = ยังรู้สึกได้
+               ว่ามีชีวิต แต่ไม่แย่งความสนใจไปจากแทร็กบนแผนที่
+               (เฟส P4 จะเลื่อนวงแหวนนี้ไปเป็นสัญญาณ data-threat แทน hover) */
             background: repeating-conic-gradient(from var(--panel-a),
                 transparent 0%,
                 transparent 32%,
-                color-mix(in srgb, var(--dc, var(--cyan)) 90%, transparent) 44%,
+                color-mix(in srgb, var(--dc, var(--cyan)) 55%, transparent) 44%,
                 transparent 50%);
             -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
             -webkit-mask-composite: xor;
@@ -1801,12 +1893,12 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity .25s ease;
-            animation: panel-ring-spin 2.4s linear infinite paused;
+            animation: panel-ring-spin 5s linear infinite paused;
         }
         .panel:hover::before {
             opacity: 1;
             animation-play-state: running;
-            filter: drop-shadow(0 0 4px color-mix(in srgb, var(--dc, var(--cyan)) 60%, transparent));
+            filter: drop-shadow(0 0 2px color-mix(in srgb, var(--dc, var(--cyan)) 35%, transparent));
         }
         @keyframes panel-ring-spin {
             to { --panel-a: 360deg; }
@@ -5170,20 +5262,25 @@
            [Stage 6b] ตัดออกแล้ว: โฮโลแกรม + คลื่นโซนาร์ (กลุ่มที่มีภาพเคลื่อนไหว)
            ═══════════════════════════════════════════════════════ */
 
-        /* ── หน้าต่าง · กระจก — ผิวกระจกฝ้าแบบ macOS/iOS ── */
+        /* ── หน้าต่าง · กระจก — ผิวกระจกฝ้าแบบ macOS/iOS ──
+           [v17.32.0 P2-F] ถอด saturate(180%) ออก — ตัวคูณความอิ่มสีนี้ไม่ได้
+           ย้อมตัวแผง แต่ย้อม "ทุกอย่างที่อยู่ข้างหลังแผง" คือแผนที่ ผลคือสี
+           น้ำทะเล เส้นเขต และแทร็กที่มองผ่านแผงจะจัดจ้านกว่าที่อยู่นอกแผง
+           ๑.๘ เท่า — สายตาจึงอ่านความอิ่มสีเป็นสัญญาณผิด ๆ ทั้งที่มันเป็นแค่
+           ผลข้างเคียงของกระจก คงความเบลอไว้ (เบลอ = เอกลักษณ์ของแบบนี้)
+           เงา ๓ ชั้นเฉพาะกิจ → ระนาบ ๒ ตามมาตราส่วนความลึกกลาง */
         body[data-panel="glass"] .panel,
         body[data-panel="glass"] .legacy-panel,
         body[data-panel="glass"] .side-panel {
             background: linear-gradient(135deg,
                 rgb(var(--bg-panel-rgb) / .35),
                 rgb(var(--bg-panel-rgb) / .15)) !important;
-            backdrop-filter: blur(24px) saturate(180%) !important;
-            -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+            backdrop-filter: blur(24px) !important;
+            -webkit-backdrop-filter: blur(24px) !important;
             border: 1px solid rgb(255 255 255 / .12) !important;
             box-shadow:
                 inset 0 1px 0 rgb(255 255 255 / .15),
-                0 12px 48px rgba(0,0,0,.45),
-                0 0 0 1px rgb(var(--cyan-rgb) / .08) !important;
+                var(--elev-2) !important;
             border-radius: 12px;
         }
 
@@ -5448,14 +5545,17 @@
                 linear-gradient(135deg,
                     rgb(var(--bg-panel-rgb) / .35),
                     rgb(var(--bg-panel-rgb) / .12)) !important;
-            backdrop-filter: blur(36px) saturate(220%) brightness(1.05) !important;
-            -webkit-backdrop-filter: blur(36px) saturate(220%) brightness(1.05) !important;
+            /* [v17.32.0 P2-F] เหตุผลเดียวกับแบบกระจก แต่หนักกว่า: saturate(220%)
+               + brightness(1.05) ทำให้แผนที่ใต้แผงทั้งอิ่มสีขึ้นและสว่างขึ้น
+               พร้อมกัน ผู้ใช้จึงเห็นแผนที่สองเวอร์ชันในจอเดียว คงเบลอ ๓๖px
+               และแถบแสงสะท้อนไว้ — นั่นคือสิ่งที่ทำให้แบบนี้เป็น Liquid Glass */
+            backdrop-filter: blur(36px) !important;
+            -webkit-backdrop-filter: blur(36px) !important;
             border: 1px solid rgb(255 255 255 / .20) !important;
             box-shadow:
                 inset 0 1px 0 rgb(255 255 255 / .25),
                 inset 0 0 0 1px rgb(var(--cyan-rgb) / .08),
-                0 16px 60px rgba(0,0,0,.55),
-                0 4px 12px rgba(0,0,0,.30) !important;
+                var(--elev-3) !important;
             border-radius: 18px !important;
             padding: 14px 18px !important;
         }
@@ -8406,7 +8506,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.31.1 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.32.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -8876,7 +8976,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.31.1 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.32.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -8894,7 +8994,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.31.1 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:13px;">v17.32.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -9866,7 +9966,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.31.1 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.32.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -14526,17 +14626,23 @@ function toggleSeaZones() {
         .ais-vessel-popup .leaflet-popup-content { margin:0 !important; }
         .ais-vessel-popup .leaflet-popup-tip { display:none !important; }   /* [v16.0.4 W4-Bug26] ปิดวงเล็บ rule ที่ค้าง — เดิมกลืน rule ถัดไปทั้งหมด */
         /* ── กล่องคำอธิบายความลึกท้องทะเลและเขตทางทะเล ── */
+        /* [v17.32.0 P2-A] rgba(8,21,37,.92) คือ --bg-panel เป๊ะ ๆ · rgba(56,189,248,.45)
+           คือ --cyan-mid · #7dd3fc คือ --cyan-hi — ทั้งสามเขียนดิบไว้ในบล็อกที่
+           TOK-4 ข้าม จึงเป็นแผงเดียวในระบบที่พื้นหลังไม่ขยับตามธีมเลย
+           สีเหลืองของ seazone-tip เป็น "เปลือกกล่องข้อความ" ใบเดียวใช้ร่วมทุกเขต
+           ไม่ใช่กุญแจแยกสีรายเขต (เส้นขอบเขตบนแผนที่ต่างหากที่ถือสีตามกฎหมาย)
+           จึงจัดเป็นการตกแต่ง → ต้องฟังธีม */
         .leaflet-tooltip.bathy-tip {
-            background: rgba(8,21,37,0.92) !important;
-            border: 1px solid rgba(56,189,248,0.45) !important;
-            border-radius: 4px !important; color: #7dd3fc !important;
+            background: rgb(var(--bg-panel-rgb) / .92) !important;
+            border: 1px solid color-mix(in srgb, var(--cyan-mid) 45%, transparent) !important;
+            border-radius: var(--radius-xs) !important; color: var(--cyan-hi) !important;
             font-family: var(--font-mono), monospace !important; font-size:10px !important;
             padding: 2px 7px !important;
         }
         .leaflet-tooltip.seazone-tip {
-            background: rgba(8,21,37,0.92) !important;
-            border: 1px solid rgba(250,204,21,0.45) !important;
-            border-radius: 4px !important; color: #fde68a !important;
+            background: rgb(var(--bg-panel-rgb) / .92) !important;
+            border: 1px solid color-mix(in srgb, var(--warn-hi) 45%, transparent) !important;
+            border-radius: var(--radius-xs) !important; color: var(--warn-hi) !important;
             font-family: var(--font-mono), monospace !important; font-size:10px !important;
             padding: 2px 7px !important;
         }
@@ -31807,7 +31913,7 @@ window.toggleSat3D = toggleSat3D;
             display:flex; flex-direction:column; align-items:stretch;
             gap:0; max-height:calc(100vh - 24px); overflow-y:auto;
             overflow-x:visible; padding:0 7px 8px; /* [v17.3.3] เว้นขอบเนื้อหา (header จะ bleed -7px เต็มกว้าง) */
-            width:236px; box-sizing:border-box; background:rgba(var(--bg-panel-rgb,8 21 37) / .97); -webkit-backdrop-filter:blur(9px); backdrop-filter:blur(9px); border:1px solid rgba(var(--cyan-rgb,0 212 255) / .42); border-radius:var(--radius-xl); box-shadow:0 12px 44px rgba(var(--bg-dark-rgb,2 12 24) / .72); /* [v17.3.3] chrome แบบ pop-up panel เดียวกับ .strat-panel (เดิม background:none;border:none [v17.3.1 FIX-6b]) */
+            width:236px; box-sizing:border-box; background:var(--plane-3-bg); -webkit-backdrop-filter:blur(9px); backdrop-filter:blur(9px); border:1px solid var(--ring-accent); border-radius:var(--radius-xl); box-shadow:var(--elev-3); /* [v17.3.3] chrome แบบ pop-up panel เดียวกับ .strat-panel (เดิม background:none;border:none [v17.3.1 FIX-6b]) · [v17.32.0 P2-C] ยกขึ้นระนาบ ๓ + ลดขอบ cyan .42 → --ring-accent */
             scrollbar-width:thin; scrollbar-color:var(--border-dim) transparent;
             pointer-events:auto;          /* ← re-enable clicks (parent .leaflet-top blocks by default) */
         }
@@ -31823,26 +31929,42 @@ window.toggleSat3D = toggleSat3D;
         }
         /* [v17.3.2] ซ่อนปุ่ม "🗂 LAYERS & TOOLS" ที่ลอยบนแผนที่ — ย้ายไปเป็นปุ่มใน header (#layersToolsBtn) แล้ว; เก็บ element ไว้เพื่อ sync state เท่านั้น */
         .leaflet-top.leaflet-right .rr-master { display:none !important; } /* [v17.3.3] LAYERS & TOOLS = pop-up panel: ย่อแล้วถอด chrome ไม่ให้เหลือกรอบเปล่า + หัว panel (ไอคอน+ชื่อ+✕) สไตล์เดียวกับ .strat-head/.p3-head */ .leaflet-top.leaflet-right.rr-organized.rr-hidden{ background:none; -webkit-backdrop-filter:none; backdrop-filter:none; border:none; box-shadow:none; padding:0; } .leaflet-top.leaflet-right.rr-organized.rr-hidden .rr-paphead{ display:none !important; } .rr-paphead{ display:flex; align-items:center; gap:8px; padding:10px 5px 9px 9px; margin:0 -7px 7px; border-bottom:1px solid rgba(var(--cyan-rgb,0 212 255) / .28); background:linear-gradient(90deg,rgba(var(--cyan-rgb,0 212 255) / .14),transparent); border-radius:var(--radius-xl) 10px 0 0; font-family:var(--font-body,"Sarabun",sans-serif); } .rr-paphead .rr-pap-ico{ font-size:16px; line-height:1; flex:none; } .rr-paphead .rr-pap-ttl{ flex:1; min-width:0; font-size:12px; font-weight:700; color:var(--text-main,var(--text-main)); letter-spacing:.6px; line-height:1.15; font-family:var(--font-mono,"Share Tech Mono",monospace); } .rr-paphead .rr-pap-sub{ display:block; font-size:var(--text-xs); font-weight:400; color:var(--text-muted,var(--text-muted)); letter-spacing:.2px; font-family:var(--font-body,"Sarabun",sans-serif); margin-top:1px; } .leaflet-top.leaflet-right .rr-paphead .rr-pap-x{ cursor:pointer; background:transparent !important; border:none !important; box-shadow:none !important; color:var(--text-muted,var(--text-muted)) !important; font-size:14px !important; line-height:1; padding:0 !important; width:24px !important; height:24px; flex:0 0 auto !important; display:inline-flex; align-items:center; justify-content:center; text-align:center; border-radius:var(--radius-sm); overflow:visible; white-space:nowrap; } .leaflet-top.leaflet-right .rr-paphead .rr-pap-x:hover{ color:var(--red,var(--red)) !important; background:rgba(var(--text-muted-rgb,100 116 139) / .15) !important; border-color:transparent !important; } /* [v17.3.3] ปุ่ม ✕ ต้องชนะกฎ global .leaflet-top.leaflet-right button{width:100%!important...} (L1166) ที่ดันปุ่มเต็มกว้าง 220px → fix overflow */
+        /* [v17.32.0 P2-A] #22d3ee คือหนึ่งในสองฟ้าที่ TOK-4 ยุบเข้า --cyan-mid
+           (อีกตัวคือ #38bdf8) แต่บล็อกนี้อยู่ใน template literal จึงถูกข้าม —
+           ผลคือหัวแผง LAYERS & TOOLS ยังฟ้าอยู่ทุกธีม ทั้งที่กรอบแผงรอบนอก
+           (บรรทัด 31810) เรียก rgba(var(--cyan-rgb)…) และเปลี่ยนตามธีมไปแล้ว */
         .rr-master {
-            background:rgba(2,12,24,.92); border:1px solid #22d3ee;
-            color:#22d3ee; font-family:var(--font-mono), monospace;
+            background:rgb(var(--bg-dark-rgb) / .92); border:1px solid var(--cyan-mid);
+            color:var(--cyan-mid); font-family:var(--font-mono), monospace;
             font-size:11px; padding:5px 11px; border-radius:var(--radius-md);
             cursor:pointer; letter-spacing:.6px; font-weight:bold;
-            margin:4px 0 3px; box-shadow:0 0 12px rgba(34,211,238,.35);
+            margin:4px 0 3px; box-shadow:var(--elev-1);
             width:100%; box-sizing:border-box; text-align:center;
         }
-        .rr-master:hover { background:rgba(34,211,238,.18); }
-        .rr-master.collapsed { color:#64748b; border-color:#334155;
+        .rr-master:hover { background:color-mix(in srgb, var(--cyan-mid) 18%, transparent); }
+        .rr-master.collapsed { color:var(--n-500); border-color:var(--n-700);
             box-shadow:none; }
+        /* [v17.32.0 P2-D] ลดชั้นการ์ด — .rr-section อยู่ "ข้างใน" แผงลอยที่มี
+           พื้น ขอบ และเงาครบอยู่แล้ว การให้มันมีพื้น+ขอบ+มุมมนของตัวเองอีกชั้น
+           คือการ์ดซ้อนการ์ด สายตาต้องข้ามขอบสองชั้นกว่าจะถึงเนื้อหา
+           เปลี่ยนเป็น "หมวดที่คั่นด้วยเส้นบาง" — โปร่ง ไม่มีขอบรอบ มีแค่เส้นคั่น
+           ด้านบน และหมวดแรกไม่ต้องมีเส้น (ชนกับหัวแผงพอดี) */
         .rr-section {
-            background:rgba(8,18,36,.78); border:1px solid var(--border-dim);
-            border-radius:7px; padding:4px 5px 5px;
-            margin:3px 0; width:100%; box-sizing:border-box;
+            background:transparent; border:none;
+            border-top:var(--hairline); border-radius:0; padding:5px 3px 6px;
+            margin:0; width:100%; box-sizing:border-box;
             display:flex; flex-direction:column; gap:3px;
         }
+        /* [v17.32.0 P2-F] เดิมเขียน .rr-section:first-of-type — ใช้ไม่ได้จริง
+           เพราะ :first-of-type นับตาม "ชนิดแท็ก" ไม่ใช่คลาส และในรางนี้มี
+           <div> หัวแผงนำหน้าอยู่แล้ว หมวดแรกจึงเป็น div ลำดับที่ ๒ เสมอ
+           กฎเดิมไม่เคยตรงกับอะไรเลย ผลคือหมวดแรกยังมีเส้นคั่นชนหัวแผง
+           เปลี่ยนเป็นตัวเชื่อมพี่น้อง: ไม่มีเส้นเป็นค่าตั้งต้น แล้วเติมเส้นให้
+           เฉพาะหมวดที่มีหมวดอื่นอยู่ก่อนหน้า = เส้นอยู่ "ระหว่าง" เท่านั้น */
+        .rr-section + .rr-section { border-top:var(--hairline); }
         .rr-section.collapsed .rr-body { display:none; }
         .rr-head {
-            color:#64ffda; font-family:var(--font-mono), monospace;
+            color:var(--teal); font-family:var(--font-mono), monospace;
             font-size:9.5px; letter-spacing:.8px; font-weight:bold;
             padding:3px 8px 4px 10px; cursor:pointer; user-select:none;
             display:flex; justify-content:space-between; align-items:center;
@@ -31869,31 +31991,41 @@ window.toggleSat3D = toggleSat3D;
            ใช้ clip-path บนมุม panel เพื่อให้ดูเป็น HUD ทหาร/cyberpunk */
         .rr-master[data-augmented-ui]{
             --aug-border-all: 1px;
-            --aug-border-bg: #22d3ee;
+            --aug-border-bg: var(--cyan-mid);
             --aug-tl: 6px; --aug-tr: 6px;
             --aug-br: 6px; --aug-bl: 6px;
             border:none;            /* ให้ augmented-ui วาดเส้นแทน */
-            background:rgba(2,12,24,.92);
-            box-shadow:0 0 14px rgba(34,211,238,.35);
+            background:rgb(var(--bg-dark-rgb) / .92);
+            box-shadow:0 0 14px color-mix(in srgb, var(--cyan-mid) 35%, transparent);
         }
         .rr-master.collapsed[data-augmented-ui]{
-            --aug-border-bg:#334155;
+            --aug-border-bg:var(--n-700);
             box-shadow:none;
         }
+        /* [v17.32.0 P2-D] เดิมกฎนี้วาดกรอบมุมตัด augmented-ui รอบทุกหมวดย่อย
+           ซึ่งจะดึง "การ์ดซ้อนการ์ด" กลับมาทันทีและชนะกฎด้านบน จึงถอด
+           --aug-border-all เป็น 0 คงตัวแปรมุมไว้เผื่อเฟสหลังอยากคืนกรอบให้
+           เฉพาะหมวดที่มีสถานะภัยคุกคาม (P4) — ไม่ใช่ทุกหมวดพร้อมกัน */
         .rr-section[data-augmented-ui]{
-            --aug-border-all: 1px;
-            --aug-border-bg: var(--border-dim);
+            --aug-border-all: 0;
+            --aug-border-bg: transparent;
             --aug-tl: 4px; --aug-tr: 10px;
             --aug-br: 4px; --aug-bl: 10px;
             border:none;
-            background:rgba(8,18,36,.78);
+            background:transparent;
         }
+        /* [v17.32.0 P2-F] แก้เหตุผลเดียวกับด้านบน — :first-of-type ใช้ไม่ได้ */
+        .rr-section[data-augmented-ui] + .rr-section[data-augmented-ui]{ border-top:var(--hairline); }
         /* คงพฤติกรรม hover ของ master ไว้ */
         .rr-master[data-augmented-ui]:hover{
-            background:rgba(34,211,238,.18);
+            background:color-mix(in srgb, var(--cyan-mid) 18%, transparent);
         }
 
         /* ── [v11] augmented-ui สำหรับ sonar / classification banner / boot ── */
+        /* [v17.32.0 P2-A] #7da77d "คงดิบไว้โดยเจตนา" — เขียวของแถบชั้นความลับ
+           เป็นสีตามระเบียบการทำเครื่องหมายเอกสาร (เขียว = UNCLASSIFIED) ไม่ใช่
+           การตกแต่ง ถ้าปล่อยให้ธีมย้อมเป็นทองหรือส้ม แถบจะกลายเป็นการแจ้ง
+           ชั้นความลับที่ผิด = เป็นข้อมูล ห้ามฟังธีม */
         .classification-banner[data-augmented-ui]{
             --aug-border-all: 1px;
             --aug-border-bg: #7da77d;
@@ -31901,7 +32033,7 @@ window.toggleSat3D = toggleSat3D;
         }
         #bootScreen .boot-crest[data-augmented-ui]{
             --aug-border-all: 2px;
-            --aug-border-bg: #64ffda;
+            --aug-border-bg: var(--teal);
             --aug-tl: 14px; --aug-tr: 14px;
             --aug-br: 14px; --aug-bl: 14px;
         }
@@ -37444,50 +37576,66 @@ window.toggleSat3D = toggleSat3D;
                 max-height: calc(100vh - 160px); font-size: 11px; }
             .mda-if-item { padding:6px 8px; margin-bottom:6px; border-left:3px solid var(--cyan);
                 background: rgb(var(--cyan-rgb) / .05); border-radius:0 3px 3px 0; }
-            .mda-if-item.warn { border-left-color: var(--mda-amber); background: rgba(255,176,32,.07); }
-            .mda-if-item.crit { border-left-color: var(--mda-crit); background: rgba(255,56,96,.10); }
-            .mda-if-item .mda-if-t { font-weight: 600; color: #e8f4ff; margin-bottom: 2px; }
+            /* [v17.32.0 P2-A] rgba(255,176,32,.07) และ rgba(255,56,96,.10) คือ hex ของ
+               --mda-amber / --mda-crit เป๊ะ ๆ อยู่แล้ว แต่เขียนดิบไว้ จึงไม่ขยับตามธีม
+               ทั้งที่ border-left ข้าง ๆ ในกฎเดียวกันขยับ — พื้นกับขอบของแถวเดียวกัน
+               จึงหลุดคู่กันในทุกธีมที่ไม่ใช่ปริยาย */
+            .mda-if-item.warn { border-left-color: var(--mda-amber); background: color-mix(in srgb, var(--mda-amber) 7%, transparent); }
+            .mda-if-item.crit { border-left-color: var(--mda-crit); background: color-mix(in srgb, var(--mda-crit) 10%, transparent); }
+            .mda-if-item .mda-if-t { font-weight: 600; color: var(--n-100); margin-bottom: 2px; }
             .mda-if-item .mda-if-m { color: var(--text-muted); font-size: 10px; line-height: 1.4; }
-            .mda-if-item .mda-if-s { color: rgba(255,255,255,.4); font-size: 9px; margin-top: 3px;
+            /* [v17.32.0 P2-A] เดิม rgba(255,255,255,.4) — ขาว ๔๐% บนพื้นเข้มได้ ~3.4:1
+               ที่ขนาด 9px ต่ำเกินไป → --n-400 (5.65:1 ตามที่วัดไว้ใน QW-A) และตามธีมด้วย */
+            .mda-if-item .mda-if-s { color: var(--n-400); font-size: 9px; margin-top: 3px;
                 text-transform: uppercase; letter-spacing: .05em; }
             .mda-empty { color: var(--text-muted); text-align:center; padding: 20px 8px;
                 font-style: italic; font-size: 11px; }
-            .mda-tooltip { background: rgb(var(--bg-panel-rgb) / .92) !important; color:#e8f4ff !important;
+            .mda-tooltip { background: rgb(var(--bg-panel-rgb) / .92) !important; color:var(--n-100) !important;
                 border:1px solid var(--mda-edge) !important; font-size:10px !important; }
-            /* [v13.0.7] Seamark popup — solid CIC-dark chrome ให้อ่านชัดบน satellite */
+            /* [v13.0.7] Seamark popup — solid CIC-dark chrome ให้อ่านชัดบน satellite
+               [v17.32.0 P2-A · เป็นการตัดสินใจ ไม่ใช่การเผลอ] คำว่า "seamark" อยู่ใน
+               บัญชีห้ามแปลงของ TOK-4 ซึ่งตั้งไว้เพื่อคุ้มครอง "สีเครื่องหมายทางเรือ
+               IALA" — คือวงแหวนและตัวอักษรบนหมุด ไม่ใช่กล่องข้อความที่เด้งขึ้นมา
+               กล่อง popup เป็นเปลือกระบบล้วน ๆ (พื้นเข้ม ขอบ ปุ่มปิด) ตามกฎข้อเดียว
+               "ตกแต่ง → ต้องฟังธีม" จึงแปลงเฉพาะเปลือก ส่วน .seamark-icon ด้านล่าง
+               ยังคงดิบไว้ เพราะมันคือฐานรองสัญลักษณ์ที่วางอยู่บนแผนที่จริง */
             .seamark-popup .leaflet-popup-content-wrapper {
-                background: rgba(6,17,32,0.96) !important;
-                border:1px solid rgba(56,189,248,.45) !important;
+                background: rgb(var(--bg-panel-rgb) / .96) !important;
+                border:1px solid color-mix(in srgb, var(--cyan-mid) 45%, transparent) !important;
                 border-radius:var(--radius-md) !important;
-                box-shadow:0 0 18px rgba(56,189,248,.25), 0 4px 14px rgba(0,0,0,.6) !important;
-                color:#e2e8f0 !important;
+                box-shadow:0 0 18px color-mix(in srgb, var(--cyan-mid) 25%, transparent), 0 4px 14px rgba(0,0,0,.6) !important;
+                color:var(--n-100) !important;
                 padding:2px !important;
             }
             .seamark-popup .leaflet-popup-content { margin:8px 10px !important; line-height:1.35 !important; }
-            .seamark-popup .leaflet-popup-tip { background: rgba(6,17,32,0.96) !important;
-                border:1px solid rgba(56,189,248,.45) !important; }
+            .seamark-popup .leaflet-popup-tip { background: rgb(var(--bg-panel-rgb) / .96) !important;
+                border:1px solid color-mix(in srgb, var(--cyan-mid) 45%, transparent) !important; }
             .seamark-popup .leaflet-popup-close-button {
-                color:#94a3b8 !important; top:4px !important; right:6px !important; font-size:16px !important;
+                color:var(--n-300) !important; top:4px !important; right:6px !important; font-size:16px !important;
             }
-            .seamark-popup .leaflet-popup-close-button:hover { color:#f87171 !important; }
+            .seamark-popup .leaflet-popup-close-button:hover { color:var(--crit-hi) !important; }
             /* [v17.10] Cyber-EM popups — CIC-dark chrome ใช้ร่วม (ransomware / urlhaus / ฯลฯ) ให้เข้าธีมมืด */
             .mda-cyber-popup .leaflet-popup-content-wrapper {
-                background: rgba(6,17,32,0.96) !important;
-                border:1px solid rgba(148,163,184,.32) !important;
+                background: rgb(var(--bg-panel-rgb) / .96) !important;
+                border:1px solid color-mix(in srgb, var(--n-300) 32%, transparent) !important;
                 border-radius:var(--radius-md) !important;
                 box-shadow:0 0 16px rgba(0,0,0,.5), 0 4px 14px rgba(0,0,0,.6) !important;
-                color:#e2e8f0 !important;
+                color:var(--n-100) !important;
                 padding:2px !important;
             }
             .mda-cyber-popup .leaflet-popup-content { margin:8px 11px !important; line-height:1.5 !important; }
             .mda-cyber-popup .leaflet-popup-tip {
-                background: rgba(6,17,32,0.96) !important;
-                border:1px solid rgba(148,163,184,.32) !important;
+                background: rgb(var(--bg-panel-rgb) / .96) !important;
+                border:1px solid color-mix(in srgb, var(--n-300) 32%, transparent) !important;
             }
             .mda-cyber-popup .leaflet-popup-close-button {
-                color:#94a3b8 !important; top:5px !important; right:7px !important; font-size:16px !important;
+                color:var(--n-300) !important; top:5px !important; right:7px !important; font-size:16px !important;
             }
-            .mda-cyber-popup .leaflet-popup-close-button:hover { color:#f87171 !important; }
+            .mda-cyber-popup .leaflet-popup-close-button:hover { color:var(--crit-hi) !important; }
+            /* [v17.32.0 P2-A] ขอบสีของ .rose / .amber ด้านล่าง "คงดิบไว้โดยเจตนา" —
+               มันบอกว่า popup ใบนี้มาจากแหล่งข่าวไหน (ransomware = ชมพูแดง ·
+               URLhaus = เหลืองอำพัน) คู่กับพจนานุกรม ๔ รูปทรงบนแผนที่ ถ้าธีมกลืนสี
+               ทั้งสองกลุ่มเป็นเทาเหมือนกัน กุญแจอ่านแผนที่จะพัง = เป็นข้อมูล ไม่ใช่การตกแต่ง */
             /* สีเน้น: มัลแวร์เรียกค่าไถ่ = ชมพูแดง */
             .mda-cyber-popup.rose .leaflet-popup-content-wrapper,
             .mda-cyber-popup.rose .leaflet-popup-tip { border-color: rgba(244,63,94,.5) !important; }
@@ -40832,7 +40980,15 @@ window.selectCOA = selectCOA;
         const savedTheme = getLS(STORAGE_KEY,     '');
         const savedBody  = getLS(STORAGE_FONT_BD, '');
         const savedMono  = getLS(STORAGE_FONT_MN, '');
-        const savedPanel = getLS(STORAGE_PANEL,   'glass');
+        /* [v17.32.0 P2-F] ค่าตั้งต้นเดิมคือ 'glass' — ซึ่งประกาศ background /
+           border / box-shadow / backdrop-filter ทับ .panel ด้วย !important
+           ทั้งชุด ผลคือกฎ .panel ที่จัดระนาบความลึกใหม่ในเฟสนี้ "ไม่เคยถูก
+           มองเห็น" ในสภาพเปิดโปรแกรมครั้งแรกเลย และผู้ใช้ใหม่ได้หน้าตา
+           glassmorphism แบบแอปผู้บริโภคเป็นภาพแรกของห้องยุทธการ
+           เปลี่ยนเป็น '' = Flat (Default) ซึ่งคือกฎ .panel ตรง ๆ ตามระนาบ ๑
+           แบบกระจก/Liquid ยังอยู่ครบในตัวเลือก ใครชอบก็เลือกได้และค่าจะถูก
+           จำไว้ใน localStorage เหมือนเดิม — เปลี่ยนแค่ "ค่าเริ่มต้น" */
+        const savedPanel = getLS(STORAGE_PANEL,   '');
         if (savedTheme && THEMES.some(t => t.id === savedTheme)) apply(savedTheme);
         if (savedBody) applyFont('body', savedBody);
         if (savedMono) applyFont('mono', savedMono);
@@ -41250,57 +41406,70 @@ window.selectCOA = selectCOA;
   }
 
   // ── รูปแบบการแสดงผล ────────────────────────────────────────────
+  /* ══ [v17.32.0 P2-A] ปิดจุดบอดของ TOK-4 ในบล็อกนี้ ═══════════════════════
+     ทั้งสี่รอบการแปลง token (TOK-4/4b/4c/4d) ต้องการ "อักขระคำพูดในบรรทัด
+     เดียวกับกฎ CSS" — จริงสำหรับ CSS ที่ต่อกันเป็นสตริง ('.x{...}'+) แต่
+     ไม่จริงกับ template literal เพราะมีแต่บรรทัดแรกที่ถือ backtick บรรทัด
+     ที่ ๒ เป็นต้นไปจึงถูกข้ามเงียบ ๆ ทั้งบล็อก
+     ผลที่ผู้ใช้เห็นจริง: แผง RMP ค้างอยู่ที่ #7dd3fc ซึ่งบังเอิญเป็น "ค่า
+     เริ่มต้นของ --cyan-hi" — token ตัวที่มันควรเรียกใช้อยู่แล้วพอดี พอสลับ
+     ธีมเป็น Royal Thai Navy แผงข้างเคียงเปลี่ยนเป็นทอง แต่ RMP ยังฟ้าอยู่
+     ซ้ำร้าย กรอบ .rmp-dock ของตัวมันเอง (บรรทัด ~9197) เรียก var(--cyan-mid)
+     อยู่แล้ว — กรอบกับไส้ในของแผงเดียวกันจึงขัดกันเองในทุกธีมที่ไม่ใช่ปริยาย
+     ตัวแปลง rgba→color-mix ใช้รูปแบบเดียวกับ .rmp-cell ที่มีอยู่เดิมในบล็อกนี้
+     ส่วน rgba(0,0,0,…) และ rgba(255,255,255,.025) คงไว้ดิบ เพราะเป็นเงาและ
+     ฟิล์มขาวบาง ไม่ใช่ "สี" ที่ธีมควรสั่ง */
   const CSS = `
   #rmp-panel{ position:fixed; top:96px; right:14px; width:348px; z-index:7400;
-    font-family:'Segoe UI',-apple-system,sans-serif; color:#e2e8f0;
-    background:rgba(8,14,22,.93); border:1px solid rgba(56,189,248,.32);
-    border-radius:9px; box-shadow:0 8px 28px rgba(0,0,0,.55); backdrop-filter:blur(7px);
+    font-family:var(--font-body),sans-serif; color:var(--n-100);
+    background:rgb(var(--bg-panel-rgb) / .93); border:1px solid color-mix(in srgb, var(--cyan-mid) 32%, transparent);
+    border-radius:9px; box-shadow:var(--elev-2); backdrop-filter:blur(7px);
     overflow:hidden; user-select:none; }
   #rmp-panel.dragging{ opacity:.94; }
   .rmp-head{ display:flex; align-items:center; justify-content:space-between;
-    padding:7px 10px; cursor:grab; background:linear-gradient(90deg,rgba(56,189,248,.16),rgba(56,189,248,.03));
-    border-bottom:1px solid rgba(56,189,248,.22); }
+    padding:7px 10px; cursor:grab; background:linear-gradient(90deg,color-mix(in srgb, var(--cyan-mid) 16%, transparent),color-mix(in srgb, var(--cyan-mid) 3%, transparent));
+    border-bottom:1px solid color-mix(in srgb, var(--cyan-mid) 22%, transparent); }
   .rmp-head:active{ cursor:grabbing; }
-  .rmp-title{ font-size:11px; font-weight:700; letter-spacing:.4px; color:#7dd3fc; }
-  .rmp-x{ cursor:pointer; font-size:12px; color:#94a3b8; padding:0 4px; }
-  .rmp-x:hover{ color:#f87171; }
-  .rmp-sub{ font-size:9.5px; color:#94a3b8; padding:5px 10px 3px; }
-  .rmp-sub #rmp-total{ color:#7dd3fc; font-weight:700; }
+  .rmp-title{ font-size:11px; font-weight:700; letter-spacing:.4px; color:var(--cyan-hi); }
+  .rmp-x{ cursor:pointer; font-size:12px; color:var(--n-300); padding:0 4px; }
+  .rmp-x:hover{ color:var(--crit-hi); }
+  .rmp-sub{ font-size:9.5px; color:var(--n-300); padding:5px 10px 3px; }
+  .rmp-sub #rmp-total{ color:var(--cyan-hi); font-weight:700; }
   .rmp-matrix{ display:grid; grid-template-columns:62px repeat(5,1fr) 26px; gap:2px; padding:4px 8px 8px; }
   .rmp-mh{ font-size:13px; text-align:center; padding:2px 0; }
-  .rmp-corner{ font-size:var(--text-xs); color:#64748b; display:flex; align-items:center; justify-content:center; }
+  .rmp-corner{ font-size:var(--text-xs); color:var(--n-500); display:flex; align-items:center; justify-content:center; }
   .rmp-bl{ font-size:9px; font-weight:700; letter-spacing:.3px; display:flex; align-items:center;
     padding-left:3px; border-left:3px solid; }
   .rmp-cell{ text-align:center; font-size:12px; font-weight:700; padding:3px 0; border-radius:var(--radius-xs);
     background:color-mix(in srgb, var(--bc) 16%, transparent); color:var(--bc);
     border:1px solid color-mix(in srgb, var(--bc) 34%, transparent); }
-  .rmp-cell.rmp-dim{ background:rgba(148,163,184,.05); color:var(--text-label); border-color:rgba(148,163,184,.10); }
+  .rmp-cell.rmp-dim{ background:color-mix(in srgb, var(--n-300) 5%, transparent); color:var(--text-label); border-color:color-mix(in srgb, var(--n-300) 10%, transparent); }
   .rmp-bt{ text-align:center; font-size:12px; font-weight:700; padding:3px 0; }
-  .rmp-legend{ font-size:var(--text-xs); color:#64748b; padding:0 10px 5px; }
+  .rmp-legend{ font-size:var(--text-xs); color:var(--n-500); padding:0 10px 5px; }
   .rmp-list{ max-height:200px; overflow-y:auto; padding:0 8px 8px; }
   .rmp-row{ display:flex; align-items:center; gap:6px; padding:3px 5px; margin-top:3px;
     background:rgba(255,255,255,.025); border-left:3px solid; border-radius:0 4px 4px 0; }
   .rmp-dot{ width:7px; height:7px; border-radius:50%; flex:0 0 auto; box-shadow:0 0 5px currentColor; }
   .rmp-dico{ font-size:12px; flex:0 0 auto; }
-  .rmp-crew{ font-size:11px; color:#7dd3fc; flex:0 0 auto; }
+  .rmp-crew{ font-size:11px; color:var(--cyan-hi); flex:0 0 auto; }
   .rmp-crew.rmp-un{ color:var(--purple-dim); }
-  .rmp-lab{ font-size:9.5px; color:#cbd5e1; flex:1 1 auto; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .rmp-lab{ font-size:9.5px; color:var(--n-200); flex:1 1 auto; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .rmp-post{ font-size:9px; font-weight:700; letter-spacing:.3px; flex:0 0 auto; }
-  .rmp-empty{ font-size:9px; color:#64748b; text-align:center; padding:14px 4px; line-height:1.6; }
+  .rmp-empty{ font-size:9px; color:var(--n-500); text-align:center; padding:14px 4px; line-height:1.6; }
   /* [v15.14] ปุ่มย่อหน้าต่างและแท็บ */
-  .rmp-min{ cursor:pointer; font-size:13px; color:#94a3b8; padding:0 5px; line-height:1; transition:transform .15s; }
-  .rmp-min:hover{ color:#7dd3fc; }
+  .rmp-min{ cursor:pointer; font-size:13px; color:var(--n-300); padding:0 5px; line-height:1; transition:transform .15s; }
+  .rmp-min:hover{ color:var(--cyan-hi); }
   #rmp-panel.rmp-collapsed .rmp-min{ transform:rotate(-90deg); }
   #rmp-panel.rmp-collapsed .rmp-body{ display:none; }
   .rmp-tabs{ display:flex; gap:0; padding:6px 8px 0; }
   .rmp-tab{ flex:1 1 0; text-align:center; font-size:10px; font-weight:700; letter-spacing:.3px;
-    padding:5px 0 6px; cursor:pointer; color:#64748b; background:rgba(148,163,184,.05);
-    border:1px solid rgba(148,163,184,.14); border-bottom:none; }
+    padding:5px 0 6px; cursor:pointer; color:var(--n-500); background:color-mix(in srgb, var(--n-300) 5%, transparent);
+    border:1px solid color-mix(in srgb, var(--n-300) 14%, transparent); border-bottom:none; }
   .rmp-tab:first-child{ border-radius:var(--radius-sm) 0 0 0; }
-  .rmp-tab:last-child{ border-radius:0 5px 0 0; }
-  .rmp-tab:hover{ color:#cbd5e1; }
-  .rmp-tab.rmp-on{ color:#7dd3fc; background:rgba(56,189,248,.12); border-color:rgba(56,189,248,.34); }
-  .rmp-pane{ display:none; border-top:1px solid rgba(56,189,248,.18); }
+  .rmp-tab:last-child{ border-radius:0 var(--radius-sm) 0 0; }
+  .rmp-tab:hover{ color:var(--n-200); }
+  .rmp-tab.rmp-on{ color:var(--cyan-hi); background:color-mix(in srgb, var(--cyan-mid) 12%, transparent); border-color:color-mix(in srgb, var(--cyan-mid) 34%, transparent); }
+  .rmp-pane{ display:none; border-top:1px solid color-mix(in srgb, var(--cyan-mid) 18%, transparent); }
   .rmp-pane.rmp-on{ display:block; }
 
   /* ══ [v15.14] โหมด docked (inline) — ฝังในพาเนลซ้าย กว้าง ~282px ══ */
@@ -41308,7 +41477,7 @@ window.selectCOA = selectCOA;
     background:transparent; border:none; border-radius:0; box-shadow:none;
     backdrop-filter:none; overflow:visible; }
   #rmp-panel.rmp-inline .rmp-head{ padding:6px 6px 5px; cursor:default;
-    background:transparent; border-bottom:1px solid rgba(56,189,248,.16); }
+    background:transparent; border-bottom:1px solid color-mix(in srgb, var(--cyan-mid) 16%, transparent); }
   #rmp-panel.rmp-inline .rmp-head:active{ cursor:default; }
   #rmp-panel.rmp-inline .rmp-title{ font-size:9.5px; letter-spacing:.2px; line-height:1.25; }
   #rmp-panel.rmp-inline .rmp-x{ display:none; }          /* docked = ไม่มีปุ่มปิด */
@@ -41324,23 +41493,23 @@ window.selectCOA = selectCOA;
   #rmp-panel.rmp-inline .rmp-legend{ font-size:var(--text-xs); padding:0 6px 5px; line-height:1.4; }
   #rmp-panel.rmp-inline .rmp-list{ max-height:160px; padding:0 4px 6px; }
   #rmp-panel.rmp-inline .rmp-lab{ font-size:9px; }
-  #rmp-panel.rmp-inline .rmp-pane{ border-top:1px solid rgba(56,189,248,.14); }
+  #rmp-panel.rmp-inline .rmp-pane{ border-top:1px solid color-mix(in srgb, var(--cyan-mid) 14%, transparent); }
   /* host panel: ใช้ chrome ของ .panel เดิม — RMP โชว์เนื้อตรง ๆ */
   #panel-rmp.rmp-dock{ padding:8px 8px 6px; }
   #panel-rmp.rmp-dock > #rmp-host{ display:block; }
   /* ══ [v16 · M1] Behavior & Intent — badge แถว + แถบเจตนาสรุป ══ */
   .rmp-bh{ font-size:var(--text-xs); font-weight:700; letter-spacing:.2px; flex:0 0 auto;
     padding:1px 4px; border-radius:7px; border:1px solid currentColor; line-height:1.35; white-space:nowrap; }
-  .rmp-bh-drag{ color:#f87171; background:rgba(248,113,113,.12); }
-  .rmp-bh-loiter{ color:#fbbf24; background:rgba(251,191,36,.12); }
-  .rmp-bh-gap{ color:var(--purple-dim); background:rgba(167,139,250,.12); }
+  .rmp-bh-drag{ color:var(--crit-hi); background:color-mix(in srgb, var(--crit-hi) 12%, transparent); }
+  .rmp-bh-loiter{ color:var(--warn-hi); background:color-mix(in srgb, var(--warn-hi) 12%, transparent); }
+  .rmp-bh-gap{ color:var(--purple-dim); background:color-mix(in srgb, var(--purple-dim) 12%, transparent); }
   .rmp-intent{ font-size:9px; font-weight:800; flex:0 0 auto; min-width:20px; text-align:right;
     font-family:var(--font-mono),monospace; }
-  #rmp-intent-top{ font-size:9px; color:#94a3b8; padding:3px 10px 5px; line-height:1.4;
-    border-top:1px solid rgba(248,113,113,.10); display:none; }
+  #rmp-intent-top{ font-size:9px; color:var(--n-300); padding:3px 10px 5px; line-height:1.4;
+    border-top:1px solid color-mix(in srgb, var(--crit-hi) 10%, transparent); display:none; }
   #rmp-intent-top.on{ display:block; }
-  #rmp-intent-top b{ color:#f87171; font-family:var(--font-mono),monospace; }
-  .rmp-imeter{ height:5px; border-radius:var(--radius-xs); margin-top:3px; overflow:hidden; background:rgba(148,163,184,.14); }
+  #rmp-intent-top b{ color:var(--crit-hi); font-family:var(--font-mono),monospace; }
+  .rmp-imeter{ height:5px; border-radius:var(--radius-xs); margin-top:3px; overflow:hidden; background:color-mix(in srgb, var(--n-300) 14%, transparent); }
   .rmp-imeter > i{ display:block; height:100%; border-radius:var(--radius-xs); transition:width .4s ease; }
   #rmp-panel.rmp-inline .rmp-bh{ font-size:var(--text-xs); padding:0 3px; }
   #rmp-panel.rmp-inline .rmp-intent{ font-size:var(--text-xs); min-width:16px; }
