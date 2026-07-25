@@ -1,6 +1,56 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.37.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.38.0 · 7-Domain + AI Staff)
+  · [v17.38.0] POP-1 — ป๊อปอัป Global UDC และ MDA-COP วางผิดที่ · แก้ด้วยตัววางตำแหน่งกลางตัวเดียว
+      ผู้ใช้แจ้งว่ากดปุ่มแล้วแผงโผล่ผิดตำแหน่ง · วัดจริงบนสี่ขนาดจอแล้วพบข้อบกพร่อง ๕ ข้อ
+      ไม่ใช่ข้อเดียว และทั้งห้าข้อมีรากเดียวกันคือ "ตรึงตัวเลขไว้ตั้งแต่ตอนแถบหัวยังเตี้ย"
+        ๑ #gudc-panel ตรึง top:54px มาตั้งแต่รุ่น ๑๖ ตอนแถบหัวสูงราว ๕๐ พิกเซล
+          วันนี้แถบหัวสูง ๑๐๓ (จอ ๑๒๘๐) · ๑๓๗ (จอ ๙๐๐) · ๒๓๘ (จอ ๓๗๕) เพราะขึ้นบรรทัดที่ ๒–๓
+          แผงจึงทับแถบหัว ๔๙ / ๘๓ / ๑๘๔ พิกเซลตามลำดับ
+        ๒ z-index ของแผง (๗๓๕๐) สูงกว่าแถบหัว (๕๕๐๐) · ยิงพิกัดทดสอบทะลุลงไปโดนปุ่มจริง
+          คือ #udc-ai-btn · #langToggleBtn · #udc-reset-btn — และบนจอ ๓๗๕ แผงทับ "ปุ่มของตัวเอง"
+        ๓ แผงไม่ผูกกับปุ่มเลย · ปุ่มอยู่ที่ x ๔๙๒–๕๙๑ แต่แผงไปโผล่ที่ x ๙๒๘–๑๒๖๘ คนละฝั่งจอ
+        ๔ #mda-cop-menu ใช้ right:0 อ้างอิง #mda-cop-wrap ซึ่งเลื่อนไปชิดซ้ายเมื่อแถบหัวขึ้นบรรทัดที่ ๒
+          ขอบซ้ายของเมนูจึงติดลบ −๑๘ (จอ ๙๐๐) และ −๑๑๐ (จอ ๓๗๕) — กดปุ่มในส่วนที่หลุดจอไม่ได้เลย
+        ๕ ไม่มีเพดานความสูงและไม่มีแถบเลื่อน · จอ ๑๒๘๐×๕๖๐ ขอบล่างของ .gudc-foot อยู่ที่ ๖๓๗
+          ขณะจอสูง ๕๖๐ — ปุ่มแถวล่างถูกตัดหายเงียบ ๆ โดยผู้ใช้ไม่รู้ว่ามีอยู่
+
+      ที่เพิ่ม — MDA.Popover · บริการวางตำแหน่งกลางตัวเดียว {place · open · bind · fit · reflow}
+        กฎห้าข้อที่บังคับใช้ทุกครั้งที่เปิด: ผูกกับปุ่มที่กด · ไม่ล้ำขอบล่างจริงของแถบหัว
+        (อ่านสดจาก getBoundingClientRect ทุกครั้ง ไม่ใช่ค่าคงที่) · หนีบเข้าจอโดยเว้นขอบ ๑๒ พิกเซล
+        · สูงได้เท่าที่จอเหลือแล้วเลื่อนในตัว ไม่ตัดทิ้ง · วางใหม่เมื่อจอเปลี่ยนขนาด (หน่วง ๙๐ มิลลิวินาที)
+        และเมื่อแถบหัวเปลี่ยนความสูงเอง ผ่าน ResizeObserver
+        respectDrag — ถ้าผู้ใช้เคยลากแผงไปวางเองแล้ว (มีบันทึกใน udc_panelpos_v1) จะไม่ย้ายให้
+        แต่ยังคุมความสูงให้อยู่ในจอเสมอ · เคารพเจตนาผู้ใช้ แต่ไม่ปล่อยให้เนื้อหาหาย
+        .gudc-head เปลี่ยนเป็น sticky — ปุ่มปิดต้องเอื้อมถึงแม้เลื่อนลงไปสุดแผง
+
+      ที่ย้าย — #mda-cop-menu จาก z ๖๒๐๐ เป็น ๗๙๐๕
+        เดิมต่ำกว่าย่านแผงลอย ๗๓๗๐–๗๙๐๐ จึงถูก juris-panel (๗๓๕๑) และ smda/su-panel (๗๓๖๐) บังได้
+        ๗๙๐๕ อยู่เหนือแผงลอยทุกตัวแต่ยังต่ำกว่ากล่องยืนยัน ๗๙๙๘ — ยอมได้เพราะเป็นเมนูชั่วคราว
+        ที่ปิดตัวเองเมื่อคลิกนอกหรือกด Esc ไม่ใช่แผงที่ค้างอยู่บนจอ
+      ที่แก้เพิ่ม — topFloor() ในตัวจัดการแผงลอย · เพดานบนเดิมตรึงไว้ ๔๐ พิกเซลตั้งแต่ตอนแถบหัวยังเตี้ย
+        เปลี่ยนเป็นอ่านขอบล่างจริงของแถบหัว ทั้งตอนคืนตำแหน่งที่บันทึกไว้และตอนสแนปขอบหลังลากเสร็จ
+        แผงที่ผู้ใช้เคยลากขึ้นไปสูง ๆ จึงไม่ถูกคืนตำแหน่งไปทับปุ่มบนแถบหัวอีก
+
+      กับดักที่เจอระหว่างทาง (บันทึกไว้กันพลาดซ้ำ)
+        เปลี่ยน position จาก absolute เป็น fixed ทำให้กล่องอ้างอิงเปลี่ยนจาก #mda-cop-wrap (กว้าง ๑๑๕)
+        เป็นทั้งจอ · เมนูจึงพองจาก ๓๔๘ เป็น ๔๑๕ พิกเซลเอง ต้องตรึง width ไว้ชัด ๆ
+        และใน place() ต้องล้าง inline width ก่อนวัดทุกครั้ง มิฉะนั้นแผงที่เคยถูกบีบตอนจอแคบ
+        จะค้างแคบตลอดไปแม้ขยายจอกลับ (วัดได้ ๒๙๖ พิกเซลบนจอที่ควรได้ ๓๔๐)
+
+      ผลวัดหลังแก้ — ผ่านครบทั้งสี่ขนาดจอ ไม่มีข้อยกเว้น
+        ๑๒๘๐×๗๒๐ · GUDC บน ๑๑๑ ขวา ๕๙๑ = ขอบขวาปุ่มพอดี · COP บน ๑๐๕ กว้าง ๓๔๘ · ทับแถบหัว ๐
+        ๙๐๐×๖๐๐ · ทั้งคู่หนีบที่ ๑๒ · COP ซ้ายจาก −๑๘ เป็น ๑๒
+        ๓๗๕×๘๑๒ · COP ซ้ายจาก −๑๑๐ เป็น ๑๒ · ทับแถบหัว ๐
+        ๑๒๘๐×๕๖๐ · .gudc-foot ขอบล่าง ๖๓๗ (นอกจอ) → ๕๔๗ หลังเลื่อน · หัวแผงยังติดอยู่ที่ ๑๑๒
+
+      ยังไม่ทำ (เป็นการตัดสินใจ ไม่ใช่การข้าม)
+        ย้ายเข้าเครื่องยนต์เฉพาะสองป๊อปอัปที่ผู้ใช้แจ้ง · แผงลอยที่เหลืออีกราว ๑๒ ตัวยังใช้
+          วิธีวางตำแหน่งเดิมของตัวเอง ได้ประโยชน์เฉพาะ topFloor() ที่แก้ให้ · เหตุผลคือแผงเหล่านั้น
+          ผู้ใช้ลากได้อิสระอยู่แล้วและไม่ได้ผูกกับปุ่มบนแถบหัว จึงไม่มีอาการเดียวกัน
+          ถ้าจะย้ายควรทำเป็นรอบแยกพร้อมวัดผลทีละตัว ไม่ควรเหมารวมในรอบแก้บั๊ก
+        ความกว้าง ๓๔๘ ของเมนู COP ตอนนี้เขียนตรึงไว้ชัดเจน จากเดิมที่เป็นผลพลอยได้ของ
+          min-width ๓๔๒ บวกระยะขอบ · ตัวเลขเท่าเดิมทุกประการ แต่ตอนนี้ตั้งใจ ไม่ใช่บังเอิญ
   · [v17.37.0] SCENARIO INJECT — ๔ ฉากใหม่ให้โดเมนที่เคยผอม (P6-D)
       P6-A ถึง P6-C แก้ "รูปลักษณ์" ของแผงจนครบ แต่เหลือปัญหาเชิงเนื้อหาที่ยังไม่ได้แตะ
       คือการกระจายตัวของฉาก · นับจาก ๑๗ ฉากที่ต่อสายแล้วในรุ่นก่อน ได้ผลดังนี้
@@ -1447,12 +1497,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.37.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.38.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.37.0';
+        const APP_VERSION = '17.38.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -9181,7 +9231,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.37.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.38.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9651,7 +9701,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.37.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.38.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9669,7 +9719,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.37.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.38.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -10642,7 +10692,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.37.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.38.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -44159,13 +44209,26 @@ window.selectCOA = selectCOA;
     'user-select:none; letter-spacing:.3px; white-space:nowrap; line-height:1.2; }'+
   '#gudc-btn:hover{ border-color:var(--cyan-mid); color:#bae6fd; }'+
   '#gudc-btn.on{ background:rgba(56,189,248,.16); color:#e0f2fe; }'+
-  '#gudc-panel{ position:fixed; top:54px; right:12px; width:340px; max-width:92vw; z-index:7350;'+
+  /* [v17.38.0 POP-1] ตำแหน่งมาจาก MDA.Popover ตอนเปิด — CSS ไม่ตรึง top/right อีกต่อไป
+     (ค่าเดิม top:54px คงที่ตั้งแต่ v16 ตอนแถบหัวสูง ~50px · วันนี้แถบหัวสูง 84–219px จึงทับแถบหัว) */
+  '#gudc-panel{ position:fixed; top:0; left:0; width:340px; max-width:calc(100vw - 24px); z-index:7350;'+
     'display:none; font-family:\'Segoe UI\',sans-serif; color:#e2e8f0;'+
     'background:rgba(8,14,22,.95); border:1px solid rgba(56,189,248,.30); border-radius:var(--radius-xl);'+
-    'box-shadow:0 12px 36px rgba(0,0,0,.6); -webkit-backdrop-filter:blur(9px); backdrop-filter:blur(9px); overflow:hidden; }'+
+    'box-shadow:0 12px 36px rgba(0,0,0,.6); -webkit-backdrop-filter:blur(9px); backdrop-filter:blur(9px);'+
+    'overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin;'+
+    'scrollbar-color:rgba(56,189,248,.38) transparent; }'+
+  '#gudc-panel::-webkit-scrollbar{ width:8px; }'+
+  '#gudc-panel::-webkit-scrollbar-track{ background:transparent; }'+
+  '#gudc-panel::-webkit-scrollbar-thumb{ background:rgba(56,189,248,.30); border-radius:var(--radius-sm);'+
+    'border:2px solid transparent; background-clip:content-box; }'+
+  '#gudc-panel::-webkit-scrollbar-thumb:hover{ background:rgba(56,189,248,.55); background-clip:content-box; }'+
   '#gudc-panel.on{ display:block; }'+
+  /* หัวแผงติดขอบบนขณะเลื่อน — ปุ่มปิดต้องเอื้อมถึงเสมอแม้เนื้อหายาวเกินจอ */
   '.gudc-head{ display:flex; align-items:center; justify-content:space-between; padding:var(--space-2) var(--space-3);'+
-    'background:linear-gradient(90deg,rgba(56,189,248,.16),transparent); border-bottom:1px solid rgba(56,189,248,.20); }'+
+    'position:sticky; top:0; z-index:2;'+
+    'background:linear-gradient(90deg,rgba(56,189,248,.16),transparent),rgba(8,14,22,.97);'+
+    '-webkit-backdrop-filter:blur(9px); backdrop-filter:blur(9px);'+
+    'border-bottom:1px solid rgba(56,189,248,.20); }'+
   '.gudc-head b{ font-size:var(--text-sm); letter-spacing:.4px; color:var(--cyan-hi); }'+
   '.gudc-x{ cursor:pointer; color:var(--n-300); font-size:var(--text-md); line-height:1; padding:0 var(--space-0-5); }'+
   '.gudc-x:hover{ color:var(--crit-hi); }'+
@@ -44237,12 +44300,16 @@ window.selectCOA = selectCOA;
     var p=document.createElement('div'); p.id='gudc-panel'; p.innerHTML=_cardHTML();
     document.body.appendChild(p);
     var x=p.querySelector('#gudc-x'); if(x) x.addEventListener('click', function(){ setOpen(false); });
+    /* [v17.38.0 POP-1] ให้ตัววางตำแหน่งกลางขยับแผงตามเมื่อจอ/แถบหัวเปลี่ยนขนาด */
+    if (window.MDA && MDA.Popover) MDA.Popover.bind('gudc-panel','gudc-btn',{ respectDrag:true });
   }
 
   function setOpen(v){
     _open=v;
     var p=document.getElementById('gudc-panel'); if(p) p.classList.toggle('on',v);
     var b=document.getElementById('gudc-btn'); if(b) b.classList.toggle('on',v);
+    /* [v17.38.0 POP-1] วางใต้ปุ่มของตัวเอง · ใต้ขอบล่างจริงของแถบหัว · หนีบเข้าจอ · เลื่อนในตัว */
+    if (v && window.MDA && MDA.Popover) MDA.Popover.open('gudc-panel','gudc-btn',{ respectDrag:true });
     _ensureLayer();
     if (_layer && typeof map!=='undefined' && map){
       if (v) _layer.addTo(map); else { try{ map.removeLayer(_layer); }catch(e){} }
@@ -49308,16 +49375,31 @@ window.MDA.StrategicAnalysis = (function () {
     background: rgb(var(--cyan-rgb) / .18); color: var(--cyan);
   }
 
-  /* เมนูที่กางออก — ยึดใต้ปุ่มเรียกเมนู จัดชิดขวา */
+  /* เมนูที่กางออก — [v17.38.0 POP-1] ตำแหน่งมาจาก MDA.Popover ตอนเปิด
+     เดิม position:absolute; right:0 ผูกกับ #mda-cop-wrap ซึ่งอยู่ชิดซ้ายเมื่อแถบหัวขึ้นบรรทัดที่ ๒
+     เมนูกว้าง 348px จึงล้นออกนอกจอซ้าย 18px (จอ 900) และ 110px (จอ 375) — กดไม่ถึง
+     z-index 6200 ยังต่ำกว่าย่านแผงลอย 7370–7900 → แผงลอยที่เปิดอยู่บังเมนูได้
+     ย้ายเป็น 7905: เหนือแผงลอยทุกตัว (เมนูชั่วคราว ปิดเมื่อคลิกนอก/ESC) แต่ยังต่ำกว่า modal 7998 */
   #mda-cop-menu{
-    display: none; position: absolute; top: calc(100% + 7px); right: 0; z-index: 6200;
+    display: none; position: fixed; top: 0; left: 0; z-index: 7905;
     grid-template-columns: repeat(2, minmax(158px, 1fr)); gap:var(--space-1-5);
-    padding:var(--space-3); min-width: 342px;
+    padding:var(--space-3);
+    /* ตรึงความกว้าง 348px เท่าเดิม — position:fixed ทำให้ shrink-to-fit อ้างอิงจอทั้งจอ
+       ถ้าไม่ตรึงไว้ เมนูจะพองเป็น 415px ตาม max-content */
+    width: min(348px, calc(100vw - 24px)); max-width: calc(100vw - 24px);
+    overscroll-behavior: contain; scrollbar-width: thin;
+    scrollbar-color: rgb(var(--cyan-rgb) / .38) transparent;
     background: linear-gradient(135deg, rgba(4,14,32,.97), rgba(4,24,40,.97));
     border: 1px solid rgb(var(--cyan-rgb) / .35); border-radius:var(--radius-lg);
     box-shadow: 0 14px 40px rgba(0,0,0,.55), 0 0 0 1px rgb(var(--cyan-rgb) / .10) inset;
     -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
     animation: mdaCopIn .14s ease-out;
+  }
+  #mda-cop-menu::-webkit-scrollbar{ width: 8px; }
+  #mda-cop-menu::-webkit-scrollbar-track{ background: transparent; }
+  #mda-cop-menu::-webkit-scrollbar-thumb{
+    background: rgb(var(--cyan-rgb) / .30); border-radius:var(--radius-sm);
+    border: 2px solid transparent; background-clip: content-box;
   }
   #mda-cop-menu.open{ display: grid; }
   @keyframes mdaCopIn{ from{ opacity: 0; transform: translateY(-6px); } to{ opacity: 1; transform: none; } }
@@ -49642,6 +49724,8 @@ window.MDA.StrategicAnalysis = (function () {
       if (!menu) return;
       menu.classList.add('open'); launcher.classList.add('open');
       launcher.setAttribute('aria-expanded', 'true');
+      /* [v17.38.0 POP-1] วางหลัง .open เพราะก่อนหน้านั้น display:none → วัดขนาดไม่ได้ */
+      if (window.MDA && MDA.Popover) MDA.Popover.open('mda-cop-menu', 'mda-cop-launcher', {});
     }
     function close() {
       if (!menu) return;
@@ -49665,6 +49749,8 @@ window.MDA.StrategicAnalysis = (function () {
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && isOpen()) close();
       });
+      /* [v17.38.0 POP-1] จอ/แถบหัวเปลี่ยนขนาดขณะเมนูเปิด → วางใหม่ */
+      if (window.MDA && MDA.Popover) MDA.Popover.bind('mda-cop-menu', 'mda-cop-launcher', {});
     }
 
     function observe() {
@@ -53447,6 +53533,124 @@ window.MDA.SeaUse = (function () {
 </script>
 
 <!-- ════════════════════════════════════════════════════════════════
+     [v17.38.0 · POP-1] ANCHORED POPOVER — เครื่องวางตำแหน่งป๊อปอัปกลาง
+     ปัญหาเดิม: ป๊อปอัปสองตัวบนแถบหัวใช้คนละระบบพิกัด และไม่มีตัวไหนรู้จักขอบจอ
+       • #gudc-panel  → position:fixed; top:54px; right:12px  (ค่าคงที่จาก v16 ตอนแถบหัวสูง ~50px)
+         แถบหัวจริงวันนี้สูง 84px (จอ 1280) / 118px (จอ 900) / 219px (จอ 375)
+         แผงจึงทับแถบหัว และ z-index 7350 > header 5500 → บังปุ่ม #udc-ai-btn · #langToggleBtn · #udc-reset-btn
+         ทั้งที่ปุ่มยังกดได้อยู่ (วัดด้วย elementFromPoint) และที่จอ 375 แผงทับ "ปุ่มของตัวเอง"
+       • #mda-cop-menu → position:absolute; right:0 ผูกกับ #mda-cop-wrap
+         เมนูกว้าง 348px แต่ปุ่มอยู่ชิดซ้าย → ที่จอ 900 ล้นออกนอกจอซ้าย 18px · ที่จอ 375 ล้น 110px (เกือบ ๑ ใน ๓)
+       • ทั้งคู่ max-height:none + overflow:hidden → ที่จอสูง 560 ส่วนท้าย .gudc-foot ถูกตัดหายเงียบ ๆ ไม่มีแถบเลื่อน
+     หลักยึดใหม่ (ใช้ร่วมกันทั้งสองตัว · ขยายไปตัวอื่นได้):
+       ๑ วางใต้ปุ่มที่กด — ป๊อปอัปต้องอยู่ติดกับสิ่งที่เรียกมันขึ้นมา ไม่ใช่มุมจอตรงข้าม
+       ๒ ไม่ต่ำกว่าขอบล่าง "จริง" ของแถบหัว (อ่านสด ๆ ทุกครั้ง เพราะแถบหัวขึ้นบรรทัดที่ ๒–๓ ได้)
+       ๓ หนีบเข้าจอทั้งสองด้าน ระยะขอบ 12px — ไม่มีเนื้อหาหลุดออกนอกจอ
+       ๔ max-height = พื้นที่ที่เหลือจริง + เลื่อนในตัว — ตัดเนื้อหาทิ้งเงียบ ๆ ไม่ได้
+       ๕ ขยับตามเมื่อจอเปลี่ยนขนาด หรือแถบหัวเปลี่ยนจำนวนบรรทัด (ResizeObserver)
+     respectDrag: แผงที่ผู้ใช้ลากไปวางเองแล้ว (มีตำแหน่งใน udc_panelpos_v1) จะไม่ถูกดึงกลับ
+       — เคารพการตัดสินใจของผู้ใช้ แต่ยังบังคับข้อ ๔ ให้เสมอ
+     ════════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+ 'use strict';
+ try {
+  var GAP = 8, MARGIN = 12, MINH = 160;
+  var reg = [];
+
+  function el(id){ return document.getElementById(id); }
+  function shown(e){
+    if (!e) return false;
+    var cs = getComputedStyle(e);
+    if (cs.display === 'none' || cs.visibility === 'hidden') return false;
+    var r = e.getBoundingClientRect();
+    return r.width > 4 && r.height > 4;
+  }
+  /* ขอบล่างจริงของแถบหัว — อ่านสดทุกครั้ง ไม่ใช่ค่าคงที่ */
+  function headerBottom(){
+    var h = document.querySelector('header');
+    if (!h) return 0;
+    var r = h.getBoundingClientRect();
+    return r.height > 0 ? r.bottom : 0;
+  }
+  function userMoved(id){
+    try { return !!JSON.parse(localStorage.getItem('udc_panelpos_v1') || '{}')[id]; }
+    catch(_){ return false; }
+  }
+  /* ข้อ ๔ — สูงได้เท่าที่จอเหลือ แล้วเลื่อนเอาเอง */
+  function fit(p){
+    if (!p) return;
+    var r = p.getBoundingClientRect();
+    p.style.maxHeight = Math.max(MINH, Math.round(window.innerHeight - r.top - MARGIN)) + 'px';
+    p.style.overflowX = 'hidden';
+    p.style.overflowY = 'auto';
+  }
+  function place(p, t, o){
+    if (!p || !t) return;
+    o = o || {};
+    var gap = (o.gap == null) ? GAP : o.gap;
+    var vw = window.innerWidth, vh = window.innerHeight;
+
+    /* ล้างค่าที่ค้างก่อนวัดความกว้างจริง */
+    p.style.position = 'fixed'; p.style.right = 'auto'; p.style.bottom = 'auto';
+    p.style.maxHeight = 'none'; p.style.overflowY = 'visible';
+    /* ต้องล้าง width ที่เคยหนีบไว้ด้วย มิฉะนั้นแผงที่เคยถูกบีบตอนจอแคบ
+       จะค้างแคบตลอดไปแม้ผู้ใช้ขยายจอกลับ (วัดได้ 296px บนจอ 436px ทั้งที่ควรเป็น 340px) */
+    p.style.width = '';
+
+    var pw = p.offsetWidth;
+    if (pw > vw - MARGIN * 2){ p.style.width = (vw - MARGIN * 2) + 'px'; pw = vw - MARGIN * 2; }
+
+    var tr = t.getBoundingClientRect();
+    /* ข้อ ๒ — ปุ่มอยู่ในแถบหัว ⇒ เริ่มใต้แถบหัวทั้งแถบ ไม่ใช่แค่ใต้ปุ่ม */
+    var floor = (t.closest && t.closest('header')) ? headerBottom() : tr.bottom;
+    var top = Math.max(tr.bottom, floor) + gap;
+    top = Math.min(top, Math.max(MARGIN, vh - MINH));
+
+    /* ข้อ ๑+๓ — ชิดขอบขวาของปุ่ม แล้วหนีบเข้าจอ */
+    var left = (o.align === 'start') ? tr.left : (tr.right - pw);
+    left = Math.max(MARGIN, Math.min(left, vw - MARGIN - pw));
+
+    p.style.left = Math.round(left) + 'px';
+    p.style.top  = Math.round(top) + 'px';
+    fit(p);
+  }
+  function open(panelId, triggerId, o){
+    var p = el(panelId), t = el(triggerId);
+    if (!p || !t) return;
+    if (o && o.respectDrag && userMoved(panelId)){ fit(p); return; }   /* ผู้ใช้ลากเองแล้ว → เคารพ */
+    place(p, t, o);
+  }
+  function bind(panelId, triggerId, o){
+    for (var i = 0; i < reg.length; i++) if (reg[i].p === panelId) return;
+    reg.push({ p:panelId, t:triggerId, o:o || {} });
+  }
+  function reflow(){
+    for (var i = 0; i < reg.length; i++){
+      var r = reg[i];
+      if (shown(el(r.p))) open(r.p, r.t, r.o);
+    }
+  }
+  var rT = null;
+  function schedule(){ clearTimeout(rT); rT = setTimeout(reflow, 90); }
+  window.addEventListener('resize', schedule);
+  /* ข้อ ๕ — แถบหัวขึ้น/ลดบรรทัด (flex-wrap) แล้วป๊อปอัปที่เปิดอยู่ต้องขยับตาม */
+  function watchHeader(){
+    if (typeof ResizeObserver === 'undefined') return;
+    var h = document.querySelector('header');
+    if (h){ try { new ResizeObserver(schedule).observe(h); } catch(_){ } }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watchHeader);
+  else watchHeader();
+
+  window.MDA = window.MDA || {};
+  window.MDA.Popover = { place:place, open:open, bind:bind, fit:fit,
+                         reflow:reflow, headerBottom:headerBottom };
+ } catch(e){ try{ console.warn('[MDA·Popover] init failed', e); }catch(_){ } }
+})();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════════
      [v17.17 · ข้อเสนอ B] FLOATING PANEL MANAGER — ตัวจัดการแผงลอยกลาง
      รวมการจัดการ ~14 แผงลอย (non-modal) ที่เดิมต่างคนต่างอยู่ ไม่มีศูนย์กลาง:
        • คลิกแผงไหน = ยกขึ้นหน้าสุด (z-index focus) ในย่านปลอดภัย 7370–7900 · ต่ำกว่า modal (7998+) เสมอ
@@ -53540,14 +53744,22 @@ window.MDA.SeaUse = (function () {
     });
     savePos(m);
   }
+  /* [v17.38.0 POP-1] เพดานบน = ขอบล่างจริงของแถบหัว (เดิมตรึงไว้ 40px ตั้งแต่ตอนแถบหัวยังเตี้ย)
+     แถบหัววันนี้สูง 84px (จอ 1280) ถึง 219px (จอ 375) เพราะ flex-wrap ขึ้นบรรทัดที่ ๒–๓
+     แผงที่ผู้ใช้เคยลากขึ้นไปสูง ๆ จึงเคยถูกคืนตำแหน่งไปทับปุ่มบนแถบหัว */
+  function topFloor(){
+    var h = document.querySelector('header');
+    var b = h ? Math.round(h.getBoundingClientRect().bottom) : 0;
+    return Math.max(40, b + 4);
+  }
   function restore(){
-    var m = loadPos();
+    var m = loadPos(), floor = topFloor();
     Object.keys(m).forEach(function(id){
       var e = el(id); if (!e) return;
       var l = parseFloat(m[id].l), t = parseFloat(m[id].t);
       if (isNaN(l) || isNaN(t)) return;
       l = Math.max(0,  Math.min(l, window.innerWidth  - 80)); /* clamp: กันแผงหลุดจอ */
-      t = Math.max(40, Math.min(t, window.innerHeight - 40));
+      t = Math.max(floor, Math.min(t, window.innerHeight - 40));
       e.style.left = l+'px'; e.style.top = t+'px';
     });
   }
@@ -53555,12 +53767,13 @@ window.MDA.SeaUse = (function () {
   document.addEventListener('mouseup', function(){
     clearTimeout(snapT);
     snapT = setTimeout(function(){
-      var SNAP = 14;
+      var SNAP = 14, floor = topFloor();
       ZIDS.map(el).filter(function(e){ return e && isOpen(e) && e.style.left; }).forEach(function(e){
         var r = e.getBoundingClientRect();
         if (r.left <= SNAP) e.style.left = '0px';
         else if (window.innerWidth - r.right <= SNAP) e.style.left = (window.innerWidth - r.width) + 'px';
-        if (r.top > 40 && r.top <= 40 + SNAP) e.style.top = '40px';
+        if (r.top < floor) e.style.top = floor + 'px';                       /* ห้ามค้างใต้แถบหัว */
+        else if (r.top <= floor + SNAP) e.style.top = floor + 'px';          /* สแนปชิดขอบล่างแถบหัว */
       });
       persist(); refreshBtn();
     }, 130);
