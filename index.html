@@ -1,6 +1,53 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.36.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.37.0 · 7-Domain + AI Staff)
+  · [v17.37.0] SCENARIO INJECT — ๔ ฉากใหม่ให้โดเมนที่เคยผอม (P6-D)
+      P6-A ถึง P6-C แก้ "รูปลักษณ์" ของแผงจนครบ แต่เหลือปัญหาเชิงเนื้อหาที่ยังไม่ได้แตะ
+      คือการกระจายตัวของฉาก · นับจาก ๑๗ ฉากที่ต่อสายแล้วในรุ่นก่อน ได้ผลดังนี้
+        ใต้น้ำ ๖ · ผิวน้ำ ๕ · ไซเบอร์ ๔ · อากาศ ๓ · พื้นท้องทะเล ๒ · ชายฝั่ง ๑ · การบังคับบัญชา ๐
+      สามโดเมนท้ายคือโดเมนที่ผู้บังคับบัญชาต้องตัดสินใจบ่อยที่สุดในเวลาจริง แต่กลับซ้อมได้น้อยที่สุด
+      โดยเฉพาะ "การบังคับบัญชา" ที่ไม่มีฉากเลยแม้แต่ฉากเดียว ทั้งที่ลิงก์ข้อมูลทางยุทธวิธีขาด
+      เป็นเหตุการณ์ที่เกิดจริงและตัดสินใจยากที่สุด เพราะแยกไม่ออกทันทีว่าของเราเสียเองหรือถูกรบกวน
+
+      ที่เพิ่ม — โมดูล MDA.LittoralC2 · ๔ ฉาก รวมคลังเป็น ๒๑ ฉาก
+        ฝูงเรือเล็กความเร็วสูงประชิดฝั่ง (ชายฝั่ง · RED)
+          ๕ ลำ ติดอาวุธ มีคนบังคับ เกิดนอกวงป้องกันแล้วแยกตัวเข้าหาเป้าหมายพร้อมกัน
+          โจทย์คือ "เป้ามากกว่าผู้ยิง" — ฉากนี้อ่านค่าจริงจาก wtaStats แล้วสรุปตามที่วัดได้
+          ไม่ได้เขียนผลไว้ล่วงหน้า ถ้ามีลำหลุดเข้าถึงเป้าหมาย จะรายงานว่าหลุดกี่ลำ
+        ลักลอบขึ้นฝั่งเวลากลางคืน (ชายฝั่ง · GREY)
+          เรือยางท้องแข็งลำเดียว ไม่เปิด AIS มุ่งจุดขึ้นบกใกล้จุดขึ้นฝั่งของสายเคเบิล
+          ยืนยันด้วยกล้องตรวจการณ์ว่ามีคน ๖–๘ คน ไม่มีเครื่องมือประมง จบด้วยการเข้าควบคุม
+          ตามลำดับขั้นการใช้กำลัง ไม่มีการยิง — เพื่อสอนว่าภัยชายฝั่งส่วนใหญ่จบด้วยกฎหมาย
+        เรือสำรวจแวะค้างเหนือสายเคเบิล (ผิวน้ำ + พื้นท้องทะเล · GREY)
+          เปิด AIS จริง แจ้งภารกิจวิจัย แต่ลดความเร็วเหลือเกือบหยุดเหนือสายเคเบิลพอดี
+          ระบบตรวจจับการสั่นสะเทือนอ่านได้ครั้งเดียว ไม่ใช่รูปแบบการลาก และสายไม่ขาด
+          ผลลัพธ์คือ "เลือกไม่ลงมืออย่างมีเจตนา" — บันทึกหลักฐานไว้ ไม่ใช่ทุกฉากต้องจบด้วยการยิง
+        ลิงก์ข้อมูลทางยุทธวิธีถูกรบกวน (การบังคับบัญชา · GREY)
+          ฉากเดียวในคลังที่ไม่สร้างหมุดบนแผนที่เลย เพราะภัยไม่ได้อยู่บนแผนที่
+          เดินตามผังสาเหตุสามทาง: ของเราเสียเอง → ท่ออากาศผิดปกติ → ถูกรบกวน
+          แล้วตัดเส้นทิศทางจากสองฐานมาบรรจบที่เรือพาณิชย์ที่ลอยลำอยู่ จบด้วยการถอยไปใช้
+          ช่องทางสำรอง — ลิงก์ขาดไม่เท่ากับถูกโจมตีเสมอ ต้องพิสูจน์ก่อน
+
+      สถาปัตยกรรม — โมดูลห่อ window.__p3HandleScenario แทนการแก้ launchScenario()
+        ลองคีย์ของตัวเองก่อน ไม่ตรงจึงส่งต่อให้ตัวจัดการเดิม ทำให้ไม่ต้องแตะโค้ดหลักเลย
+        และถ้าโมดูลไม่โหลด ฉากเดิม ๑๗ ฉากยังทำงานครบเหมือนเดิม · เพิ่ม NEED.litc2
+        ให้ปุ่มทั้ง ๔ ปิดตัวเองพร้อมบอกเหตุผล ถ้าโมดูลหายไป แทนที่จะกดแล้วเงียบ
+
+      ยังไม่ทำ (เป็นการตัดสินใจ ไม่ใช่การข้าม)
+        วงแหวน LIT และ CYB ขยับตามฉากไม่ได้ — domainState('littoral') อ่านจาก littoralState()
+          ซึ่งคำนวณจากคลื่นลมจริงของ Open-Meteo และ domainState('cyber') อ่านจาก cyberState()
+          ซึ่งคำนวณจากฟีดข่าวกรองจริง ทั้งคู่ไม่สนใจค่าที่ setDomain() เขียนลงไป
+          ฉากทั้ง ๔ จึงขับวงแหวน coastal / command / underwater แทน ตามความจริงของท่อข้อมูล
+          ไม่ได้ทำวงแหวนปลอมขึ้นมาให้ขยับ ซึ่งจะขัดหลัก "SIM ซื่อสัตย์"
+        ฉาก GREY ทั้งสามตั้ง classified:false ไว้ จึงไม่ถูกยิงอัตโนมัติภายใต้ ROE ระดับ TIGHT
+          ซึ่งเป็นค่าตั้งต้น · ถ้าผู้ฝึกผ่อน ROE ลงเอง เป้าเหล่านี้จะกลายเป็นเป้ายิงได้
+          นั่นคือพฤติกรรมที่ตั้งใจ — บทเรียนของฉาก GREY คือราคาของการผ่อนกฎ ไม่ใช่การกันไว้ไม่ให้เกิด
+        เส้นทางการยิงจริงของฉากฝูงเรือเล็ก (WTA · การใช้กระสุน) ยังไม่ได้ทดสอบในรอบนี้
+          เพราะสภาพแวดล้อมตรวจสอบเป็นแท็บที่ถูกซ่อน requestAnimationFrame จึงหยุดเดิน
+          และไม่มีเรือตรวจการณ์ถูกวางกำลัง (patrolVessels ว่าง) · ที่ยืนยันแล้วคือฉากรายงาน
+          ผลตามที่วัดได้จริง (ทำลาย ๐/๕ · ยิง ๐ ชุด) ไม่ได้แต่งผลลัพธ์ขึ้นมา
+          ต้องเปิดหน้าจอจริงแล้วกดวางกำลังก่อน จึงจะทดสอบเส้นทางการยิงได้
+
   · [v17.36.0] SCENARIO INJECT — ยกเครื่องแผงจำลองภัยคุกคาม (P6-A ถึง P6-C)
       ผู้ใช้สรุปอาการไว้สามข้อ: "เหมือนจับปุ่มต่างๆ ยัดใส่" · "ขนาดใหญ่เล็ก สีสันต่างๆ กัน" ·
       "เหมือนมี case ไม่ครบถ้วนเลย" ตรวจแล้วทั้งสามข้อเป็นอาการของโรคเดียวกัน คือแผงนี้
@@ -1400,12 +1447,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.36.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.37.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.36.0';
+        const APP_VERSION = '17.37.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -9134,7 +9181,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.36.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.37.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9604,7 +9651,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.36.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.37.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9622,7 +9669,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.36.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.37.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -10595,7 +10642,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.36.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.37.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -10735,7 +10782,7 @@ window.udcHdrAnchor = udcHdrAnchor;
              และเป็นสมาชิกใน MAP ของ UDCThreatChoreo (P4) ห้ามเปลี่ยน -->
         <div class="panel" id="redforce-panel" style="--dc:var(--red);">
             <div class="panel-title" style="color:var(--dc);"><svg class="ico" aria-hidden="true"><use href="#i-swords"/></svg> Scenario Inject</div>
-            <div class="panel-sub">คลังสถานการณ์ฝึก ๑๗ ฉาก — มีทั้งที่เป็นภัยและไม่ใช่ภัย</div>
+            <div class="panel-sub">คลังสถานการณ์ฝึก ๒๑ ฉาก — มีทั้งที่เป็นภัยและไม่ใช่ภัย</div>
 
             <!-- แท็บจำแนกฝ่าย — ใช้ค่า recognition ของหลักนิยมที่ทุกเป้าในระบบมีอยู่แล้ว
                  ไม่ได้สร้างการจัดหมวดใหม่ขึ้นมาซ้อน -->
@@ -10758,7 +10805,7 @@ window.udcHdrAnchor = udcHdrAnchor;
                 <button type="button" class="si-dchip" data-dfil="C2"  aria-pressed="false" onclick="siFilterDom(this)" title="การบังคับบัญชาและควบคุม">C2</button>
             </div>
 
-            <div class="si-count" id="siCount">แสดง ๑๗ จาก ๑๗ ฉาก</div>
+            <div class="si-count" id="siCount">แสดง ๒๑ จาก ๒๑ ฉาก</div>
 
             <div class="si-list" id="siList">
                 <!-- ── ใต้น้ำ ── -->
@@ -10840,6 +10887,27 @@ window.udcHdrAnchor = udcHdrAnchor;
                     <svg class="ico si-ico" aria-hidden="true"><use href="#i-zap"/></svg>
                     <span class="si-body"><span class="si-name">ไซเบอร์-กายภาพผสม</span><span class="si-desc">ทำเซนเซอร์บอดด้วยไซเบอร์ แล้วส่ง UUV เข้าจริง — เข้าเกณฑ์กฎ R6 ภัยผสม</span></span>
                     <span class="si-dom" title="ไซเบอร์ + ใต้น้ำ">MULTI</span>
+                </button>
+                <!-- ── ชายฝั่ง · ก้นทะเล · การบังคับบัญชา [P6-D v17.37.0] ── -->
+                <button type="button" class="si-card" style="--si:var(--sym-hostile);" data-key="swarm-skiff" data-rec="RED" data-dom="LIT" data-mod="litc2" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-waves"/></svg>
+                    <span class="si-body"><span class="si-name">ฝูงเรือเล็กความเร็วสูงประชิดฝั่ง</span><span class="si-desc">๕ ลำ ติดอาวุธ แยกตัวเข้าหาเป้าหมาย — เป้ามากกว่าผู้ยิง</span></span>
+                    <span class="si-dom">LIT</span>
+                </button>
+                <button type="button" class="si-card" style="--si:var(--sym-greyzone);" data-key="lit-landing" data-rec="GREY" data-dom="LIT" data-mod="litc2" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-anchor"/></svg>
+                    <span class="si-body"><span class="si-name">เรือยางลอบขึ้นฝั่ง</span><span class="si-desc">ไม่มี AIS มีคน ๖–๘ คน — คำตอบคือกฎหมาย ไม่ใช่อาวุธ</span></span>
+                    <span class="si-dom">LIT</span>
+                </button>
+                <button type="button" class="si-card" style="--si:var(--sym-greyzone);" data-key="cable-tap" data-rec="GREY" data-dom="SUR SEA" data-mod="litc2" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-ear"/></svg>
+                    <span class="si-body"><span class="si-name">ดักสัญญาณบนสายเคเบิลใต้น้ำ</span><span class="si-desc">เรือ "วิจัย" วางอุปกรณ์โดยไม่ตัดสาย — จับแล้วเสียข่าวกรอง</span></span>
+                    <span class="si-dom" title="ผิวน้ำ + พื้นท้องทะเล">MULTI</span>
+                </button>
+                <button type="button" class="si-card" style="--si:var(--sym-greyzone);" data-key="c2-datalink" data-rec="GREY" data-dom="C2" data-mod="litc2" onclick="siRun(this)">
+                    <svg class="ico si-ico" aria-hidden="true"><use href="#i-link"/></svg>
+                    <span class="si-body"><span class="si-name">ลิงก์ข้อมูลยุทธวิธีขาด</span><span class="si-desc">ไม่มีหมุดบนแผนที่ — ต้องไล่ผังความผิดพลาดก่อนสรุปว่าถูกโจมตี</span></span>
+                    <span class="si-dom">C2</span>
                 </button>
                 <!-- ── ไม่ใช่ภัย — ใช้ทดสอบการแยกแยะ ซึ่งเป็นแก่นของการรู้สถานการณ์ทางทะเล ── -->
                 <button type="button" class="si-card" style="--si:var(--sym-partner);" data-key="singsiam" data-rec="WHITE" data-dom="SUR C2" data-mod="singsiam" onclick="siRun(this)">
@@ -30061,6 +30129,56 @@ const BRIEFINGS = {
         ],
         footer: '✔ NOT A THREAT — สิทธิทำกินโดยชอบด้วยกฎหมาย',
     },
+
+    // ── P6-D · โดเมนที่เคยผอม: LITTORAL · SEABED · COMMAND C2 ──────
+    'swarm-skiff': {
+        header: 'HOSTILE — SMALL BOAT SWARM (LITTORAL)',
+        color: '#ff4136',                       // --sym-hostile
+        rows: [
+            ['ประเภทเป้า',  'เรือเล็กความเร็วสูงติดอาวุธเบา ๕ ลำ มีคนบังคับ แยกตัวเข้าหาเป้าหมาย'],
+            ['แกนรู้จำ',    'GREY → RED — เรดาร์เห็นเร็วแต่ยังไม่รู้เจตนา ยืนยันด้วย EO/IR'],
+            ['แกนมิติ',     'LITTORAL — แนวน้ำตื้นชายฝั่ง เวลาตอบสนองสั้นกว่าทะเลเปิดมาก'],
+            ['โจทย์จริง',   'เป้ามากกว่าผู้ยิง — ต้องเรียงลำดับเป้าและยอมรับว่าอาจปล่อยบางลำ'],
+            ['ROE',          'WEAPONS FREE หลังยืนยัน RED · วัดผลจากการรบจริง ไม่ใช่ผลที่เขียนไว้'],
+        ],
+        footer: '⚠ เป้ามากกว่าผู้ยิง — การเลือกคือการรบ',
+    },
+    'lit-landing': {
+        header: 'GREY-ZONE — CLANDESTINE SHORE LANDING',
+        color: '#cbd5e1',                       // --sym-greyzone
+        rows: [
+            ['ประเภทเป้า',  'เรือยางท้องแข็ง ไม่มี AIS ไม่มีไฟเดินเรือ มีคน ๖–๘ คน'],
+            ['แกนรู้จำ',    'GREY ตลอดฉาก — ไม่มีอาวุธปรากฏ ไม่มีการใช้กำลัง'],
+            ['แกนมิติ',     'LITTORAL — อยู่ในเขตอำนาจบังคับใช้กฎหมายของรัฐชายฝั่ง'],
+            ['เครื่องมือ',  'สิ่งที่ยกระดับคืออำนาจจับกุม (ศรชล./สอ.รฝ.) ไม่ใช่อำนาจการยิง'],
+            ['ROE',          'CHALLENGE → BOARD & SEARCH → DETAIN · ไม่ใช้อาวุธ'],
+        ],
+        footer: '⚖ ภัยชายฝั่งส่วนใหญ่จบด้วยกฎหมาย ไม่ใช่ด้วยอาวุธ',
+    },
+    'cable-tap': {
+        header: 'GREY-ZONE — SUBSEA CABLE TAP',
+        color: '#cbd5e1',                       // --sym-greyzone
+        rows: [
+            ['ประเภทเป้า',  'เรือ "วิจัยสมุทรศาสตร์" วางอุปกรณ์ดักสัญญาณบนสายเคเบิล (ไม่ตัดสาย)'],
+            ['แกนรู้จำ',    'WHITE → GREY — ไม่ยกระดับเป็น RED โดยเจตนา'],
+            ['แกนมิติ',     'SURFACE (เรือ) + SEABED (อุปกรณ์บนสาย)'],
+            ['ต่างจากฉากตัดสาย','ตัดสาย = เสียหายแล้ว ต้องหยุด · ดักสาย = จับแล้วเสียข่าวกรอง'],
+            ['ROE',          'ไม่ลงมือ · เก็บหลักฐาน ย้ายการจราจรสำคัญ เข้ารหัสชั้นบน เฝ้าจุดนั้น'],
+        ],
+        footer: '◎ การไม่ลงมืออย่างมีเจตนา ก็เป็นการตัดสินใจ',
+    },
+    'c2-datalink': {
+        header: 'GREY-ZONE — TACTICAL DATA LINK DENIAL',
+        color: '#cbd5e1',                       // --sym-greyzone
+        rows: [
+            ['ประเภทเป้า',  'ลิงก์ข้อมูลยุทธวิธีขาดกับหน่วยในทะเล ๓ หน่วย — ไม่มีหมุดบนแผนที่'],
+            ['แกนรู้จำ',    'GREY — รบกวนโดยเจตนา "น่าจะใช่" ยังชี้ตัวผู้สั่งการไม่ได้'],
+            ['แกนมิติ',     'COMMAND C2 — ภัยต่อการบัญชาการไม่มีรูปร่างให้ยิง'],
+            ['ผังความผิดพลาด','อุปกรณ์ฝ่ายเรา → สภาพบรรยากาศ → ความแออัดของคลื่น → จึงเหลือการรบกวน'],
+            ['ROE',          'ไม่มีเหตุใช้อาวุธ · สลับช่องทาง ยอมรับภาพที่ด้อยลง เก็บหลักฐานชี้ตัว'],
+        ],
+        footer: '⚠ ลิงก์ขาด ≠ ถูกโจมตีเสมอ — ต้องพิสูจน์ ไม่ใช่เดา',
+    },
 };
 
 // ── showBriefing: แสดง Scenario Briefing overlay ────────────────
@@ -47559,6 +47677,422 @@ window.MDA.FisherMSP = (function(){
 </script>
 <!-- ════════════════════ END PHASE 3 ════════════════════ -->
 
+<!-- ════════════════ LITTORAL / C2 SCENARIOS  (P6-D · v17.37.0) ════════════════
+     เติมฉากให้โดเมนที่ผอมที่สุดสามโดเมน — LITTORAL (ฝั่ง-ชายฝั่ง) · SEABED (ก้นทะเล)
+     · COMMAND C2 (บัญชาการ) ก่อนหน้านี้ LIT มีฉากเดียว C2 มีฉากเดียว และทั้งสอง
+     โดเมนไม่มีฉากที่เป็น "ภัย" เลย ทั้งที่เป็นสองโดเมนที่กองทัพเรือใช้งานหนักที่สุด
+
+     ตัวกรองที่ใช้เลือกฉาก (เกณฑ์เดียวกับแผนสายตาถึงอาวุธ v17.20–17.23) :
+       ฉากจะถูกเพิ่มก็ต่อเมื่อมัน "เปลี่ยนคำตัดสินใจของผู้บังคับบัญชา" ไม่ใช่เพิ่มหมุดบนจอ
+
+       ๑ swarm-skiff  ฝูงเรือเล็กประชิดฝั่ง — บังคับให้ต้อง "เรียงลำดับเป้า" ของจริง
+                      เพราะจำนวนเป้ามากกว่าจำนวนผู้ยิง ผลลัพธ์จึงวัดจากการรบจริง
+       ๒ lit-landing  เรือยางลอบขึ้นฝั่ง — คำตอบคือการบังคับใช้กฎหมาย ไม่ใช่อาวุธ
+       ๓ cable-tap    ดักสัญญาณบนสายเคเบิล — เป็น "ภาพสะท้อนกลับด้าน" ของฉาก
+                      เรือประมงพราง AIS: การตัดสาย = ความเสียหายเกิดแล้ว ต้องลงมือ
+                      แต่การดักฟังที่เรา "รู้ตัว" คือทรัพย์สินทางข่าวกรอง ห้ามลงมือ
+       ๔ c2-datalink  ลิงก์ข้อมูลยุทธวิธีขาด — สาเหตุกำกวมตั้งแต่ต้น ฝึกไม่ให้ด่วนสรุป
+                      ว่า "ถูกโจมตี" ฉากนี้ไม่สร้างหมุดบนแผนที่เลยแม้แต่จุดเดียว
+
+     สถาปัตยกรรม — ไม่แตะ launchScenario() :
+       โมดูลนี้ "ห่อ" window.__p3HandleScenario ตัวเดิม (ลองของตัวเองก่อน ไม่ใช่ก็ส่งต่อ
+       ให้ตัวเดิม) จึงต่อท้ายกันได้เรื่อย ๆ โดยไม่ต้องแก้ตัวส่งงานกลางที่บรรทัด ~29201
+       สคริปต์นี้เป็น classic script จึงมองเห็น threats / T / UDC / patrolVessels ที่
+       ประกาศเป็น let/const ระดับบนสุดของสคริปต์ก่อนหน้าได้ตามขอบเขตของสคริปต์
+
+     สีทุกจุดในไฟล์นี้คัดค่ามาจากโทเคน --sym-* ตรง ๆ (TOK-3 ตัดสินใจไม่สร้างสะพาน
+     โทเคนฝั่ง JS ไว้แล้ว) จึงต้อง "เท่ากันโดยการสร้าง" กับค่าใน :root เสมอ
+     ════════════════════════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+    'use strict';
+
+    /* ── สีที่ใช้ — ต้องเท่ากับโทเคนใน :root เสมอ ─────────────────────────── */
+    var C_HOSTILE = '#ff4136';   // --sym-hostile
+    var C_GREY    = '#cbd5e1';   // --sym-greyzone
+    var C_OK      = '#39ff14';   // --sym-friendly
+    var C_WARN    = '#fbbf24';   // --sym-hostile-u (โทนเตือน เดียวกับที่ฉากเดิมใช้)
+
+    /* ── ตัวห่อบางๆ ให้ล้มแล้วไม่พังทั้งหน้า ─────────────────────────────── */
+    function _T(ms, fn) { if (typeof T === 'function') T(ms, fn); else setTimeout(fn, ms); }
+    function _log(m, c) { try { addLog(m, c); } catch (_) {} }
+    function _st(h, c)  { try { updateStatus(h, c); } catch (_) {} }
+    function _dom(k, s) { try { setDomain(k, s); } catch (_) {} }
+    function _sen(i, t, c) { try { setSensor(i, t, c); } catch (_) {} }
+    function _rmp()     { try { if (window.__rmp && window.__rmp.refresh) window.__rmp.refresh(); } catch (_) {} }
+    function _out(o)    { try { showOutcome(o); } catch (_) {} }
+    function _ended()   { try { return !!missionEnded; } catch (_) { return false; } }
+    function _push(t)   { try { threats.push(t); } catch (_) {} return t; }
+
+    /* จุดขึ้นบกของสายเคเบิล — ใช้เป็นหมุดอ้างอิงของโดเมนชายฝั่ง */
+    function landPt() {
+        return { nx: (LAND_LNG - LNG_LEFT) / (LNG_RIGHT - LNG_LEFT),
+                 ny: (LAT_TOP  - LAND_LAT) / (LAT_TOP  - LAT_BOT) };
+    }
+    function hdgTo(nx, ny, tx, ty) {
+        return Math.round((Math.atan2(tx - nx, -(ty - ny)) * 180 / Math.PI + 360) % 360);
+    }
+    function dist(ax, ay, bx, by) { var dx = ax - bx, dy = ay - by; return Math.sqrt(dx * dx + dy * dy); }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       ๑ · ฝูงเรือเล็กความเร็วสูงประชิดฝั่ง  (LITTORAL · RED)
+       ────────────────────────────────────────────────────────────────────────
+       ห้าลำ มีคนบังคับ ติดอาวุธเบา แยกกันวิ่งเข้าหา UDC จากแนวน้ำตื้นทางใต้
+       เป้ามากกว่าผู้ยิง — ฉากนี้จึงไม่ได้ "เขียนผลลัพธ์ไว้ล่วงหน้า" แต่ปล่อยให้
+       เครื่องจัดเป้ารวมศูนย์ (updateWTA) กับบัญชีกระสุนตัดสิน แล้วรายงานตามที่วัดได้
+       ถ้ามีลำใดหลุดเข้าถึง UDC ระบบตรวจภารกิจล้มเหลวเดิมจะทำงานเองที่ระยะ 0.40 nm
+       ════════════════════════════════════════════════════════════════════════ */
+    function runSwarmSkiff() {
+        var N = 5, boats = [], i;
+        var baseNx = UDC.nx - 0.10, baseNy = UDC.ny + 0.21;   // ~0.23 หน่วย ≈ นอกวง MEZ เล็กน้อย
+        for (i = 0; i < N; i++) {
+            var s  = (i - (N - 1) / 2);
+            var nx = baseNx + s * 0.035;
+            var ny = baseNy + s * 0.012;
+            boats.push(_push({
+                type: 'surface', nx: nx, ny: ny, tnx: UDC.nx, tny: UDC.ny,
+                color: C_GREY, speed: 0.00055, active: true, frozen: false,
+                classified: false, detained: false,
+                recognition: 'GREY',        // เรดาร์เห็นทันที แต่ยังไม่รู้เจตนา
+                crewing: 'MANNED',
+                label: 'SKIFF-' + (i + 1), spd: 32,
+                hdg: hdgTo(nx, ny, UDC.nx, UDC.ny), trail: [], scAlerted: false
+            }));
+        }
+
+        /* จับค่าตั้งต้นของสถิติการยิง เพื่อรายงาน "เฉพาะรอบนี้" ไม่ใช่ยอดสะสมทั้งเซสชัน */
+        var base = { salvos: 0, kills: 0, rounds: 0 };
+        try { if (typeof wtaStats !== 'undefined') base = { salvos: wtaStats.salvos, kills: wtaStats.kills, rounds: wtaStats.rounds }; } catch (_) {}
+
+        _T(800, function () {
+            _log('[Coastal Radar] เป้าผิวน้ำเล็ก ๕ เป้า เรียงหน้ากระดาน ความเร็ว ~32 kt · ไม่มี AIS | 🟡 GREY', 'var(--warn-hi)');
+            _dom('coastal', 'warn');
+            _sen('cs-radar', 'SWARM · 5 CONTACTS', 's-warn');
+            _sen('cs-guard', 'ALERT', 's-warn');
+            _rmp();
+            _st('[RADAR] <span class="dot dot--warn"></span> GREY — เป้าเล็ก ๕ เป้า เข้าจากแนวน้ำตื้น<br>[LITTORAL] เวลาตอบสนองสั้น ระยะประชิด<br>[ROE] DETECT → TRACK', C_GREY);
+        });
+
+        _T(3000, function () {
+            boats.forEach(function (b) { if (b.active) { b.recognition = 'RED'; b.classified = true; b.color = C_HOSTILE; b.speed = 0.00072; } });
+            _log('[EO/IR] เห็นลูกเรือบนหัวเรือทุกลำ · ติดอาวุธเบา/จรวดต่อสู้รถถัง · แยกตัวกระจายเข้าหา UDC', 'var(--red)');
+            _log('[RMP] ✋ ยืนยัน HOSTILE → 🔴 RED (๕ เป้า มีคนบังคับ) | WCS: FREE', 'var(--red)');
+            _dom('coastal', 'crit'); _dom('command', 'warn');
+            _sen('as-patrol', 'WEAPONS FREE', 's-alert');
+            _rmp();
+            _st('<span class="dot dot--crit"></span> [RMP] RED — ฝูงเรือเล็กติดอาวุธ ๕ ลำ<br>[WCS] FREE — ยิงได้<br>[WTA] เป้ามากกว่าผู้ยิง — ต้องเรียงลำดับ', C_HOSTILE);
+        });
+
+        /* T~6s — ชี้ให้เห็น "ช่องโหว่" ที่วัดได้จริง ไม่ใช่ข้อความประดับ */
+        _T(6000, function () {
+            if (_ended()) return;
+            var gap = 0, shooters = 0;
+            try { gap = boats.filter(function (b) { return b.active && b.wtaGap; }).length; } catch (_) {}
+            try { shooters = patrolVessels.filter(function (v) { return !pvOffStation(v) && !v.winchester; }).length; } catch (_) {}
+            if (gap > 0) {
+                _log('[WTA] ⚠ ไม่มีผู้ยิงว่างสำหรับ ' + gap + ' เป้า ที่ยังวิ่งเข้าหา UDC — นี่คือช่องโหว่จริง ไม่ใช่ความล่าช้า', 'var(--red)');
+                _st('<svg class="ico" aria-hidden="true"><use href="#i-triangle-alert"/></svg> [WTA] ช่องโหว่ ' + gap + ' เป้า · ผู้ยิงในสมการ ' + shooters + ' ลำ<br>[LITTORAL] ระยะสั้น = โอกาสยิงซ้ำมีน้อย<br>[DECISION] เลือกว่าจะปล่อยเป้าไหน', C_HOSTILE);
+            } else {
+                _log('[WTA] จัดเป้าครบทุกลำ — ผู้ยิงในสมการ ' + shooters + ' ลำ · เฝ้าอัตราสิ้นเปลืองกระสุน', 'var(--amber)');
+                _st('[WTA] จัดเป้าครบ · ผู้ยิง ' + shooters + ' ลำ<br>[AMMO] ระยะประชิด — ยิงถี่ สิ้นเปลืองเร็ว<br>[ROE] ENGAGE ต่อเนื่อง', C_WARN);
+            }
+        });
+
+        /* T~14s — สรุปจาก "ผลการรบที่วัดได้" ล้วน ๆ (SIM ซื่อสัตย์ — ไม่เขียนผลไว้ก่อน) */
+        _T(14000, function () {
+            if (_ended()) return;                       // ถ้ามีลำหลุดถึง UDC ระบบเดิมสรุปให้แล้ว
+            var alive = boats.filter(function (b) { return b.active && !b.detained; }).length;
+            var killed = N - alive;
+            var salvos = 0, kills = 0, rounds = 0;
+            try { if (typeof wtaStats !== 'undefined') { salvos = wtaStats.salvos - base.salvos; kills = wtaStats.kills - base.kills; rounds = wtaStats.rounds - base.rounds; } } catch (_) {}
+            var win = (alive === 0);
+            _dom('coastal', win ? 'ok' : 'crit'); _dom('command', win ? 'ok' : 'warn');
+            _sen('cs-radar', win ? 'ACTIVE' : 'SWARM INBOUND', win ? '' : 's-alert');
+            _sen('cs-guard', win ? 'READY' : 'ALERT', win ? '' : 's-warn');
+            _sen('as-patrol', win ? 'ON PATROL' : 'ENGAGED', win ? '' : 's-alert');
+            _rmp();
+            _out({
+                result: win ? '✓ SWARM ELIMINATED — ทำลายครบทุกลำ'
+                            : '⚠ LEAKER — ยังเหลือ ' + alive + ' ลำ วิ่งเข้าหา UDC',
+                color: win ? C_OK : C_WARN,
+                rows: [
+                    ['ภัยคุกคาม',  'ฝูงเรือเล็กความเร็วสูงติดอาวุธ ๕ ลำ (มีคนบังคับ)'],
+                    ['แกนรู้จำ',   'GREY → RED (ยืนยันด้วย EO/IR เห็นลูกเรือและอาวุธ)'],
+                    ['แกนมิติ',    'LITTORAL — แนวน้ำตื้นชายฝั่ง ระยะประชิด'],
+                    ['ผลการรบ',    'ทำลาย ' + killed + ' / ' + N + ' ลำ · ยิง ' + salvos + ' ชุด (' + rounds + ' นัด) · โดน ' + kills + ' ครั้ง'],
+                    ['บทเรียน',    win
+                        ? 'ชนะเพราะเรียงลำดับเป้าทัน — ในน้ำตื้นเวลาตัดสินใจสั้นกว่าทะเลเปิดมาก'
+                        : 'เป้ามากกว่าผู้ยิง = ต้องเลือกว่าจะปล่อยลำไหน · เพิ่มผู้ยิงหรือยิงให้เร็วขึ้น']
+                ]
+            });
+            _T(6000, function () {
+                boats.forEach(function (b) { if (b.active) { b.tnx = b.nx + 0.25; b.tny = b.ny + 0.25; b.speed = 0.0007; } });
+                _T(4000, function () { boats.forEach(function (b) { b.active = false; }); _rmp(); });
+            });
+        });
+        return true;
+    }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       ๒ · เรือยางลอบขึ้นฝั่ง  (LITTORAL · GREY)
+       ────────────────────────────────────────────────────────────────────────
+       ลำเดียว เครื่องยนต์ท้ายเรือ ไม่มี AIS วิ่งกลางคืนเข้าหาแนวหาดใกล้สถานีขึ้นบก
+       คำตอบที่ถูกคือ "บังคับใช้กฎหมาย" ไม่ใช่อาวุธ — จึงคง classified = false ตลอด
+       ภายใต้ ROE ตั้งต้น TIGHT เรือลำนี้จะไม่ถูกเครื่องยิงอัตโนมัติเลือกเป็นเป้า
+       และหมุดหมายถูกวางไว้ห่างจุดขึ้นบกราว 0.65 nm จึงไม่ไปชนกติกาภารกิจล้มเหลว
+       ════════════════════════════════════════════════════════════════════════ */
+    function runLitLanding() {
+        var land = landPt();
+        var hold = { nx: land.nx + 0.025, ny: land.ny + 0.006 };   // จุดลอยลำนอกฝั่ง ~0.65 nm
+        var sNx = land.nx + 0.20, sNy = land.ny + 0.115;
+        var t = _push({
+            type: 'surface', nx: sNx, ny: sNy, tnx: hold.nx, tny: hold.ny,
+            color: C_GREY, speed: 0.00050, active: true, frozen: false,
+            classified: false, detained: false,
+            recognition: 'GREY',
+            crewing: 'MANNED',
+            label: 'RADAR-ONLY · SMALL CRAFT', spd: 18,
+            hdg: hdgTo(sNx, sNy, hold.nx, hold.ny), trail: [], scAlerted: false
+        });
+
+        _T(700, function () {
+            _log('[Coastal Radar] เป้าผิวน้ำเล็กมาก RCS ต่ำ ~18 kt · ไม่มี AIS ไม่มีไฟเดินเรือ | 🟡 GREY', 'var(--warn-hi)');
+            _dom('coastal', 'warn');
+            _sen('cs-radar', 'SMALL CONTACT', 's-warn');
+            _rmp();
+            _st('[RADAR] <span class="dot dot--warn"></span> GREY — เป้าเล็กมาก ไม่มี AIS<br>[LITTORAL] เส้นทางมุ่งแนวหาด ไม่ใช่ร่องน้ำประมง<br>[ROE] MONITOR — ยังไม่มีเหตุใช้อาวุธ', C_GREY);
+        });
+
+        _T(3200, function () {
+            _log('[EO/IR·Thermal] เห็นคน ๖–๘ คนบนเรือยางท้องแข็ง · ไม่มีอุปกรณ์ประมงบนดาดฟ้า', 'var(--amber)');
+            _log('[MDA] รูปแบบตรงกับการลักลอบขึ้นฝั่ง — ยังไม่ใช่การใช้กำลัง ยังไม่มีอาวุธปรากฏ', 'var(--amber)');
+            _sen('cs-optical', 'TRACKING', 's-warn');
+            _sen('cs-hydro', 'OUTBOARD SIG', 's-warn');
+            _rmp();
+            _st('<svg class="ico" aria-hidden="true"><use href="#i-eye"/></svg> [EO/IR] คน ๖–๘ คน ไม่มีอุปกรณ์ประมง<br>[กฎหมาย] เข้าข่ายเข้าเมือง/ศุลกากร ไม่ใช่ภัยทางทหาร<br>[ROE] ยังคง MONITOR', C_WARN);
+        });
+
+        _T(6400, function () {
+            _log('[ROE·CHALLENGE] 📻 เรียกทางวิทยุช่อง 16 และไฟฉายสัญญาณ — ไม่ตอบ แต่ไม่เร่งความเร็วหนี', 'var(--amber)');
+            _log('[C2] ไม่เข้าเงื่อนไขใช้อาวุธ — สิ่งที่ยกระดับคือ "อำนาจจับกุม" ไม่ใช่ "อำนาจการยิง"', 'var(--amber)');
+            _dom('command', 'warn');
+            var pv = null; try { pv = closestPatrol(t.nx, t.ny); } catch (_) {}
+            if (pv) { pv.redirected = true; pv.redirectTarget = { nx: t.nx - 0.03, ny: t.ny - 0.02 }; }
+            _sen('cs-guard', 'INTERCEPT', 's-warn');
+            _st('<svg class="ico" aria-hidden="true"><use href="#i-radio"/></svg> [CHALLENGE] ไม่ตอบวิทยุ · ไม่หลบหนี<br>[สอ.รฝ.] ชุดตรวจการณ์ชายฝั่งเข้าสกัด<br>[ROE] BOARD & SEARCH — ไม่ใช้อาวุธ', C_WARN);
+        });
+
+        _T(9600, function () {
+            t.frozen = true; t.detained = true; t.speed = 0;
+            try { if (typeof addCaptureEffect === 'function') addCaptureEffect(t.nx, t.ny); } catch (_) {}
+            _log('[ROE·DETAIN] ⚓ เรือตรวจการณ์ + ชุด สอ.รฝ. เข้าควบคุมเรือยาง — ตรวจค้นและควบคุมตัว', C_OK);
+            _rmp();
+            _st('<svg class="ico" aria-hidden="true"><use href="#i-anchor"/></svg> [DETAIN] ควบคุมเรือยางได้นอกฝั่ง<br>[ศรชล.] รับช่วงดำเนินคดีตามกฎหมาย<br>[ผล] ไม่มีการใช้อาวุธ ไม่มีผู้บาดเจ็บ', C_OK);
+        });
+
+        _T(13000, function () {
+            if (_ended()) return;
+            _dom('coastal', 'ok'); _dom('command', 'ok');
+            _sen('cs-radar', 'ACTIVE', ''); _sen('cs-optical', 'STANDBY', '');
+            _sen('cs-hydro', 'ONLINE', ''); _sen('cs-guard', 'READY', '');
+            _rmp();
+            _out({
+                result: '✓ ROE COMPLETE — ควบคุมได้โดยไม่ใช้อาวุธ',
+                color: C_OK,
+                rows: [
+                    ['เหตุการณ์',  'เรือยางท้องแข็ง ลักลอบเข้าหาแนวหาดใกล้สถานีขึ้นบกสายเคเบิล'],
+                    ['แกนรู้จำ',   'GREY ตลอดฉาก — ไม่เคยยกระดับเป็น RED และไม่ควรยกระดับ'],
+                    ['แกนมิติ',    'LITTORAL — เขตน้ำตื้น อยู่ในเขตอำนาจบังคับใช้กฎหมายของรัฐ'],
+                    ['เครื่องมือ', 'สิ่งที่ยกระดับคืออำนาจจับกุม (ศรชล./สอ.รฝ.) ไม่ใช่อำนาจการยิง'],
+                    ['บทเรียน',    'ภัยชายฝั่งส่วนใหญ่จบด้วยกฎหมาย ไม่ใช่ด้วยอาวุธ — ยิงเร็วเกินคือความล้มเหลว']
+                ]
+            });
+            _T(5000, function () { t.frozen = false; t.tnx = 1.1; t.tny = 1.1; t.speed = 0.0006; _T(4000, function () { t.active = false; _rmp(); }); });
+        });
+        return true;
+    }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       ๓ · เรือ "วิจัยสมุทรศาสตร์" วางอุปกรณ์ดักสัญญาณบนสายเคเบิล  (SUR + SEA · GREY)
+       ────────────────────────────────────────────────────────────────────────
+       จงใจสร้างให้เป็นภาพสะท้อนกลับด้านของฉากเรือประมงพราง AIS :
+         ตัดสาย   = ความเสียหายเกิดแล้ว → ต้องเข้าจับกุม หยุดให้เร็วที่สุด
+         ดักฟัง   = ความเสียหายยัง "ต่อเนื่อง" แต่ถ้าเรารู้ว่ามันอยู่ตรงไหน มันกลายเป็น
+                    ทรัพย์สินของเรา — เข้าจับทันทีคือการทิ้งข่าวกรองและบอกฝ่ายตรงข้าม
+                    ว่าเราตรวจพบ ฉากนี้จึงจบด้วย "ไม่ลงมือ" และนั่นคือคำตอบที่ถูก
+       สายเคเบิลไม่ถูกตัด เรือไม่ถูกจับ — ผู้เล่นที่คุ้นกับฉากภัยจะรู้สึกว่า "ยังไม่จบ"
+       ════════════════════════════════════════════════════════════════════════ */
+    function runCableTap() {
+        var cab = null, mid = null;
+        try {
+            var polys = (typeof _cablePolys === 'function') ? _cablePolys() : [];
+            if (polys.length) { cab = polys[Math.floor(Math.random() * polys.length)]; mid = cab.pts[Math.floor(cab.pts.length / 2)]; }
+        } catch (_) {}
+        if (!mid) mid = { nx: UDC.nx - 0.02, ny: UDC.ny + 0.10 };
+        /* กันจุด loiter ไปตกใกล้ UDC หรือสถานีขึ้นบก จนไปชนกติกาภารกิจล้มเหลวโดยไม่ตั้งใจ */
+        var land = landPt();
+        if (dist(mid.nx, mid.ny, UDC.nx, UDC.ny) < 0.05 || dist(mid.nx, mid.ny, land.nx, land.ny) < 0.05) {
+            mid = { nx: UDC.nx - 0.02, ny: UDC.ny + 0.10 };
+        }
+        var eNx = Math.min(0.95, Math.max(0.05, mid.nx + 0.20));
+        var eNy = Math.min(0.95, Math.max(0.05, mid.ny + 0.14));
+        var t = _push({
+            type: 'surface', nx: eNx, ny: eNy, tnx: mid.nx, tny: mid.ny,
+            color: C_GREY, speed: 0.00080, active: true, frozen: false,
+            classified: false, detained: false,
+            recognition: 'WHITE',
+            crewing: 'MANNED',
+            aisName: 'R/V HAI YANG 26', mmsi: '412xxxxxx',
+            label: 'AIS · R/V HAI YANG 26 (RESEARCH)', spd: 11,
+            hdg: hdgTo(eNx, eNy, mid.nx, mid.ny), trail: [], scAlerted: false, _cableTarget: mid
+        });
+
+        _T(700, function () {
+            _log('[AIS] เรือ "R/V HAI YANG 26" (MMSI 412xxxxxx) — Type: Research/Survey | ⚪ WHITE', 'var(--n-200)');
+            _dom('coastal', 'ok');
+            _rmp();
+            _st('[AIS] <span class="dot dot--neutral"></span> WHITE — เรือสำรวจสมุทรศาสตร์<br>[RMP] แจ้ง AIS ครบ เดินเรือถูกกติกา<br>[ROE] MONITOR — ยังไม่มีเหตุผิดปกติ', C_GREY);
+        });
+
+        _T(3300, function () {
+            t.recognition = 'GREY'; t.speed = 0.00016;
+            _log('[MDA] ⚠ เรือลดความเร็วเหลือเกือบหยุด "ตรงแนวสายเคเบิลพอดี" — ไม่ตรงกับแผนสำรวจที่แจ้งไว้', 'var(--warn-hi)');
+            _log('[RMP] จัดประเภทใหม่ → 🟡 GREY (น่าสงสัย) | ROE: MONITOR + SHADOW (ยังไม่ท้าทาย)', 'var(--warn-hi)');
+            _dom('coastal', 'warn');
+            _rmp();
+            _st('<svg class="ico" aria-hidden="true"><use href="#i-triangle-alert"/></svg> [RMP] <span class="dot dot--warn"></span> GREY — ลอยลำเหนือแนวสาย<br>[SEABED] เฝ้าสัญญาณ DAS ช่วงนี้<br>[ROE] เงียบไว้ก่อน — อย่าเพิ่งท้าทาย', C_WARN);
+        });
+
+        _T(6600, function () {
+            _log('[DAS Tripwire] สัญญาณสั่นสะเทือน "ครั้งเดียวแล้วนิ่ง" ที่ราว ๓๘ ม. — เป็นการวางของ ไม่ใช่การลาก', 'var(--amber)');
+            _log('[MDA] แยกจากฉากลากสมอตัดสาย: การลากให้สัญญาณต่อเนื่องยาว การวางให้สัญญาณสั้นแล้วเงียบ', 'var(--amber)');
+            _dom('underwater', 'warn');
+            _sen('uw-hydro', 'ALERT', 's-warn');
+            _sen('cs-hydro', 'ROV SIGNATURE', 's-warn');
+            _st('<svg class="ico" aria-hidden="true"><use href="#i-volume-2"/></svg> [DAS] สั่นครั้งเดียวแล้วนิ่ง — สงสัยวางอุปกรณ์<br>[ROV] เสียงมอเตอร์ใต้น้ำระยะสั้น<br>[SEABED] สายยังส่งข้อมูลได้ตามปกติ', C_WARN);
+        });
+
+        _T(9800, function () {
+            _log('[SEABED] สายไม่ขาด ปริมาณข้อมูลปกติ แต่พบการรั่วของสัญญาณแสงราว ๐.๓ dB ที่จุดเดียวกัน', 'var(--amber)');
+            _log('[ประเมิน] อุปกรณ์ดักสัญญาณแบบคัปปลิงโค้งงอ (optical tap) — ลอบอ่านโดยไม่ตัดสาย', 'var(--amber)');
+            _dom('command', 'warn');
+            _rmp();
+            _st('<span class="dot dot--warn"></span> [SEABED] สัญญาณรั่ว ๐.๓ dB — สงสัยอุปกรณ์ดักสัญญาณ<br>[C2] ตัดสินใจ: จับ หรือ ปล่อยให้อยู่ในสายตา<br>[คำแนะนำ] อย่าเพิ่งลงมือ', C_WARN);
+        });
+
+        _T(13500, function () {
+            if (_ended()) return;
+            t.recognition = 'GREY'; t.speed = 0.00070; t.tnx = 1.15; t.tny = -0.15;
+            _log('[C2·DECISION] ไม่เข้าจับกุม — บันทึกพิกัด ถ่ายภาพ เก็บหลักฐาน แล้วปล่อยให้เรือออกจากพื้นที่', C_OK);
+            _log('[COMSEC] ย้ายการจราจรสำคัญไปเส้นทางสำรอง + เข้ารหัสชั้นบนสายที่ถูกดัก (ยังใช้สายเดิมต่อไป)', C_OK);
+            _dom('coastal', 'ok'); _dom('underwater', 'ok'); _dom('command', 'ok');
+            _sen('uw-hydro', 'ONLINE', ''); _sen('cs-hydro', 'ONLINE', '');
+            _rmp();
+            _out({
+                result: '◎ COUNTER-INTELLIGENCE — เลือก "ไม่ลงมือ" อย่างมีเจตนา',
+                color: C_GREY,
+                rows: [
+                    ['เหตุการณ์',  'เรือสำรวจวางอุปกรณ์ดักสัญญาณบนสายเคเบิลใต้น้ำ (ไม่ตัดสาย)'],
+                    ['แกนรู้จำ',   'WHITE → GREY — ไม่ยกระดับเป็น RED เพราะยังไม่ต้องการให้เขารู้ว่าเรารู้'],
+                    ['แกนมิติ',    'SURFACE (เรือ) + SEABED (อุปกรณ์บนสาย)'],
+                    ['สิ่งที่ทำ',  'บันทึกหลักฐาน · ย้ายการจราจรสำคัญ · เข้ารหัสชั้นบน · เฝ้าจุดนั้นต่อ'],
+                    ['บทเรียน',    'ตัดสาย = ต้องหยุดทันที · ดักสาย = การเข้าจับคือการทิ้งข่าวกรอง ทางเลือกไม่เท่ากัน']
+                ]
+            });
+            _T(6000, function () { t.active = false; _rmp(); });
+        });
+        return true;
+    }
+
+    /* ════════════════════════════════════════════════════════════════════════
+       ๔ · ลิงก์ข้อมูลยุทธวิธีขาด  (COMMAND C2 · GREY)
+       ────────────────────────────────────────────────────────────────────────
+       ฉากเดียวในคลังที่ไม่สร้างหมุดบนแผนที่เลย — เพราะภัยต่อการบัญชาการไม่มีรูปร่าง
+       (ทำได้เพราะ v17.36.0 แก้ live() ให้เทียบจากชนิดฉากที่กำลังเดิน ไม่ใช่จากหมุด)
+       แก่นของฉาก: สาเหตุกำกวมตั้งแต่ต้น ต้องไล่ผังความผิดพลาดให้ครบก่อนจึงสรุปได้
+       "ลิงก์ขาด ≠ ถูกโจมตี" ทุกครั้ง — และเมื่อพิสูจน์ได้ว่าถูกรบกวนจริง คำตอบก็ยัง
+       ไม่ใช่อาวุธ แต่คือการชี้ตัวผู้กระทำ + เปลี่ยนช่องทาง + ยอมรับภาพที่ด้อยลง
+       ════════════════════════════════════════════════════════════════════════ */
+    function runC2Datalink() {
+        _T(900, function () {
+            _log('[TDL] ⚠ ลิงก์ข้อมูลยุทธวิธีขาดกับหน่วยในทะเล ๓ หน่วย — ภาพเป้าหยุดอัปเดต', 'var(--warn-hi)');
+            _dom('command', 'warn');
+            _sen('as-radar', 'NO TDL', 's-warn');
+            _st('<svg class="ico" aria-hidden="true"><use href="#i-triangle-alert"/></svg> [C2] ลิงก์ข้อมูลยุทธวิธีขาด ๓ หน่วย<br>[RMP] ภาพเป้าเริ่มเก่า — ยังไม่ทราบสาเหตุ<br>[คำสั่ง] ห้ามสรุปว่าถูกโจมตี จนกว่าจะไล่สาเหตุครบ', C_WARN);
+        });
+
+        _T(3500, function () {
+            _log('[FAULT TREE ๑/๓] อุปกรณ์ฝ่ายเรา — ตัวส่ง/สายอากาศ/แหล่งจ่ายไฟ ผลตรวจปกติทั้งหมด', 'var(--amber)');
+            _log('[FAULT TREE ๒/๓] สภาพชั้นบรรยากาศ (ducting) — ไม่เข้าเงื่อนไข · เส้นทางอื่นในย่านเดียวกันปกติ', 'var(--amber)');
+            _log('[FAULT TREE ๓/๓] ความแออัดของคลื่นตามปกติ — ไม่พบผู้ใช้รายใหม่ที่ลงทะเบียน', 'var(--amber)');
+            _st('[FAULT TREE] ตัดสาเหตุแล้ว ๓ ข้อ: อุปกรณ์ · อากาศ · ความแออัด<br>[เหลือ] การรบกวนโดยเจตนา — ยังต้องพิสูจน์<br>[C2] ยังไม่ประกาศว่าถูกโจมตี', C_WARN);
+        });
+
+        _T(6800, function () {
+            _log('[ESM] พื้นระดับเสียงรบกวนในย่านลิงก์สูงขึ้น ~14 dB เฉพาะย่านนี้ย่านเดียว', 'var(--red)');
+            _log('[DF] หาทิศได้ ๒ ฐาน ตัดกันที่เรือสินค้าลำหนึ่งซึ่งลอยลำอยู่นอกร่องน้ำมา ๙ ชม.', 'var(--red)');
+            _log('[RMP] 🟡 GREY — เป็นการรบกวนโดยเจตนา "น่าจะใช่" · ยังไม่ยืนยันตัวผู้สั่งการ', 'var(--warn-hi)');
+            _dom('command', 'crit'); _dom('coastal', 'warn');
+            _st('<span class="dot dot--crit"></span> [ESM] เสียงรบกวนเฉพาะย่านลิงก์ +14 dB<br>[DF] ตัดทิศไปที่เรือสินค้าลอยลำ ๙ ชม.<br>[RMP] GREY — รบกวนโดยเจตนา (น่าจะใช่)', C_HOSTILE);
+        });
+
+        _T(9800, function () {
+            _log('[C2·FALLBACK] สลับไปรายงานด้วยเสียงตามรอบ + ลิงก์สำรองความถี่ต่ำ — ภาพเป้ากลับมาแต่ช้าลง', 'var(--amber)');
+            _log('[ผลกระทบ] รอบการตัดสินใจยาวขึ้น — สิ่งที่หายไปคือ "เวลา" ไม่ใช่ "เซนเซอร์"', 'var(--amber)');
+            _dom('command', 'warn');
+            _sen('as-radar', 'DEGRADED', 's-warn');
+            _st('<svg class="ico" aria-hidden="true"><use href="#i-radio"/></svg> [FALLBACK] เสียง + ลิงก์สำรอง — ภาพกลับมาแบบด้อยลง<br>[KILL CHAIN] รอบตัดสินใจยาวขึ้น<br>[ROE] ไม่มีเหตุใช้อาวุธ', C_WARN);
+        });
+
+        _T(13500, function () {
+            if (_ended()) return;
+            _dom('command', 'ok'); _dom('coastal', 'ok');
+            _sen('as-radar', 'ACTIVE', '');
+            _rmp();
+            _out({
+                result: '◎ C2 DEGRADED — พิสูจน์แล้วว่าถูกรบกวน แต่คำตอบไม่ใช่อาวุธ',
+                color: C_GREY,
+                rows: [
+                    ['เหตุการณ์',  'ลิงก์ข้อมูลยุทธวิธีขาด ๓ หน่วย — สาเหตุกำกวมตั้งแต่ต้น'],
+                    ['แกนรู้จำ',   'GREY — รบกวนโดยเจตนา "น่าจะใช่" ยังไม่ถึงขั้นชี้ตัวผู้สั่งการได้'],
+                    ['แกนมิติ',    'COMMAND C2 — ฉากนี้ไม่มีหมุดบนแผนที่แม้แต่จุดเดียว'],
+                    ['สิ่งที่ทำ',  'ไล่ผังความผิดพลาดครบ → ESM+DF ยืนยัน → สลับช่องทาง → เก็บหลักฐานชี้ตัว'],
+                    ['บทเรียน',    'ลิงก์ขาดไม่ได้แปลว่าถูกโจมตีเสมอ · และเมื่อถูกโจมตีจริง สิ่งที่เสียคือเวลา']
+                ]
+            });
+        });
+        return true;
+    }
+
+    /* ── ทะเบียนฉาก + ต่อท้ายตัวส่งงานเดิม (ไม่แตะ launchScenario) ────────── */
+    var MAP = {
+        'swarm-skiff': runSwarmSkiff,
+        'lit-landing': runLitLanding,
+        'cable-tap':   runCableTap,
+        'c2-datalink': runC2Datalink
+    };
+
+    window.MDA = window.MDA || {};
+    window.MDA.LittoralC2 = {
+        keys: Object.keys(MAP),
+        run: function (type) {
+            var fn = MAP[String(type || '').toLowerCase()];
+            if (!fn) return false;
+            try { return !!fn(); } catch (e) { try { addLog('[SIM] ฉาก ' + type + ' ล้มเหลว: ' + e.message, 'var(--red)'); } catch (_) {} return false; }
+        }
+    };
+
+    /* ห่อตัวเดิม: ลองของเราก่อน ไม่ใช่ก็ส่งต่อให้ตัวก่อนหน้า (ต่อกันได้ไม่จำกัดชั้น) */
+    var prev = window.__p3HandleScenario;
+    window.__p3HandleScenario = function (type) {
+        try { if (window.MDA.LittoralC2.run(type)) return true; } catch (_) {}
+        if (typeof prev === 'function') { try { return !!prev(type); } catch (_) {} }
+        return false;
+    };
+})();
+</script>
+<!-- ════════════════ END LITTORAL / C2 SCENARIOS ════════════════ -->
+
 
 <!-- ============ phase4_data.html ============ -->
 <!-- ============================================================================
@@ -52369,7 +52903,9 @@ window.CommandCore = (function () {
         fisher:   { ok: function () { return typeof window.scenarioCommunityFishery === 'function' || !!(window.MDA && window.MDA.FisherMSP); },
                     why: 'โมดูล MDA.FisherMSP ไม่ได้โหลด — ฉากประมงพื้นบ้านใช้ไม่ได้ในหน้านี้' },
         singsiam: { ok: function () { return typeof window.scenarioSingsiam === 'function'; },
-                    why: 'ยังไม่พบฟังก์ชัน scenarioSingsiam — ฉากการฝึกร่วมใช้ไม่ได้ในหน้านี้' }
+                    why: 'ยังไม่พบฟังก์ชัน scenarioSingsiam — ฉากการฝึกร่วมใช้ไม่ได้ในหน้านี้' },
+        litc2:    { ok: function () { return !!(window.MDA && window.MDA.LittoralC2 && typeof window.MDA.LittoralC2.run === 'function'); },
+                    why: 'โมดูล MDA.LittoralC2 ไม่ได้โหลด — ฉากชายฝั่ง/ก้นทะเล/การบังคับบัญชาใช้ไม่ได้ในหน้านี้' }
     };
 
     function probe() {
