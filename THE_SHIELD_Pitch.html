@@ -38,7 +38,7 @@
 
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Saira:wght@300;400;500;600;700;800&family=Prompt:wght@200;300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Saira:wght@300;400;500;600;700;800&family=Prompt:wght@300;400;500;600;700&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
 
@@ -109,11 +109,11 @@
 
   --aurora-cyan:rgba(0,212,255,.05);
 
-  --f-disp:'Saira','Prompt',system-ui,sans-serif;
+  --f-disp:'Saira','Prompt','Sarabun',system-ui,-apple-system,sans-serif;
 
-  --f-body:'Prompt','Saira',system-ui,sans-serif;
+  --f-body:'Prompt','Sarabun','TH Sarabun New',system-ui,-apple-system,sans-serif;
 
-  --f-mono:'Share Tech Mono','Courier New',monospace;
+  --f-mono:'JetBrains Mono','Share Tech Mono',monospace;
 
 }
 
@@ -5071,7 +5071,7 @@ html{background:var(--bg-dark)}
 
       <div class="sim-stat rv rv-d1"><div class="n" data-to="18" data-tpl="{n}">18</div><div class="l"><span class="lang-th">แหล่งข้อมูลจริงเรียลไทม์</span><span class="lang-en">Real-time Data Sources</span></div></div>
 
-      <div class="sim-stat rv rv-d2"><div class="n" data-to="8" data-tpl="{n}">8</div><div class="l"><span class="lang-th">โมเดล AI (LLM)</span><span class="lang-en">AI Models (LLM)</span></div></div>
+      <div class="sim-stat rv rv-d2"><div class="n" data-to="11" data-tpl="{n}">11</div><div class="l"><span class="lang-th">โมเดล AI (LLM)</span><span class="lang-en">AI Models (LLM)</span></div></div>
 
       <div class="sim-stat rv rv-d3"><div class="n" data-to="17" data-tpl="{n}">17</div><div class="l"><span class="lang-th">รุ่นการพัฒนา</span><span class="lang-en">Development Version</span></div></div>
 
@@ -5097,9 +5097,9 @@ html{background:var(--bg-dark)}
 
         <div class="tagline">Sovereign MDA</div>
 
-        <h4><span class="lang-th">📡 ข้อมูลจริง 16 แหล่ง</span><span class="lang-en">📡 16 Live Data Sources</span></h4>
+        <h4><span class="lang-th">📡 ข้อมูลจริง 18 แหล่ง</span><span class="lang-en">📡 18 Live Data Sources</span></h4>
 
-        <p><span class="lang-th">AIS เรือจริง · เครื่องบินจริง (OpenSky) · แผ่นดินไหว USGS · อวกาศ NOAA · ข่าวกรอง GDELT · อุตุ-สมุทรศาสตร์ · เรดาร์ฝน · ระดับน้ำ 28 สถานี (HII) · ภาพดาวเทียม SAR (GISTDA) — ผสานเป็นภาพสถานการณ์เดียว</span><span class="lang-en">Live AIS ship tracking · Live aircrafts (OpenSky) · USGS earthquakes · NOAA space weather · GDELT global news registry · automatically pulled every 30s to 5m with prediction modules.</span></p>
+        <p><span class="lang-th">AIS เรือจริง · เครื่องบินจริง (OpenSky) · แผ่นดินไหว USGS · คลื่นชายฝั่ง Open-Meteo · Ransomware ในไทยสด (ThreatFox) · อวกาศ NOAA · ข่าวกรอง GDELT · เรดาร์ฝน · ระดับน้ำ HII — ผสานเป็นภาพสถานการณ์เดียว</span><span class="lang-en">Live AIS ship tracking · Live aircrafts (OpenSky) · USGS earthquakes · Open-Meteo littoral waves · Live Thai Ransomware feed (ThreatFox) · NOAA space weather · GDELT news registry · automatically pulled every 30s to 5m with prediction modules.</span></p>
 
       </div>
 
@@ -5119,7 +5119,7 @@ html{background:var(--bg-dark)}
 
         <h4><span class="lang-th">🧠 AI วิเคราะห์ 2 ชั้น</span><span class="lang-en">🧠 2-Layer AI Analysis</span></h4>
 
-        <p><span class="lang-th">กติกาอัตโนมัติ 10 ข้อทำงานออฟไลน์ + LLM 8 โมเดลผ่านโครงสร้างพื้นฐานของตนเอง วิเคราะห์เจตนา-พฤติกรรมเป้าหมาย โดยมนุษย์เป็นผู้ตัดสินใจสุดท้ายเสมอ (Human-in-the-Loop)</span><span class="lang-en">10 offline rule-based heuristics + 8 LLMs hosted on private infrastructure, analyzing intents and assessing undersea hostile actions across 5 severity levels.</span></p>
+        <p><span class="lang-th">กติกาอัตโนมัติ 10 ข้อทำงานออฟไลน์ + LLM 11 โมเดล (รวมถึง ThaiLLM/Pathumma/Typhoon ภาษาไทย) ผ่านโครงสร้างพื้นฐานของตนเอง วิเคราะห์เจตนา-พฤติกรรมเป้าหมาย โดยมนุษย์เป็นผู้ตัดสินใจสุดท้ายเสมอ (Human-in-the-Loop)</span><span class="lang-en">10 offline rule-based heuristics + 11 LLMs (incl. ThaiLLM/Pathumma/Typhoon) hosted on private infrastructure, analyzing intents and assessing undersea hostile actions across 5 severity levels.</span></p>
 
       </div>
 
