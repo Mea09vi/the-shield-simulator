@@ -1,6 +1,44 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.35.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.35.1 · 7-Domain + AI Staff)
+  · [v17.35.1] กล่อง AI DECISION · 7-DOMAIN THREAT — กรอบชมพู hex ดิบ → โทเคนตามธีม
+      ผู้ใช้ถามว่ากรอบชมพูรอบกล่องนี้ตั้งใจหรือเปล่า คำตอบคือ "ตั้งใจตอน v17.5.4
+      แต่เป็นของค้างแล้ว" — สีชมพู #ec4899 คือสีประจำโดเมนที่ ๗ (AI-การตัดสินใจ · ศรชล.)
+      ตอนนั้นจึงเอามาทำกรอบเรืองแสงเพื่อให้กล่องนี้เด่นกว่าบล็อกอื่นในแผงซ้าย
+
+      ทำไมถึงต้องแก้ — สองเหตุผล ไม่ใช่เรื่องความชอบ
+        ๑) กฎ governance ที่เขียนไว้ตั้งแต่ P1 คือ "ตกแต่ง → ต้องฟังธีม ·
+           เป็นข้อมูล → ห้ามฟังธีม" กรอบกล่องคือเปลือก ไม่ใช่สัญลักษณ์หลักนิยม
+           และเราตัดสินไปแล้วว่ามันคือของตกแต่ง — หลักฐานคือ bf-tb-glow ถูกใส่ไว้
+           ในรายการหยุดการเคลื่อนไหวของ BRIEF mode ตั้งแต่ v17.35.0
+           แต่มันฟังธีมไม่ได้ เพราะเขียน rgba(236,72,153,…) ดิบ ๑๓ จุด
+           และไฟล์นี้ไม่มีโทเคน --pink เลย ผลคือใน Stealth Mono ทุกอย่างเป็นเทา
+           แต่กล่องนี้ยังชมพูสด · ใน black-orange ทุกอย่างเป็นบรอนซ์ กล่องนี้ก็ยังชมพู
+           — เป็นบักชนิดเดียวกับการ์ด Cyber ที่ผู้ใช้จับได้และแก้ไปแล้วใน v17.33.1
+        ๒) หลัง P4 กรอบของ panel ถูกจองไว้ให้ data-threat เป็นตัวบอกระดับภัยแล้ว
+           การมีกรอบสีถาวรที่ไม่เกี่ยวกับภัยคุกคามอยู่ตรงนี้ทำให้กรอบสองแบบแย่งความหมายกัน
+
+      ที่แก้ — ๑๓ จุด rgba(236,72,153,…) → rgb(var(--purple-rgb) / …) และอีก ๑ จุด
+      color:#f0abfc (ตัวอักษรปุ่มเปิด AI Decision Support) → var(--purple-hi)
+      รวม ๑๔ จุด ครอบคลุม @keyframes bf-tb-glow · .bf-dp-threatboard · .bf-tb-title ·
+      .bf-ai-open ทั้งสถานะปกติและ hover  ทั้ง --purple-rgb และ --purple-hi
+      ประกาศครบทั้ง ๗ ธีม จึงไม่ติดกับดัก ":root แช่ค่า" ที่เจอกับ --focus ใน P5-A
+
+      พิสูจน์ด้วยการวัด — วน data-theme ครบทั้ง ๗ ค่า อ่าน computed style จริง
+        (ค่าเริ่มต้น) #bd93f9 · stealth #a3a3a3 · royal-thai-navy #8aa0dc ·
+        tactical-dark #9b87d9 · maritime-ai #8b5cf6 · classified #9e9e9e ·
+        black-orange #c98a3a — ไม่เหลือชมพูในธีมใดเลย (stillPink: [])
+      แสงเรืองใน @keyframes ก็ตามธีมด้วย: อ่าน getKeyframes() ใน stealth ได้
+        rgba(163,163,163,.20) → .45 → .20 ตรงกับ --purple-rgb ของธีมนั้น
+
+      ยังไม่ทำ (เป็นการตัดสินใจ ไม่ใช่การข้าม)
+        · จุดสี .bf-tb-dot ทั้ง ๗ ยังเป็น hex ดิบ — นั่นคือ "ข้อมูล" (สีประจำโดเมน)
+          เขียนครบทุกโดเมนเท่ากัน ไม่มีอันไหนโดดออกมา ตามกฎข้อ "เป็นข้อมูล → ห้ามฟังธีม"
+        · ชุดสีชมพูของแผง GFW OSINT (#gfwBtn และ _showGfwPanel) ยังเป็น hex ดิบ
+          — เป็นคนละคอมโพเนนต์ สีนั้นทำหน้าที่เป็นอัตลักษณ์ของชั้นข้อมูล GFW
+          บนแผนที่และในบันทึกเหตุการณ์ ต้องตัดสินแยกว่ามันคือเปลือกหรือข้อมูล
+        · ไม่ได้ลดระดับกล่องให้เท่าบล็อกอื่น (ตัดกรอบ+glow ทิ้ง) — ผู้ใช้เลือกทาง ก
+          คือให้ฟังธีมแต่ยังเด่น เพราะกล่องนี้คือทางเข้าหลักของโดเมนที่ ๗
   · [v17.35.0] OPERATIONAL CALM เฟส ๕ — พื้นล่างตัวอักษร · วงแหวนโฟกัส · ความว่างที่พูดได้ · BRIEF
       เฟสนี้เก็บสามเรื่องที่เหลือค้างจากสี่เฟสก่อน ทั้งสามมีรากเดียวกันคือ
       "ผู้ใช้มองแล้วไม่รู้" — อ่านไม่ออกเพราะเล็กเกิน · ไม่รู้ว่าคีย์บอร์ดอยู่ตรงไหน ·
@@ -1287,12 +1325,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.35.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.35.1 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.35.0';
+        const APP_VERSION = '17.35.1';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -5147,24 +5185,32 @@
 
         /* ── [v15] กระดานภัยคุกคาม ๗ โดเมน (ช่วยตัดสินใจด้วย AI · อยู่บนสุดของหน้าต่าง) ── */
         @keyframes bf-tb-glow {
-            0%, 100% { box-shadow: 0 0 14px rgba(236,72,153,.20), inset 0 1px 0 rgba(255,255,255,.04); }
-            50%       { box-shadow: 0 0 28px rgba(236,72,153,.45), inset 0 1px 0 rgba(255,255,255,.04); }
+            0%, 100% { box-shadow: 0 0 14px rgb(var(--purple-rgb) / .20), inset 0 1px 0 rgba(255,255,255,.04); }
+            50%       { box-shadow: 0 0 28px rgb(var(--purple-rgb) / .45), inset 0 1px 0 rgba(255,255,255,.04); }
         }
-        /* [v17.5.4] กล่องภัยคุกคาม ๗ โดเมน ของ AI — กรอบเรืองแสงให้เด่นชัด */
+        /* [v17.5.4] กล่องภัยคุกคาม ๗ โดเมน ของ AI — กรอบเรืองแสงให้เด่นชัด
+           [v17.35.1] เดิมกล่องนี้เขียนสีชมพู rgba(236,72,153,…) ดิบ ๑๓ จุด เพราะ #ec4899
+             คือสีประจำโดเมนที่ ๗ (AI-การตัดสินใจ) — แต่ตัวกล่องคือ "เปลือก" ไม่ใช่ "ข้อมูล"
+             ตามกฎ P1 (ตกแต่ง → ต้องฟังธีม · เป็นข้อมูล → ห้ามฟังธีม) มันจึงต้องฟังธีม
+             ผลของ hex ดิบคือใน Stealth Mono ทุกอย่างเป็นเทาแต่กล่องนี้ยังชมพูสด
+             — บักชนิดเดียวกับการ์ด Cyber ที่แก้ไปแล้วใน v17.33.1
+           ย้ายไป --purple-rgb / --purple-hi ซึ่งมีค่าครบทั้ง ๗ ธีม
+           จุดสี .bf-tb-dot ทั้ง ๗ ยังเป็น hex ดิบตามเดิม — นั่นคือ "ข้อมูล" (สีประจำโดเมน)
+             เขียนครบทุกโดเมนเท่ากัน จึงไม่มีอันไหนโดดออกมา */
         #bf-deploy-panel .bf-dp-threatboard {
             margin:var(--space-1) var(--space-1-5) var(--space-2); padding: 0;
-            border: 1.5px solid rgba(236,72,153,.58);
+            border: 1.5px solid rgb(var(--purple-rgb) / .58);
             border-radius:var(--radius-lg);
-            background: linear-gradient(155deg, rgba(236,72,153,.09) 0%, rgb(var(--purple-rgb) / .06) 100%);
+            background: linear-gradient(155deg, rgb(var(--purple-rgb) / .10) 0%, rgb(var(--purple-rgb) / .04) 100%);
             overflow: hidden;
             animation: bf-tb-glow 3s ease-in-out infinite;
         }
         #bf-deploy-panel .bf-tb-title {
             font-size:var(--text-2xs); font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
-            color: rgba(236,72,153,.95); margin-bottom: 0;
+            color: rgb(var(--purple-rgb) / .95); margin-bottom: 0;
             padding:var(--space-1-5) var(--space-2) var(--space-1-5);
-            background: linear-gradient(90deg, rgba(236,72,153,.15) 0%, transparent 75%);
-            border-bottom: 1px solid rgba(236,72,153,.28);
+            background: linear-gradient(90deg, rgb(var(--purple-rgb) / .15) 0%, transparent 75%);
+            border-bottom: 1px solid rgb(var(--purple-rgb) / .28);
         }
         #bf-deploy-panel #bf-tb-body { padding:var(--space-1) var(--space-2) var(--space-2); }
         #bf-deploy-panel .bf-tb-row {
@@ -5190,16 +5236,16 @@
         #bf-deploy-panel .bf-ai-open {
             display: flex; align-items: center; gap:var(--space-2); margin-top:var(--space-2); padding:var(--space-2) var(--space-3);
             border-radius:var(--radius-md); cursor: pointer; font-size:var(--text-xs); font-weight: 800; letter-spacing: .8px; text-transform: uppercase;
-            color: #f0abfc;
-            background: linear-gradient(135deg, rgba(236,72,153,.22) 0%, rgb(var(--purple-rgb) / .15) 100%);
-            border: 1.5px solid rgba(236,72,153,.62);
-            box-shadow: 0 0 12px rgba(236,72,153,.24);
+            color: var(--purple-hi);
+            background: linear-gradient(135deg, rgb(var(--purple-rgb) / .22) 0%, rgb(var(--purple-rgb) / .12) 100%);
+            border: 1.5px solid rgb(var(--purple-rgb) / .62);
+            box-shadow: 0 0 12px rgb(var(--purple-rgb) / .24);
             transition: all .18s;
         }
         #bf-deploy-panel .bf-ai-open:hover {
-            background: linear-gradient(135deg, rgba(236,72,153,.34) 0%, rgb(var(--purple-rgb) / .26) 100%);
-            border-color: rgba(236,72,153,.92);
-            box-shadow: 0 0 22px rgba(236,72,153,.55), 0 0 8px rgb(var(--purple-rgb) / .28);
+            background: linear-gradient(135deg, rgb(var(--purple-rgb) / .34) 0%, rgb(var(--purple-rgb) / .20) 100%);
+            border-color: rgb(var(--purple-rgb) / .92);
+            box-shadow: 0 0 22px rgb(var(--purple-rgb) / .55), 0 0 8px rgb(var(--purple-rgb) / .28);
             transform: translateY(-1px);
         }
         #bf-deploy-panel .bf-ai-open:active { transform: translateY(0); }
@@ -8911,7 +8957,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.35.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.35.1 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9381,7 +9427,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.35.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.35.1 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9399,7 +9445,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.35.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.35.1 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -10372,7 +10418,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.35.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.35.1 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
