@@ -1,6 +1,26 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.39.2 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.39.3 · 7-Domain + AI Staff)
+  · [v17.39.3] SU-KEY — กล่องมุมซ้ายล่างของชั้น SEA-USE: จาก "ป้ายชื่อที่พูดไม่จริง" เป็น "กุญแจแผนที่"
+      ผู้ใช้รายงานว่าแถบเฉดสีในกล่องเป็นขาว→แดงชุดเดิมตลอด ไม่ว่าจะเลือกหมวดไหน ตรวจแล้วพบว่า
+      ระบบมีแถบสี ๓ ชุดที่ไม่ตรงกันเลย: แผนที่โหมดรวมใช้ SEQ · แผนที่รายหมวดใช้ catColor()
+      ส่วนกล่องใช้ linear-gradient ค่าคงที่ฝังใน CSS ซึ่งไม่ตรงกับทั้งสองชุด และไม่เคยถูกวาดใหม่เลย
+      · [A] แถบในกล่องสร้างจาก rampCSS() ซึ่งสุ่มค่าจาก catColor()/seqColor() ตัวเดียวกับที่แผนที่ใช้
+        และถูกสร้างใหม่ทุกครั้งที่ recolor() — จึงเป็นไปไม่ได้ทางโครงสร้างที่แถบกับแผนที่จะหลุดกันอีก
+      · [B] เลิกหารด้วยค่าสูงสุด "ของเฟรมนั้น" (inv = 1/mx) ซึ่งดันทุกเฟรมให้เต็มช่วงสีเสมอ
+        ผลเดิมคือไทม์แลปส์ ๒๔ ชม. ไม่เคยสว่าง-มืดตามเวลา และ "ความเข้มสูงสุด" ค้าง ๑๐๐% โดยนิยาม
+        เปลี่ยนเป็นตัวหารคงที่ = จุดคึกคักที่สุดของหมวดนั้นตลอด ๒๔ ชม. คำนวณครั้งเดียวตอนเปิดชั้น
+        ตรวจแล้วที่รันไทม์: ยอดรวมทุกกิจกรรมไล่ ๓๙% → ๑๐๐% โดยจุดสูงสุดจริงอยู่ ๐๘:๐๐
+        เต่าทะเลตอน ๑๓:๐๐ เหลือ ๕% (๐ ช่อง) ตามพฤติกรรมขึ้นวางไข่กลางคืน — ตัวเลขกลับมามีข้อมูล
+      · [C] ตัดบรรทัดที่อ้างที่มาข้อมูลซึ่งไม่มีอยู่จริงใน engine ("บินสำรวจด้วยโดรน · จำลอง ๘ วัน" —
+        hexRaw() ไม่มีมิติวันและไม่มีแนวคิดโดรนเลย) และเลิกพิมพ์ชื่อชั้นซ้ำกับหัวหน้าต่างที่เปิดอยู่
+        แทนด้วยของที่มีแต่แผนที่เท่านั้นที่ตอบได้: หมวด+เวลาที่แสดงอยู่ · แถบไล่สีตัวจริง ·
+        กุญแจรูปทรงเขต ๔ ชนิด (อนุรักษ์เต่า · ฝึกยกพลขึ้นบก · MEZ ๕ ไมล์ทะเล · เขตปลอดภัย ๕๐๐ ม.)
+        ซึ่งก่อนหน้านี้วาดอยู่บนแผนที่โดยไม่มีคำอธิบายแม้แต่ชิ้นเดียว — แคปเฉพาะแผนที่ไปใส่บรีฟได้แล้ว
+      · [D] เปลือกกล่อง = สีตกแต่ง จึงเปลี่ยนมาใช้โทเคนธีม (เดิมฝัง hex ตรงจึงตายด้านทุกธีม)
+        ส่วนแถบไล่สีและจุดสีเขต = สีข้อมูล จึงคงที่ ไม่ผูกกับธีม ตามกฎ "ตกแต่ง→ฟังธีม · ข้อมูล→ไม่ฟัง"
+      หมายเหตุขอบเขต — ตัวหารแยกรายหมวด เทียบ "หมวดนี้กับตัวเองข้ามเวลา" ได้ แต่ยังไม่ได้ออกแบบ
+      ให้เทียบข้ามหมวดกัน (คนละหน่วยกิจกรรม) บันทึกไว้ในคอมเมนต์ที่ buildNorms() แล้ว
   · [v17.39.2] HDR-3 — สีฟ้าบนหัวจอ = "เปิดอยู่" ไม่ใช่ "สำคัญ"
       ปุ่มนำหลัก ๒ ตัว (Global UDC · MDA-COP) เคยเป็นสีฟ้าประจำตัวตลอดเวลา เพื่อบอก "ลำดับความสำคัญ"
       แต่นั่นทำให้สีเน้นสีเดียวของจอถูกใช้ไปกับ "ยศของปุ่ม" จนไม่เหลือความหมายไว้บอก "สถานะ"
@@ -1645,12 +1665,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.39.2 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.39.3 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.39.2';
+        const APP_VERSION = '17.39.3';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -9634,7 +9654,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.39.2 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.39.3 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -10104,7 +10124,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.39.2 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.39.3 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -10122,7 +10142,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.39.2 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.39.3 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -11095,7 +11115,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.39.2 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.39.3 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -54081,6 +54101,15 @@ window.MDA.SeaUse = (function () {
     var a = [lerp(b[0],255,.70), lerp(b[1],255,.70), lerp(b[2],255,.70)];   // ปลายอ่อน = สีเดิมผสมขาว (คงเนื้อสีไว้ ไม่จางเป็นเทา)
     return 'rgb('+lerp(a[0],b[0],v)+','+lerp(a[1],b[1],v)+','+lerp(a[2],b[2],v)+')';
   }
+  /* [v17.39.3 SU-KEY-A] แถบไล่สีของกุญแจแผนที่ — สุ่มค่าจากฟังก์ชันสีตัวเดียวกับที่แผนที่ใช้จริง
+       จึงเป็นไปไม่ได้ที่แถบกับหกเหลี่ยมบนแผนที่จะไม่ตรงกันอีก
+       (ของเดิมเป็น linear-gradient ค่าคงที่ฝังใน CSS จึงค้างชุดสีรุ่นเก่าไว้ตลอด)
+       cat = null → โหมดรวมทุกกิจกรรม (ใช้ SEQ) · cat = หมวดหนึ่ง → ใช้สีประจำหมวดนั้น */
+  function rampCSS(cat){
+    var s = [], i, v;
+    for (i=0;i<=8;i++){ v = i/8; s.push((cat ? catColor(cat, v) : seqColor(v)) + ' ' + (v*100).toFixed(0) + '%'); }
+    return 'linear-gradient(90deg,' + s.join(',') + ')';
+  }
 
   /* ── สร้างตารางหกเหลี่ยม เฉพาะแนวพื้นที่ทะเลรอบ UDC และแนวสายเคเบิล ──────
         เก็บเฉพาะช่องที่อยู่ในทะเล และเข้าเงื่อนไขข้อใดข้อหนึ่งต่อไปนี้
@@ -54133,17 +54162,46 @@ window.MDA.SeaUse = (function () {
     var cat = catOf(_cat);
     return h.feats[_cat] * hourProfile(cat, _hour);
   }
+  /* ── [v17.39.3 SU-KEY-B] ตัวหารคงที่ประจำหมวด ─────────────────────────────
+        ของเดิมหารด้วยค่าสูงสุด "ของเฟรมนั้น" (1/mx) ผลคือทุกเฟรมถูกดันให้เต็มช่วงสีเสมอ
+        ตี ๓ ที่มีแค่เรือลาดตระเวนกับเต่า จึงดูเข้มพอ ๆ กับบ่ายโมงที่กิจกรรมเต็มพื้นที่
+        ไทม์แลปส์ ๒๔ ชม. จึงไม่เคยสื่ออะไรเลย และ "ความเข้มสูงสุด" ค้างที่ ๑๐๐% โดยนิยาม
+        จึงเปลี่ยนมาหารด้วยจุดคึกคักที่สุดของหมวดนั้น "ตลอดทั้ง ๒๔ ชั่วโมง" ซึ่งเป็นค่าคงที่
+        คำนวณครั้งเดียวตอนเปิดชั้น (๒๔ ชม. × ช่อง × ๘ หมวด ในรอบเดียว) แล้วเก็บไว้ใช้ตลอด
+        ผล: ภาพรวมสว่าง-มืดตามเวลาจริง · เปอร์เซ็นต์ที่รายงานกลายเป็นตัวเลขที่มีข้อมูล
+        หมายเหตุ: ตัวหารแยกรายหมวด — เทียบ "หมวดนี้เทียบกับตัวเองข้ามเวลา" ได้
+                  แต่ยังไม่ได้ออกแบบให้เทียบข้ามหมวดกัน (คนละสเกล คนละหน่วยกิจกรรม) */
+  var _norm = null;
+  function buildNorms(){
+    if (_norm) return _norm;
+    if (!_hexes.length) return { ALL:0 };              // ยังไม่สร้างตาราง — อย่าเพิ่งจำค่าศูนย์ไว้ถาวร
+    _norm = { ALL:0 };
+    var c, t, i, hp = [];
+    for (c=0;c<CATS.length;c++) _norm[CATS[c].k] = 0;
+    for (t=0;t<24;t++){
+      for (c=0;c<CATS.length;c++) hp[c] = hourProfile(CATS[c], t);
+      for (i=0;i<_hexes.length;i++){
+        var h = _hexes[i], s = 0;
+        for (c=0;c<CATS.length;c++){
+          var v = h.feats[CATS[c].k] * hp[c];
+          if (v > _norm[CATS[c].k]) _norm[CATS[c].k] = v;
+          s += v * CATS[c].w;
+        }
+        if (s > _norm.ALL) _norm.ALL = s;
+      }
+    }
+    return _norm;
+  }
   function recolor(){
-    var single = (_cat !== 'ALL') ? catOf(_cat) : null, i, mx = 0;
-    for (i=0;i<_hexes.length;i++){ _hexes[i].v = hexRaw(_hexes[i]); if (_hexes[i].v > mx) mx = _hexes[i].v; }
-    var inv = mx > 0 ? 1/mx : 0;                                     // เทียบสัดส่วนกับค่าสูงสุดที่พบจริง ให้ใช้เฉดสีได้เต็มช่วง
+    var single = (_cat !== 'ALL') ? catOf(_cat) : null, i;
+    var nm = buildNorms()[_cat] || 0, inv = nm > 0 ? 1/nm : 0;       // ตัวหารคงที่ = จุดคึกคักที่สุดของหมวดนี้ใน ๒๔ ชม.
     for (i=0;i<_hexes.length;i++){
-      var h = _hexes[i]; h.v *= inv; if (!h.poly) continue;
+      var h = _hexes[i]; h.v = Math.min(1, hexRaw(h) * inv); if (!h.poly) continue;
       var fill = single ? catColor(single, h.v) : seqColor(h.v);
       h.poly.setStyle({ fillColor:fill, fillOpacity: 0.21 + 0.61*h.v,   // ความทึบกึ่งกลางระหว่างค่าเดิมกับค่าที่เพิ่มไว้
         color:'rgba(255,255,255,'+(0.10+0.17*h.v).toFixed(2)+')', weight:0.75 });
     }
-    _syncStats();
+    _syncStats(); _syncKey();
   }
 
   /* ── เขตสำคัญ ๓ เขต (อิงพื้นที่จริง) ─────────────────────────────────────
@@ -54209,22 +54267,47 @@ window.MDA.SeaUse = (function () {
       _titleCtl = L.control({ position:'bottomleft' });
       _titleCtl.onAdd = function(){
         var d = L.DomUtil.create('div', 'su-title');
+        /* [v17.39.3 SU-KEY-C] เปลี่ยนหน้าที่จาก "ป้ายชื่อ" เป็น "กุญแจแผนที่"
+             ของเดิมพิมพ์ชื่อซ้ำกับหัวหน้าต่างที่เปิดอยู่ และอ้างที่มาข้อมูล
+             ("บินสำรวจด้วยโดรน · จำลอง ๘ วัน") ที่ไม่มีอยู่จริงใน engine — ตัดทิ้งทั้งสองบรรทัด
+             แทนด้วยของที่มีแต่แผนที่เท่านั้นที่ตอบได้ และยังอ่านออกเมื่อแคปหน้าจอไปใส่บรีฟ
+             โดยหน้าต่างควบคุมถูกลากออกไปหรือปิดไปแล้ว:
+             หมวด+เวลาที่กำลังแสดง · แถบไล่สีที่ตรงกับภาพจริง · กุญแจรูปทรงเขต ๔ ชนิด
+             ที่ก่อนหน้านี้วาดอยู่บนแผนที่โดยไม่มีคำอธิบายเลยแม้แต่ชิ้นเดียว */
         d.innerHTML =
-          '<div class="su-title-h">การใช้ประโยชน์พื้นที่ทะเล · เกาะคราม–สัตหีบ</div>'+
-          '<div class="su-title-s">บินสำรวจด้วยโดรนรายชั่วโมง (จำลอง ๘ วัน) · เฉพาะพื้นที่ทะเล</div>'+
-          '<div class="su-ramp"><span>น้อย</span><i></i><span>มาก</span></div>';
+          '<div class="su-k-h"><b id="su-k-cat">รวมทุกกิจกรรม</b><span id="su-k-hh">13:00</span></div>'+
+          '<div class="su-ramp"><i id="su-k-ramp"></i></div>'+
+          '<div class="su-k-lbl"><span>0</span><span>เทียบจุดคึกคักที่สุดใน ๒๔ ชม.</span><span>สูงสุด</span></div>'+
+          '<div class="su-k-sep"></div>'+
+          '<div class="su-k-zones">'+
+            '<span><i class="zbox" style="border-color:#34d399"></i>เขตอนุรักษ์เต่าทะเล</span>'+
+            '<span><i class="zbox" style="border-color:#f59e0b"></i>เขตฝึกยกพลขึ้นบก</span>'+
+            '<span><i class="zdash" style="border-color:#ef4444"></i>MEZ ๕ ไมล์ทะเล</span>'+
+            '<span><i class="zdot" style="background:#ef4444"></i>เขตปลอดภัย ๕๐๐ ม.</span>'+
+          '</div>';
         L.DomEvent.disableClickPropagation(d);
+        setTimeout(_syncKey, 0);                       // เติมแถบสี/หมวด/เวลา ให้ตรงตั้งแต่เฟรมแรก
         return d;
       };
       _titleCtl.addTo(map);
     }catch(_){}
   }
+  /* [v17.39.3 SU-KEY-A/C] ปรับกุญแจแผนที่ให้ตรงกับภาพที่แสดงอยู่ — เรียกทุกครั้งที่ recolor()
+       แถบสีถูกสร้างใหม่จาก rampCSS() ทุกรอบ จึงเปลี่ยนตามหมวดที่เลือกเสมอ */
+  function _syncKey(){
+    var r = document.getElementById('su-k-ramp'); if (!r) return;
+    var c = (_cat !== 'ALL') ? catOf(_cat) : null;
+    r.style.background = rampCSS(c);
+    var nm = document.getElementById('su-k-cat'), hh = document.getElementById('su-k-hh');
+    if (nm) nm.textContent = c ? c.th : 'รวมทุกกิจกรรม';
+    if (hh) hh.textContent = ('0'+_hour).slice(-2)+':00';
+  }
   function _rmTitle(){ if (_titleCtl){ try{ map.removeControl(_titleCtl); }catch(_){} _titleCtl = null; } }
 
   /* ── หน้าต่างควบคุม: รายการหมวด · แถบเลื่อนเวลา · สรุปตัวเลข ───────────── */
   function _catRows(){                               // แถวรายการหมวดกิจกรรม ให้กดเลือกดูทีละหมวด
-    var rows = '<div class="su-cat'+(_cat==='ALL'?' on':'')+'" data-cat="ALL">'+
-      '<i style="background:linear-gradient(90deg,#ecebe8,#96201a)"></i><span>รวมทุกกิจกรรม</span></div>';
+    var rows = '<div class="su-cat'+(_cat==='ALL'?' on':'')+'" data-cat="ALL">'+   /* [v17.39.3] แถบรวมสร้างจาก SEQ ตัวจริง ไม่ใช่ค่าคงที่ชุดเก่า */
+      '<i style="background:'+rampCSS(null)+'"></i><span>รวมทุกกิจกรรม</span></div>';
     CATS.forEach(function(c){
       rows += '<div class="su-cat'+(_cat===c.k?' on':'')+'" data-cat="'+c.k+'">'+
         '<i style="background:'+c.col+'"></i><span>'+c.th+'</span></div>';
@@ -54342,12 +54425,26 @@ window.MDA.SeaUse = (function () {
         '.su-cat:hover{background:rgba(125,211,252,.10)}'+
         '.su-cat.on{background:rgba(125,211,252,.16);border-color:rgba(125,211,252,.35)}'+
         '.su-cat i{width:16px;height:10px;border-radius:var(--radius-xs);flex:0 0 auto;box-shadow:0 0 4px rgba(0,0,0,.4)}'+
-        '.su-title{background:rgba(8,14,26,.82);border:1px solid rgba(125,211,252,.30);border-radius:var(--radius-lg);'+
+        /* [v17.39.3 SU-KEY-D] เปลือกกล่อง = สีตกแต่ง จึงต้องฟังธีม (เดิมฝัง hex ตรงจึงตายด้าน
+             ทุกธีม) ส่วนแถบไล่สีและจุดสีเขต = สีข้อมูล จึงคงที่ ไม่ผูกกับธีม ตามกฎที่ตั้งไว้ */
+        '.su-title{background:rgb(var(--bg-dark-rgb) / .84);border:1px solid color-mix(in srgb, var(--cyan-mid) 32%, transparent);'+
+          'border-radius:var(--radius-lg);max-width:300px;'+
           'padding:var(--space-2) var(--space-3);font-family:var(--font-main,"Sarabun",sans-serif);backdrop-filter:blur(4px);margin-bottom:var(--space-1-5)}'+
-        '.su-title-h{font-size:var(--text-md);font-weight:700;color:#e8d3b0;letter-spacing:.3px}'+
-        '.su-title-s{font-size:var(--text-xs);color:#9fb3c8;margin-top:var(--space-px)}'+
-        '.su-ramp{display:flex;align-items:center;gap:var(--space-1-5);margin-top:var(--space-1-5);font-size:var(--text-2xs);color:#9fb3c8}'+
-        '.su-ramp i{flex:1;height:8px;border-radius:var(--radius-sm);background:linear-gradient(90deg,#ecebe8,#e8d3b0,#e08a6b,#d6584a,#96201a)}'+
+        '.su-k-h{display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3)}'+
+        '.su-k-h b{font-size:var(--text-md);font-weight:700;color:var(--text-main);letter-spacing:.3px}'+
+        '.su-k-h span{font-family:var(--font-mono),monospace;font-size:var(--text-sm);font-weight:700;color:var(--cyan-hi);flex:0 0 auto}'+
+        '.su-ramp{display:flex;align-items:center;margin-top:var(--space-1-5)}'+
+        '.su-ramp i{flex:1;height:8px;border-radius:var(--radius-sm);box-shadow:0 0 0 1px rgba(0,0,0,.45) inset}'+
+        '.su-k-lbl{display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-2);'+
+          'margin-top:var(--space-px);font-size:var(--text-2xs);color:var(--text-dim)}'+
+        '.su-k-sep{height:1px;background:color-mix(in srgb, var(--cyan-mid) 22%, transparent);margin:var(--space-2) 0 var(--space-1-5)}'+
+        '.su-k-zones{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-1) var(--space-2);'+
+          'font-size:var(--text-2xs);color:var(--text-dim)}'+
+        '.su-k-zones span{display:flex;align-items:center;gap:var(--space-1);white-space:nowrap}'+
+        '.su-k-zones i{flex:0 0 auto;width:11px;height:9px}'+
+        '.su-k-zones .zbox{border:1.5px solid;border-radius:1px}'+
+        '.su-k-zones .zdash{width:10px;height:10px;border:1.5px dashed;border-radius:50%}'+
+        '.su-k-zones .zdot{width:9px;height:9px;border-radius:50%;opacity:.8}'+
         '.su-zlbl{font-family:var(--font-main,"Sarabun",sans-serif);font-size:var(--text-sm);font-weight:700;'+
           'white-space:nowrap;text-shadow:0 0 4px #000,0 0 8px #000;pointer-events:none;transform:translate(-50%,-50%)}';
       document.head.appendChild(css);
