@@ -1,6 +1,27 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.39.3 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.40.0 · 7-Domain + AI Staff)
+  · [v17.40.0] GOTHAM — ถอดบทเรียนงานออกแบบจาก Palantir Gotham/Blueprint มาเป็น "ตัวเลือก"
+      ไม่ใช่ "การบังคับ" เงื่อนไขที่ผู้ใช้กำหนดคือ ๑) ต้องเลือกทั้งชุดสีและแบบหน้าต่าง Gotham ได้
+      ๒) ธีมเดิมอีก ๖ ธีม และแบบหน้าต่างเดิมอีก ๘ แบบ ต้องเหมือนเดิมทุกพิกเซล จึงแบ่งงานเป็น ๒ แกน
+      · [A][B] ชั้นโทเคนใหม่ใน :root — --track-* (ระยะห่างตัวอักษร ๙ ค่า) และ --dur-*/--ease-*
+        (จังหวะเวลา ๔ ค่า) แล้วกวาดแทนที่ค่าตัวอักษรเดิม ๒๗๗ จุด (letter-spacing ๑๑๔ · transition ๑๖๓)
+        ทุกค่าที่แทนเท่ากับของเดิมเป๊ะ จำนวนบรรทัดสุทธิ ๐ ภาพจึงไม่เปลี่ยน — พิสูจน์ด้วยสคริปต์ตรวจ
+        แบบสถิต (verify_tokens.py) ที่เทียบค่าโทเคนกับตัวอักษรที่ถูกแทนทีละตัว ผลลัพธ์ fail=0
+        ยกเว้น transition ๑๔ จุดที่ทำภาพเคลื่อนไหวของ "ข้อมูล" (width/height/stroke-dashoffset)
+        ซึ่งจงใจไม่แตะ เพราะจังหวะของมันคือความหมาย ไม่ใช่การตกแต่ง
+      · [E][G] แกน "สี" — body[data-theme="gotham"] ชุดสี Blueprint อิ่มตัวต่ำ + เทาเอียงน้ำเงิน
+        ทุกขั้น (ไม่มีขั้นไหน R=G=B) และลดตระกูลตัวอักษรจาก ๓ เหลือ ๒ (--font-accent ทิ้ง Orbitron
+        มาใช้ Sarabun) พร้อมประกาศโทเคนอนุพันธ์ ๑๑ ตัวซ้ำในบล็อกธีม ตามข้อจำกัด color-mix() ของ CSS
+      · [F][C][A][B] แกน "รูปทรง" — body[data-panel="gotham"] มุม ๒px · พื้นทึบไม่มี backdrop-filter
+        (ความลึกมาจากค่าความสว่างของพื้นผิว ไม่ใช่เบลอหรือเรืองแสง) · ระยะห่างตัวอักษรเป็นหน่วย em
+        · จังหวะ ๑๐๐ms เส้นโค้ง cubic-bezier(.4,1,.75,.9) ไม่เด้ง — ครอบทั้ง .panel/.legacy-panel/.side-panel
+      · [D-1] บันไดความสว่าง --sym-<สังกัด>-1…5 ราว ๓๐ โทเคนใน :root (ไม่ฟังธีม เพราะเป็นข้อมูล)
+      · [D-2] ระบายคุณภาพ track ด้วยความสว่าง: จาง=เดินด้วยการคาดคะเน สว่างสุด=เซ็นเซอร์เราจับเองยิงได้
+        ★ เดิมวางแผนจะผูกไว้กับธีม Gotham — แก้เป็น "สวิตช์แสดงผลของตัวเอง ตั้งต้นปิด" เพราะคุณภาพ
+        track เป็นข้อมูล ไม่ใช่ของตกแต่ง การผูกกับธีมจะขัดกฎของโครงการเอง (ดู [v17.40.0 GOTHAM-D2])
+      · symStep() อ่านค่า color-mix(in oklab,…) กลับผ่านผืนผ้าใบ ๑×๑ พิกเซล ไม่ใช่ getComputedStyle()
+        ซึ่งคืนสตริง oklab() เลข ๐–๑ และเคยทำให้บันไดกลายเป็นดำสนิททุกขั้น (บักที่เจอตอนทดสอบจริง)
   · [v17.39.3] SU-KEY — กล่องมุมซ้ายล่างของชั้น SEA-USE: จาก "ป้ายชื่อที่พูดไม่จริง" เป็น "กุญแจแผนที่"
       ผู้ใช้รายงานว่าแถบเฉดสีในกล่องเป็นขาว→แดงชุดเดิมตลอด ไม่ว่าจะเลือกหมวดไหน ตรวจแล้วพบว่า
       ระบบมีแถบสี ๓ ชุดที่ไม่ตรงกันเลย: แผนที่โหมดรวมใช้ SEQ · แผนที่รายหมวดใช้ catColor()
@@ -1665,12 +1686,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.39.3 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.40.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.39.3';
+        const APP_VERSION = '17.40.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -1868,6 +1889,30 @@
             --radius-2xl:16px;   /* กรอบใหญ่สุด — แผงครอบ/โมดัลเต็มจอ */
             --radius-pill: 999px;
 
+            /* ── ค่ากำหนดระยะห่างระหว่างตัวอักษร (tracking) ────────
+               [v17.40.0 GOTHAM-A] สำรวจทั้งไฟล์พบ letter-spacing ที่เขียน
+               ดิบ ๒๕๕ จุด บน ~๕๐ ค่าต่างกัน และเรียกผ่านโทเคน ๐ จุด
+               — เป็นชั้นเดียวในระบบโทเคนที่ยังไม่มีบันไดเลยแม้แต่ขั้นเดียว
+               ผลที่วัดได้: ธีมสั่ง "ความโปร่งของตัวอักษร" ไม่ได้เลย ทั้งที่
+               นี่คือหนึ่งในสองสิ่งที่ทำให้จอ Gotham อ่านเป็น Gotham
+               (อีกอย่างคือความคมของมุม) ป้ายพิมพ์ใหญ่ของ Palantir วัดได้
+               ๐.๐๕em คงที่ทั้งหน้า ขณะที่ของเราไล่ตั้งแต่ ๐.๒px ถึง ๖px
+               บันได ๙ ขั้นนี้ตั้งค่าให้ "ตรงกับ literal ที่ใช้จริงมากที่สุด
+               ๙ อันดับแรกแบบเป๊ะ ๆ" (1px·35 จุด · .5px·32 · .4px·23 ·
+               1.5px·16 · .3px·12 · .2px·7 · 2px·6 · .05em·13 · .08em·11)
+               จึงแปลงได้โดยไม่มีพิกเซลใดเปลี่ยน — ส่วนหางยาวอีก ~๔๐ ค่า
+               ที่ใช้ค่าละ ๑–๔ จุด จงใจ ไม่ ปัดเข้าบันได เพราะการปัดคือการ
+               เปลี่ยนภาพของ ๖ ธีมเดิม ซึ่งขัดเงื่อนไขที่ตกลงกันไว้ */
+            --track-body:    .2px;   /* ตัวเนื้อความที่ต้องการคลายเล็กน้อย */
+            --track-label:   .3px;
+            --track-cap:     .4px;   /* ป้ายกำกับพิมพ์ใหญ่ขนาดเล็ก */
+            --track-mono:    .5px;   /* ตัวเลขความกว้างคงที่ */
+            --track-hud:    1px;     /* ป้าย HUD — ค่าที่ใช้มากที่สุดในไฟล์ */
+            --track-title:  1.5px;
+            --track-wide:   2px;     /* หัวเรื่องพิมพ์ใหญ่ระยะไกล */
+            --track-em:      .05em;  /* สัมพัทธ์กับขนาดตัว — ป้ายคำบรรยาย */
+            --track-em-wide: .08em;
+
             /* ── ลำดับการซ้อนทับของชั้นแสดงผล ───────────────────── */
             --z-map-ui:    680;
             --z-floating:  900;
@@ -1879,7 +1924,19 @@
             --z-boot:   999999;
 
             /* [v16.0.5 W5-Q11] ค่ากำหนดความเร็วของภาพเคลื่อนไหว */
+            /* [v17.40.0 GOTHAM-B] สำรวจ transition ทั้งไฟล์ ๑๗๙ จุด บน ~๖๐ ค่า
+               ต่างกัน เรียกผ่านโทเคนเพียง ๑๖ จุด (๙%) — บันไดเดิมมีแค่สองขั้น
+               (.15s / .3s) แต่ค่าที่ถูกเขียนดิบบ่อยที่สุดสองอันดับแรกคือ
+               .2s (๒๑ จุด) และ .25s (๖ จุด) ซึ่ง ไม่มี ขั้นรองรับ — อาการ
+               เดียวกับบันไดระยะห่างและบันไดความมนที่ซ่อมไปแล้วใน P3-A
+               เพิ่มสองขั้นให้ตรงกับของจริง ค่าเป๊ะ จึงไม่มีอะไรบนจอเปลี่ยน
+
+               ★ ขอบเขตที่จงใจไม่แตะ: transition ของ width ในแถบวัดค่า
+               (.4s–1.2s) เป็น "ภาพเคลื่อนไหวของข้อมูล" ไม่ใช่ของเปลือกระบบ
+               ตามกฎตัดสิน — ข้อมูลห้ามฟังธีม จึงคงเป็น literal ไว้ตามเดิม */
             --dur-fast:    .15s;
+            --dur-quick:   .2s;
+            --dur-calm:    .25s;
             --dur-med:     .3s;
             --ease-out:    cubic-bezier(.22, .68, 0, 1);
             --ease-spring: cubic-bezier(.22, .68, 0, 1.2);
@@ -2094,6 +2151,69 @@
                three.js วาดจริง เดิมฝังดิบทั้งใน CSS และ HTML ป้ายอธิบายจึงหลุดจากฉาก */
             --sym-thermocline: #38bdf8;  /* ชั้นเทอร์โมไคลน์ · ~๒๐ ม. */
             --sym-seabed:      #9aa8bd;  /* พื้นทะเล/ตะกอน (ค่ากลาง) */
+
+            /* ── [v17.40.0 GOTHAM-D1] บันไดค่าความสว่าง ๕ ขั้นของสีสังกัด ─────────
+               Blueprint ของ Palantir ไม่มีสีเดี่ยว ๆ เลย ทุกสีมาเป็นชุด ๕ ขั้น
+               (เช่น แดง #8e292c #ac2f33 #cd4246 #e76a6e #fa999c) เพราะระบบที่ต้อง
+               แสดง "ระดับ" ของสิ่งเดียวกัน — มั่นใจแค่ไหน ใกล้แค่ไหน เก่าแค่ไหน —
+               ต้องแยกระดับด้วย "ค่าความสว่าง" ของสีเดิม ไม่ใช่เปลี่ยนไปเป็นสีอื่น
+               หรือลดความทึบ ของเราเดิมมีสีสังกัดขั้นเดียว เวลาจะบอกระดับจึงต้อง
+               ยืมวิธีอื่นทุกครั้ง
+
+               ทำไมต้องเป็นความสว่าง ไม่ใช่ความทึบ (opacity): ความทึบทำให้สิ่งที่
+               อยู่ "ใต้" หมุดเป็นตัวกำหนดว่าหมุดจะอ่านได้แค่ไหน — หมุดระดับเดียวกัน
+               วางบนทะเลเข้มกับบนแผ่นดินสว่างจะดูคนละระดับ ส่วนค่าความสว่างเป็นค่า
+               ทึบจริง อ่านได้เท่ากันทุกพื้นหลัง (เหตุผลเดียวกับข้อ C ของแผงหน้าต่าง)
+
+               ★ ขั้นที่ ๓ = ค่าเดิมเป๊ะ ๆ ทุกสี — โทเคนชุดนี้ "เพิ่มเข้ามา" เฉย ๆ
+                 ยังไม่มีใครเรียกใช้ ภาพบนจอจึงไม่ขยับแม้แต่พิกเซลเดียว
+               ★ อยู่ที่ :root ไม่ใช่ในบล็อกธีม — ตามกฎด้านบน: สีสังกัดเป็น "ข้อมูล"
+                 ห้ามฟังธีม ธีม Gotham จึงไม่แตะชุดนี้เช่นกัน
+               ★ ใช้ oklab ไม่ใช่ srgb เพราะ oklab ไล่ค่าความสว่างโดยรักษาเนื้อสี
+                 (hue) ไว้ ส่วน srgb จะเพี้ยนเนื้อสีตอนผสมขาว — แดงจะกลายเป็นชมพูอมส้ม
+
+               ความหมายของแต่ละขั้นเมื่อผูกกับคุณภาพ track (TQ):
+                 ๑ จางสุด — track ที่ขาดการติดตาม กำลังเดินด้วยการคาดคะเน (COAST)
+                 ๒        — ระดับ ๑ DETECT ตรวจพบ แต่ยังไม่พิสูจน์ทราบ
+                 ๓ ค่าเดิม — ระดับ ๒ CLASSIFY พิสูจน์ทราบแล้ว
+                 ๔        — ระดับ ๓ FIRE-CONTROL ที่รับต่อผ่านลิงก์ CEC หรือเพิ่งหลุดมือ
+                 ๕ สว่างสุด — ระดับ ๓ ที่เซ็นเซอร์ของเราจับอยู่เองขณะนี้ ยิงได้ทันที
+               (ผู้ใช้ฝั่งจาวาสคริปต์คือ symStep()/tqStep() — ดู [v17.40.0 GOTHAM-D2]) */
+            --sym-friendly-1: color-mix(in oklab, var(--sym-friendly) 55%, black);
+            --sym-friendly-2: color-mix(in oklab, var(--sym-friendly) 76%, black);
+            --sym-friendly-3: var(--sym-friendly);
+            --sym-friendly-4: color-mix(in oklab, var(--sym-friendly) 74%, white);
+            --sym-friendly-5: color-mix(in oklab, var(--sym-friendly) 48%, white);
+
+            --sym-partner-1:  color-mix(in oklab, var(--sym-partner) 55%, black);
+            --sym-partner-2:  color-mix(in oklab, var(--sym-partner) 76%, black);
+            --sym-partner-3:  var(--sym-partner);
+            --sym-partner-4:  color-mix(in oklab, var(--sym-partner) 74%, white);
+            --sym-partner-5:  color-mix(in oklab, var(--sym-partner) 48%, white);
+
+            --sym-unknown-1:  color-mix(in oklab, var(--sym-unknown) 55%, black);
+            --sym-unknown-2:  color-mix(in oklab, var(--sym-unknown) 76%, black);
+            --sym-unknown-3:  var(--sym-unknown);
+            --sym-unknown-4:  color-mix(in oklab, var(--sym-unknown) 74%, white);
+            --sym-unknown-5:  color-mix(in oklab, var(--sym-unknown) 48%, white);
+
+            --sym-suspect-1:  color-mix(in oklab, var(--sym-suspect) 55%, black);
+            --sym-suspect-2:  color-mix(in oklab, var(--sym-suspect) 76%, black);
+            --sym-suspect-3:  var(--sym-suspect);
+            --sym-suspect-4:  color-mix(in oklab, var(--sym-suspect) 74%, white);
+            --sym-suspect-5:  color-mix(in oklab, var(--sym-suspect) 48%, white);
+
+            --sym-greyzone-1: color-mix(in oklab, var(--sym-greyzone) 55%, black);
+            --sym-greyzone-2: color-mix(in oklab, var(--sym-greyzone) 76%, black);
+            --sym-greyzone-3: var(--sym-greyzone);
+            --sym-greyzone-4: color-mix(in oklab, var(--sym-greyzone) 74%, white);
+            --sym-greyzone-5: color-mix(in oklab, var(--sym-greyzone) 48%, white);
+
+            --sym-hostile-1:  color-mix(in oklab, var(--sym-hostile) 55%, black);
+            --sym-hostile-2:  color-mix(in oklab, var(--sym-hostile) 76%, black);
+            --sym-hostile-3:  var(--sym-hostile);
+            --sym-hostile-4:  color-mix(in oklab, var(--sym-hostile) 74%, white);
+            --sym-hostile-5:  color-mix(in oklab, var(--sym-hostile) 48%, white);
         }
         /* [v16.0.5 W5-Q11] panel entrance — โผล่นุ่มๆ ตอน mount/เปิด */
         @keyframes udc-panel-in {
@@ -2174,7 +2294,7 @@
             background: var(--bg-dark); color: var(--text-main);
             min-height: 100vh; display: flex; flex-direction: column;
             overflow-x: hidden; overflow-y: auto;
-            transition: background-color .45s ease, color .3s ease;
+            transition: background-color .45s ease, color var(--dur-med) ease;
             /* [TACTICAL-AURORA-FIX] isolate: สร้างชั้นซ้อนของตัวเอง เพื่อให้แสงออโรราธีมยุทธการ
                (::before ที่ z-index:-1) วาดทับพื้นหลังของบล็อกนี้ แทนที่จะจมอยู่ข้างหลัง
                — isolation ไม่กระทบกรอบอ้างอิงของ position:absolute จึงปลอดภัยกว่า
@@ -2309,7 +2429,7 @@
             header::before { animation: none; filter: drop-shadow(0 0 4px rgb(var(--cyan-rgb) / .7)); }
         }
         header .title { font-size:var(--text-xl); font-weight:700; color:var(--cyan);
-            letter-spacing:2px; text-shadow:0 0 12px rgb(var(--cyan-rgb) / .5); }
+            letter-spacing:var(--track-wide); text-shadow:0 0 12px rgb(var(--cyan-rgb) / .5); }
         header .subtitle { font-size:var(--text-xs); color:var(--text-muted); margin-top:var(--space-px); }
         /* [v15] ตราราชนาวีบน header หน้าหลัก — ใช้รูปเดียวกับ boot screen (โคลน src ด้วย JS) */
         header .app-crest { flex:0 0 auto; line-height:0;
@@ -2329,7 +2449,7 @@
             font-size:var(--text-md);
             padding:var(--space-0-5) var(--space-2);
             cursor: pointer;
-            transition: all .2s;
+            transition: all var(--dur-quick);
             line-height: 1;
             user-select: none;
         }
@@ -2393,7 +2513,7 @@
             z-index: var(--z-floating);
             text-align: right;
             font-family: var(--font-mono), monospace;
-            font-size:var(--text-2xs); letter-spacing: .5px;
+            font-size:var(--text-2xs); letter-spacing: var(--track-mono);
             color: var(--text-dim);
             background: rgb(var(--bg-dark-rgb) / .92);
             border-top: 1px solid var(--border-dim);
@@ -2407,7 +2527,7 @@
             background: rgba(57,255,20,.08); border: 1px solid rgba(57,255,20,.4);
             border-radius:var(--radius-xl); padding:var(--space-0-5) var(--space-2);
             font-family: var(--font-mono), monospace; font-size:var(--text-2xs);
-            color: var(--green); letter-spacing: 1px;
+            color: var(--green); letter-spacing: var(--track-hud);
         }
         .sys-status-pill .dot {
             width: 7px; height: 7px; border-radius: 50%;
@@ -2493,7 +2613,7 @@
         }
         @keyframes bootBarFill { to { width: 100%; } }
         .boot-foot {
-            font-size:var(--text-sm); font-weight: 500; color: #9fc3e0; letter-spacing: 2px;
+            font-size:var(--text-sm); font-weight: 500; color: #9fc3e0; letter-spacing: var(--track-wide);
             margin-top:var(--space-4);
             text-shadow: 0 1px 3px rgba(0,0,0,.6);
         }
@@ -2514,7 +2634,7 @@
             border-radius:var(--radius-sm); padding:var(--space-1) var(--space-2);
             font-family: var(--font-mono), monospace; font-size:var(--text-xs);
             color: var(--teal); line-height: 1.5; pointer-events: none;
-            letter-spacing: .5px;
+            letter-spacing: var(--track-mono);
         }
         #coordReadout .cr-label { color: var(--text-muted); }
         #coordReadout .cr-val   { color: var(--teal); }
@@ -2543,7 +2663,7 @@
         }
         #alertRibbon.amber .ar-chev { color: var(--amber); }
         #alertRibbon .ar-text {
-            font-size:var(--text-sm); font-weight: 700; letter-spacing: 1.5px; color: var(--red);
+            font-size:var(--text-sm); font-weight: 700; letter-spacing: var(--track-title); color: var(--red);
         }
         #alertRibbon.amber .ar-text { color: var(--yellow); }
         #alertRibbon .ar-text .ar-hi { color: #fff; }
@@ -2577,7 +2697,7 @@
             border-radius:var(--radius-md); padding:var(--space-0-5) var(--space-2);
         }
         #uiZoomCtl.show { display:flex; }
-        #uiZoomCtl .uz-lbl { font-size:var(--text-2xs); letter-spacing:1px; color:var(--text-muted); }
+        #uiZoomCtl .uz-lbl { font-size:var(--text-2xs); letter-spacing:var(--track-hud); color:var(--text-muted); }
         #uiZoomSlider { width:80px; accent-color:var(--teal); cursor:pointer; }
         #uiZoomVal {
             font-family:var(--font-mono), monospace; font-size:var(--text-2xs);
@@ -2650,7 +2770,7 @@
                     mask-composite: exclude;
             opacity: 0;
             pointer-events: none;
-            transition: opacity .25s ease;
+            transition: opacity var(--dur-calm) ease;
             animation: panel-ring-spin 5s linear infinite paused;
         }
         .panel:hover::before {
@@ -2704,7 +2824,7 @@
         .thr-chip {
             float: right;                                /* หัวแผงเป็น block — float ทำให้ป้ายไปชิดขวาโดยไม่ต้องแปลง layout เดิมเป็น flex */
             font-family: var(--font-mono), monospace; font-size: var(--text-2xs);
-            letter-spacing: 1px; line-height: 1;
+            letter-spacing: var(--track-hud); line-height: 1;
             padding: var(--space-px) var(--space-1);
             border: 1px solid transparent; border-radius: var(--radius-xs);
         }
@@ -2726,10 +2846,10 @@
             -webkit-backdrop-filter: none !important;
         }
         .panel-title {
-            font-size:var(--text-xs); font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+            font-size:var(--text-xs); font-weight:700; letter-spacing:var(--track-title); text-transform:uppercase;
             border-left: 2px solid currentColor; padding-left:var(--space-1-5);
         }
-        .panel-sub   { font-size:var(--text-xs); letter-spacing:1px; opacity:.65; margin-top:-4px; }
+        .panel-sub   { font-size:var(--text-xs); letter-spacing:var(--track-hud); opacity:.65; margin-top:-4px; }
         hr.divider   { border:none; border-top:1px solid var(--border-dim); margin:var(--space-px) 0; }
         .sensor-row  { display:flex; justify-content:space-between; align-items:center;
             font-size:var(--text-xs); color:var(--text-muted); line-height:1.5; }
@@ -2758,7 +2878,7 @@
         .map-hdr-tools { display:flex; align-items:center; gap:var(--space-1);
             flex-shrink:0; }
         .mh-group-label {
-            font-size:var(--text-xs); color:var(--text-muted); letter-spacing:1px;
+            font-size:var(--text-xs); color:var(--text-muted); letter-spacing:var(--track-hud);
             font-weight:700; padding-right:var(--space-px);
         }
         .mh-divider {
@@ -2776,15 +2896,15 @@
             position:absolute; top:12px; right:16px; z-index:10;
             background:rgba(124,58,237,.22); border:1px solid rgba(167,139,250,.5);
             color:var(--purple-dim); font-size:var(--text-sm); padding:var(--space-1) var(--space-3); border-radius:var(--radius-sm);
-            cursor:pointer; font-family:var(--font-mono); letter-spacing:.5px;
+            cursor:pointer; font-family:var(--font-mono); letter-spacing:var(--track-mono);
         }
         #spaceGlobeClose:hover { background:rgba(124,58,237,.38); }
         #sgHud {
             position:absolute; top:14px; left:16px; z-index:10;
             color:var(--purple-dim); font-family:var(--font-mono);
         }
-        #sgHud .sg-title { font-size:var(--text-md); font-weight:700; letter-spacing:1px; color:var(--purple-light); }
-        #sgHud .sg-subtitle { font-size:var(--text-2xs); color:var(--purple-deep); margin-top:var(--space-0-5); letter-spacing:.5px; }
+        #sgHud .sg-title { font-size:var(--text-md); font-weight:700; letter-spacing:var(--track-hud); color:var(--purple-light); }
+        #sgHud .sg-subtitle { font-size:var(--text-2xs); color:var(--purple-deep); margin-top:var(--space-0-5); letter-spacing:var(--track-mono); }
         #sgPanel {
             position:absolute; top:60px; left:0; width:260px; bottom:40px;
             background:rgba(4,2,16,.82); border-right:1px solid rgba(124,58,237,.3);
@@ -2792,11 +2912,11 @@
             font-family:var(--font-mono);
         }
         #sgPanel .sg-panel-title {
-            font-size:var(--text-xs); font-weight:700; color:var(--purple-dim); letter-spacing:1px;
+            font-size:var(--text-xs); font-weight:700; color:var(--purple-dim); letter-spacing:var(--track-hud);
             padding:var(--space-1) var(--space-3) var(--space-2); border-bottom:1px solid rgba(124,58,237,.2); margin-bottom:var(--space-1-5);
         }
         #sgPanel .sg-section-label {
-            font-size:var(--text-2xs); font-weight:700; letter-spacing:.5px; padding:var(--space-1) var(--space-3) var(--space-0-5);
+            font-size:var(--text-2xs); font-weight:700; letter-spacing:var(--track-mono); padding:var(--space-1) var(--space-3) var(--space-0-5);
             color:var(--purple-light);
         }
         .sg-sat-list { padding:0 var(--space-2) var(--space-1); }
@@ -2895,7 +3015,7 @@
             min-width:238px; max-width:290px;
         }
         #dive3dHud .d3-title { color:var(--cyan); font-weight:700;
-            font-size:var(--text-base); letter-spacing:1px;
+            font-size:var(--text-base); letter-spacing:var(--track-hud);
             display:flex; align-items:center; gap:var(--space-1-5);
             padding-bottom:var(--space-1); margin-bottom:var(--space-1-5);
             border-bottom:1px solid var(--border-dim); }
@@ -2972,7 +3092,7 @@
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--cyan);
             color:var(--cyan); font-family:var(--font-mono), monospace;
             font-size:var(--text-sm); padding:var(--space-2) var(--space-3); min-height:44px; min-width:44px; border-radius:var(--radius-sm);
-            cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+            cursor:pointer; letter-spacing:var(--track-cap); white-space:nowrap;
             display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
         #d3resetBtn:hover { background:rgb(var(--cyan-rgb) / .22); }
@@ -2980,7 +3100,7 @@
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--purple);
             color:var(--purple); font-family:var(--font-mono), monospace;
             font-size:var(--text-sm); padding:var(--space-2) var(--space-3); min-height:44px; min-width:44px; border-radius:var(--radius-sm);
-            cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+            cursor:pointer; letter-spacing:var(--track-cap); white-space:nowrap;
             display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
         #d3northBtn:hover { background:rgb(var(--purple-rgb) / .22); }
@@ -2988,7 +3108,7 @@
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--amber);
             color:var(--yellow); font-family:var(--font-mono), monospace;
             font-size:var(--text-sm); padding:var(--space-2) var(--space-3); min-height:44px; min-width:44px; border-radius:var(--radius-sm);
-            cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+            cursor:pointer; letter-spacing:var(--track-cap); white-space:nowrap;
             display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
         #d3straitBtn:hover { background:rgb(var(--amber-rgb) / .22); }
@@ -3001,7 +3121,7 @@
             color:color-mix(in srgb, var(--teal) 62%, var(--n-100));
             font-family:var(--font-mono), monospace;
             font-size:var(--text-sm); padding:var(--space-2) var(--space-3); min-height:44px; min-width:44px; border-radius:var(--radius-sm);
-            cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+            cursor:pointer; letter-spacing:var(--track-cap); white-space:nowrap;
             display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
         #d3udcBtn:hover { background:rgb(var(--teal-rgb) / .22); }
@@ -3012,7 +3132,7 @@
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--pink);
             color:var(--pink-hi); font-family:var(--font-mono), monospace;
             font-size:var(--text-sm); padding:var(--space-2) var(--space-3); min-height:44px; min-width:44px; border-radius:var(--radius-sm);
-            cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+            cursor:pointer; letter-spacing:var(--track-cap); white-space:nowrap;
             display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
         #d3raysBtn:hover { background:rgb(var(--pink-rgb) / .22);
@@ -3024,7 +3144,7 @@
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--amber);
             color:var(--warn-hi); font-family:var(--font-mono), monospace;
             font-size:var(--text-sm); padding:var(--space-2) var(--space-3); min-height:44px; min-width:44px; border-radius:var(--radius-sm);
-            cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+            cursor:pointer; letter-spacing:var(--track-cap); white-space:nowrap;
             display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
         #d3sedBtn:hover { background:rgb(var(--amber-rgb) / .22);
@@ -3036,7 +3156,7 @@
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--cyan-mid);
             color:var(--cyan-hi); font-family:var(--font-mono), monospace;
             font-size:var(--text-sm); padding:var(--space-2) var(--space-3); min-height:44px; min-width:44px; border-radius:var(--radius-sm);
-            cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+            cursor:pointer; letter-spacing:var(--track-cap); white-space:nowrap;
             display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
         /* [v17.39.0 D3-1g] เดิม rgba(56,189,248,…) = #38bdf8 = --cyan-mid ของธีมปริยาย
@@ -3051,7 +3171,7 @@
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--orange);
             color:var(--orange-hi); font-family:var(--font-mono), monospace;
             font-size:var(--text-sm); padding:var(--space-2) var(--space-3); min-height:44px; min-width:44px; border-radius:var(--radius-sm);
-            cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+            cursor:pointer; letter-spacing:var(--track-cap); white-space:nowrap;
             display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
         #d3detonateBtn:hover { background:rgb(var(--orange-rgb) / .22);
@@ -3085,7 +3205,7 @@
             background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--n-300);
             color:var(--n-100); font-family:var(--font-mono), monospace;
             font-size:var(--text-sm); padding:var(--space-2) var(--space-3); min-height:44px; min-width:44px; border-radius:var(--radius-sm);
-            cursor:pointer; letter-spacing:.4px; white-space:nowrap;
+            cursor:pointer; letter-spacing:var(--track-cap); white-space:nowrap;
             display:flex; align-items:center; justify-content:center; touch-action:manipulation;
         }
         #d3ssaoBtn:hover { background:color-mix(in srgb, var(--n-300) 20%, transparent); }
@@ -3117,7 +3237,7 @@
         #dive3dSedLegend .sed-lg-toggle:hover { background:rgb(var(--amber-rgb) / .34); box-shadow:0 0 8px rgb(var(--amber-rgb) / .4); }
         #dive3dSedLegend .sed-lg-title {
             font-size:var(--text-sm); font-weight:bold; color:var(--warn-hi);
-            letter-spacing:.2px; margin-bottom:var(--space-1); line-height:1.4;
+            letter-spacing:var(--track-body); margin-bottom:var(--space-1); line-height:1.4;
         }
         /* [v17.39.0 D3-1g] #b59866 ทั้งสามจุด (แหล่งอ้างอิง/บรรทัดรอง/หมายเหตุ)
            คือ "ทองหม่น" อ่อนกว่าหัวข้อหนึ่งขั้น → ตรงกับ --brass ซึ่งมีครบทั้ง ๗ ชุดสี
@@ -3139,7 +3259,7 @@
             border:1px solid color-mix(in srgb, var(--n-100) 30%, transparent); display:inline-block;
         }
         #dive3dSedLegend .sed-nm { color:var(--n-100); }
-        #dive3dSedLegend .sed-here-tag { color:var(--amber); font-size:var(--text-xs); font-weight:bold; letter-spacing:.3px; }
+        #dive3dSedLegend .sed-here-tag { color:var(--amber); font-size:var(--text-xs); font-weight:bold; letter-spacing:var(--track-label); }
         /* [v17.39.0 D3-1g] ชื่ออังกฤษเป็นข้อความจางสุดของแผง — เดิม #9c855f คือ
            --brass หรี่ลง ใช้ color-mix ที่จุดใช้งานแทนการเพิ่มโทเคนใหม่อีก ๗ ชุด */
         #dive3dSedLegend .sed-en { color:color-mix(in srgb, var(--brass) 72%, var(--bg-dark)); font-style:normal; font-size:var(--text-xs); margin-left:auto; }
@@ -3172,7 +3292,7 @@
             background:rgb(var(--cyan-rgb) / .10); border:1px solid var(--cyan);
             border-radius:var(--radius-sm); color:var(--cyan);
             font-family:var(--font-mono), monospace; font-size:var(--text-xs);
-            padding:var(--space-0-5) var(--space-2); cursor:pointer; letter-spacing:.4px;
+            padding:var(--space-0-5) var(--space-2); cursor:pointer; letter-spacing:var(--track-cap);
         }
         .dive3d-btn:hover { background:rgb(var(--cyan-rgb) / .22);
             box-shadow:0 0 10px rgb(var(--cyan-rgb) / .4); }
@@ -3196,7 +3316,7 @@
             background:rgb(var(--orange-rgb) / .92); color:#fff;
             padding:var(--space-1) var(--space-4); border-radius:var(--radius-sm);
             font-family:var(--font-mono), monospace; font-size:var(--text-sm); font-weight:bold;
-            animation:blink .4s infinite; letter-spacing:1px;
+            animation:blink .4s infinite; letter-spacing:var(--track-hud);
             white-space:nowrap; pointer-events:none;
             box-shadow:0 0 18px rgb(var(--orange-rgb) / .7);
         }
@@ -3223,7 +3343,7 @@
         /* v17.27.0 IFF-1 — หัวข้อกลุ่ม: แยกสัญลักษณ์ตาม "ฝ่าย" ไม่ใช่เรียงยาวแถวเดียว
            ผู้บังคับบัญชาต้องกวาดตาหาคำตอบว่า "จุดสีนี้ฝ่ายไหน" ให้ได้ในครั้งเดียว */
         .iff-group { display:flex; align-items:center; gap:var(--space-1-5);
-            margin:var(--space-1-5) 0 var(--space-0-5); font-size:var(--text-xs); letter-spacing:0.08em; text-transform:uppercase;
+            margin:var(--space-1-5) 0 var(--space-0-5); font-size:var(--text-xs); letter-spacing:var(--track-em-wide); text-transform:uppercase;
             color:var(--text-muted); white-space:nowrap; }
         .iff-group:first-child { margin-top:0; }
         .iff-group::after { content:''; flex:1; height:1px; background:var(--border-dim); }
@@ -3259,8 +3379,8 @@
             flex:1; padding:var(--space-0-5) 0; background:transparent;
             border:1px solid var(--border-dim); border-radius:var(--radius-sm);
             color:var(--text-dim); font-family:var(--font-mono), monospace;
-            font-size:var(--text-2xs); font-weight:700; letter-spacing:1px; cursor:pointer;
-            transition:background .2s, color .2s, border-color .2s;
+            font-size:var(--text-2xs); font-weight:700; letter-spacing:var(--track-hud); cursor:pointer;
+            transition:background var(--dur-quick), color var(--dur-quick), border-color var(--dur-quick);
         }
         .si-tab:hover { color:var(--text-main); }
         .si-tab:focus-visible { outline:2px solid var(--focus); outline-offset:1px; }
@@ -3274,8 +3394,8 @@
             padding:1px 5px; background:transparent; border:1px solid var(--border-dim);
             border-radius:999px; color:var(--text-dim);
             font-family:var(--font-mono), monospace; font-size:var(--text-2xs);
-            font-weight:700; letter-spacing:.5px; cursor:pointer;
-            transition:background .2s, color .2s, border-color .2s;
+            font-weight:700; letter-spacing:var(--track-mono); cursor:pointer;
+            transition:background var(--dur-quick), color var(--dur-quick), border-color var(--dur-quick);
         }
         .si-dchip:hover { color:var(--text-main); }
         .si-dchip:focus-visible { outline:2px solid var(--focus); outline-offset:1px; }
@@ -3285,7 +3405,7 @@
         }
         .si-count {
             margin-top:var(--space-1); font-family:var(--font-mono), monospace;
-            font-size:var(--text-2xs); color:var(--text-dim); letter-spacing:.5px;
+            font-size:var(--text-2xs); color:var(--text-dim); letter-spacing:var(--track-mono);
         }
         .si-list { display:flex; flex-direction:column; gap:var(--space-px); margin-top:var(--space-0-5); }
         /* การ์ดสถานการณ์ — ขนาดเดียว รูปทรงเดียว ทุกใบ
@@ -3297,7 +3417,7 @@
             background:var(--bg-deeper); border:1px solid var(--border-dim);
             border-left:3px solid var(--si, var(--border-dim));
             border-radius:var(--radius-sm); color:var(--text-main); cursor:pointer;
-            transition:background .2s, border-color .2s;
+            transition:background var(--dur-quick), border-color var(--dur-quick);
         }
         .si-card:hover {
             background:color-mix(in srgb, var(--si) 12%, var(--bg-deeper));
@@ -3325,7 +3445,7 @@
         }
         .si-card[disabled]:hover .si-ico { color:var(--text-dim); }
         .si-card.si-hide { display:none; }
-        .si-ico { font-size:13px; color:var(--text-dim); transition:color .2s; }
+        .si-ico { font-size:13px; color:var(--text-dim); transition:color var(--dur-quick); }
         .si-body { min-width:0; display:flex; flex-direction:column; gap:1px; }
         .si-name {
             font-family:var(--font-body), sans-serif; font-size:var(--text-sm); font-weight:700;
@@ -3339,8 +3459,8 @@
             flex-shrink:0; padding:1px 4px; border-radius:var(--radius-xs);
             border:1px solid var(--border-dim); background:transparent;
             font-family:var(--font-mono), monospace; font-size:var(--text-2xs);
-            font-weight:700; letter-spacing:.5px; color:var(--text-dim);
-            transition:color .2s, border-color .2s;
+            font-weight:700; letter-spacing:var(--track-mono); color:var(--text-dim);
+            transition:color var(--dur-quick), border-color var(--dur-quick);
         }
         .si-empty {
             padding:var(--space-2); text-align:center; color:var(--text-dim);
@@ -3375,7 +3495,7 @@
             background:rgb(var(--bg-panel-rgb) / 0.88); border:1px solid var(--green); border-radius:var(--radius-md);
             color:var(--green); font-family:var(--font-mono), monospace; font-size:var(--text-base);
             padding:var(--space-1) var(--space-2); cursor:pointer; display:block;
-            box-shadow:0 0 10px rgb(var(--green-rgb) / .3); transition:all .2s;
+            box-shadow:0 0 10px rgb(var(--green-rgb) / .3); transition:all var(--dur-quick);
         }
         .reef-toggle-btn:hover { background:rgb(var(--green-rgb) / .15); box-shadow:0 0 14px rgb(var(--green-rgb) / .45); }
         /* ── ปุ่มเปิด-ปิดข้อมูลเรือพาณิชย์สด (AIS) ── */
@@ -3389,8 +3509,8 @@
             padding:var(--space-0-5) var(--space-2);
             cursor: pointer;
             display: block;
-            transition: all .25s;
-            letter-spacing: .4px;
+            transition: all var(--dur-calm);
+            letter-spacing: var(--track-cap);
         }
         .ais-toggle-btn:hover { background: rgb(var(--teal-rgb) / .10); }
         .ais-toggle-btn.ais-live {
@@ -3415,7 +3535,7 @@
             padding:var(--space-0-5) var(--space-2);
             border-radius:var(--radius-sm);
             cursor: pointer;
-            transition: all .25s;
+            transition: all var(--dur-calm);
             white-space: nowrap;
             flex-shrink: 0;
         }
@@ -3470,7 +3590,7 @@
             background:rgb(var(--bg-panel-rgb) / 0.88); border:1px solid rgba(255,255,255,0.65); border-radius:var(--radius-md);
             color:#e0e0e0; font-family:var(--font-mono), monospace; font-size:var(--text-base);
             padding:var(--space-1) var(--space-2); cursor:pointer; display:block;
-            box-shadow:0 0 8px rgba(255,255,255,.15); transition:all .2s; white-space:nowrap;
+            box-shadow:0 0 8px rgba(255,255,255,.15); transition:all var(--dur-quick); white-space:nowrap;
         }
         .safety-zone-toggle-btn:hover { background:rgba(255,255,255,.10); box-shadow:0 0 14px rgba(255,255,255,.30); }
         /* ── โหมดวางเส้นทางลาดตระเวน ── */
@@ -3478,7 +3598,7 @@
             background:rgb(var(--bg-panel-rgb) / 0.88); border:1.5px solid rgb(var(--teal-rgb) / 0.55); border-radius:var(--radius-md);
             color:var(--teal); font-family:var(--font-mono), monospace; font-size:var(--text-base);
             padding:var(--space-1) var(--space-2); cursor:pointer; display:block;
-            box-shadow:0 0 8px rgb(var(--teal-rgb) / .15); transition:all .2s; white-space:nowrap;
+            box-shadow:0 0 8px rgb(var(--teal-rgb) / .15); transition:all var(--dur-quick); white-space:nowrap;
         }
         .place-patrol-btn:hover { background:rgb(var(--teal-rgb) / .12); box-shadow:0 0 14px rgb(var(--teal-rgb) / .45); }
         .place-patrol-btn.active {
@@ -3499,7 +3619,7 @@
             background:rgb(var(--bg-panel-rgb) / 0.88); border:1.5px solid rgba(251,191,36,0.65); border-radius:var(--radius-md);
             color:var(--amber); font-family:var(--font-mono), monospace; font-size:var(--text-base);
             padding:var(--space-1) var(--space-2); cursor:pointer; display:block;
-            box-shadow:0 0 8px rgba(251,191,36,.15); transition:all .2s; white-space:nowrap;
+            box-shadow:0 0 8px rgba(251,191,36,.15); transition:all var(--dur-quick); white-space:nowrap;
         }
         .place-survey-btn:hover { background:rgba(251,191,36,.12); box-shadow:0 0 14px rgba(251,191,36,.4); }
         .place-survey-btn.active {
@@ -3511,7 +3631,7 @@
             background:rgb(var(--bg-panel-rgb) / 0.88); border:1.5px solid rgb(var(--cyan-rgb) / 0.65); border-radius:var(--radius-md);
             color:var(--cyan); font-family:var(--font-mono), monospace; font-size:var(--text-base);
             padding:var(--space-1) var(--space-2); cursor:pointer; display:block;
-            box-shadow:0 0 8px rgb(var(--cyan-rgb) / .15); transition:all .2s; white-space:nowrap;
+            box-shadow:0 0 8px rgb(var(--cyan-rgb) / .15); transition:all var(--dur-quick); white-space:nowrap;
         }
         .place-guuv-btn:hover { background:rgb(var(--cyan-rgb) / .12); box-shadow:0 0 14px rgb(var(--cyan-rgb) / .45); }
         .place-guuv-btn.active {
@@ -3531,7 +3651,7 @@
             content: none; /* [v17.3.1 FIX-6b] ลบป้าย DEPLOY BLUE FORCE (ค้างจากอดีต · เครื่องมือวางกำลังย้ายไปแผง Blue Force Operations แล้ว · เคยทับการ์ดอำนาจกฎหมาย) */
             display: block;
             font-family: var(--font-mono), monospace;
-            font-size:var(--text-xs); color: var(--text-muted); letter-spacing: 1px;
+            font-size:var(--text-xs); color: var(--text-muted); letter-spacing: var(--track-hud);
             text-align: center; padding:var(--space-0-5) 0 var(--space-0-5);
         }
         .leaflet-top.leaflet-right .leaflet-control {
@@ -3591,7 +3711,7 @@
             background:rgb(var(--bg-panel-rgb) / 0.88); border:1px solid rgba(255,255,255,0.65); border-radius:var(--radius-md);
             color:#e0e0e0; font-family:var(--font-mono), monospace; font-size:var(--text-base);
             padding:var(--space-1) var(--space-2); cursor:pointer; display:block;
-            box-shadow:0 0 8px rgba(255,255,255,.15); transition:all .2s; white-space:nowrap;
+            box-shadow:0 0 8px rgba(255,255,255,.15); transition:all var(--dur-quick); white-space:nowrap;
         }
         .cable-toggle-btn:hover { background:rgba(255,255,255,.10); box-shadow:0 0 14px rgba(255,255,255,.30); }
         .cable-toggle-btn.active-a {
@@ -3613,7 +3733,7 @@
             background:rgb(var(--bg-panel-rgb) / 0.88); border:1px solid rgba(251,146,60,0.70); border-radius:var(--radius-md);
             color:var(--orange); font-family:var(--font-mono), monospace; font-size:var(--text-base);
             padding:var(--space-1) var(--space-2); cursor:pointer; display:block;
-            box-shadow:0 0 8px rgba(251,146,60,.20); transition:all .2s; white-space:nowrap;
+            box-shadow:0 0 8px rgba(251,146,60,.20); transition:all var(--dur-quick); white-space:nowrap;
         }
         .sloc-toggle-btn:hover { background:rgba(251,146,60,.12); box-shadow:0 0 14px rgba(251,146,60,.45); }
         .sloc-toggle-btn.active {
@@ -3625,7 +3745,7 @@
             background:rgb(var(--bg-panel-rgb) / 0.88); border:1px solid rgb(var(--cyan-rgb) / 0.55); border-radius:var(--radius-md);
             color:var(--cyan); font-family:var(--font-mono), monospace; font-size:var(--text-sm);
             padding:var(--space-1) var(--space-2); cursor:pointer; display:block; min-width:114px; text-align:center;
-            box-shadow:0 0 8px rgb(var(--cyan-rgb) / .18); transition:all .2s; white-space:nowrap;
+            box-shadow:0 0 8px rgb(var(--cyan-rgb) / .18); transition:all var(--dur-quick); white-space:nowrap;
         }
         .openseamap-btn:hover { background:rgb(var(--cyan-rgb) / .10); box-shadow:0 0 14px rgb(var(--cyan-rgb) / .45); }
         /* สีตอนเปิดใช้งานกำหนดแยกตามโหมดในโค้ด · คลาส .active คงแสงเรืองไว้ */
@@ -3691,7 +3811,7 @@
         .mwx-val.crit { color: var(--red); }
         .mwx-section-head {
             font-size:var(--text-2xs);
-            letter-spacing: .08em;
+            letter-spacing: var(--track-em-wide);
             color: rgba(255,255,255,.35);
             text-transform: uppercase;
             padding:var(--space-1-5) 0 var(--space-0-5);
@@ -3741,7 +3861,7 @@
         .mspec-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--space-0-5); }
         .mspec-band { color: rgba(255,255,255,.72); font-size:var(--text-xs); font-weight:600; letter-spacing:.02em; }
         .mspec-band small { color: rgba(255,255,255,.4); font-weight:400; }
-        .mspec-state { font-size:var(--text-2xs); font-weight: 700; letter-spacing:.05em; }
+        .mspec-state { font-size:var(--text-2xs); font-weight: 700; letter-spacing:var(--track-em); }
         .mspec-bar { height: 8px; border-radius:var(--radius-xs); background: rgba(255,255,255,.07); overflow:hidden; position:relative; }
         .mspec-fill { height: 100%; width: 0%; border-radius:var(--radius-xs); transition: width .5s ease, background .4s ease; }
         /* ป้ายกำกับแหล่งข้อมูล — LIVE (จากเซ็นเซอร์จริง) vs SIM (สาธิตตามหลักนิยม) */
@@ -3773,12 +3893,12 @@
             font-family:var(--font-mono), monospace; font-size:var(--text-xs);
             color:var(--text-muted); display:none; pointer-events:none;
             backdrop-filter:blur(6px);
-            transition: border-color .3s;
+            transition: border-color var(--dur-med);
         }
         #isobathLegend.visible { display:block; }
         /* leg-title สีเปลี่ยนตาม mode ผ่าน inline style */
         #isobathLegend .leg-title {
-            font-size:var(--text-xs); letter-spacing:1px; font-weight:700;
+            font-size:var(--text-xs); letter-spacing:var(--track-hud); font-weight:700;
             margin-bottom:var(--space-0-5); text-align:center;
         }
         /* ── หน้าต่างกราฟสด น้ำขึ้นน้ำลง และตัวปรับค่าการตรวจจับ ── */
@@ -3827,7 +3947,7 @@
             color: var(--cyan);
             font-family: var(--font-mono), monospace;
             font-size:var(--text-sm); font-weight: 700;
-            letter-spacing: 1.5px;
+            letter-spacing: var(--track-title);
         }
         #windyPanelClose {
             margin-left: auto;
@@ -3907,7 +4027,7 @@
         .cc-seabar .cc-sea-val { color: #93c5fd; font-weight: 700; }
         .cc-seabar .cc-sea-pill {
             margin-left: auto; padding:var(--space-px) var(--space-1-5); border-radius:var(--radius-lg);
-            font-weight: 700; letter-spacing: .05em; font-size:var(--text-2xs);
+            font-weight: 700; letter-spacing: var(--track-em); font-size:var(--text-2xs);
             border: 1px solid currentColor;
         }
         .cc-pill-ok   { color: var(--green); background: rgba(34,197,94,.12); }
@@ -3956,7 +4076,7 @@
         }
         #coastCamStatus[data-shown="1"] { display: flex; }
         #coastCamStatus .cc-st-ico  { font-size:var(--text-2xl); }
-        #coastCamStatus .cc-st-main { color: var(--amber); font-weight: 700; font-size:var(--text-sm); letter-spacing: .05em; }
+        #coastCamStatus .cc-st-main { color: var(--amber); font-weight: 700; font-size:var(--text-sm); letter-spacing: var(--track-em); }
         #coastCamStatus a { color: var(--teal); }
         .cc-foot {
             padding:var(--space-1) var(--space-2);
@@ -3994,7 +4114,7 @@
             color: var(--orange);
             font-family: var(--font-mono), monospace;
             font-size:var(--text-sm); font-weight: 700;
-            letter-spacing: 1.5px;
+            letter-spacing: var(--track-title);
         }
         .seis-tabs {
             display: flex; gap:var(--space-0-5); margin-left: auto; margin-right:var(--space-1);
@@ -4008,7 +4128,7 @@
             font-size:var(--text-xs);
             padding:var(--space-0-5) var(--space-1-5);
             cursor: pointer;
-            transition: all .2s;
+            transition: all var(--dur-quick);
             white-space: nowrap;
         }
         .seis-tab:hover  { background: rgba(251,146,60,.10); color: var(--orange); }
@@ -4054,7 +4174,7 @@
             font-size:var(--text-xs);
             padding:var(--space-0-5) var(--space-2);
             cursor: pointer;
-            transition: all .2s;
+            transition: all var(--dur-quick);
             white-space: nowrap;
             flex-shrink: 0;
         }
@@ -4070,7 +4190,7 @@
             font-size:var(--text-xs);
             padding:var(--space-0-5) var(--space-2);
             cursor: pointer;
-            transition: all .25s;
+            transition: all var(--dur-calm);
             white-space: nowrap;
             flex-shrink: 0;
         }
@@ -4092,7 +4212,7 @@
             font-size:var(--text-xs);
             padding:var(--space-0-5) var(--space-2);
             cursor: pointer;
-            transition: all .25s;
+            transition: all var(--dur-calm);
             white-space: nowrap;
             flex-shrink: 0;
         }
@@ -4146,7 +4266,7 @@
             background:rgb(var(--bg-panel-rgb) / 0.88); border:1px solid rgba(255,80,80,0.65); border-radius:var(--radius-md);
             color:var(--red); font-family:var(--font-mono), monospace; font-size:var(--text-base);
             padding:var(--space-1) var(--space-2); cursor:pointer; display:block;
-            box-shadow:0 0 8px rgba(255,80,80,.20); transition:all .2s; white-space:nowrap;
+            box-shadow:0 0 8px rgba(255,80,80,.20); transition:all var(--dur-quick); white-space:nowrap;
         }
         .radar-toggle-btn:hover { background:rgba(255,80,80,.12); box-shadow:0 0 14px rgba(255,80,80,.45); }
         .radar-toggle-btn.active {
@@ -4158,7 +4278,7 @@
             background:rgb(var(--bg-panel-rgb) / 0.88); border:1px solid rgba(251,191,36,0.65); border-radius:var(--radius-md);
             color:var(--amber); font-family:var(--font-mono), monospace; font-size:var(--text-base);
             padding:var(--space-1) var(--space-2); cursor:pointer; display:block; margin-top:var(--space-1-5);
-            box-shadow:0 0 8px rgba(251,191,36,.20); transition:all .2s; white-space:nowrap;
+            box-shadow:0 0 8px rgba(251,191,36,.20); transition:all var(--dur-quick); white-space:nowrap;
         }
         .terrain-shadow-btn:hover { background:rgba(251,191,36,.12); box-shadow:0 0 14px rgba(251,191,36,.45); }
         .terrain-shadow-btn.active {
@@ -4196,7 +4316,7 @@
             font-family:var(--font-mono), monospace; font-size:var(--text-xs);
             text-align:center; line-height:1.3;
             background:rgba(255,255,255,.04); border:1px solid var(--border-dim);
-            color:var(--text-muted); transition:all .15s;
+            color:var(--text-muted); transition:all var(--dur-fast);
         }
         .ss-btn:hover { background:rgba(255,255,255,.09); }
         /* [v16.0.2 UX5] เพิ่ม --ssc-rgb คู่กับ --ssc (เดิมอ้าง --ssc-rgb แต่ไม่เคยนิยาม → background ของ .active หาย)
@@ -4230,7 +4350,7 @@
             font-family:var(--font-mono), monospace; font-size:var(--text-2xs);
             text-align:center; line-height:1.4;
             background:rgba(255,255,255,.04); border:1px solid var(--border-dim);
-            color:var(--text-muted); transition:all .15s; white-space:nowrap;
+            color:var(--text-muted); transition:all var(--dur-fast); white-space:nowrap;
         }
         .svp-btn:hover { background:rgba(255,255,255,.09); }
         /* [v16.0.2 UX5] แก้ var(--X)44 → rgb(var(--X-rgb) / .27) (pattern เดิม invalid, glow ไม่เคยแสดง) */
@@ -4260,7 +4380,7 @@
 
         /* ── ลูกเล่นตอบสนองการกดปุ่มบนแผนที่และหน้าต่าง (รูปแบบเดียวกันทั้งระบบ) ── */
         #bathyBtn, #seaZonesBtn, #elevBtn, #gfwBtn, #windyBtn, #chartToggleBtn, #aisToggleBtn, #aisKplerBtn, #svImportBtn, #svResetBtn, #dive3dBtn, #audioBtn, .radar-toggle-btn, .terrain-shadow-btn, .ss-btn, .svp-btn {
-            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease !important;
+            transition: transform var(--dur-fast) cubic-bezier(0.4, 0, 0.2, 1), box-shadow var(--dur-fast) ease, background-color var(--dur-fast) ease, border-color var(--dur-fast) ease, color var(--dur-fast) ease !important;
         }
         #bathyBtn:hover, #seaZonesBtn:hover, #elevBtn:hover, #gfwBtn:hover, #windyBtn:hover, #chartToggleBtn:hover, #aisToggleBtn:hover, #aisKplerBtn:hover, #svImportBtn:hover, #svResetBtn:hover, #dive3dBtn:hover, #audioBtn:hover, .radar-toggle-btn:hover, .terrain-shadow-btn:hover, .ss-btn:hover, .svp-btn:hover {
             transform: scale(1.04);
@@ -4301,7 +4421,7 @@
             display:flex; justify-content:space-between; align-items:center;
             font-family:var(--font-mono), monospace; font-size:var(--text-xs);
         }
-        .tl-hdr-title { color:var(--cyan); font-weight:700; letter-spacing:1px; }
+        .tl-hdr-title { color:var(--cyan); font-weight:700; letter-spacing:var(--track-hud); }
         .tl-hdr-right { color:var(--text-muted); font-size:var(--text-xs); }
         .tl-idle {
             font-family:var(--font-mono), monospace; font-size:var(--text-xs);
@@ -4359,10 +4479,10 @@
                บันไดทั้งแถบจึงจมอยู่ที่ .42 วัดได้ 2.05:1 (roe-th) และ 3.16:1 (roe-en)
                ต่ำกว่าเกณฑ์ WCAG AA 4.5:1 ทั้งคู่ · .62 ยกเป็น ~5.4:1 / ~5.5:1
                ลำดับความสำคัญยังอยู่ครบเพราะ .active มีพื้นสี + เรืองแสงของตัวเอง */
-            opacity:.62; transition:all .25s;
+            opacity:.62; transition:all var(--dur-calm);
         }
         .roe-rung .roe-ic { font-size:var(--text-base); }
-        .roe-rung .roe-en { font-size:var(--text-2xs); font-weight:700; letter-spacing:.3px; color:var(--text-main); }
+        .roe-rung .roe-en { font-size:var(--text-2xs); font-weight:700; letter-spacing:var(--track-label); color:var(--text-main); }
         .roe-rung .roe-th { font-size:var(--text-xs); color:var(--n-200); font-family:var(--font-body),sans-serif;
             white-space:nowrap; max-width:100%; overflow:hidden; text-overflow:ellipsis; }
         .roe-rung.passed { opacity:.85; }
@@ -4415,10 +4535,10 @@
             font-size:var(--text-xs);
             padding:var(--space-1) var(--space-2);
             cursor: pointer;
-            transition: all .2s;
+            transition: all var(--dur-quick);
             line-height: 1.2;
             user-select: none;
-            letter-spacing: .5px;
+            letter-spacing: var(--track-mono);
         }
         #legalBtn:hover  { background: rgb(var(--amber-rgb) / .14); border-color: var(--amber); box-shadow: 0 0 10px rgb(var(--amber-rgb) / .45); }
         #legalBtn.active { background: rgb(var(--amber-rgb) / .18); border-color: var(--amber); color: #fff; }
@@ -4433,10 +4553,10 @@
             font-size:var(--text-xs);
             padding:var(--space-1) var(--space-2);
             cursor: pointer;
-            transition: all .2s;
+            transition: all var(--dur-quick);
             line-height: 1.2;
             user-select: none;
-            letter-spacing: .5px;
+            letter-spacing: var(--track-mono);
         }
         #layersToolsBtn:hover  { background: rgb(var(--cyan-rgb) / .14); border-color: rgb(var(--cyan-rgb)); box-shadow: 0 0 10px rgb(var(--cyan-rgb) / .45); }
         #layersToolsBtn.active { background: rgb(var(--cyan-rgb) / .18); border-color: rgb(var(--cyan-rgb)); color: #fff; }
@@ -4458,7 +4578,7 @@
         }
         .lc-hdr {
             font-family:var(--font-mono), monospace; font-size:var(--text-base);
-            font-weight:bold; letter-spacing:1.5px; color:var(--amber);
+            font-weight:bold; letter-spacing:var(--track-title); color:var(--amber);
             padding-bottom:var(--space-2); margin-bottom:var(--space-2);
             border-bottom:1px solid rgb(var(--amber-rgb) / .40);
         }
@@ -4469,7 +4589,7 @@
         }
         .lc-law .lc-tag {
             display:inline-block; padding:0 var(--space-1); margin-right:var(--space-1); border-radius:var(--radius-xs);
-            font-size:var(--text-2xs); letter-spacing:.5px;
+            font-size:var(--text-2xs); letter-spacing:var(--track-mono);
             background:rgb(var(--amber-rgb) / .15); color:var(--amber);
             border:1px solid rgb(var(--amber-rgb) / .35);
         }
@@ -4482,7 +4602,7 @@
         }
         .bp-hdr {
             font-family:var(--font-mono), monospace; font-size:var(--text-base);
-            font-weight:bold; letter-spacing:1.5px;
+            font-weight:bold; letter-spacing:var(--track-title);
             padding-bottom:var(--space-2); margin-bottom:var(--space-2);
             border-bottom:1px solid rgba(255,255,255,.12);
         }
@@ -4498,7 +4618,7 @@
             margin-top:var(--space-2); padding:var(--space-1) var(--space-2); border-radius:var(--radius-sm);
             font-family:var(--font-mono), monospace;
             font-size:var(--text-xs); text-align:center;
-            letter-spacing:1px; font-weight:bold;
+            letter-spacing:var(--track-hud); font-weight:bold;
         }
 
         /* ── หน้าต่างเตือนภัย FLS (ทับบนแผนที่ — หยุดภาพค้างไว้) ── */
@@ -4510,7 +4630,7 @@
             border:1.5px solid var(--red);
             border-radius:var(--radius-xl); padding:var(--space-3) var(--space-4) var(--space-3);
             opacity:0; pointer-events:none; visibility:hidden;
-            transition:opacity .3s, transform .3s, visibility .3s;
+            transition:opacity var(--dur-med), transform var(--dur-med), visibility var(--dur-med);
             backdrop-filter:blur(14px);
             box-shadow:0 0 40px rgba(255,65,54,.35), 0 0 80px rgba(255,65,54,.12);
         }
@@ -4520,7 +4640,7 @@
         }
         .fls-hdr {
             font-family:var(--font-mono), monospace; font-size:var(--text-md);
-            font-weight:bold; letter-spacing:2px; color:var(--red);
+            font-weight:bold; letter-spacing:var(--track-wide); color:var(--red);
             text-align:center; padding-bottom:var(--space-2); margin-bottom:var(--space-2);
             border-bottom:1px solid rgba(255,65,54,.35);
             animation:fls-pulse 1s ease-out 1;
@@ -4531,7 +4651,7 @@
         }
         .fls-section-title {
             font-family:var(--font-mono), monospace; font-size:var(--text-xs);
-            letter-spacing:1.5px; color:rgba(255,255,255,.35);
+            letter-spacing:var(--track-title); color:rgba(255,255,255,.35);
             text-transform:uppercase; margin:var(--space-2) 0 var(--space-1);
         }
         .fls-threat-grid {
@@ -4595,7 +4715,7 @@
             color:var(--red); font-family:var(--font-mono), monospace;
             font-size:var(--text-xs); padding:var(--space-1) var(--space-3); border-radius:var(--radius-sm);
             cursor:pointer; letter-spacing:.8px; font-weight:bold;
-            transition:background .15s;
+            transition:background var(--dur-fast);
         }
         .fls-ack-btn:hover { background:rgba(255,65,54,.35); }
 
@@ -4619,7 +4739,7 @@
             border:1.5px solid var(--teal); border-radius:var(--radius-xl);
             padding:0; overflow:hidden;
             opacity:0; visibility:hidden; pointer-events:none;
-            transition:opacity .20s ease, visibility .20s ease, transform .20s ease;
+            transition:opacity var(--dur-quick) ease, visibility var(--dur-quick) ease, transform var(--dur-quick) ease;
             box-shadow:0 0 50px rgb(var(--teal-rgb) / .22),0 0 100px rgb(var(--teal-rgb) / .12);
             backdrop-filter:blur(16px);
         }
@@ -4669,7 +4789,7 @@
         .pvs-card-hdr { display:flex; align-items:center; gap:var(--space-1-5); margin-bottom:var(--space-1-5); flex-wrap:wrap; }
         .pvs-tier-badge {
             font-family:var(--font-mono), monospace; font-size:var(--text-xs);
-            padding:var(--space-0-5) var(--space-1-5); border-radius:var(--radius-xs); letter-spacing:.4px; white-space:nowrap;
+            padding:var(--space-0-5) var(--space-1-5); border-radius:var(--radius-xs); letter-spacing:var(--track-cap); white-space:nowrap;
         }
         .pvs-tier-1 { background:rgb(var(--red-rgb) / .18); border:1px solid var(--red); color:var(--red); }
         .pvs-tier-2 { background:rgb(var(--amber-rgb) / .18); border:1px solid var(--amber); color:var(--amber); }
@@ -4715,7 +4835,7 @@
             border:1.5px solid var(--teal); border-radius:var(--radius-xl);
             padding:0; overflow:hidden;
             opacity:0; visibility:hidden; pointer-events:none;
-            transition:all .20s ease;
+            transition:all var(--dur-quick) ease;
             box-shadow:0 0 50px rgb(var(--teal-rgb) / .22),0 0 100px rgb(var(--teal-rgb) / .12);
             backdrop-filter:blur(16px);
         }
@@ -4731,12 +4851,12 @@
         }
         .pv-modal-hdr-title {
             font-family:var(--font-mono), monospace; font-size:var(--text-base);
-            font-weight:bold; letter-spacing:1.5px; color:var(--teal);
+            font-weight:bold; letter-spacing:var(--track-title); color:var(--teal);
         }
         .pv-modal-close {
             background:none; border:1px solid rgb(var(--teal-rgb) / .35); border-radius:var(--radius-sm);
             color:var(--teal); font-size:var(--text-base); padding:var(--space-0-5) var(--space-2); cursor:pointer;
-            font-family:var(--font-mono), monospace; transition:background .15s;
+            font-family:var(--font-mono), monospace; transition:background var(--dur-fast);
         }
         .pv-modal-close:hover { background:rgb(var(--teal-rgb) / .15); }
         /* แท็บ */
@@ -4748,7 +4868,7 @@
             border:none; border-right:1px solid rgb(var(--teal-rgb) / .15);
             color:rgb(var(--teal-rgb) / .55); font-family:var(--font-mono), monospace;
             font-size:var(--text-xs); line-height:1.4; padding:var(--space-2) var(--space-1);
-            cursor:pointer; text-align:center; transition:all .15s;
+            cursor:pointer; text-align:center; transition:all var(--dur-fast);
         }
         .pv-tab:last-child { border-right:none; }
         .pv-tab:hover { background:rgb(var(--teal-rgb) / .08); color:var(--teal); }
@@ -4771,7 +4891,7 @@
         .pv-desc-sect.pv-desc-active { display:block; }
         .pv-desc-name {
             font-family:var(--font-mono), monospace; font-size:var(--text-sm);
-            font-weight:bold; color:var(--teal); letter-spacing:1px;
+            font-weight:bold; color:var(--teal); letter-spacing:var(--track-hud);
             margin-bottom:var(--space-1-5);
         }
         .pv-diagram {
@@ -4794,7 +4914,7 @@
         .pv-param-section.pv-params-active { display:block; }
         .pv-param-hdr {
             font-family:var(--font-mono), monospace; font-size:var(--text-2xs);
-            color:rgb(var(--teal-rgb) / .55); letter-spacing:1px;
+            color:rgb(var(--teal-rgb) / .55); letter-spacing:var(--track-hud);
             border-bottom:1px solid rgb(var(--teal-rgb) / .15);
             padding-bottom:var(--space-1); margin-bottom:var(--space-2);
         }
@@ -4850,14 +4970,14 @@
             background:none; border:1px solid rgba(255,255,255,.25);
             color:rgba(255,255,255,.55); font-family:var(--font-mono), monospace;
             font-size:var(--text-sm); padding:var(--space-1-5) var(--space-4); border-radius:var(--radius-sm); cursor:pointer;
-            transition:all .15s;
+            transition:all var(--dur-fast);
         }
         .pv-cancel-btn:hover { background:rgba(255,255,255,.08); color:#fff; }
         .pv-confirm-btn {
             background:rgb(var(--teal-rgb) / .15); border:1.5px solid var(--teal);
             color:var(--teal); font-family:var(--font-mono), monospace;
             font-size:var(--text-sm); padding:var(--space-1-5) var(--space-5); border-radius:var(--radius-sm); cursor:pointer;
-            font-weight:bold; letter-spacing:.5px; transition:all .15s;
+            font-weight:bold; letter-spacing:var(--track-mono); transition:all var(--dur-fast);
         }
         .pv-confirm-btn:hover { background:rgb(var(--teal-rgb) / .28); box-shadow:0 0 12px rgb(var(--teal-rgb) / .45); }
 
@@ -4870,7 +4990,7 @@
             border:1.5px solid var(--amber);
             border-radius:var(--radius-xl); padding:var(--space-3) var(--space-4) var(--space-3);
             opacity:0; pointer-events:none; visibility:hidden;
-            transition:opacity .3s, transform .3s, visibility .3s;
+            transition:opacity var(--dur-med), transform var(--dur-med), visibility var(--dur-med);
             backdrop-filter:blur(14px);
             box-shadow:0 0 36px rgb(var(--amber-rgb) / .30), 0 0 70px rgb(var(--amber-rgb) / .12);
         }
@@ -4880,7 +5000,7 @@
         }
         .sc-hdr {
             font-family:var(--font-mono), monospace; font-size:var(--text-md);
-            font-weight:bold; letter-spacing:2px; color:var(--amber);
+            font-weight:bold; letter-spacing:var(--track-wide); color:var(--amber);
             text-align:center; padding-bottom:var(--space-2); margin-bottom:var(--space-2);
             border-bottom:1px solid rgb(var(--amber-rgb) / .35);
             animation:sc-pulse 1.2s ease-out 1;
@@ -4909,7 +5029,7 @@
             background:rgba(255,255,255,.04); border:1px solid var(--border-dim);
             color:var(--text-muted); font-family:var(--font-mono), monospace;
             font-size:var(--text-xs); padding:var(--space-0-5) var(--space-2); border-radius:var(--radius-xs);
-            cursor:pointer; letter-spacing:.5px; transition:background .15s;
+            cursor:pointer; letter-spacing:var(--track-mono); transition:background var(--dur-fast);
         }
         .iff-toggle-btn:hover { background:rgba(255,255,255,.09); }
 
@@ -4918,11 +5038,11 @@
         .mi5-accordion-summary {
             display:flex; align-items:center; gap:var(--space-1); cursor:pointer; list-style:none;
             font-family:var(--font-mono), monospace; font-size:var(--text-xs); font-weight:700;
-            letter-spacing:1px; text-transform:uppercase; padding:var(--space-0-5) 0;
+            letter-spacing:var(--track-hud); text-transform:uppercase; padding:var(--space-0-5) 0;
             -webkit-tap-highlight-color:transparent;
         }
         .mi5-accordion-summary::-webkit-details-marker { display:none; }
-        .mi5-accordion-summary::before { content:"▶"; font-size:var(--text-2xs); transition:transform .15s ease; }
+        .mi5-accordion-summary::before { content:"▶"; font-size:var(--text-2xs); transition:transform var(--dur-fast) ease; }
         .mi5-accordion[open] > .mi5-accordion-summary::before { transform:rotate(90deg); }
         .mi5-accordion-body { padding-top:var(--space-0-5); }
 
@@ -4947,11 +5067,11 @@
         }
         #outcomePopup .popup-title {
             font-family:var(--font-mono), monospace; font-size:var(--text-xs);
-            color:var(--teal); letter-spacing:1px; margin-bottom:var(--space-1-5);
+            color:var(--teal); letter-spacing:var(--track-hud); margin-bottom:var(--space-1-5);
         }
         .out-result {
             font-family:var(--font-mono), monospace; font-size:var(--text-sm);
-            font-weight:bold; letter-spacing:1px; text-align:center;
+            font-weight:bold; letter-spacing:var(--track-hud); text-align:center;
             padding:var(--space-1-5) var(--space-2); border-radius:var(--radius-sm); margin-bottom:var(--space-1-5);
         }
         .out-row {
@@ -4968,8 +5088,8 @@
             display:block; width:100%; margin-top:var(--space-2);
             background:rgb(var(--teal-rgb) / .10); border:1px solid var(--teal);
             color:var(--teal); font-family:var(--font-mono), monospace;
-            font-size:var(--text-xs); letter-spacing:1px; padding:var(--space-1-5) 0;
-            border-radius:var(--radius-sm); cursor:pointer; transition:background .15s;
+            font-size:var(--text-xs); letter-spacing:var(--track-hud); padding:var(--space-1-5) 0;
+            border-radius:var(--radius-sm); cursor:pointer; transition:background var(--dur-fast);
         }
         #outcomeAckBtn:hover { background:rgb(var(--teal-rgb) / .22); }
 
@@ -5133,7 +5253,7 @@
             width: 26px; height: 22px; display: flex; align-items: center; justify-content: center;
             background: rgb(var(--cyan-rgb) / .05); border: 1px solid rgb(var(--cyan-rgb) / .18);
             color: var(--text-muted); cursor: pointer; border-radius:var(--radius-sm);
-            font-size:var(--text-base); line-height: 1; padding: 0; transition: all .15s;
+            font-size:var(--text-base); line-height: 1; padding: 0; transition: all var(--dur-fast);
         }
         #mda-layerpanel .mda-lp-seg:hover { color: var(--cyan); border-color: rgb(var(--cyan-rgb) / .4); background: rgb(var(--cyan-rgb) / .12); }
         #mda-layerpanel .mda-lp-seg.on {
@@ -5146,7 +5266,7 @@
             width: 24px; height: 22px; display: flex; align-items: center; justify-content: center;
             background: rgba(0,0,0,.28); border: 1px solid rgba(255,255,255,.12);
             border-radius:var(--radius-sm); cursor: pointer; font-size:var(--text-base); line-height: 1; padding: 0;
-            filter: grayscale(.55) opacity(.55); transition: all .15s;
+            filter: grayscale(.55) opacity(.55); transition: all var(--dur-fast);
         }
         #mda-layerpanel .mda-lp-dombtn:hover { filter: none; transform: translateY(-1px); }
         #mda-layerpanel .mda-lp-dombtn.on { filter: none; border-color: currentColor; box-shadow: 0 0 8px -2px currentColor; }
@@ -5237,7 +5357,7 @@
             width: 26px; height: 22px; display: flex; align-items: center; justify-content: center;
             background: rgb(var(--cyan-rgb) / .05); border: 1px solid rgb(var(--cyan-rgb) / .18);
             color: var(--text-muted); cursor: pointer; border-radius:var(--radius-sm);
-            font-size:var(--text-base); line-height: 1; padding: 0; transition: all .15s;
+            font-size:var(--text-base); line-height: 1; padding: 0; transition: all var(--dur-fast);
         }
         #bf-deploy-panel .bf-lp-seg:hover { color: var(--cyan); border-color: rgb(var(--cyan-rgb) / .4); background: rgb(var(--cyan-rgb) / .12); }
         #bf-deploy-panel .bf-lp-seg.on {
@@ -5250,7 +5370,7 @@
             height: 22px; padding:0 var(--space-1-5); display: flex; align-items: center; gap:var(--space-0-5);
             background: rgba(0,0,0,.28); border: 1px solid rgba(255,255,255,.12);
             border-radius:var(--radius-sm); cursor: pointer; font-size:var(--text-xs); line-height: 1;
-            white-space: nowrap; filter: grayscale(.5) opacity(.6); transition: all .15s;
+            white-space: nowrap; filter: grayscale(.5) opacity(.6); transition: all var(--dur-fast);
         }
         #bf-deploy-panel .bf-lp-catbtn:hover { filter: none; transform: translateY(-1px); }
         #bf-deploy-panel .bf-lp-catbtn.on { filter: none; border-color: currentColor; box-shadow: 0 0 8px -2px currentColor; }
@@ -5373,21 +5493,21 @@
         #mda-layerpanel .mda-lp-group-head {
             display: flex; align-items: center; justify-content: space-between;
             padding:var(--space-1) var(--space-2); cursor: pointer; user-select: none;
-            transition: background .15s;
+            transition: background var(--dur-fast);
         }
         #mda-layerpanel .mda-lp-group-head:hover { background: rgb(var(--cyan-rgb) / .05); }
         /* [v17.7.5 DOMAIN-HOVER-1] hover กล่อง Domain แล้วเรืองแสงตามสีประจำกล่อง (var(--dc)) —
            แถบสีซ้าย + tint พื้นหลัง + glow + name/chev เปลี่ยนเป็นสี domain · fallback --dc = cyan */
         #mda-layerpanel .mda-lp-group[data-domain] {
             position: relative;
-            transition: background .2s ease, box-shadow .2s ease;
+            transition: background var(--dur-quick) ease, box-shadow var(--dur-quick) ease;
             box-shadow: inset 3px 0 0 rgba(0,0,0,0);
         }
         #mda-layerpanel .mda-lp-group[data-domain]::after {
             content: '';
             position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
             background: var(--dc, var(--cyan));
-            opacity: 0; transition: opacity .2s ease;
+            opacity: 0; transition: opacity var(--dur-quick) ease;
             pointer-events: none;
         }
         #mda-layerpanel .mda-lp-group[data-domain]:hover {
@@ -5415,7 +5535,7 @@
             white-space: nowrap; min-width: 0; overflow: hidden;
         }
         #mda-layerpanel .mda-lp-chev {
-            display: inline-block; width: 9px; transition: transform .25s;
+            display: inline-block; width: 9px; transition: transform var(--dur-calm);
             color: var(--dc, var(--cyan)); font-size:var(--text-2xs);
         }
         #mda-layerpanel .mda-lp-group.collapsed .mda-lp-chev { transform: rotate(-90deg); }
@@ -5429,12 +5549,12 @@
 
         /* ── [v15] สีประจำ ๗ โดเมน: ชื่อกำกับภาษาอังกฤษ + บรรทัดหน่วยรับผิดชอบ ── */
         #mda-layerpanel .mda-lp-group-name small {
-            font-size:var(--text-xs); letter-spacing: .4px; opacity: .6;
+            font-size:var(--text-xs); letter-spacing: var(--track-cap); opacity: .6;
             font-weight: 600; margin-left:var(--space-1); text-transform: none;
         }
         #mda-layerpanel .mda-lp-org {
             font-size: var(--text-2xs); line-height: 1.3; color: #8595ab; font-weight: 500;
-            letter-spacing: .2px; padding:0 var(--space-2) var(--space-1) var(--space-6); margin-top: -2px;
+            letter-spacing: var(--track-body); padding:0 var(--space-2) var(--space-1) var(--space-6); margin-top: -2px;
         }
         #mda-layerpanel .mda-lp-org .lead { color: var(--text-main); font-weight: 600; }
 
@@ -5444,7 +5564,7 @@
             grid-template-columns: 9px 1fr auto auto;
             align-items: center; gap:var(--space-1-5);
             padding:var(--space-0-5) var(--space-1); border-radius:var(--radius-sm);
-            transition: background .15s;
+            transition: background var(--dur-fast);
         }
         #mda-layerpanel .mda-lp-row:hover { background: rgb(var(--cyan-rgb) / .06); }
         #mda-layerpanel .mda-lp-row .bullet {
@@ -5477,14 +5597,14 @@
             position: relative; width: 26px; height: 14px;
             background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.15);
             border-radius:var(--radius-pill); cursor: pointer;
-            transition: background .25s, border-color .25s;
+            transition: background var(--dur-calm), border-color var(--dur-calm);
             flex-shrink: 0;
         }
         .mda-sw::after {
             content: ''; position: absolute; top: 1px; left: 1px;
             width: 10px; height: 10px; border-radius: 50%;
             background: #d8d8d8; box-shadow: 0 1px 3px rgba(0,0,0,.5);
-            transition: left .25s, background .25s;
+            transition: left var(--dur-calm), background var(--dur-calm);
         }
         .mda-sw.on {
             background: linear-gradient(90deg, rgb(var(--cyan-rgb) / .85), rgb(var(--cyan-rgb) / 0));
@@ -5516,7 +5636,7 @@
             color: var(--cyan); font-weight: bold; font-size:var(--text-lg);
             z-index: var(--z-overlay);                         /* above leaflet & overlays */
             opacity: 0; pointer-events: none;
-            transition: opacity .25s, box-shadow .2s, background .2s, transform .2s;
+            transition: opacity var(--dur-calm), box-shadow var(--dur-quick), background var(--dur-quick), transform var(--dur-quick);
             backdrop-filter: blur(8px);
         }
         .mda-handle.visible {
@@ -5547,7 +5667,7 @@
         #mda-layerpanel .mda-lp-row .mda-arrow {
             width: 26px; text-align: right; color: var(--cyan);
             font-size:var(--text-base); font-weight: bold; opacity: .55;
-            transition: transform .15s, opacity .15s;
+            transition: transform var(--dur-fast), opacity var(--dur-fast);
         }
         #mda-layerpanel .mda-lp-row.mda-lp-action:hover .mda-arrow {
             opacity: 1; transform: translateX(3px);
@@ -5564,7 +5684,7 @@
             border: 1px solid var(--mda-edge); border-radius:var(--radius-pill);
             color: var(--cyan); font-family: var(--font-mono), monospace;
             font-size:var(--text-sm); z-index: 5001; opacity: 0;
-            transition: opacity .25s; pointer-events: none;
+            transition: opacity var(--dur-calm); pointer-events: none;
             backdrop-filter: blur(10px);
         }
         #mda-toast.show { opacity: 1; }
@@ -5613,7 +5733,7 @@
             background: rgb(var(--bg-panel-rgb) / .92); border: 1px solid rgb(var(--text-muted-rgb) / .40);
             color: var(--text-muted); cursor: pointer; padding:var(--space-px) var(--space-1-5);
             border-radius:var(--radius-xs); font-size:var(--text-2xs);
-            transition: border-color .15s, color .15s, background .15s;
+            transition: border-color var(--dur-fast), color var(--dur-fast), background var(--dur-fast);
         }
         #bf-deploy-panel .bf-dp-collapse:hover {
             color: var(--text-main); border-color: rgba(148,163,184,.70);
@@ -5625,7 +5745,7 @@
         #bf-deploy-panel .bf-dp-group-head {
             display: flex; align-items: center; justify-content: space-between;
             padding:var(--space-1) var(--space-2); cursor: pointer; user-select: none;
-            transition: background .15s;
+            transition: background var(--dur-fast);
         }
         #bf-deploy-panel .bf-dp-group-head:hover { background: rgb(var(--text-muted-rgb) / .06); }
         #bf-deploy-panel .bf-dp-group-name {
@@ -5633,7 +5753,7 @@
             text-transform: uppercase; display: flex; align-items: center; gap:var(--space-1-5);
         }
         #bf-deploy-panel .bf-dp-chev {
-            display: inline-block; width: 9px; transition: transform .25s;
+            display: inline-block; width: 9px; transition: transform var(--dur-calm);
             font-size:var(--text-xs); color: rgba(148,163,184,.65);
         }
         #bf-deploy-panel .bf-dp-group.collapsed .bf-dp-chev { transform: rotate(-90deg); }
@@ -5649,7 +5769,7 @@
             color: var(--text-muted); background: rgba(0,0,0,.32);
             padding:0 var(--space-1-5); border-radius:var(--radius-xl); min-width: 22px; text-align: center;
             border: 1px solid rgb(var(--text-muted-rgb) / .20); line-height: 14px;
-            transition: color .2s, border-color .2s;
+            transition: color var(--dur-quick), border-color var(--dur-quick);
         }
         #bf-deploy-panel .bf-dp-group.active .bf-dp-count {
             color: var(--text-main); border-color: rgba(148,163,184,.55);
@@ -5659,7 +5779,7 @@
         /* ══ [v15.14] สถานะกำลังรบ — ประจำการ (in-service) vs เสนอจัดหา (proposed) ══ */
         #bf-deploy-panel .bf-dp-status {
             font-family: var(--font-mono), monospace; font-size:var(--text-xs); font-weight: 700;
-            letter-spacing: .4px; line-height: 13px; padding:0 var(--space-1); border-radius:var(--radius-lg);
+            letter-spacing: var(--track-cap); line-height: 13px; padding:0 var(--space-1); border-radius:var(--radius-lg);
             white-space: nowrap; flex: 0 0 auto; text-transform: none;
         }
         #bf-deploy-panel .bf-st-svc {            /* ประจำการ — ของจริงในกองทัพเรือวันนี้ */
@@ -5683,7 +5803,7 @@
             grid-template-columns: 22px 1fr 14px;
             align-items: center; gap:var(--space-1-5);
             padding:var(--space-1-5) var(--space-2); border-radius:var(--radius-sm);
-            cursor: pointer; transition: background .15s, border-color .15s, box-shadow .15s;
+            cursor: pointer; transition: background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast);
             margin-bottom:var(--space-0-5); background: rgb(var(--bg-panel-rgb) / .50);
             border: 1px solid rgb(var(--text-muted-rgb) / .18);
         }
@@ -5697,7 +5817,7 @@
         }
         #bf-deploy-panel .bf-dp-row .bf-dp-arrow {
             color: var(--text-muted); font-size:var(--text-sm); font-weight: bold;        /* SLATE default */
-            opacity: .55; transition: transform .15s, opacity .15s, color .15s;
+            opacity: .55; transition: transform var(--dur-fast), opacity var(--dur-fast), color var(--dur-fast);
             text-align: right;
         }
         #bf-deploy-panel .bf-dp-row:hover .bf-dp-arrow { opacity: 1; transform: translateX(3px); }
@@ -5806,7 +5926,7 @@
             animation: bf-tb-glow 3s ease-in-out infinite;
         }
         #bf-deploy-panel .bf-tb-title {
-            font-size:var(--text-2xs); font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+            font-size:var(--text-2xs); font-weight: 800; letter-spacing: var(--track-title); text-transform: uppercase;
             color: rgb(var(--purple-rgb) / .95); margin-bottom: 0;
             padding:var(--space-1-5) var(--space-2) var(--space-1-5);
             background: linear-gradient(90deg, rgb(var(--purple-rgb) / .15) 0%, transparent 75%);
@@ -5825,7 +5945,7 @@
         }
         #bf-deploy-panel .bf-tb-name small { color: var(--n-400); font-size:var(--text-xs); margin-left:var(--space-0-5); }
         #bf-deploy-panel .bf-tb-chip {
-            font-size:var(--text-xs); font-weight: 800; letter-spacing: .4px;
+            font-size:var(--text-xs); font-weight: 800; letter-spacing: var(--track-cap);
             padding:var(--space-px) var(--space-1-5); border-radius:var(--radius-sm); border: 1px solid currentColor;
         }
         #bf-deploy-panel .bf-tb-chip.low  { color: var(--green); background: rgb(var(--green-rgb) / .12); }
@@ -5865,15 +5985,15 @@
             display: block; gap:var(--space-0-5);
             padding:var(--space-0-5) 0 var(--space-0-5); font-size:var(--text-xs);
         }
-        #bf-deploy-panel .bf-es-k { display: block; font-size:var(--text-xs); font-weight: 700; letter-spacing: .4px; color: var(--n-400); margin-bottom:var(--space-px); }
+        #bf-deploy-panel .bf-es-k { display: block; font-size:var(--text-xs); font-weight: 700; letter-spacing: var(--track-cap); color: var(--n-400); margin-bottom:var(--space-px); }
         #bf-deploy-panel .bf-es-v {
             display: block; color: var(--text-main); font-weight: 600; line-height: 1.35;
             white-space: normal; overflow-wrap: anywhere; word-break: break-word;
         }
-        #bf-deploy-panel .bf-es-v.bf-es-level { font-size:var(--text-sm); font-weight: 800; letter-spacing: 1px; }
+        #bf-deploy-panel .bf-es-v.bf-es-level { font-size:var(--text-sm); font-weight: 800; letter-spacing: var(--track-hud); }
         /* [v17.5.4] ปุ่มพับเก็บหัวข้อย่อย — บทสรุปผู้บริหาร + กระดานภัยคุกคาม */
         #bf-deploy-panel .bf-sub-hd { cursor: pointer; user-select: none; display: flex; align-items: center; gap:var(--space-1); }
-        #bf-deploy-panel .bf-sub-chev { font-size:var(--text-xs); opacity: .65; flex: 0 0 auto; transition: transform .15s; }
+        #bf-deploy-panel .bf-sub-chev { font-size:var(--text-xs); opacity: .65; flex: 0 0 auto; transition: transform var(--dur-fast); }
         #bf-deploy-panel .bf-sub-hd.open .bf-sub-chev { transform: rotate(90deg); }
 
         /* v12.5 — คำสั่งการ: สั่งเฮลิคอปเตอร์ขึ้นบินด่วน (สีเหลืองอำพัน) */
@@ -5943,7 +6063,7 @@
             color: var(--text-muted); font-weight: bold; font-size:var(--text-lg);
             z-index: var(--z-overlay);
             opacity: 0; pointer-events: none;
-            transition: opacity .25s, box-shadow .2s, background .2s, transform .2s, color .2s;
+            transition: opacity var(--dur-calm), box-shadow var(--dur-quick), background var(--dur-quick), transform var(--dur-quick), color var(--dur-quick);
             backdrop-filter: blur(8px);
             right: 0; border-radius:var(--radius-md) 0 0 var(--radius-md);
         }
@@ -5998,7 +6118,7 @@
                 0 2px 8px rgba(0,0,0,.35),
                 0 0 0 1px rgb(var(--purple-rgb) / .18) inset,
                 0 0 14px rgb(var(--purple-rgb) / .12);
-            transition: background .15s, border-color .15s, box-shadow .15s, transform .15s, color .15s;
+            transition: background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast), transform var(--dur-fast), color var(--dur-fast);
         }
         #udc-ai-btn:hover {
             background: rgb(var(--purple-rgb) / .18);
@@ -6063,7 +6183,7 @@
             box-shadow:
                 0 2px 8px rgba(0,0,0,.35),
                 0 0 0 1px rgb(var(--red-rgb) / .15) inset;
-            transition: background .15s, border-color .15s, box-shadow .15s, transform .15s, color .15s;
+            transition: background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast), transform var(--dur-fast), color var(--dur-fast);
         }
         #udc-reset-btn:hover {
             background: rgb(var(--red-rgb) / .18);
@@ -6106,7 +6226,7 @@
             box-shadow:
                 0 2px 8px rgba(0,0,0,.35),
                 0 0 0 1px rgb(var(--teal-rgb) / .15) inset;
-            transition: background .15s, border-color .15s, box-shadow .15s, transform .15s, color .15s;
+            transition: background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast), transform var(--dur-fast), color var(--dur-fast);
         }
         #udc-pitch-btn:hover {
             background: rgb(var(--teal-rgb) / .16);
@@ -6120,7 +6240,7 @@
         #udc-pitch-btn:active { transform: translateY(0); }
         #udc-pitch-btn .upb-icon {
             display: inline-block;
-            transition: transform .25s ease;
+            transition: transform var(--dur-calm) ease;
             font-size:var(--text-base);
         }
         #udc-pitch-btn:hover .upb-icon { transform: translateX(-2px); }
@@ -6147,7 +6267,7 @@
             box-shadow:
                 0 2px 8px rgba(0,0,0,.35),
                 0 0 0 1px rgb(var(--cyan-rgb) / .15) inset;
-            transition: background .15s, border-color .15s, box-shadow .15s, transform .15s, color .15s;
+            transition: background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast), transform var(--dur-fast), color var(--dur-fast);
             position: relative;
         }
         #udc-theme-btn:hover {
@@ -6282,7 +6402,7 @@
             font-size:var(--text-sm);
             font-family: inherit;
             cursor: pointer;
-            transition: border-color .15s, box-shadow .15s;
+            transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
         }
         /* [v17.35.0 P5-A] ดูหมายเหตุที่ .pv-slider */
         #udc-theme-pop .utp-select:focus:not(:focus-visible) { outline: none; }
@@ -6367,7 +6487,7 @@
         body[data-panel="blueprint"] .legacy-panel,
         body[data-panel="blueprint"] .side-panel {
             --bp-grid-a: 0.07;
-            transition: --bp-grid-a .3s ease;
+            transition: --bp-grid-a var(--dur-med) ease;
             background:
                 /* เส้นตารางละเอียด (ทั้งแนวตั้งและแนวนอน) */
                 repeating-linear-gradient(0deg,
@@ -6434,7 +6554,7 @@
                     mask-composite: exclude;
             opacity: 0;
             pointer-events: none;
-            transition: opacity .25s ease;
+            transition: opacity var(--dur-calm) ease;
             animation: panel-ring-spin 5s linear infinite paused;
         }
         body[data-panel="blueprint"] .panel:hover::after,
@@ -6601,6 +6721,108 @@
             padding:var(--space-3) var(--space-4) !important;
         }
 
+        /* ── หน้าต่าง · GOTHAM ─────────────────────────────────────────────
+           [v17.40.0 GOTHAM-F/C/A/B] แกน "รูปทรง" ของชุด Gotham (แกน "สี" อยู่ที่
+           body[data-theme="gotham"] แยกกันคนละที่ เลือกผสมข้ามกันได้)
+
+           แบบหน้าต่างอีก ๙ แบบเปลี่ยนเฉพาะ "เปลือกของ .panel" แบบนี้ต่างออกไป:
+           มันทับ "โทเคน" ๔ ชั้นบน body ด้วย จึงเปลี่ยนทั้งระบบไปพร้อมกัน — ทำได้
+           เพราะทั้งสี่ชั้นนี้เป็นเรื่องของ "เปลือกระบบ" ล้วน ไม่มีชั้นไหนแตะข้อมูล
+           และเมื่อสลับกลับไปแบบอื่น ค่าทั้งหมดกลับไปหา :root ตามเดิมทันที
+           อีก ๖ ธีมกับอีก ๙ แบบหน้าต่างจึงไม่ถูกแตะแม้แต่ค่าเดียว
+
+           ── F · บันไดความมน ──
+           วัด palantir.com ได้ ๑๘ ลายเซ็นเส้นขอบ ทุกเส้นเป็น 1px solid ไม่มี
+           ข้อยกเว้น และความมนที่ใช้มากที่สุดคือ ๒px (๑๑ จุด) รองลงมา ๓px (๕ จุด)
+           ส่วนปุ่มหลักเป็น ๐px สนิท — บันไดของเราเดิมไล่ ๒→๑๖px ซึ่งกว้างกว่าเกิน
+           สองเท่า จึงบีบลงเหลือ ๐–๖px ยกเว้น --radius-pill ที่คงไว้ เพราะแคปซูล
+           ที่ไม่มนคือสี่เหลี่ยม ไม่ใช่แคปซูลที่คมขึ้น
+
+           ── C · ความลึกมาจากค่าความสว่าง ──
+           ต่อยอดชั้นโทเคนที่วางไว้แล้วใน [v17.32.0 P2-C] ตรง ๆ: ระนาบทั้งสาม
+           เดิมแยกกันด้วย "ความโปร่ง" (.74/.93/.97) ซึ่งแปลว่าสิ่งที่อยู่ ใต้ แผง
+           เป็นตัวกำหนดว่าแผงจะสว่างแค่ไหน — แผงเดียวกันวางบนทะเลกับบนแผ่นดิน
+           จึงอ่านเป็นคนละชั้นกัน ที่นี่เปลี่ยนเป็นพื้นทึบที่ไล่ค่าความสว่างจริง
+           (Blueprint ไล่ #1c2127 → #2f343c ด้วยวิธีเดียวกัน) ชั้นจึงคงที่ไม่ว่า
+           อะไรอยู่ข้างล่าง และเงาถูกลดเหลือแค่ตัวช่วยแยกขอบ ไม่ใช่ตัวบอกชั้น
+
+           ── A · ระยะห่างตัวอักษร ──
+           ป้ายพิมพ์ใหญ่ของ Palantir วัดได้ ๐.๐๕em เท่ากันทั้งหน้า — ค่าเดียว
+           ไม่ใช่บันได ที่นี่จึงยุบบันได ๙ ขั้นที่เพิ่งสร้างใน GOTHAM-A ให้เหลือ
+           ๓ ค่าและเปลี่ยนหน่วยจาก px เป็น em ทั้งหมด ผลคือระยะห่างขยายตาม
+           ขนาดตัวอักษรเอง ป้าย ๙px กับหัวเรื่อง ๑๘px จึงดู "คลาย" เท่ากัน
+           แทนที่จะคลายเท่ากันเป็นพิกเซลซึ่งตาอ่านว่าไม่เท่า
+
+           ── B · จังหวะการเคลื่อนไหว ──
+           Blueprint ใช้ ๑๐๐ms + cubic-bezier(.4, 1, .75, .9) เป็นค่ากลางทั้งระบบ
+           ซึ่งเร็วกว่าของเราเกือบครึ่ง และเส้นโค้งไม่มีช่วงเด้งเลย — เจตนาคือให้
+           ส่วนติดต่อ "ตอบทันที" ไม่ใช่ "แสดงตัวว่ากำลังตอบ" จึงทับ --ease-spring
+           ด้วยเส้นเดียวกันเพื่อตัดการเด้งออกให้หมด
+
+           ★ ขอบเขตที่จงใจไม่แตะ: transition ของ width ในแถบวัดค่า (.4s–1.2s)
+             เป็นภาพเคลื่อนไหวของ "ข้อมูล" ไม่ใช่ของเปลือกระบบ — ยังเป็น literal
+             อยู่ในไฟล์ตามเดิม การทับโทเคนตรงนี้จึงไปไม่ถึงมัน ตามที่ตั้งใจ */
+        body[data-panel="gotham"] {
+            /* F */
+            --radius-xs:   0;
+            --radius-sm:   2px;
+            --radius-md:   2px;
+            --radius-lg:   3px;
+            --radius-xl:   4px;
+            --radius-2xl:  6px;
+            /* --radius-pill คงเดิม */
+
+            /* C — ระนาบทึบ ไล่ค่าความสว่างขึ้นทีละขั้น */
+            --plane-1-bg: var(--bg-panel);
+            --plane-2-bg: color-mix(in srgb, var(--bg-panel) 84%, var(--n-100));
+            --plane-3-bg: color-mix(in srgb, var(--bg-panel) 74%, var(--n-100));
+            --elev-1: 0 1px 2px rgb(0 0 0 / .30);
+            --elev-2: 0 2px 6px rgb(0 0 0 / .36);
+            --elev-3: 0 6px 18px rgb(0 0 0 / .46);
+            --hairline: 1px solid color-mix(in srgb, var(--n-600) 82%, transparent);
+            --ring-accent: color-mix(in srgb, var(--cyan-mid) 34%, transparent);
+
+            /* A — เหลือ ๓ ค่า หน่วย em ล้วน */
+            --track-body:    0;
+            --track-label:   .04em;
+            --track-cap:     .05em;
+            --track-mono:    .04em;
+            --track-hud:     .05em;
+            --track-title:   .05em;
+            --track-wide:    .08em;
+            --track-em:      .05em;
+            --track-em-wide: .08em;
+
+            /* B */
+            --dur-fast:    .1s;
+            --dur-quick:   .1s;
+            --dur-calm:    .15s;
+            --dur-med:     .15s;
+            --ease-out:    cubic-bezier(.4, 1, .75, .9);
+            --ease-spring: cubic-bezier(.4, 1, .75, .9);
+        }
+        body[data-panel="gotham"] .panel,
+        body[data-panel="gotham"] .legacy-panel,
+        body[data-panel="gotham"] .side-panel {
+            /* พื้นทึบชั้นเดียว ไม่มีไล่สี ไม่มีแถบแสงเฉียง ไม่มีเบลอทะลุ —
+               ตรงกับที่วัดได้จริงจาก palantir.com: ทั้งหน้ามีเงาแค่ ๓ ชุด
+               และหนึ่งในนั้นโปร่งใสสนิท */
+            background: var(--plane-1-bg) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border: var(--hairline) !important;
+            box-shadow: var(--elev-1) !important;
+            border-radius: var(--radius-sm) !important;
+            padding: var(--space-3) var(--space-4) !important;
+        }
+        /* ชี้เมาส์ = ยกขึ้นหนึ่งระนาบ + ขอบติดสีเน้น ไม่ใช่เรืองแสงออกมา */
+        body[data-panel="gotham"] .panel:hover,
+        body[data-panel="gotham"] .legacy-panel:hover,
+        body[data-panel="gotham"] .side-panel:hover {
+            background: var(--plane-2-bg) !important;
+            border-color: var(--ring-accent) !important;
+            box-shadow: var(--elev-2) !important;
+        }
 
         /* ── [Stage 6] Group divider ใน popover Panel section ── */
         #udc-theme-pop .utp-group {
@@ -7140,6 +7362,95 @@
                         0 0 34px rgb(var(--cyan-rgb) / .26);
         }
 
+        /* ── ธีมที่ ๘ · GOTHAM ─────────────────────────────────────────────
+           [v17.40.0 GOTHAM-E/G] แกน "สี" ของชุด Gotham (แกน "รูปทรง" อยู่ที่
+           body[data-panel="gotham"] แยกกันคนละที่ เลือกผสมข้ามกันได้)
+
+           ที่มา: วัดจาก palantir.com/platforms/gotham/europa จริง + ชุดสี
+           Blueprint (ระบบออกแบบโอเพนซอร์สของ Palantir เอง) — ไม่ได้เดาจาก
+           ภาพหน้าจอ ข้อสังเกตที่ใช้ตัดสินใจสองข้อ:
+             ๑. เทาของ Blueprint ไม่มีค่าไหนที่ R=G=B เลยสักค่า ทุกขั้นเอียง
+                น้ำเงินหมด (#111418 · #1c2127 · #2f343c · #abb3bf …) จอที่จ้อง
+                ทั้งกะจึงไม่ออกเทาตาย และไม่ตีกับสีสถานะที่วางทับ
+             ๒. สีเน้นของเขาอิ่มตัวต่ำกว่าของเรามาก — cerulean4 #3fa6da เทียบ
+                กับไซแอนเดิม #00d4ff ที่อิ่มตัวเกือบสุดสเกล นี่คือมาตรการ E:
+                ลดความจัดของ "ชั้นตกแต่ง" ลง เพื่อให้สีที่เหลือความจัดเต็ม
+                (แดงศัตรู · เหลืองไม่ทราบฝ่าย) เด้งออกมาจากจอได้จริง
+
+           ★ สิ่งที่ธีมนี้จงใจ ไม่ แตะ: ชุด --sym-* ทั้งหมด — สัญลักษณ์ทางยุทธการ
+             คือ "ข้อมูล" ตามกฎตัดสิน จึงห้ามฟังธีม แดงศัตรูต้องเป็นแดงเดียวกัน
+             ทุกธีม มิฉะนั้นการฝึกกับของจริงจะสอนสายตาคนละอย่างกัน
+             มาตรการ E ลดความจัดเฉพาะเปลือกระบบเท่านั้น
+
+           ★ มาตรการ G (๓ ตระกูลตัวอักษร → ๒): ธีมนี้ทิ้ง Orbitron แล้วให้
+             --font-accent กลับไปใช้ตัวเนื้อความ เหลือแค่ sans + mono เท่ากับที่
+             Palantir ใช้จริง (Alliance No.1 + Apercu Mono) หัวเรื่องแยกตัวเอง
+             ด้วย "ระยะห่างตัวอักษร + น้ำหนัก" ไม่ใช่ด้วยหน้าตาตัวอักษรคนละพันธุ์
+             — ใช้ precedent เดียวกับที่ royal-thai-navy/classified ทำอยู่แล้ว */
+        body[data-theme="gotham"] {
+            --bg-dark:    #111418;   /* Blueprint black */
+            --bg-panel:   #1c2127;   /* dark-gray1 */
+            --text-main:  #f6f7f9;   /* light-gray5 */
+            --text-muted: #8f99a8;   /* gray4 */
+            --cyan:       #3fa6da;   /* cerulean4 — สีเน้นหลัก อิ่มตัวต่ำ */
+            --green:      #32a467;   /* green4 */
+            --red:        #cd4246;   /* red3 */
+            --yellow:     #d1980b;   /* gold3 */
+            --amber:      #d1980b;
+            --orange:     #c87619;   /* orange3 */
+            --purple:     #7961db;   /* indigo3 */
+            --teal:       #00b3a4;   /* turquoise3 */
+            /* ค่าสีแยกช่อง แดง-เขียว-น้ำเงิน */
+            --cyan-rgb:       63 166 218;
+            --teal-rgb:       0 179 164;
+            --green-rgb:      50 164 103;
+            --red-rgb:        205 66 70;
+            --amber-rgb:      209 152 11;
+            --orange-rgb:     200 118 25;
+            --purple-rgb:     121 97 219;
+            --bg-dark-rgb:    17 20 24;
+            --bg-panel-rgb:   28 33 39;
+            --text-muted-rgb: 143 153 168;
+            /* ค่าสีรองของ MDA — พื้นทึบกว่าธีมอื่นตามหลัก "ความลึกมาจากค่า
+               ความสว่างของพื้น" ไม่ใช่จากการเบลอทะลุ */
+            --mda-glass:   rgb(var(--bg-panel-rgb) / .90);
+            --mda-edge:    rgb(var(--cyan-rgb) / .30);
+            --mda-edge-hi: rgb(var(--cyan-rgb) / .78);
+            --mda-amber:   #d1980b;
+            --mda-crit:    #cd4246;
+            --mda-ok:      #32a467;
+            /* [v17.31.0 TOK-1] ชั้นโทนสีเชิงความหมาย — บันไดเทาของ Blueprint
+               ทั้งขั้น ไล่จากสว่างสุด (n-100) ลงไปมืดสุด (n-700) */
+            --n-100: #f6f7f9; --n-200: #d3d8de; --n-300: #abb3bf; --n-400: #8f99a8;
+            --n-500: #738091; --n-600: #404854; --n-700: #2f343c;
+            /* บันได ๕ ขั้นของ Blueprint ขั้นละสี — ขั้น ๓ คือค่าฐานด้านบน */
+            --cyan-hi:  #68c1ee; --cyan-mid: #3fa6da; --cyan-dim:  #147eb3;
+            --ok-hi:    #72ca9b; --ok-dim:    #1c6e42;
+            --warn-hi:  #fbd065; --warn-dim:  #866103;
+            --crit-hi:  #fa999c; --crit-dim:  #8e292c;
+            --orange-hi:#ec9a3c; --orange-dim:#77450d;
+            --teal-dim: #007067; --purple-hi: #9881f3;
+            --pink:     #c22762;  /* rose3 */
+            --pink-rgb: 194 39 98;
+            --pink-hi:  #e34a8c;
+            /* [v17.40.0 GOTHAM-G] เหลือ ๒ ตระกูล: Sarabun (sans) + mono */
+            --font-accent: 'Sarabun', sans-serif;
+
+            /* [v17.31.0 TOK-6] ชุดเดียวกับที่อธิบายไว้ในธีม Stealth Mono —
+               หาค่าจากฐานสีของธีมนี้เอง ไม่ใช่ hex ตายตัว */
+            --bg-deep:        color-mix(in srgb, var(--bg-dark) 90%, #000);
+            --bg-deeper:      color-mix(in srgb, var(--bg-panel) 80%, var(--cyan));
+            --border-dim:     color-mix(in srgb, var(--bg-panel) 72%, var(--cyan));
+            --border-divider: color-mix(in srgb, var(--bg-panel) 55%, var(--cyan));
+            --text-dim:       color-mix(in srgb, var(--text-muted) 70%, var(--bg-panel));
+            --text-label:     color-mix(in srgb, var(--text-muted) 85%, var(--n-300));
+            --brass:          color-mix(in srgb, var(--amber) 70%, var(--n-300));
+            --purple-light:   color-mix(in srgb, var(--purple) 70%, var(--n-100));
+            --purple-dim:     color-mix(in srgb, var(--purple) 85%, var(--n-700));
+            --purple-deep:    color-mix(in srgb, var(--purple) 55%, var(--bg-dark));
+            --purple-muted:   color-mix(in srgb, var(--purple) 55%, var(--n-500));
+        }
+
         /* หน้าต่างยืนยันคำสั่ง */
         #udc-reset-confirm {
             position: fixed; inset: 0; z-index: var(--z-modal);
@@ -7168,7 +7479,7 @@
         }
         #udc-reset-confirm .urc-title {
             color: var(--red); font-size:var(--text-md); font-weight: 700;
-            letter-spacing: 1.5px; text-transform: uppercase;
+            letter-spacing: var(--track-title); text-transform: uppercase;
             margin-bottom:var(--space-3);
             display: flex; align-items: center; gap:var(--space-2);
             font-family: var(--font-mono), monospace;
@@ -7193,7 +7504,7 @@
             padding:var(--space-1-5) var(--space-4); border-radius:var(--radius-md);
             font-family: var(--font-mono), monospace;
             font-size:var(--text-sm); font-weight: 700; letter-spacing: 1.2px;
-            cursor: pointer; transition: all .15s;
+            cursor: pointer; transition: all var(--dur-fast);
             background: transparent; border: 1px solid;
         }
         #udc-reset-confirm .urc-cancel {
@@ -7242,7 +7553,7 @@
         #zulu-clock .zc-time {
             font-size:var(--text-base);
             font-weight: 700;
-            letter-spacing: 1.5px;
+            letter-spacing: var(--track-title);
             color: var(--green);
             text-shadow:
                 0 0 5px rgba(0, 255, 102, 0.85),
@@ -7358,7 +7669,7 @@
             width: 26px; height: 26px; line-height: 22px; padding: 0;
             border-radius:var(--radius-sm);
             cursor: pointer;
-            transition: all .15s;
+            transition: all var(--dur-fast);
         }
         #mda-ai-modal .mda-ai-close:hover {
             background: rgb(var(--brass-rgb) / 0.16); color: #f3e9d2;
@@ -7380,7 +7691,7 @@
             color: var(--text-muted);
             cursor: pointer;
             background: rgba(15,23,42,0.45);
-            transition: all .15s;
+            transition: all var(--dur-fast);
             white-space: nowrap;
             flex-shrink: 0;
         }
@@ -7399,9 +7710,9 @@
             padding:var(--space-1) var(--space-2);
             font-size:var(--text-sm);
             font-family: var(--font-mono), 'Consolas', monospace;
-            letter-spacing: 0.05em;
+            letter-spacing: var(--track-em);
             cursor: pointer;
-            transition: all .15s;
+            transition: all var(--dur-fast);
             min-width: 220px;
         }
         /* [v17.35.0 P5-A] ดูหมายเหตุที่ .pv-slider */
@@ -7495,7 +7806,7 @@
             font-size:var(--text-sm);
             line-height: 1.45;
             color: var(--text-main);
-            transition: background 0.2s;
+            transition: background var(--dur-quick);
         }
         #mda-ai-modal .mda-ai-alert:hover { background: rgba(8,15,28,0.95); }
         #mda-ai-modal .mda-ai-alert.crit {
@@ -7527,7 +7838,7 @@
         }
         #mda-ai-modal .mda-ai-alert-head {
             display: flex; justify-content: space-between;
-            font-size:var(--text-2xs); letter-spacing: 0.08em;
+            font-size:var(--text-2xs); letter-spacing: var(--track-em-wide);
             color: var(--text-muted); margin-bottom:var(--space-0-5);
         }
         #mda-ai-modal .mda-ai-alert-head .mda-ai-alert-tag {
@@ -7545,7 +7856,7 @@
             border-radius:var(--radius-xs);
             background: rgb(var(--brass-rgb) / 0.14);
             color: var(--brass);
-            letter-spacing: 0.08em;
+            letter-spacing: var(--track-em-wide);
         }
         /*  [v17.15] ป้ายกำกับข้อความสาธิต — ต้องเห็นชัดว่าไม่ได้มาจากเซ็นเซอร์
             ใช้ลายทางเฉียงจาง ๆ เป็นสัญญาณสายตาเพิ่ม เพื่อไม่ให้ปะปนกับ alert จริงเมื่อดูเร็ว ๆ */
@@ -7693,7 +8004,7 @@
         #mda-ai-modal .mda-wargame-panel .wg-close {
             background: none; border: none;
             color: var(--n-700); cursor: pointer; font-size:var(--text-lg);
-            transition: color 0.2s; padding:0 var(--space-0-5);
+            transition: color var(--dur-quick); padding:0 var(--space-0-5);
         }
         #mda-ai-modal .mda-wargame-panel .wg-close:hover { color: var(--red); }
         #mda-ai-modal .mda-wargame-panel .wg-sub {
@@ -7732,7 +8043,7 @@
             background: rgba(0,5,15,0.88); border: 1px solid rgba(0,229,255,0.38);
             color: #00e5ff; font-size:var(--text-md); cursor: pointer; line-height: 1;
             padding:var(--space-0-5) var(--space-1); border-radius:var(--radius-xs); font-family: monospace;
-            pointer-events: all !important; transition: background 0.15s;
+            pointer-events: all !important; transition: background var(--dur-fast);
             user-select: none;
         }
         #mda-ai-modal .mda-wargame-panel .wg-map-expand:hover { background: rgba(0,50,110,0.75); }
@@ -7746,7 +8057,7 @@
             max-height: 54px; overflow-y: auto;
         }
         #mda-ai-modal .mda-wargame-panel .wg-coa-lbl {
-            font-size:var(--text-xs); color:var(--text-dim); letter-spacing: 0.08em;
+            font-size:var(--text-xs); color:var(--text-dim); letter-spacing: var(--track-em-wide);
             text-transform: uppercase; margin-bottom:var(--space-0-5);
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
@@ -7876,7 +8187,7 @@
             border: 1px solid rgba(0, 160, 240, 0.28);
             background: rgba(0, 40, 90, 0.22);
             color: #00e5ff; transition: all 0.18s;
-            text-align: center; letter-spacing: 0.05em;
+            text-align: center; letter-spacing: var(--track-em);
             font-family: 'Chakra Petch', monospace;
         }
         #mda-ai-modal .mda-wargame-panel .wg-btn:hover:not(:disabled) {
@@ -7907,7 +8218,7 @@
             background: rgba(0, 15, 40, 0.7);
             border: 1px solid rgba(0, 90, 160, 0.18);
             color:var(--text-dim); border-radius:var(--radius-xs); cursor: pointer;
-            letter-spacing: 0.04em; transition: all 0.15s;
+            letter-spacing: 0.04em; transition: all var(--dur-fast);
         }
         #mda-ai-modal .mda-wargame-panel .wg-spd-btn:hover {
             border-color: rgba(0, 229, 255, 0.4); color: #00e5ff;
@@ -8064,7 +8375,7 @@
             font-size:var(--text-sm); color: #ede9fe;
         }
         #mda-ai-modal table.mda-im th {
-            text-align: left; font-size:var(--text-xs); font-weight: 800; letter-spacing: 0.05em;
+            text-align: left; font-size:var(--text-xs); font-weight: 800; letter-spacing: var(--track-em);
             text-transform: uppercase; color:var(--purple-light);
             padding:var(--space-1) var(--space-2); border-bottom: 1px solid rgb(var(--purple-rgb) / 0.30);
             background: rgb(var(--purple-rgb) / 0.10);
@@ -8085,7 +8396,7 @@
         #mda-ai-modal .mda-im-reason { color: #d8c9f5; font-size:var(--text-sm); }
         #mda-ai-modal .mda-im-stat {
             display: inline-block; margin-left:var(--space-1); padding:0 var(--space-1);
-            font-size:var(--text-xs); font-weight: 800; letter-spacing: 0.05em;
+            font-size:var(--text-xs); font-weight: 800; letter-spacing: var(--track-em);
             border-radius:var(--radius-xs); vertical-align: middle;
         }
         #mda-ai-modal .mda-im-stat.live  { background: rgb(34 197 94 / 0.22);   color: var(--ok-hi); }
@@ -8159,7 +8470,7 @@
             margin-top:var(--space-1);
             font-size:var(--text-2xs);
             color: var(--cyan);
-            letter-spacing: 0.08em;
+            letter-spacing: var(--track-em-wide);
         }
 
         /* ─── แถบปุ่มสั่งการ ─── */
@@ -8179,7 +8490,7 @@
             letter-spacing: 0.10em;
             cursor: pointer;
             border-radius:var(--radius-sm);
-            transition: all .15s;
+            transition: all var(--dur-fast);
         }
         #mda-ai-modal .mda-ai-btn:hover {
             background: rgb(var(--purple-rgb) / 0.26);
@@ -8317,7 +8628,7 @@
             border-radius:var(--radius-md);
             border: 1px solid rgba(148,163,184,0.06);
             background: rgba(15,23,42,0.18);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all var(--dur-calm) cubic-bezier(0.4, 0, 0.2, 1);
         }
         #mda-ai-modal .mda-staff-step:hover {
             background: rgba(15,23,42,0.38);
@@ -8331,7 +8642,7 @@
             border-radius: 50%;
             border: 1px solid rgba(148,163,184,0.6);
             background: transparent;
-            transition: all 0.25s;
+            transition: all var(--dur-calm);
         }
         #mda-ai-modal .mda-staff-step.run {
             color: var(--text-main);
@@ -8378,7 +8689,7 @@
             margin-bottom:var(--space-2);
             font-size:var(--text-sm); line-height: 1.55;
             color: var(--n-200);
-            transition: all 0.2s;
+            transition: all var(--dur-quick);
         }
         #mda-ai-modal .mda-staff-ecoa:hover {
             border-color: rgba(251,191,36,0.35);
@@ -8429,7 +8740,7 @@
             font-size:var(--text-sm); line-height: 1.55;
             color: var(--n-200);
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all var(--dur-calm) cubic-bezier(0.4, 0, 0.2, 1);
         }
         #mda-ai-modal .mda-staff-coa:hover {
             border-color: rgb(var(--brass-rgb) / 0.40);
@@ -8448,7 +8759,7 @@
         }
         #mda-ai-modal .mda-staff-coa.sel .hd { color: var(--brass); }
         #mda-ai-modal .mda-staff-coa .pick {
-            font-size:var(--text-2xs); font-weight: 700; letter-spacing: 0.08em;
+            font-size:var(--text-2xs); font-weight: 700; letter-spacing: var(--track-em-wide);
             color: var(--ok-hi); white-space: nowrap;
             padding:var(--space-px) var(--space-1-5);
             border-radius:var(--radius-xs);
@@ -8459,7 +8770,7 @@
         #mda-ai-modal .mda-staff-crit {
             display: flex; align-items: center; gap:var(--space-2);
             font-size:var(--text-sm); padding:var(--space-0-5) var(--space-1);
-            cursor: pointer; transition: background 0.15s;
+            cursor: pointer; transition: background var(--dur-fast);
         }
         #mda-ai-modal .mda-staff-crit:hover {
             background: rgba(148, 163, 184, 0.12);
@@ -8501,7 +8812,7 @@
         #mda-ai-modal .mda-staff-ptype {
             display: inline-flex; align-items: center;
             cursor: pointer;
-            font-size:var(--text-xs); letter-spacing: 0.08em;
+            font-size:var(--text-xs); letter-spacing: var(--track-em-wide);
             padding:var(--space-0-5) var(--space-2); border-radius:var(--radius-pill);
             border: 1px solid rgba(148,163,184,0.35);
             color: var(--text-muted);
@@ -8540,7 +8851,7 @@
             display: flex; justify-content: space-between; align-items: center; gap:var(--space-1-5);
             font-size:var(--text-xs); font-weight: 700; color: var(--brass);
             font-family: 'Share Tech Mono', monospace;
-            letter-spacing: 0.05em; margin-bottom:var(--space-1-5);
+            letter-spacing: var(--track-em); margin-bottom:var(--space-1-5);
         }
         #mda-ai-modal .mda-staff-fusion .fhd .ts { font-weight: 400; color: var(--text-muted); font-size:var(--text-2xs); }
         #mda-ai-modal .mda-staff-fusion .fgrp {
@@ -8556,7 +8867,7 @@
             background: rgba(15,23,42,0.45); color: var(--n-200);
             font-family: 'Share Tech Mono', monospace;
             white-space: nowrap;
-            transition: all 0.2s;
+            transition: all var(--dur-quick);
         }
         #mda-ai-modal .mda-staff-chip.live { border-color: rgba(52,211,153,0.45); color: #6ee7b7; }
         #mda-ai-modal .mda-staff-chip.warn { border-color: rgba(252,211,77,0.55); color: var(--warn-hi); }
@@ -8576,7 +8887,7 @@
         /* ═══ [v17.1.0 STAFF-7] ที่มาคะแนนเกณฑ์ทดสอบ หป. (breakdown) ═══ */
         #mda-ai-modal .mda-staff-bd { margin-top:var(--space-1-5); }
         #mda-ai-modal .mda-staff-bd .bgrp {
-            font-size:var(--text-xs); font-weight: 700; letter-spacing: 0.05em;
+            font-size:var(--text-xs); font-weight: 700; letter-spacing: var(--track-em);
             color: var(--brass); margin:var(--space-1-5) 0 var(--space-0-5);
             display: flex; justify-content: space-between;
         }
@@ -8649,7 +8960,7 @@
             background: rgba(139,92,246,.14); border: 1px solid rgba(139,92,246,.28);
             color:var(--purple-dim); cursor: pointer; border-radius:var(--radius-sm);
             font-size:var(--text-md); width: 26px; height: 26px;
-            display: flex; align-items: center; justify-content: center; transition: all .15s;
+            display: flex; align-items: center; justify-content: center; transition: all var(--dur-fast);
         }
         #osint-drawer-hd .od-close:hover { background: rgba(139,92,246,.3); color:var(--purple-light); }
         #osint-drawer-body {
@@ -8674,7 +8985,7 @@
         .od-tl-vline { width:1px; background:rgba(255,255,255,.07); flex:1; margin-top:var(--space-0-5); }
         .od-item:last-child .od-tl-vline { display:none; }
         .od-tl-content { flex:1; min-width:0; }
-        .od-tl-tag { display:inline-block; font-size:var(--text-2xs); font-weight:600; padding:var(--space-px) var(--space-1-5); border-radius:var(--radius-xs); margin-bottom:var(--space-1); letter-spacing:.3px; }
+        .od-tl-tag { display:inline-block; font-size:var(--text-2xs); font-weight:600; padding:var(--space-px) var(--space-1-5); border-radius:var(--radius-xs); margin-bottom:var(--space-1); letter-spacing:var(--track-label); }
         .od-tl-tag.CRITICAL { background:rgba(248,113,113,.15); color:var(--crit-hi); }
         .od-tl-tag.HIGH     { background:rgba(251,146,60,.15);  color:var(--orange-hi); }
         .od-tl-tag.MEDIUM   { background:rgba(251,191,36,.12);  color:var(--warn-hi); }
@@ -8684,7 +8995,7 @@
         .od-tl-title { font-size:var(--text-md); font-weight:500; color:rgba(255,255,255,.85); line-height:1.45; margin-bottom:var(--space-0-5); }
         .od-tl-desc { font-size:var(--text-sm); color:rgba(255,255,255,.52); line-height:1.55; margin-bottom:var(--space-1); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
         .od-tl-meta { display:flex; gap:var(--space-2); align-items:center; font-size:var(--text-xs); color:rgba(255,255,255,.3); }
-        .od-tl-link { font-size:var(--text-xs); color:var(--purple-dim); border-bottom:1px solid rgba(167,139,250,.3); transition:color .15s; margin-left:auto; }
+        .od-tl-link { font-size:var(--text-xs); color:var(--purple-dim); border-bottom:1px solid rgba(167,139,250,.3); transition:color var(--dur-fast); margin-left:auto; }
         .od-tl-link:hover { color:var(--purple-light); }
         .od-tl-src { background:rgba(57,255,20,.08); color:var(--ok-hi); border:1px solid rgba(57,255,20,.18); border-radius:var(--radius-xs); padding:var(--space-px) var(--space-1-5); font-size:var(--text-xs); }
         .od-empty { padding:48px var(--space-5); text-align:center; color:rgba(255,255,255,.3); font-size:var(--text-md); line-height:2; }
@@ -9654,7 +9965,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.39.3 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.40.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -10124,7 +10435,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.39.3 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.40.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -10142,7 +10453,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.39.3 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.40.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -11115,7 +11426,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.39.3 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.40.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -20284,6 +20595,103 @@ function tqLabel(t) {
     return { s:'D', th:'ตรวจพบ', c:'#94a3b8' };
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   [v17.40.0 GOTHAM-D2] ระบายคุณภาพ track ลงบนหมุดด้วย "ค่าความสว่าง"
+   ══════════════════════════════════════════════════════════════════════════
+   ปัญหาที่แก้: ตั้งแต่ v17.22.0 คุณภาพ track ถูกแสดงที่ "ป้ายตัวอักษร ๑๐px"
+   เหนือหมุดเท่านั้น (D / C / FC) ส่วนตัวหมุดเองไม่ได้บอกอะไรเลย — ผบ. ที่
+   กวาดสายตาทั้งจอจึงต้องอ่านป้ายทีละอัน ทั้งที่คำถามแรกคือ "เป้าไหนยิงได้แล้ว"
+   สีสังกัดตอบว่า "เป็นใคร" แต่ยังไม่มีอะไรตอบว่า "รู้จริงแค่ไหน"
+
+   วิธี: ใช้บันไดค่าความสว่าง ๕ ขั้นของสีสังกัดที่วางไว้ที่ :root (GOTHAM-D1)
+   สีไม่เปลี่ยน — แดงยังแดง เขียวยังเขียว — เปลี่ยนแค่ความสว่างตามระดับความรู้
+   สองแกนจึงอ่านพร้อมกันได้โดยไม่ชนกัน: เนื้อสี = สังกัด · ความสว่าง = คุณภาพ
+
+   ★ ทำไมต้องคำนวณในจาวาสคริปต์ ไม่ใช้ var() ตรง ๆ: แผนที่หมุดวาดบน canvas
+     ซึ่ง ctx.fillStyle อ่าน var() ไม่ได้ (ข้อยกเว้นถาวรที่บันทึกไว้ ๑๒๗ จุด)
+     จึงยืม "เครื่องคิดเลข" ของเบราว์เซอร์เอง: เขียน color-mix ลงบน element
+     ล่องหนแล้วอ่านค่าที่คำนวณแล้วกลับมา — ได้ค่าตรงกับฝั่ง CSS เป๊ะ ๆ โดยไม่
+     ต้องเขียนคณิตศาสตร์ oklab ซ้ำสองที่ให้เพี้ยนกันภายหลัง (จำผลไว้ใน Map
+     จึงคิดครั้งเดียวต่อ (สี, ขั้น) ไม่ใช่ทุกเฟรม)
+
+   ★ ทำไมเป็นสวิตช์แยก ไม่ใช่ผูกกับธีม Gotham: ก่อนหน้านี้ผมบอกว่าจะ gate
+     ไว้ที่ Gotham เพื่อไม่ให้อีก ๖ ธีมเปลี่ยนภาพ — พออ่านโค้ดจริงแล้วพบว่า
+     คิดผิด เพราะคุณภาพ track เป็น "ข้อมูล" ไม่ใช่ "ของตกแต่ง" การผูกไว้กับ
+     ตัวเลือกธีมจะทำให้เป้าเดียวกันอ่านได้ต่างกันเพียงเพราะผู้ใช้เลือกสีหน้าจอ
+     คนละแบบ ซึ่งขัดกฎของโครงการเองที่ว่า "เป็นข้อมูล → ห้ามฟังธีม"
+     ทางลงที่ถูกคือสวิตช์แสดงผลของตัวเอง ตั้งต้น "ปิด" — ทุกธีมจึงเหมือนเดิม
+     ทุกพิกเซล และเมื่อเปิด ก็เปิดเหมือนกันหมดทุกธีม (แบบเดียวกับสวิตช์ CRT)
+   ══════════════════════════════════════════════════════════════════════════ */
+const SYM_STEP_MIX = { 1:'55%, black', 2:'76%, black', 4:'74%, white', 5:'48%, white' };
+let _symProbe = null;
+const _symCache = new Map();
+
+/** เลื่อนสีหนึ่งไปยังขั้นที่ n ของบันไดความสว่าง (ขั้น ๓ = ค่าเดิม) → คืนเป็น #rrggbb
+    วิธี: ให้เบราว์เซอร์คำนวณ color-mix(in oklab, …) เอง แล้วอ่านค่ากลับมา
+    ★ อ่านกลับผ่านผืนผ้าใบ ๑×๑ พิกเซล ไม่ใช่ getComputedStyle()
+      เพราะ getComputedStyle().color ของ color-mix แบบ oklab คืนสตริง
+      "oklab(0.36 0.11 0.06)" ซึ่งเป็นเลข ๐–๑ ไม่ใช่ rgb() ๐–๒๕๕
+      ถ้าไปตีความเป็น rgb จะได้ดำสนิททุกขั้น (บักที่เจอตอนทดสอบจริง)
+      การวาดลงผ้าใบบังคับให้เบราว์เซอร์แปลงเป็น sRGB ๘ บิตให้เสร็จ
+      แล้ว getImageData() คืนไบต์จริง — ตรงกับที่ CSS จะวาดเป๊ะ */
+function symStep(color, step) {
+    const mix = SYM_STEP_MIX[step];
+    if (!color || !mix) return color;                    // ขั้น ๓ หรือค่าผิด = คืนของเดิม
+    const key = color + '|' + step;
+    if (_symCache.has(key)) return _symCache.get(key);
+    let out = color;
+    try {
+        if (!_symProbe) {
+            const cv = document.createElement('canvas');
+            cv.width = cv.height = 1;
+            _symProbe = cv.getContext('2d', { willReadFrequently: true });
+        }
+        const mixed = 'color-mix(in oklab, ' + color + ' ' + mix + ')';
+        _symProbe.fillStyle = '#000';
+        _symProbe.fillStyle = mixed;
+        // เบราว์เซอร์เก่าไม่รู้จัก color-mix → fillStyle ไม่ถูกเปลี่ยน ยังเป็น #000
+        if (_symProbe.fillStyle !== '#000000') {
+            _symProbe.clearRect(0, 0, 1, 1);
+            _symProbe.fillRect(0, 0, 1, 1);
+            const d = _symProbe.getImageData(0, 0, 1, 1).data;
+            out = '#' + [d[0], d[1], d[2]]
+                .map(v => v.toString(16).padStart(2, '0')).join('');
+        }
+    } catch (e) { /* ไม่รองรับ = ใช้สีเดิม ไม่ทำให้จอพัง */ }
+    _symCache.set(key, out);
+    return out;
+}
+
+/** แปลงสถานะ track เป็นขั้นบนบันได — ยิ่งรู้จริง ยิ่งสว่าง */
+function tqStep(t) {
+    if (!t || !t.tq) return 3;
+    if (t.tqCoasting) return 1;                                   // ขาดการติดตาม เดินด้วยการคาดคะเน
+    if (t.tq === TQ.FC) {
+        const own = t._tqFcSet && Object.keys(t._tqFcSet).length;
+        return own ? 5 : 4;                                       // จับเอง = สว่างสุด · รับต่อมา/เพิ่งหลุด = รองลงมา
+    }
+    if (t.tq === TQ.CLASSIFY) return 3;                           // ค่าเดิมเป๊ะ
+    return 2;                                                     // DETECT
+}
+
+/** สวิตช์แสดงผล — ตั้งต้นปิด ทุกธีมจึงเหมือนเดิมทุกพิกเซลจนกว่าผู้ใช้จะเปิดเอง */
+let tqShading = false;
+try { tqShading = localStorage.getItem('udc_tq_shade') === '1'; } catch (e) {}
+
+/** ใช้ตรงจุดวาด: ปิดอยู่ = คืนสีเดิมทันที ไม่มีค่าใช้จ่าย */
+function tqShade(color, t) { return tqShading ? symStep(color, tqStep(t)) : color; }
+
+window.toggleTrackQualityShading = function() {
+    tqShading = !tqShading;
+    try { localStorage.setItem('udc_tq_shade', tqShading ? '1' : '0'); } catch (e) {}
+    if (typeof addLog === 'function') {
+        addLog(tqShading
+            ? '◐ ระบายคุณภาพ track: เปิด — ความสว่างของหมุดบอกระดับความรู้ (จาง=คาดคะเน · สว่าง=ชี้เป้าเองได้)'
+            : '◐ ระบายคุณภาพ track: ปิด — หมุดกลับไปใช้สีสังกัดขั้นเดียว', 'cyan');
+    }
+    return tqShading;
+};
+
 /** [v17.22.0 TQ-3] เปิด/ปิดลิงก์ CEC — ให้ ผบ. ลองเทียบผลได้กลางภารกิจ */
 function toggleCEC() {
     cecEnabled = !cecEnabled;
@@ -23440,7 +23848,10 @@ function drawPatrolVessels() {
 function drawThreats() {
     threats.forEach((t,idx)=>{
         if (!t.active) return;
-        const dispColor=t.classified?t.color:'#f59e0b';
+        // [v17.40.0 GOTHAM-D2] tqShade() = ตัวตน (เนื้อสี) × ความรู้ (ความสว่าง)
+        //   สวิตช์ปิดอยู่ตั้งต้น → คืนสีเดิมทันที ภาพจึงไม่ต่างจาก v17.39.3 แม้แต่พิกเซลเดียว
+        const dispColor=tqShade(t.classified?t.color:'#f59e0b', t);
+        const glyphColor=tqShade(t.color, t);
 
         // ── stable position (ใช้วาดข้อความ — ไม่สั่น) ──
         const {x:sx,y:sy}=pn(t.nx,t.ny);
@@ -23477,8 +23888,8 @@ function drawThreats() {
                 ctx.fillStyle='#f59e0b'; ctx.textAlign='center'; ctx.fillText('?',0,4);
             }
         } else {
-            ctx.fillStyle=t.detained?'#39ff14':t.color;
-            ctx.strokeStyle=t.detained?'#39ff14':t.color; ctx.lineWidth=2;
+            ctx.fillStyle=t.detained?'#39ff14':glyphColor;
+            ctx.strokeStyle=t.detained?'#39ff14':glyphColor; ctx.lineWidth=2;
             if (t.type==='uuv') {
                 ctx.beginPath(); ctx.moveTo(8,0); ctx.lineTo(-5,-6); ctx.lineTo(-5,6); ctx.closePath(); ctx.fill();
             } else if (t.type==='surface') {
@@ -42561,6 +42972,9 @@ window.selectCOA = selectCOA;
         { id:'maritime-ai',     group:'Operator', name:'Maritime AI',        swatch:'#06b6d4', desc:'Attio/Dayos · deep navy + cyan-teal · AI & ML platform aesthetic' },
         { id:'classified',      group:'Operator', name:'Classified',         swatch:'#e82127', desc:'Tesla dark · pure black + crimson · futuristic minimal high-contrast' },
         { id:'black-orange',    group:'Operator', name:'Black-Orange',       swatch:'#ff7a18', desc:'ดำสนิท + ส้ม amber เรืองแสง · โทน command-post กลางคืน high-contrast' },
+        // ── ชุดสีสายศูนย์ข้อมูล ──
+        // [v17.40.0 GOTHAM] แกน "สี" — จับคู่กับแบบหน้าต่าง Gotham ได้ แต่ไม่บังคับ
+        { id:'gotham',          group:'Data Ops', name:'Gotham',             swatch:'#3fa6da', desc:'เทาเอียงน้ำเงิน + สีเน้นอิ่มตัวต่ำ · ชุดสี Blueprint ของ Palantir · เหลือ ๒ ตระกูลตัวอักษร' },
     ];
 
     // [Stage 4] Font catalogue — Google Fonts ที่ preload ไว้แล้ว
@@ -42593,6 +43007,9 @@ window.selectCOA = selectCOA;
         { id:'hex',               group:'Defense',   name:'Hex Tactical',        desc:'hex pattern + corner accent · Halo HUD',    swatch:'var(--cyan)', augValue:null },
         // ── สายศูนย์ข้อมูล · แดชบอร์ดบัญชาการแบบรวมศูนย์ ──
         { id:'palantir',          group:'Data Ops',  name:'Palantir',            desc:'grid เข้ม + live-pulse dot · fused command dashboard (Maven-style)', swatch:'var(--cyan)', augValue:null },
+        // [v17.40.0 GOTHAM] แกน "รูปทรง" — ทับโทเคน ๔ ชั้น: มุมคม ๒px · พื้นทึบไล่
+        // ค่าความสว่างแทนการเบลอ · ระยะห่างตัวอักษรหน่วย em · จังหวะ ๑๐๐ms ไม่เด้ง
+        { id:'gotham',            group:'Data Ops',  name:'Gotham',              desc:'มุมคม ๒px + พื้นทึบไม่มีเบลอ · ความลึกมาจากค่าความสว่าง · จังหวะ ๑๐๐ms', swatch:'#3fa6da', augValue:null },
     ];
     // CSS selector ของ panel ที่ต้องได้รับ data-augmented-ui
     const PANEL_SELECTORS = '.panel, .legacy-panel, .side-panel';
@@ -42821,6 +43238,35 @@ window.selectCOA = selectCOA;
             if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flipBrief(); }
         });
         secFx.appendChild(brf);
+
+        // [v17.40.0 GOTHAM-D2] สวิตช์ระบายคุณภาพ track ลงบนหมุด
+        //   อยู่ในกลุ่มเดียวกับ CRT/BRIEF เพราะเป็น "จะให้จอแสดงอะไรเพิ่ม" ไม่ใช่
+        //   "จะให้ระบบตัดสินใจอย่างไร" — เอนจิน TQ เดินเหมือนเดิมไม่ว่าสวิตช์นี้จะเปิดหรือปิด
+        //   ตั้งต้นปิด: ทุกธีมและทุกแบบหน้าต่างจึงเห็นภาพเดิมจนกว่าจะกดเอง
+        const tqsOn = (function(){ try { return localStorage.getItem('udc_tq_shade') === '1'; } catch(_) { return false; } })();
+        const tqs = document.createElement('div');
+        tqs.className = 'utp-item' + (tqsOn ? ' active' : '');
+        tqs.id = 'utp-tqshade-toggle';
+        tqs.title = 'ไล่ความสว่างของหมุดตามคุณภาพ track โดยไม่เปลี่ยนสีสังกัด\nจางสุด = ขาดการติดตาม เดินด้วยการคาดคะเน (COAST)\nจาง = ตรวจพบ · ปกติ = พิสูจน์ทราบแล้ว\nสว่าง = ใช้ชี้เป้าอาวุธได้ · สว่างสุด = เซ็นเซอร์ของเราจับอยู่เอง\nอ่าน "ยิงได้กี่เป้า" ได้จากการกวาดตา ไม่ต้องอ่านป้าย D/C/FC ทีละอัน';
+        tqs.setAttribute('role', 'switch');
+        tqs.setAttribute('tabindex', '0');
+        tqs.setAttribute('aria-checked', tqsOn ? 'true' : 'false');
+        tqs.innerHTML =
+            '<span class="utp-swatch" style="background:linear-gradient(90deg,var(--sym-hostile-1) 0 20%,var(--sym-hostile-2) 20% 40%,var(--sym-hostile-3) 40% 60%,var(--sym-hostile-4) 60% 80%,var(--sym-hostile-5) 80% 100%);color:var(--sym-hostile);"></span>' +
+            '<span data-en="Track-quality shading — glyph brightness = confidence">ระบายคุณภาพ track — ความสว่างหมุด = ระดับความรู้</span>' +
+            '<span class="utp-check"><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg></span>';
+        const flipTqs = () => {
+            const on = (typeof window.toggleTrackQualityShading === 'function')
+                ? window.toggleTrackQualityShading()
+                : !tqs.classList.contains('active');
+            tqs.classList.toggle('active', on);
+            tqs.setAttribute('aria-checked', on ? 'true' : 'false');
+        };
+        tqs.addEventListener('click', flipTqs);
+        tqs.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flipTqs(); }
+        });
+        secFx.appendChild(tqs);
         pop.appendChild(secFx);
 
         // ── ส่วนที่ 4 · คืนค่าการจัดวางหน้าจอ [v16.0.4 W4-UX10] ──
@@ -43645,7 +44091,7 @@ window.selectCOA = selectCOA;
   background:linear-gradient(180deg,rgb(var(--green-rgb) / .12),transparent);
   border-radius:var(--radius-xl) var(--radius-xl) 0 0;
 }
-#trapmine-panel .tmp-head b{ color:var(--ok-hi); font-size:var(--text-md); letter-spacing:.5px; }
+#trapmine-panel .tmp-head b{ color:var(--ok-hi); font-size:var(--text-md); letter-spacing:var(--track-mono); }
 #trapmine-panel .tmp-head .tmp-sub{ color:var(--n-500); font-size:var(--text-xs); margin-left:var(--space-0-5); }
 #trapmine-panel .tmp-x{
   margin-left:auto; cursor:pointer; color:var(--n-300); font-size:var(--text-xl); line-height:1;
@@ -43663,7 +44109,7 @@ window.selectCOA = selectCOA;
 @media (max-width:680px){ #trapmine-panel .tmp-body{ grid-template-columns:1fr; } }
 #trapmine-panel .tmp-sec{ margin-bottom:var(--space-3); }
 #trapmine-panel .tmp-sec-t{
-  font-size:var(--text-xs); color:var(--ok-hi); letter-spacing:1px; text-transform:uppercase;
+  font-size:var(--text-xs); color:var(--ok-hi); letter-spacing:var(--track-hud); text-transform:uppercase;
   margin-bottom:var(--space-1-5); padding-bottom:var(--space-0-5); border-bottom:1px dashed rgba(74,222,128,0.18);
 }
 #trapmine-panel .tmp-sec-t small{ color:var(--n-500); letter-spacing:0; text-transform:none; }
@@ -43698,7 +44144,7 @@ window.selectCOA = selectCOA;
 .tmp-actions{ display:flex; gap:var(--space-2); margin-top:var(--space-3); }
 .tmp-btn{
   flex:1; padding:var(--space-2); cursor:pointer; font-size:var(--text-base); font-weight:bold;
-  border-radius:var(--radius-lg); border:1px solid; transition:.12s; letter-spacing:.5px;
+  border-radius:var(--radius-lg); border:1px solid; transition:.12s; letter-spacing:var(--track-mono);
 }
 .tmp-btn.deploy{ background:rgb(var(--green-rgb) / .2); border-color:var(--ok-hi); color:#bbf7d0; }
 .tmp-btn.deploy:hover{ background:rgb(var(--green-rgb) / .32); }
@@ -45852,7 +46298,7 @@ else init();
     border-color:rgba(var(--cyan-rgb,0 212 255) / .55);
     background:rgba(var(--cyan-rgb,0 212 255) / .10);
   }
-  #mda-term-btn .mtb-state{ font-family:var(--font-mono,'Share Tech Mono',monospace); letter-spacing:.3px; }
+  #mda-term-btn .mtb-state{ font-family:var(--font-mono,'Share Tech Mono',monospace); letter-spacing:var(--track-label); }
 </style>
 <script>
 /* MDA.Terminology — ตัวแปลงคำศัพท์จากกฎการปะทะเป็นคำทางกฎหมาย ทำงานทันทีและย้อนกลับได้ */
@@ -47659,8 +48105,8 @@ window.MDA.Jurisdiction = (function () {
     color:var(--cyan,var(--cyan)); background:rgba(var(--bg-panel-rgb,8 21 37) / .92);
     border:1px solid rgba(var(--cyan-rgb,0 212 255) / .34); border-radius:var(--radius-xl);
     padding:var(--space-0-5) var(--space-2); box-shadow:0 2px 8px rgba(0,0,0,.35);
-    user-select:none; letter-spacing:.3px; white-space:nowrap; line-height:1.2;
-    transition:border-color var(--dur-fast,.15s) var(--ease-out,ease), color var(--dur-fast,.15s) var(--ease-out,ease); }
+    user-select:none; letter-spacing:var(--track-label); white-space:nowrap; line-height:1.2;
+    transition:border-color var(--dur-fast,var(--dur-fast)) var(--ease-out,ease), color var(--dur-fast,var(--dur-fast)) var(--ease-out,ease); }
   .p3-hbtn:hover{ border-color:var(--cyan,var(--cyan-mid)); color:var(--teal,#bae6fd); }
   .p3-hbtn.on{ background:rgba(var(--cyan-rgb,0 212 255) / .16); color:var(--text-main,#e0f2fe); }
 
@@ -47674,7 +48120,7 @@ window.MDA.Jurisdiction = (function () {
   .p3-panel .p3-head{ display:flex; align-items:center; justify-content:space-between; padding:var(--space-2) var(--space-3);
     background:linear-gradient(90deg,rgba(var(--cyan-rgb,0 212 255) / .16),transparent);
     border-bottom:1px solid rgba(var(--cyan-rgb,0 212 255) / .20); }
-  .p3-panel .p3-head b{ font-size:var(--text-sm); letter-spacing:.4px; color:var(--cyan,var(--cyan-hi)); }
+  .p3-panel .p3-head b{ font-size:var(--text-sm); letter-spacing:var(--track-cap); color:var(--cyan,var(--cyan-hi)); }
   .p3-x{ cursor:pointer; color:var(--text-muted,var(--n-300)); font-size:var(--text-lg); line-height:1; padding:0 var(--space-0-5); }
   .p3-x:hover{ color:var(--red,var(--crit-hi)); }
   .p3-sub{ font-size:var(--text-2xs); color:var(--text-muted,var(--n-300)); padding:var(--space-1-5) var(--space-3) var(--space-0-5); line-height:1.45; }
@@ -50199,7 +50645,7 @@ window.MDA.StrategicAnalysis = (function () {
     cursor: pointer; user-select: none; white-space: nowrap;
     -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
     box-shadow: 0 2px 8px rgba(0,0,0,.35), 0 0 0 1px rgb(var(--cyan-rgb) / .15) inset;
-    transition: background .15s, border-color .15s, box-shadow .15s, color .15s;
+    transition: background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast), color var(--dur-fast);
   }
   #mda-cop-launcher:hover{
     background: rgb(var(--cyan-rgb) / .14);
@@ -50249,7 +50695,7 @@ window.MDA.StrategicAnalysis = (function () {
   /* หัวเมนูเต็มความกว้าง กินพื้นที่ทั้งสองคอลัมน์ */
   #mda-cop-menu .mcm-head{
     grid-column: 1 / -1; display: flex; align-items: center; gap:var(--space-1-5);
-    font-family: var(--font-mono), monospace; font-size:var(--text-2xs); letter-spacing: 1.5px;
+    font-family: var(--font-mono), monospace; font-size:var(--text-2xs); letter-spacing: var(--track-title);
     color: var(--text-muted); text-transform: uppercase;
     padding-bottom:var(--space-1-5); border-bottom: 1px solid rgb(var(--cyan-rgb) / .18);
   }
@@ -50261,7 +50707,7 @@ window.MDA.StrategicAnalysis = (function () {
   #mda-cop-menu .mda-cop-item{
     display: flex !important; width: 100% !important; box-sizing: border-box !important;
     justify-content: flex-start !important; align-items: center !important;
-    margin: 0 !important; font-size:var(--text-xs) !important; letter-spacing: .4px;
+    margin: 0 !important; font-size:var(--text-xs) !important; letter-spacing: var(--track-cap);
   }
 
   /* ── จัดปุ่มรองบนแถบหัวให้เป็นมาตรฐานเดียวกัน — สูง 24 จุดภาพ อักษร 10 จุดภาพ ──
@@ -50283,7 +50729,7 @@ window.MDA.StrategicAnalysis = (function () {
     color: rgba(34,211,238,.5); font-size:var(--text-base); line-height: 1;
     padding:var(--space-px) var(--space-0-5); border-radius:var(--radius-xs);
     font-family: var(--font-mono), monospace;
-    transition: color .15s, background .15s;
+    transition: color var(--dur-fast), background var(--dur-fast);
   }
   #lpPanelCloseBtn:hover { color: var(--cyan, var(--cyan-mid)); background: rgba(34,211,238,.12); }
 
@@ -50309,7 +50755,7 @@ window.MDA.StrategicAnalysis = (function () {
     font-size:var(--text-xs) !important;
     font-family: var(--font-mono), monospace !important;
     font-weight: 600 !important;
-    letter-spacing: 0.5px !important;
+    letter-spacing: var(--track-mono) !important;
     line-height: 1 !important;   /* [v17.30.0 HDR-2] เดิมแยกกันสามค่า 10px/12px/normal แล้วแต่ปุ่ม */
     background: rgba(255,255,255,0.02) !important;
     cursor: pointer !important;
@@ -50318,7 +50764,7 @@ window.MDA.StrategicAnalysis = (function () {
     gap:var(--space-1) !important;
     box-sizing: border-box !important;
     vertical-align: middle !important;
-    transition: border-color .15s, color .15s, background .15s !important;
+    transition: border-color var(--dur-fast), color var(--dur-fast), background var(--dur-fast) !important;
     text-decoration: none !important;
     white-space: nowrap !important;
     user-select: none !important;
@@ -50416,7 +50862,7 @@ window.MDA.StrategicAnalysis = (function () {
     font-family: var(--font-mono), monospace !important;
     font-size:var(--text-xs) !important;
     font-weight: 700 !important;          /* ★ คงไว้ — นี่คือที่ที่ "ลำดับความสำคัญ" ย้ายไปอยู่ */
-    letter-spacing: 0.5px !important;
+    letter-spacing: var(--track-mono) !important;
     box-sizing: border-box !important;
     line-height: 1 !important;
     display: inline-flex !important;
@@ -50428,7 +50874,7 @@ window.MDA.StrategicAnalysis = (function () {
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    transition: border-color .15s, color .15s, background .15s !important;
+    transition: border-color var(--dur-fast), color var(--dur-fast), background var(--dur-fast) !important;
   }
   /* ── ชี้เมาส์: ใช้กฎเดียวกับปุ่มรองทุกตัว ──
      [v17.39.2 HDR-3] ต้องเขียนใหม่ที่นี่ เพราะ #gudc-btn:hover (บรรทัด ~45018 · ฉีดด้วย JS)
@@ -50492,7 +50938,7 @@ window.MDA.StrategicAnalysis = (function () {
   header .hdr-state .zc-label, header .hdr-state .zc-time {
     font-size: inherit !important; font-weight: inherit !important; line-height: 1 !important;
   }
-  header .hdr-state .zc-label { letter-spacing: 2px !important; }
+  header .hdr-state .zc-label { letter-spacing: var(--track-wide) !important; }
   header .hdr-state .zc-time  { letter-spacing: 1.1px !important; }
   /* จุดกะพริบสองจุดในกรอบเดียวกันต้องเท่ากัน (เดิม 7 กับ 5) */
   header .hdr-state .dot, header .hdr-state .zc-dot {
@@ -50514,7 +50960,7 @@ window.MDA.StrategicAnalysis = (function () {
   }
   header #uiZoomCtl .uz-lbl, header #uiZoomCtl #uiZoomVal {
     font-family: var(--font-mono), monospace !important;
-    font-size:var(--text-xs) !important; letter-spacing: 0.5px !important; line-height: 1 !important;
+    font-size:var(--text-xs) !important; letter-spacing: var(--track-mono) !important; line-height: 1 !important;
   }
   header #uiZoomCtl #uiZoomVal { color: var(--cyan, var(--cyan)) !important; }
   header #uiZoomCtl .uz-btn {
@@ -52337,7 +52783,7 @@ function _sgEnsureBloom() {
   font-family: var(--font-mono), monospace;
   font-weight: 500; letter-spacing: normal; white-space: nowrap;
   align-items: unset; gap: 0; vertical-align: unset;
-  box-shadow: 0 0 8px rgba(34,211,238,.20); transition: all .2s;
+  box-shadow: 0 0 8px rgba(34,211,238,.20); transition: all var(--dur-quick);
 }
 .rr-body #lpBtn:hover {
   background: rgba(34,211,238,.12);
@@ -52364,7 +52810,7 @@ function _sgEnsureBloom() {
   padding:var(--space-1) var(--space-2); cursor: pointer;
   display: block; width: 100%; box-sizing: border-box;
   white-space: nowrap; text-align: left;
-  transition: all .2s; margin-top:var(--space-1);
+  transition: all var(--dur-quick); margin-top:var(--space-1);
 }
 .basemap-rr-btn:hover {
   background: rgba(251,191,36,.10);
@@ -52504,7 +52950,7 @@ function _sgEnsureBloom() {
   box-shadow: none !important;
   line-height: 1.3 !important;
   white-space: nowrap !important;
-  transition: border-color .15s, background .15s, color .15s !important;
+  transition: border-color var(--dur-fast), background var(--dur-fast), color var(--dur-fast) !important;
 }
 
 /* ๒. เมื่อชี้เมาส์ */
@@ -52573,10 +53019,10 @@ body[data-term-mode="ops"] #mda-cop-menu #mda-term-btn {
 <style>
 /* ── ปุ่มเปิด (อยู่ใน panel Command & Intelligence) ── */
 #ccOpenBtn {
-    font-family:'Share Tech Mono',monospace; font-size:var(--text-xs); letter-spacing:1.5px;
+    font-family:'Share Tech Mono',monospace; font-size:var(--text-xs); letter-spacing:var(--track-title);
     color:var(--purple,var(--purple-dim)); background:rgba(139,92,246,.10);
     border:1px solid rgba(139,92,246,.45); border-radius:var(--radius-sm);
-    padding:var(--space-0-5) var(--space-2); cursor:pointer; transition:all .2s; white-space:nowrap;
+    padding:var(--space-0-5) var(--space-2); cursor:pointer; transition:all var(--dur-quick); white-space:nowrap;
 }
 #ccOpenBtn:hover { background:rgba(139,92,246,.22); box-shadow:0 0 8px rgba(139,92,246,.35); color:#fff; }
 
@@ -52626,28 +53072,28 @@ body[data-term-mode="ops"] #mda-cop-menu #mda-term-btn {
 }
 .cc-title { font-family:'Saira','Share Tech Mono',sans-serif; font-size:var(--text-lg); font-weight:600;
     letter-spacing:3px; color:var(--cc-accent); white-space:nowrap; }
-.cc-title .cc-ver { font-size:var(--text-xs); letter-spacing:1px; opacity:.55; margin-left:var(--space-2); }
-#ccStateTxt { font-size:var(--text-sm); letter-spacing:2px; color:var(--cc-state); text-align:center; flex:1; }
+.cc-title .cc-ver { font-size:var(--text-xs); letter-spacing:var(--track-hud); opacity:.55; margin-left:var(--space-2); }
+#ccStateTxt { font-size:var(--text-sm); letter-spacing:var(--track-wide); color:var(--cc-state); text-align:center; flex:1; }
 .cc-clockbox { display:flex; align-items:center; gap:var(--space-2); font-size:var(--text-sm); color:#8fa4c0; white-space:nowrap; }
 #ccCloseBtn {
-    font-family:inherit; font-size:var(--text-xs); letter-spacing:1px; color:#9fb2cc;
+    font-family:inherit; font-size:var(--text-xs); letter-spacing:var(--track-hud); color:#9fb2cc;
     background:rgba(148,163,184,.08); border:1px solid rgba(148,163,184,.30);
-    border-radius:var(--radius-sm); padding:var(--space-0-5) var(--space-2); cursor:pointer; transition:all .2s;
+    border-radius:var(--radius-sm); padding:var(--space-0-5) var(--space-2); cursor:pointer; transition:all var(--dur-quick);
 }
 #ccCloseBtn:hover { color:#fff; border-color:rgba(255,65,54,.6); background:rgba(255,65,54,.12); }
 
 /* ── ผังหลัก: เซนเซอร์ | วงกลางจอ | มิติปฏิบัติการ ── */
 .cc-main { display:grid; grid-template-columns:1fr 1.15fr 1fr; gap:var(--space-4); padding:var(--space-3) var(--space-4) var(--space-1); }
 .cc-sec-title {
-    font-size:var(--text-xs); letter-spacing:2px; color:rgb(var(--cc-accent-rgb) / .85);
+    font-size:var(--text-xs); letter-spacing:var(--track-wide); color:rgb(var(--cc-accent-rgb) / .85);
     border-left:2px solid var(--cc-accent); padding-left:var(--space-1-5); margin:var(--space-2) 0 var(--space-1);
     text-transform:uppercase;
 }
 .cc-sec-title:first-child { margin-top:0; }
 .cc-row { display:flex; justify-content:space-between; align-items:baseline; gap:var(--space-2);
     font-size:var(--text-sm); padding:var(--space-0-5) 0; border-bottom:1px dashed rgba(148,163,184,.08); }
-.cc-row .cc-lbl { color:#b9cbe0; letter-spacing:.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.cc-row .cc-val { white-space:nowrap; letter-spacing:.5px; }
+.cc-row .cc-lbl { color:#b9cbe0; letter-spacing:var(--track-mono); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.cc-row .cc-val { white-space:nowrap; letter-spacing:var(--track-mono); }
 .cs-ok   { color:#39ff8c; } .cs-warn { color:var(--warn-hi); }
 .cs-crit { color:var(--red); animation:ccBlink 1s step-end infinite; }
 .cs-dim  { color:var(--n-500); }
@@ -52682,15 +53128,15 @@ body[data-term-mode="ops"] #mda-cop-menu #mda-term-btn {
 #ccReadyPct { font-family:'Saira','Share Tech Mono',sans-serif; font-size:46px; font-weight:600;
     color:#eaf7ff; line-height:1; text-shadow:0 0 18px rgb(var(--cc-state-rgb) / .45); }
 #ccReadyLbl { font-size:var(--text-base); letter-spacing:4px; color:var(--cc-state); }
-#ccThreatN  { font-size:var(--text-xs); letter-spacing:1.5px; color:#8fa4c0; }
-.cc-ring-legend { font-size:var(--text-xs); letter-spacing:1px; color:var(--n-500); text-align:center; }
+#ccThreatN  { font-size:var(--text-xs); letter-spacing:var(--track-title); color:#8fa4c0; }
+.cc-ring-legend { font-size:var(--text-xs); letter-spacing:var(--track-hud); color:var(--n-500); text-align:center; }
 
 /* ── ปุ่มสลับมุมมอง: แบบวง ◎ / แบบภาพตัดขวาง ⛰ ── */
 .cc-view-toggle { display:flex; gap:var(--space-1-5); margin-bottom:var(--space-1); }
 .cc-view-toggle button {
-    font-family:'Share Tech Mono',monospace; font-size:var(--text-2xs); letter-spacing:1.5px; text-transform:uppercase;
+    font-family:'Share Tech Mono',monospace; font-size:var(--text-2xs); letter-spacing:var(--track-title); text-transform:uppercase;
     color:#7d90ab; background:rgba(148,163,184,.06); border:1px solid rgba(148,163,184,.22);
-    border-radius:var(--radius-sm); padding:var(--space-0-5) var(--space-3); cursor:pointer; transition:all .2s;
+    border-radius:var(--radius-sm); padding:var(--space-0-5) var(--space-3); cursor:pointer; transition:all var(--dur-quick);
 }
 .cc-view-toggle button:hover { color:#cfe6f5; border-color:rgb(var(--cc-accent-rgb) / .5); }
 .cc-view-toggle button.cc-vt-on {
@@ -52722,9 +53168,9 @@ body[data-term-mode="ops"] #mda-cop-menu #mda-term-btn {
     background:rgba(8,16,30,.55); padding:var(--space-1-5) var(--space-2);
 }
 .cc-fib-hdr { display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-0-5); }
-.cc-fib-name { font-size:var(--text-sm); letter-spacing:1px; color:#d7e6f5; }
-.cc-fib-st { font-size:var(--text-xs); letter-spacing:1.5px; padding:var(--space-px) var(--space-1-5); border-radius:var(--radius-xs); border:1px solid; }
-.cc-fib-route { font-size:var(--text-2xs); color:var(--n-500); letter-spacing:.5px; margin-bottom:var(--space-1); }
+.cc-fib-name { font-size:var(--text-sm); letter-spacing:var(--track-hud); color:#d7e6f5; }
+.cc-fib-st { font-size:var(--text-xs); letter-spacing:var(--track-title); padding:var(--space-px) var(--space-1-5); border-radius:var(--radius-xs); border:1px solid; }
+.cc-fib-route { font-size:var(--text-2xs); color:var(--n-500); letter-spacing:var(--track-mono); margin-bottom:var(--space-1); }
 .cc-fib-metrics { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-px) var(--space-2); font-size:var(--text-xs); }
 .cc-fib-metrics span   { color:#7d90ab; }
 .cc-fib-metrics b      { color:#b9cbe0; font-weight:400; float:right; }
@@ -52733,12 +53179,12 @@ body[data-term-mode="ops"] #mda-cop-menu #mda-term-btn {
 .cc-dc { display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:var(--space-2); padding:var(--space-0-5) var(--space-4) var(--space-1-5); }
 .cc-cell { border:1px solid rgba(148,163,184,.14); border-radius:var(--radius-md);
     background:rgba(8,16,30,.45); padding:var(--space-1-5) var(--space-2) var(--space-1-5); min-width:0; }
-.cc-cell-lbl { font-size:var(--text-2xs); letter-spacing:1px; color:#7d90ab; margin-bottom:var(--space-0-5); line-height:1.35;
+.cc-cell-lbl { font-size:var(--text-2xs); letter-spacing:var(--track-hud); color:#7d90ab; margin-bottom:var(--space-0-5); line-height:1.35;
     white-space:normal; overflow-wrap:break-word; min-height:22px; }
 .cc-cell-val { font-family:'Saira','Share Tech Mono',sans-serif; font-size:var(--text-2xl); font-weight:600;
     color:#eaf7ff; line-height:1.15; white-space:nowrap; }
 .cc-cell-val small { font-size:var(--text-xs); font-weight:400; color:#8fa4c0; margin-left:var(--space-0-5); }
-.cc-cell-sub { font-size:var(--text-2xs); color:var(--n-500); letter-spacing:.3px; margin-top:var(--space-0-5);
+.cc-cell-sub { font-size:var(--text-2xs); color:var(--n-500); letter-spacing:var(--track-label); margin-top:var(--space-0-5);
     white-space:normal; overflow-wrap:break-word; line-height:1.35; }
 .cc-pue-track { position:relative; height:5px; margin-top:var(--space-1); border-radius:var(--radius-xs);
     background:rgba(148,163,184,.12); overflow:visible; }
