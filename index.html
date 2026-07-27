@@ -1,6 +1,19 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.40.1 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.40.2 · 7-Domain + AI Staff)
+  · [v17.40.2] ค่ากลาง — v17.40.1 ลดจนแทบมองไม่เห็น จึงถอยกลับมาครึ่งทางระหว่างก่อนกับหลัง
+      ผู้ใช้แจ้งว่าผลลัพธ์จางเกินไป จึงหาจุดกึ่งกลางของทุกค่าที่ปรับ และแก้ต้นเหตุที่แท้จริงเพิ่ม:
+      · ค่าสีเส้น EEC (ต้นเหตุหลัก) — ยกขึ้นบันไดเทาสองขั้น #5f6b7c/#738091/#8f99a8
+        → #8f99a8/#9aa4b2/#abb3bf · ค่าสำรอง #64748b → #9aa4b2
+        เทาขั้นล่างมีความสว่างสัมพัทธ์ราว .๑๔ ซึ่งบนแผนที่พื้นมืดแทบไม่ต่างจากพื้นหลังอยู่แล้ว
+        พอลดความทึบและน้ำหนักซ้ำเข้าไปอีกจึงหายไปเลย — ปัญหาอยู่ที่ค่าความสว่าง ไม่ใช่ความหนา
+      · ช่องไฟจุด — กองเรือ '1 7' → '1 5' · EEC '1 8' → '1 5'
+        จุดถี่ขึ้นราวหนึ่งในสามต่อความยาวเส้น ทำให้เส้นต่อเนื่องขึ้นในสายตาโดยไม่หนาขึ้นเลย
+      · น้ำหนักเส้น — กองเรือ ๑.๒ → ๑.๖ (เดิม ๒) · EEC ๑ → ๑.๔ (เดิม ๑.๘)
+      · ความทึบ — กองเรือ เส้น .๕๕ → .๗๒ (เดิม .๙๐) พื้น .๐๕ → .๐๖๕ (เดิม .๐๘)
+                  EEC     เส้น .๔๕ → .๖๒ (เดิม .๘๐) พื้น .๐๒๘ → .๐๓๖ (เดิม .๐๔๕)
+      · ไม่แตะระนาบ eecPane zIndex 345 และการเปิดเป็นค่าตั้งต้น — สองข้อนั้นได้ผลตามต้องการแล้ว
+        และเป็นข้อที่รับประกันว่าเส้นเขตทับสัญลักษณ์เซ็นเซอร์ไม่ได้ ไม่ว่าจะทำให้เห็นชัดแค่ไหน
   · [v17.40.1] เขตแดนเป็นฉากหลัง ไม่ใช่เป้า — ลดน้ำหนักเส้นเขต EEC และพื้นที่กองเรือ
       ผู้ใช้แจ้งว่าเส้นประทั้งสองเส้นหนาจนแย่งสายตาไปจากสัญลักษณ์เซ็นเซอร์ จึงแก้ ๔ ทาง:
       · รูปแบบเส้น — เส้นประ → เส้นจุด: dashArray '6, 5'/'7 5' → '1 7'/'1 8' + lineCap:'round'
@@ -1704,12 +1717,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.40.1 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.40.2 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.40.1';
+        const APP_VERSION = '17.40.2';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -9983,7 +9996,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.40.1 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.40.2 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -10453,7 +10466,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.40.1 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.40.2 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -10471,7 +10484,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.40.1 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.40.2 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -11444,7 +11457,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.40.1 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.40.2 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -12867,14 +12880,17 @@ const FLEET_ZONE_COORDS = [
 
 // [v17.40.1] เส้นประหนา → เส้นจุดบาง
 //   เขตแดนคือ "ฉากหลัง" ไม่ใช่ "เป้า" จึงต้องอ่านได้แต่ต้องไม่แย่งสายตาไปจากสัญลักษณ์เซ็นเซอร์
-//   dashArray '1 7' + lineCap round = จุดกลมเว้นระยะ (ช่วงจุดสั้นสุดที่ยังเห็นเป็นจุด ไม่กลายเป็นขีด)
+//   dashArray '1 5' + lineCap round = จุดกลมเว้นระยะ (ช่วงจุดสั้นสุดที่ยังเห็นเป็นจุด ไม่กลายเป็นขีด)
+// [v17.40.2] ค่ากลางระหว่างก่อนปรับกับหลังปรับ — v17.40.1 จางจนแทบมองไม่เห็น
+//   น้ำหนัก ๑.๒→๑.๖ (เดิม ๒) · ทึบ .๕๕→.๗๒ (เดิม .๙๐) · พื้น .๐๕→.๐๖๕ (เดิม .๐๘)
+//   และร่นช่องไฟจุด ๗→๕ ซึ่งเพิ่มจำนวนจุดต่อความยาวราวหนึ่งในสาม โดยไม่ทำให้เส้นหนาขึ้น
 const fleetZoneLine = L.polygon(FLEET_ZONE_COORDS, {
     color:       '#f97316',
-    weight:      1.2,
-    opacity:     0.55,
+    weight:      1.6,
+    opacity:     0.72,
     fillColor:   '#f97316',
-    fillOpacity: 0.05,
-    dashArray:   '1 7',
+    fillOpacity: 0.065,
+    dashArray:   '1 5',
     lineCap:     'round',
     lineJoin:    'round',
 }).addTo(map);
@@ -19265,10 +19281,14 @@ let eecVisible = false;
 //   เหตุผล: EEC เปิดเป็นค่าตั้งต้นแล้ว ถ้ายังใช้ส้ม/เหลือง/เขียว จะชนกับ --sym-unknown (#f59e0b)
 //   และ --sym-friendly โดยตรง = เส้นเขตการปกครองพูดภาษาเดียวกับสถานะเป้า ซึ่งผิดหลักของโครงการเอง
 //   ("สีนั้นตกแต่งหรือเป็นข้อมูล") เขตแดนเป็นภูมิหลัง จึงต้องไม่ยืมสีของชั้นข้อมูลเป้า
+// [v17.40.2] ยกทั้งสามระดับขึ้นบันไดเทาสองขั้น (#5f6b7c/#738091/#8f99a8 → #8f99a8/#9aa4b2/#abb3bf)
+//   เหตุผล: แผนที่พื้นมืด เทาขั้นล่าง (ค่าความสว่างสัมพัทธ์ ~.๑๔) แทบไม่ต่างจากพื้นหลัง
+//   การลดความทึบ+น้ำหนักซ้ำเข้าไปอีกจึงทำให้หายไปเลย ขั้นบน (~.๓๕-.๔๔) อ่านออกชัดแต่ยังเป็นกลาง
+//   ไม่ยืมภาษาสีของ --sym-* ตามเดิม
 const EEC_PROV_COLORS = {
-    20: { border: '#f59e0b', fill: '#f59e0b', line: '#5f6b7c' },   // ชลบุรี   — amber
-    21: { border: '#fb923c', fill: '#fb923c', line: '#738091' },   // ระยอง    — orange
-    24: { border: '#4ade80', fill: '#4ade80', line: '#8f99a8' },   // ฉะเชิงเทรา — green
+    20: { border: '#f59e0b', fill: '#f59e0b', line: '#8f99a8' },   // ชลบุรี   — amber
+    21: { border: '#fb923c', fill: '#fb923c', line: '#9aa4b2' },   // ระยอง    — orange
+    24: { border: '#4ade80', fill: '#4ade80', line: '#abb3bf' },   // ฉะเชิงเทรา — green
 };
 
 (function() {
@@ -19284,21 +19304,23 @@ const EEC_PROV_COLORS = {
             pane: 'eecPane',
             style: function(feature) {
                 const c = EEC_PROV_COLORS[feature.properties.PROV_CODE]
-                        || { border: '#94a3b8', fill: '#94a3b8', line: '#64748b' };
+                        || { border: '#94a3b8', fill: '#94a3b8', line: '#9aa4b2' };
+                // [v17.40.2] ค่ากลาง — น้ำหนัก ๑→๑.๔ (เดิม ๑.๘) · ทึบ .๔๕→.๖๒ (เดิม .๘๐)
+                //   พื้น .๐๒๘→.๐๓๖ (เดิม .๐๔๕) · ช่องไฟจุด ๘→๕ (จุดถี่ขึ้นโดยเส้นไม่หนาขึ้น)
                 return {
                     color:       c.line,
-                    weight:      1,
-                    dashArray:   '1 8',
+                    weight:      1.4,
+                    dashArray:   '1 5',
                     lineCap:     'round',
                     fillColor:   c.line,
-                    fillOpacity: 0.028,
-                    opacity:     0.45,
+                    fillOpacity: 0.036,
+                    opacity:     0.62,
                 };
             },
             onEachFeature: function(feature, layer) {
                 const p = feature.properties;
                 const c = EEC_PROV_COLORS[p.PROV_CODE]
-                        || { border: '#94a3b8', fill: '#94a3b8', line: '#64748b' };
+                        || { border: '#94a3b8', fill: '#94a3b8', line: '#9aa4b2' };
                 layer.bindTooltip(
                     `<span style="color:${c.border};font-weight:700;">EEC — ${p.PROV_NAMT}</span><br>` +
                     `${p.PROV_NAME}<br>` +
