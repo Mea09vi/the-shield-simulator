@@ -1,6 +1,20 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.40.3 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.41.0 · 7-Domain + AI Staff)
+  · [v17.41.0] แผงหนทางปฏิบัติ (หป.) — อ่านเทียบกันได้ และซื่อสัตย์ว่า "อะไรที่ยังไม่รู้"
+      อ้างอิงรูปแบบการนำเสนอของ Palantir Gotham (ECOA/COA) แต่คงเกณฑ์ ๑๒ ข้อของเราไว้ครบ
+      · แถวข้อมูลจัดคอลัมน์ ":" ตรงกันทั้ง ๔ แถว — เวลาถึง CDP-1 · ความเป็นไปได้ ·
+        ความเสี่ยงที่ยอมรับได้ · สถานะตรวจทาน (เทียบข้าม หป. ด้วยสายตาได้ทันที)
+      · สถานะ "ยังประเมินไม่ได้" เป็นสีเทาเอียง ไม่ปล่อยให้ค่าฐานผ่านตาเป็นค่าจริง
+        (เวลา = ไม่มีหน่วยถึง CDP-1 · ความเป็นไปได้ = เซ็นเซอร์อ่านไม่ได้ · ยอมรับได้ = ไม่มีชั้น AIS)
+      · บันไดสถานะตรวจทาน HITL: ยังไม่ตรวจทาน → ฝสธ. ตรวจแล้ว → ผบ. อนุมัติ
+        เปลี่ยน หป. = การตรวจทานเดิมเป็นโมฆะ ต้องเริ่มบันไดใหม่ทุกครั้ง
+      · หป. ที่เลือกกางเต็ม ที่เหลือย่อเหลือชื่อ+คะแนนรวม · ปุ่มปฏิบัติการแยกจากตัวการ์ด
+        (การแตะการ์ดจะไม่กลายเป็นการตกลงใจโดยไม่ตั้งใจอีกต่อไป)
+      · แถบเทียบแกนเดียว (Gantt) บน "นาทีถึง CDP-1" — ข้อได้เปรียบด้านเวลาเห็นเป็นความยาว
+      · แผงยืนยันการส่งคำสั่ง แทน window.confirm — ผบ. เห็นด่านตรวจทานทั้งหมดก่อนกด
+        ด่านที่ยังประเมินไม่ได้ขึ้น ⚠ พร้อมเหตุผล และต้องติ๊กรับความเสี่ยงนั้นด้วยตนเอง
+        กฎสองคน (ฝสธ. ตรวจ → ผบ. อนุมัติ) ยังคงเดิมทุกประการ
   · [v17.40.3] เอกสารประกอบโค้ด — ไม่แตะพฤติกรรมของโปรแกรมแม้แต่บรรทัดเดียว
       เป้าหมาย: พิมพ์ออกกระดาษแล้วอ่านรู้เรื่องทั้งผู้บังคับบัญชาและโปรแกรมเมอร์ จากไฟล์เดียว
       · แยกด้วย "ระดับความสูง" ไม่ใช่แยกเอกสาร — ชั้น ๑ ป้ายหัวข้อ (ภาษาผู้บังคับบัญชา:
@@ -1735,12 +1749,12 @@
     <!-- [v17.3.4 DOC-1] อัปเดต comment ให้ตรงบริบทปัจจุบัน (อ้างอิงร่างวิทยานิพนธ์บท ๓-๔) + ตรวจสอบ bug โดยละเอียด (ครบ ๙ ข้อสั่งการ — ทำงานถูกต้อง) + แก้ป้ายเวอร์ชันค้าง v16.0 ๒ จุด (ส่วนหัวไฟล์ + console banner) → v17.3.4 + version bump display string 7 จุด -->
     <!-- [v17.3.5 DOC-2] เติม changelog เชิงบรรยาย v16 + v17 กลับเข้า comment ส่วนหัว (บล็อก vNN changelog: เดิมหยุดที่ v15) + version bump display string -->
     <!-- [v17.5.4 GLM-CRED] ป้ายโมเดล Z.AI GLM ในตัวเลือก AI: เติม "(ยังไม่มีเครดิต)" ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.40.3 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.41.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.40.3';
+        const APP_VERSION = '17.41.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -8815,6 +8829,156 @@
             border: 1px solid currentColor;
             line-height: 1.2;
         }
+        /* ── [v17.41.0 COA-CARD] บล็อกข้อมูลสรุปในการ์ด หป. ─────────────
+           ทุกแถวเป็นคู่ «หัวข้อ : ค่า» เรียงแกนเดียวกัน อ่านเทียบกันได้ในพริบตา
+           ค่าที่ประเมินไม่ได้ต้องแสดงเป็นตัวเอียงสีจาง — ห้ามให้ค่าฐานผ่านตัวเป็นค่าจริง */
+        #mda-ai-modal .mda-staff-coa-meta {
+            margin-top:var(--space-1-5);
+            border-top: 1px solid rgba(148,163,184,0.14);
+            padding-top:var(--space-1);
+            display: grid; grid-template-columns: auto 1fr;
+            gap:var(--space-0-5) var(--space-2);
+            font-size:var(--text-xs);
+        }
+        #mda-ai-modal .mda-staff-coa-meta .mk { color: var(--text-muted); white-space: nowrap; }
+        #mda-ai-modal .mda-staff-coa-meta .mv { color: var(--n-100); font-weight: 700; }
+        #mda-ai-modal .mda-staff-coa-meta .mv.unk {
+            color: var(--text-muted); font-weight: 400; font-style: italic;
+        }
+        #mda-ai-modal .mda-staff-coa-meta .mv .sim {
+            color: var(--text-muted); font-weight: 400; font-style: italic;
+        }
+        #mda-ai-modal .mda-staff-coa-meta .mv.rv-ok   { color: var(--ok-hi); }
+        #mda-ai-modal .mda-staff-coa-meta .mv.rv-warn { color: var(--warn-hi); }
+        /* ป้ายที่มาของ หป. — กลไกกฎ หรือ LLM (ต้องแยกออกจากกันบนหน้าจอ) */
+        #mda-ai-modal .mda-staff-coa .src {
+            font-size:var(--text-2xs); letter-spacing: var(--track-em-wide);
+            color: var(--text-muted); font-weight: 400;
+        }
+        /* การ์ดที่ไม่ได้เลือก — ย่อเหลือชื่อ + คะแนนรวม เพื่อลดความแออัดของคอลัมน์ */
+        #mda-ai-modal .mda-staff-coa.collapsed { padding:var(--space-1-5) var(--space-3); }
+        #mda-ai-modal .mda-staff-coa.collapsed .cbody { display: none; }
+        /* ปุ่มปฏิบัติการแยกจากการคลิกทั้งการ์ด — กันการตกลงใจโดยไม่ตั้งใจ */
+        #mda-ai-modal .mda-staff-coa-acts {
+            display: flex; flex-wrap: wrap; gap:var(--space-1-5);
+            margin-top:var(--space-1-5);
+        }
+        #mda-ai-modal .mda-staff-coa-acts button {
+            font: inherit; font-size:var(--text-xs); font-weight: 700;
+            color: var(--n-200); background: rgba(148,163,184,0.10);
+            border: 1px solid rgba(148,163,184,0.30);
+            border-radius:var(--radius-sm);
+            padding:var(--space-0-5) var(--space-2);
+            cursor: pointer; transition: all var(--dur-quick);
+        }
+        #mda-ai-modal .mda-staff-coa-acts button:hover {
+            border-color: rgb(var(--brass-rgb) / 0.55); color: var(--n-100);
+        }
+        #mda-ai-modal .mda-staff-coa-acts button.go {
+            color: var(--ok-hi); border-color: rgb(var(--brass-rgb) / 0.45);
+        }
+        /* แถบเทียบ "เวลาถึง CDP-1" ของทุก หป. บนแกนเดียวกัน */
+        #mda-ai-modal .mda-coa-gantt {
+            margin-top:var(--space-2); padding-top:var(--space-1-5);
+            border-top: 1px solid rgba(148,163,184,0.14);
+            font-size:var(--text-xs);
+        }
+        #mda-ai-modal .mda-coa-gantt .ghd {
+            color: var(--text-muted); margin-bottom:var(--space-1);
+            letter-spacing: var(--track-em-wide);
+        }
+        #mda-ai-modal .mda-coa-gantt .grow {
+            display: grid; grid-template-columns: 58px 1fr 78px;
+            align-items: center; gap:var(--space-1-5);
+            margin-bottom:var(--space-0-5);
+        }
+        #mda-ai-modal .mda-coa-gantt .gid { color: var(--text-muted); }
+        #mda-ai-modal .mda-coa-gantt .gtrk {
+            position: relative; height: 9px;
+            background: rgba(148,163,184,0.14);
+            border-radius:var(--radius-sm); overflow: hidden;
+        }
+        #mda-ai-modal .mda-coa-gantt .gtrk i {
+            display: block; height: 100%;
+            background: rgba(148,163,184,0.38);
+            border-radius:var(--radius-sm);
+        }
+        #mda-ai-modal .mda-coa-gantt .grow.sel .gid { color: var(--brass); }
+        #mda-ai-modal .mda-coa-gantt .grow.sel .gtrk i { background: rgb(var(--brass-rgb) / 0.85); }
+        #mda-ai-modal .mda-coa-gantt .gval { text-align: right; color: var(--n-100); font-weight: 700; }
+        #mda-ai-modal .mda-coa-gantt .gval.unk { color: var(--text-muted); font-weight: 400; font-style: italic; }
+        /* ── [v17.41.0 DEPLOY] แผงยืนยันคำสั่งวางกำลัง (HITL ขั้นสุดท้าย) ── */
+        #mda-deploy-panel {
+            display: none; position: fixed; inset: 0; z-index: 12000;
+            background: rgba(2,6,23,0.72);
+            align-items: center; justify-content: center;
+            padding:var(--space-3);
+        }
+        #mda-deploy-panel.on { display: flex; }
+        #mda-deploy-panel .dp-box {
+            width: min(780px, 96vw); max-height: 88vh; overflow: auto;
+            background: #0b1220;
+            border: 1px solid rgb(var(--brass-rgb) / 0.40);
+            border-radius:var(--radius-md);
+            padding:var(--space-3);
+            font-size:var(--text-sm); color: var(--n-200); line-height: 1.55;
+        }
+        #mda-deploy-panel .dp-hd {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            gap:var(--space-2); margin-bottom:var(--space-2);
+            padding-bottom:var(--space-1-5);
+            border-bottom: 1px solid rgba(148,163,184,0.18);
+        }
+        #mda-deploy-panel .dp-hd b { color: var(--brass); font-size:var(--text-base); }
+        #mda-deploy-panel .dp-x {
+            font: inherit; background: none; border: 0; cursor: pointer;
+            color: var(--text-muted); font-size:var(--text-base); line-height: 1;
+        }
+        #mda-deploy-panel .dp-cols {
+            display: grid; grid-template-columns: 1fr 1fr; gap:var(--space-3);
+        }
+        #mda-deploy-panel .dp-lbl {
+            font-size:var(--text-2xs); letter-spacing: var(--track-em-wide);
+            color: var(--text-muted); margin-bottom:var(--space-1);
+        }
+        #mda-deploy-panel textarea {
+            width: 100%; min-height: 138px; resize: vertical;
+            font: inherit; font-size:var(--text-xs); line-height: 1.6;
+            color: var(--n-100); background: rgba(15,23,42,0.6);
+            border: 1px solid rgba(148,163,184,0.25);
+            border-radius:var(--radius-sm); padding:var(--space-1-5);
+        }
+        #mda-deploy-panel .dp-sub {
+            font-size:var(--text-xs); font-style: italic;
+            color: var(--text-muted); margin-bottom:var(--space-1-5);
+        }
+        #mda-deploy-panel .dp-stg { display: flex; gap:var(--space-1-5); margin-bottom:var(--space-1-5); }
+        #mda-deploy-panel .dp-stg .tick {
+            flex: 0 0 18px; height: 18px; border-radius: 50%;
+            border: 1px solid rgba(148,163,184,0.45);
+            display: flex; align-items: center; justify-content: center;
+            font-size:var(--text-2xs); color: var(--text-muted);
+        }
+        #mda-deploy-panel .dp-stg.ok .tick { border-color: var(--ok-hi); color: var(--ok-hi); }
+        #mda-deploy-panel .dp-stg .t { font-weight: 700; color: var(--n-100); }
+        #mda-deploy-panel .dp-stg .w { font-size:var(--text-xs); color: var(--text-muted); }
+        #mda-deploy-panel .dp-stg.auto .t { color: var(--text-muted); font-weight: 400; }
+        #mda-deploy-panel .dp-stg label { cursor: pointer; }
+        #mda-deploy-panel .dp-ft {
+            display: flex; justify-content: space-between; gap:var(--space-2);
+            margin-top:var(--space-3); padding-top:var(--space-2);
+            border-top: 1px solid rgba(148,163,184,0.18);
+        }
+        #mda-deploy-panel .dp-ft button {
+            font: inherit; font-size:var(--text-xs); font-weight: 700;
+            padding:var(--space-1) var(--space-3);
+            border-radius:var(--radius-sm); cursor: pointer;
+            color: var(--n-200); background: rgba(148,163,184,0.10);
+            border: 1px solid rgba(148,163,184,0.30);
+            transition: all var(--dur-quick);
+        }
+        #mda-deploy-panel .dp-ft button.go { color: var(--ok-hi); border-color: var(--ok-hi); }
+        #mda-deploy-panel .dp-ft button:disabled { opacity: .45; cursor: not-allowed; }
         /* เกณฑ์ทดสอบ หป. — score bars */
         #mda-ai-modal .mda-staff-crit {
             display: flex; align-items: center; gap:var(--space-2);
@@ -10014,7 +10178,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.40.3 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.41.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -10484,7 +10648,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.40.3 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.41.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -10502,7 +10666,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.40.3 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.41.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
         </div>
@@ -11475,7 +11639,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.40.3 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.41.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -41265,8 +41429,10 @@ function _buildCOAs(tp, snap) {
         const aRisk = Math.min(95, 40 + 15 * bands.size);
         /* ยอมรับได้-๒: กระทบการเดินเรือพาณิชย์ — นับเรือ AIS จริงใน 3nm รอบจุดวาง PV/ฮ. */
         let near = 0;
+        let aisArr = false;   // [v17.41.0] มีชั้นข้อมูล AIS ให้ประเมินจริงหรือไม่ (แยกจาก near===0 ที่แปลว่า "ไม่มีเรือ")
         try {
             if (typeof aisVesselData !== 'undefined' && Array.isArray(aisVesselData)) {
+                aisArr = true;
                 aisVesselData.forEach(v => {
                     if (v && v.lat != null && v.lng != null) {
                         const p = xyOf(v.lat, v.lng);
@@ -41276,6 +41442,20 @@ function _buildCOAs(tp, snap) {
             }
         } catch (e) {}
         const aShip = Math.max(40, 95 - 6 * near);
+        /* ── [v17.41.0 HONEST] บันทึกสิ่งที่ "ยังประเมินไม่ได้" ไว้กับ หป. โดยตรง ────────
+           คะแนนทุกตัวมีค่าฐานเสมอเพื่อให้เปรียบเทียบกันได้ แต่การ์ด หป. ต้องบอกผู้บังคับบัญชา
+           ให้ชัดว่าแถวไหนมาจากข้อมูลจริง แถวไหนเป็นค่าฐานเพราะเซ็นเซอร์/AIS ยังอ่านไม่ได้
+              time — ไม่มีหน่วยใดไปถึง CDP-1 ได้เลย (tMin ค้างที่ 999)
+              feas — snapshot ไม่มีค่า sensorEff จึงตกไปใช้ค่าฐาน 100
+              acc  — ไม่มีชั้นข้อมูล AIS เลย ทำให้ near=0 ดูเหมือน "ไม่มีเรือพาณิชย์" */
+        c.tMin = tMin;
+        c.nearAis = near;
+        c.aisReal = aisLive;
+        c.unk = {
+            time: tMin >= 999,
+            feas: !(snap && snap.dyn && snap.dyn.sensorEff != null),
+            acc: !aisArr,
+        };
         /* ยอมรับได้-๓: สอดคล้อง RoE — ตั้งรับประชิด UDC เสี่ยง escalation ต่ำกว่าผลักแนวออกไกล */
         let aRoe = (c.id === 'COA-A') ? 90 : (c.id === 'COA-C') ? 78 : 72;   // [v18.1.0 COA-C]
         if (tp.cy) aRoe -= 5;
@@ -41599,6 +41779,73 @@ function renderMap(plan) {
 }
 
 /* ── render ผลทั้งหมดลง panel ────────────────────────────────── */
+/**
+ * แปลงเวลาถึง CDP-1 (นาที) ของ หป. หนึ่งเป็นข้อความสำหรับแสดงบนการ์ด
+ * คืน '— ยังประเมินไม่ได้' เมื่อไม่มีหน่วยใดไปถึงจุดตัดสินใจได้เลย — ห้ามแสดงตัวเลขหลอก
+ * @param   {object} c  หนทางปฏิบัติที่ผ่าน judge() แล้ว (ต้องมี c.tMin, c.unk)
+ * @returns {{txt:string, unk:boolean}}
+ */
+function _coaTimeTxt(c) {
+    if (!c || c.unk == null || c.unk.time || c.tMin == null || c.tMin >= 999) {
+        return { txt: '— ยังประเมินไม่ได้', unk: true };
+    }
+    return { txt: c.tMin.toFixed(1) + ' นาที', unk: false };
+}
+
+/**
+ * บล็อกข้อมูลสรุป ๔ แถวใต้แนวความคิดของ หป. — จัดแกน «หัวข้อ : ค่า» ให้เทียบกันได้ทันที
+ * แถวใดที่ข้อมูลต้นทางอ่านไม่ได้จะแสดงเป็นตัวเอียงสีจางแทนค่าฐาน (หลัก «SIM ซื่อสัตย์»)
+ * @param   {object} c     หนทางปฏิบัติ
+ * @param   {object} plan  แผนปัจจุบัน (ใช้สถานะตรวจทานของ หป. ที่เลือกอยู่)
+ * @param   {boolean} sel  การ์ดนี้เป็น หป. ที่เลือกอยู่หรือไม่
+ * @returns {string} HTML
+ */
+function _coaMeta(c, plan, sel) {
+    const t = _coaTimeTxt(c);
+    const rv = (plan && plan.review) || { staff: false, cmdr: false };
+    const rvTxt = !sel ? 'ยังไม่ตรวจทาน'
+        : rv.cmdr ? 'ผบ. อนุมัติแล้ว'
+            : rv.staff ? 'ฝสธ. ตรวจแล้ว' : 'ยังไม่ตรวจทาน';
+    const rvCls = !sel ? '' : rv.cmdr ? ' rv-ok' : rv.staff ? ' rv-warn' : '';
+    /* เป็นไปได้: ถ้า snapshot ไม่มีค่าประสิทธิภาพเซ็นเซอร์ คะแนนนี้มาจากค่าฐานล้วน */
+    const fTxt = c.unk && c.unk.feas
+        ? '<span class="mv unk">' + c.f + '/100 <span class="sim">(ค่าฐาน — เซ็นเซอร์อ่านไม่ได้)</span></span>'
+        : '<span class="mv">' + c.f + '/100</span>';
+    /* ยอมรับได้: ไม่มีชั้น AIS เลย = ประเมินผลกระทบการเดินเรือพาณิชย์ไม่ได้จริง */
+    const aTxt = c.unk && c.unk.acc
+        ? '<span class="mv unk">' + c.a + '/100 <span class="sim">(ยังไม่มีชั้นข้อมูล AIS)</span></span>'
+        : '<span class="mv">' + c.a + '/100' + (c.aisReal ? '' : ' <span class="sim">(AIS จำลอง)</span>') + '</span>';
+    return '<div class="mda-staff-coa-meta">' +
+        '<span class="mk">เวลาถึง CDP-1</span><span class="mv' + (t.unk ? ' unk' : '') + '">' + t.txt + '</span>' +
+        '<span class="mk">ความเป็นไปได้</span>' + fTxt +
+        '<span class="mk">ความเสี่ยงที่ยอมรับได้</span>' + aTxt +
+        '<span class="mk">สถานะตรวจทาน</span><span class="mv' + rvCls + '">' + rvTxt + '</span>' +
+        '</div>';
+}
+
+/**
+ * แถบเทียบ หป. ทั้งหมดบนแกน «เวลาถึง CDP-1» เดียวกัน — เห็นความต่างเชิงเวลาโดยไม่ต้องอ่านตัวเลข
+ * หป. ที่เลือกอยู่จะทึบ ที่เหลือจาง ส่วนแถวที่ประเมินไม่ได้จะไม่มีแท่งเลย
+ * @param   {object} plan
+ * @returns {string} HTML
+ */
+function _coaGantt(plan) {
+    const list = plan.coas || [];
+    let maxT = 0;
+    list.forEach(c => { if (c.tMin != null && c.tMin < 999) maxT = Math.max(maxT, c.tMin); });
+    const axis = Math.max(10, Math.ceil(maxT));
+    const rows = list.map(c => {
+        const t = _coaTimeTxt(c), sel = c.id === plan.coa.id;
+        const w = t.unk ? 0 : Math.max(2, Math.round(c.tMin / axis * 100));
+        return '<div class="grow' + (sel ? ' sel' : '') + '">' +
+               '<span class="gid">' + c.id + '</span>' +
+               '<span class="gtrk"><i style="width:' + w + '%"></i></span>' +
+               '<span class="gval' + (t.unk ? ' unk' : '') + '">' + (t.unk ? 'ยังประเมินไม่ได้' : c.tMin.toFixed(1) + ' น.') + '</span>' +
+               '</div>';
+    }).join('');
+    return '<div class="mda-coa-gantt"><div class="ghd">เทียบเวลาถึง CDP-1 — แกนร่วม ๐–' + axis + ' นาที</div>' + rows + '</div>';
+}
+
 function _renderAll(plan) {
     const eb = $id('mda-staff-ecoas');
     if (eb) eb.innerHTML = plan.ecoas.map(e => {
@@ -41612,13 +41859,24 @@ function _renderAll(plan) {
     const ec = $id('mda-staff-ecoa-count'); if (ec) ec.textContent = plan.ecoas.length + ' ECOA';
     const wgBtn = $id('mda-staff-wargame-btn'); if (wgBtn) wgBtn.style.display = 'inline-block';
     const cb = $id('mda-staff-coas');
+    /* [v17.41.0] การ์ด หป. — หป. ที่เลือกกางเต็ม ที่เหลือย่อเหลือชื่อ+คะแนนรวม
+       ปุ่มปฏิบัติการแยกออกจากตัวการ์ด: การแตะการ์ดจะไม่กลายเป็นการตกลงใจโดยไม่ตั้งใจอีกต่อไป */
     if (cb) cb.innerHTML = plan.coas.map(c => {
         const sel = c.id === plan.coa.id, tot = c.s + c.f + c.a;
-        return '<div class="mda-staff-coa' + (sel ? ' sel' : '') + '" onclick="selectCOA(\'' + c.id + '\')"><div class="hd"><span>' + c.id + ' · ' + c.name +
-               '</span>' + (sel ? '<span class="pick">★ ฝสธ. เสนอ</span>' : '<span class="pick" style="color:var(--text-muted);">' + tot + '/300</span>') +
-               '</div>' + c.concept +
-               '<div style="margin-top:var(--space-0-5);color:var(--n-300);font-size:var(--text-xs);">เหมาะสม ' + c.s + ' · เป็นไปได้ ' + c.f + ' · ยอมรับได้ ' + c.a + ' — รวม ' + tot + '/300</div></div>';
-    }).join('');
+        return '<div class="mda-staff-coa' + (sel ? ' sel' : ' collapsed') + '"><div class="hd"><span>' + c.id + ' · ' + c.name +
+               ' <span class="src">⚙ กลไกกฎ</span></span>' +
+               (sel ? '<span class="pick">★ ฝสธ. เสนอ</span>' : '<span class="pick" style="color:var(--text-muted);">' + tot + '/300</span>') +
+               '</div><div class="cbody">' + c.concept +
+               '<div style="margin-top:var(--space-0-5);color:var(--n-300);font-size:var(--text-xs);">เหมาะสม ' + c.s + ' · เป็นไปได้ ' + c.f + ' · ยอมรับได้ ' + c.a + ' — รวม ' + tot + '/300</div>' +
+               _coaMeta(c, plan, sel) +
+               '<div class="mda-staff-coa-acts">' +
+               '<button type="button" onclick="reviewCOA(\'' + c.id + '\')">ดูรายละเอียด…</button>' +
+               '<button type="button" onclick="compareCOAs()">เปรียบเทียบ…</button>' +
+               (sel ? '' : '<button type="button" class="go" onclick="selectCOA(\'' + c.id + '\')">เลือก หป. นี้</button>') +
+               '</div></div></div>';
+    }).join('') + _coaGantt(plan) +
+        (plan.llmCoa ? '<div style="margin-top:var(--space-1-5);color:var(--text-muted);font-size:var(--text-xs);font-style:italic;">' +
+            '🧠 มีข้อเสนอจากผู้ช่วย AI เพิ่มเติม — เป็นคำแนะนำประกอบ ไม่ใช่ ๑ ใน ๓ หป. ที่ให้คะแนนไว้ (ดูช่องผู้ช่วย AI)</div>' : '');
     const cc = $id('mda-staff-coa-count'); if (cc) cc.textContent = plan.coa.id + ' ★';
     const ob = $id('mda-staff-org');
     if (ob) ob.innerHTML = plan.assets.map(a =>
@@ -41659,7 +41917,9 @@ function runPlan() {
     const ecoas = _ecoas(tp);
     const built = _buildCOAs(tp, snap);
     const assets = _allocate(built.sel, tp);
-    const plan = { snap, tp, ecoas, coas: built.list, coa: built.sel, assets, dsm: _dsm(tp), prov: built.prov };
+    /* review — บันไดสถานะตรวจทาน (HITL): ยังไม่ตรวจทาน → ฝสธ. ตรวจแล้ว → ผบ. อนุมัติ */
+    const plan = { snap, tp, ecoas, coas: built.list, coa: built.sel, assets, dsm: _dsm(tp), prov: built.prov,
+                   review: { staff: false, cmdr: false, tStaff: null } };
     state.plan = plan;
     // เติมรายละเอียดใต้แต่ละขั้น
     const u = _ull();
@@ -41706,11 +41966,50 @@ function selectCOA(coaId) {
     if (!coa) return;
     state.plan.coa = coa;
     state.plan.assets = _allocate(coa, state.plan.tp);
+    /* เปลี่ยน หป. = การตรวจทานเดิมเป็นโมฆะ ต้องเริ่มบันไดสถานะใหม่ */
+    if (state.plan.review) { state.plan.review.staff = false; state.plan.review.cmdr = false; state.plan.review.tStaff = null; }
     _renderAll(state.plan);
     try {
         if (typeof addLog === 'function')
             addLog('[STAFF] 📥 ผบ. เลือกหนทางปฏิบัติ ' + coa.id + ' «' + coa.name + '»', 'var(--warn-hi)');
     } catch (e) {}
+}
+
+/**
+ * «ดูรายละเอียด…» — เลือก หป. นั้น (ถ้ายังไม่ได้เลือก) แล้วเลื่อนไปยังตารางเกณฑ์ ๑๒ ข้อ
+ * พร้อมประทับสถานะ «ฝสธ. ตรวจแล้ว» เพราะถือว่าฝ่ายเสนาธิการได้อ่านที่มาของคะแนนครบแล้ว
+ * @param {string} coaId
+ */
+function reviewCOA(coaId) {
+    if (!state.plan) return;
+    if (coaId && state.plan.coa.id !== coaId) { selectCOA(coaId); }
+    if (state.plan.review) {
+        state.plan.review.staff = true;
+        state.plan.review.tStaff = _clockTxt();
+    }
+    _renderAll(state.plan);
+    try {
+        const bd = $id('mda-staff-bd');
+        if (bd && bd.scrollIntoView) bd.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } catch (e) {}
+    try {
+        if (typeof addLog === 'function')
+            addLog('[STAFF] 🔍 ฝสธ. ตรวจทานเกณฑ์ ' + state.plan.coa.id + ' ครบทั้ง ๑๒ ข้อ', 'var(--cyan-hi)');
+    } catch (e) {}
+}
+
+/**
+ * «เปรียบเทียบ…» — เปิดกระดานวอร์เกมซึ่งเทียบ หป. ทั้งหมดกับ ECOA ฝ่ายตรงข้าม
+ * (ห่อ toggleWargame ซึ่งเป็นฟังก์ชันภายในโมดูล ให้เรียกจาก onclick ได้)
+ */
+function compareCOAs() {
+    try { toggleWargame(true); } catch (e) {}
+}
+
+/** เวลาปัจจุบันแบบ HH:MM สำหรับประทับบันทึกการตรวจทาน @returns {string} */
+function _clockTxt() {
+    const d = new Date();
+    return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
 }
 
 /* ── [v17.21.0 FIRES-3] แปลแผนที่อนุมัติแล้ว → คำสั่งการยิงที่เอนจินปะทะอ่านได้จริง ──
@@ -41774,15 +42073,126 @@ function _firesFromPlan(plan) {
 }
 const _FG_POL_TH = { CONSERVE: 'ประหยัดอาวุธนำวิถี', NORMAL: 'ตามปกติ', SURGE: 'ระดมยิง' };
 
+/* ══ [v17.41.0 DEPLOY] แผงยืนยันคำสั่งวางกำลัง ═════════════════════════════════
+   เดิมการอนุมัติใช้ window.confirm บรรทัดเดียว — ผู้บังคับบัญชาไม่เห็นเลยว่าอะไร
+   "ตรวจแล้ว" อะไร "ยังประเมินไม่ได้" แผงนี้แยกออกเป็นสองคอลัมน์
+      ซ้าย  — คำสั่งที่จะออก (แก้ไขข้อความได้ก่อนส่ง)
+      ขวา   — ด่านตรวจทาน ๔ ด่าน พร้อมที่มาว่าใคร/อะไรเป็นผู้ตรวจ
+   ด่านที่ข้อมูลต้นทางอ่านไม่ได้จะขึ้นเป็น ⚠ ไม่ใช่ ✓ และ ผบ. ต้องติ๊กรับทราบข้อจำกัด
+   ก่อนปุ่มส่งคำสั่งจะทำงาน — กฎสองคน (ฝสธ. ตรวจ → ผบ. ตกลงใจ) ยังอยู่ครบ  */
+
+/**
+ * ประเมินด่านตรวจทานทั้ง ๔ ของแผนปัจจุบัน
+ * @param   {object} plan
+ * @returns {Array<{t:string,w:string,ok:boolean,auto:boolean}>}
+ */
+function _deployStages(plan) {
+    const c = plan.coa, rv = plan.review || {}, unk = c.unk || {};
+    return [
+        { t: 'ความปลอดภัยการเดินเรือพาณิชย์', auto: true, ok: !unk.acc,
+          w: unk.acc ? 'ยังไม่มีชั้นข้อมูล AIS — ประเมินไม่ได้'
+                     : 'เรือพาณิชย์ในรัศมี ๓ ไมล์ทะเล ' + (c.nearAis || 0) + ' ลำ' + (c.aisReal ? ' (AIS จริง)' : ' (AIS จำลอง)') },
+        { t: 'ความเป็นไปได้ (Feasibility)', auto: true, ok: !unk.feas,
+          w: unk.feas ? 'snapshot ไม่มีค่าประสิทธิภาพเซ็นเซอร์ — ใช้ค่าฐาน'
+                      : 'ตรวจอัตโนมัติจากสถานะเซ็นเซอร์จริง · ' + c.f + '/100' },
+        { t: 'เวลาถึงจุดตัดสินใจ CDP-1', auto: true, ok: !unk.time,
+          w: unk.time ? 'ไม่มีหน่วยใดไปถึง CDP-1 ได้ — ประเมินไม่ได้'
+                      : 'หน่วยแรกถึงใน ' + Number(c.tMin).toFixed(1) + ' นาที' },
+        { t: 'ตรวจทานโดยฝ่ายเสนาธิการ', auto: false, ok: !!rv.staff,
+          w: rv.staff ? 'ตรวจเกณฑ์ครบ ๑๒ ข้อ เมื่อ ' + (rv.tStaff || '—')
+                      : 'ยังไม่ได้กด «ดูรายละเอียด…» เพื่อตรวจทานเกณฑ์' },
+    ];
+}
+
+/** เปิดแผงยืนยันคำสั่งวางกำลัง (สร้าง DOM ครั้งแรกแล้วใช้ซ้ำ) */
+function openDeployPanel() {
+    const plan = state.plan;
+    if (!plan) return;
+    let el = $id('mda-deploy-panel');
+    if (!el) {
+        el = document.createElement('div');
+        el.id = 'mda-deploy-panel';
+        document.body.appendChild(el);
+    }
+    const st = _deployStages(plan);
+    const gaps = st.filter(s => !s.ok);
+    const lines = plan.assets.map(a => '· ' + a.label + ' @ ' + a.posTxt + ' — ' + a.mission).join('\n');
+    const note = plan.deployNote != null ? plan.deployNote
+        : ('คำสั่งวางกำลังตามหนทางปฏิบัติ ' + plan.coa.id + ' «' + plan.coa.name + '»\n\n' + lines);
+    const stHtml = st.map(s =>
+        '<div class="dp-stg' + (s.ok ? ' ok' : '') + (s.auto ? ' auto' : '') + '">' +
+        '<span class="tick">' + (s.ok ? '✓' : '⚠') + '</span>' +
+        '<span><span class="t">' + s.t + '</span><br><span class="w">' +
+        (s.auto ? '🤖 ตรวจอัตโนมัติ · ' : '') + s.w + '</span></span></div>').join('');
+    el.innerHTML =
+        '<div class="dp-box" role="dialog" aria-modal="true" aria-label="ยืนยันคำสั่งวางกำลัง">' +
+        '<div class="dp-hd"><b>ยืนยันคำสั่งวางกำลัง — ' + plan.coa.id + ' «' + plan.coa.name + '»</b>' +
+        '<button type="button" class="dp-x" onclick="closeDeployPanel()" aria-label="ปิด">✕</button></div>' +
+        '<div class="dp-cols">' +
+        '<div><div class="dp-lbl">คำสั่งที่จะออก</div>' +
+        '<textarea id="mda-deploy-note">' + escapeHtml(note) + '</textarea></div>' +
+        '<div><div class="dp-lbl">ด่านตรวจทานที่ต้องผ่าน</div>' +
+        '<div class="dp-sub">' + (gaps.length === 0 ? 'ตรวจทานครบทุกด่านแล้ว'
+            : 'ยังไม่ครบ ' + gaps.length + ' ด่าน — ต้องรับทราบข้อจำกัดก่อนส่งคำสั่ง') + '</div>' +
+        stHtml +
+        '<div class="dp-stg"><span class="tick"><input type="checkbox" id="mda-deploy-ack" onchange="_deployAckSync()" style="margin:0;"></span>' +
+        '<span><label for="mda-deploy-ack"><span class="t">ผบ. รับผิดชอบการตกลงใจ</span><br>' +
+        '<span class="w">' + (gaps.length ? 'รับทราบว่าด่านที่ยังประเมินไม่ได้เป็นความเสี่ยงที่ยอมรับ' : 'ยืนยันการตกลงใจตามอำนาจผู้บังคับบัญชา') +
+        '</span></label></span></div></div></div>' +
+        '<div class="dp-ft"><button type="button" onclick="closeDeployPanel()">ยกเลิก</button>' +
+        '<span><button type="button" onclick="restartReview()">เริ่มตรวจทานใหม่</button> ' +
+        '<button type="button" class="go" id="mda-deploy-go" disabled onclick="submitTaskOrder()">ส่งคำสั่งวางกำลัง</button></span></div>' +
+        '</div>';
+    el.classList.add('on');
+}
+
+/** ปุ่มส่งคำสั่งจะทำงานได้ก็ต่อเมื่อ ผบ. ติ๊กรับผิดชอบการตกลงใจแล้วเท่านั้น */
+function _deployAckSync() {
+    const ck = $id('mda-deploy-ack'), go = $id('mda-deploy-go');
+    if (go) go.disabled = !(ck && ck.checked);
+}
+
+/** ปิดแผงโดยไม่ส่งคำสั่ง (เก็บข้อความที่แก้ไว้) */
+function closeDeployPanel() {
+    const ta = $id('mda-deploy-note');
+    if (ta && state.plan) state.plan.deployNote = ta.value;
+    const el = $id('mda-deploy-panel');
+    if (el) el.classList.remove('on');
+}
+
+/** ล้างสถานะตรวจทานทั้งบันได แล้วกลับไปตรวจใหม่ตั้งแต่ต้น */
+function restartReview() {
+    if (state.plan && state.plan.review) {
+        state.plan.review.staff = false;
+        state.plan.review.cmdr = false;
+        state.plan.review.tStaff = null;
+    }
+    closeDeployPanel();
+    if (state.plan) _renderAll(state.plan);
+    try {
+        if (typeof addLog === 'function')
+            addLog('[STAFF] ↺ ล้างสถานะตรวจทาน — ต้องตรวจเกณฑ์ใหม่ก่อนอนุมัติ', 'var(--warn-hi)');
+    } catch (e) {}
+}
+
+/** ส่งคำสั่ง — จุดเดียวที่การวางกำลังจริงจะเริ่มทำงาน */
+function submitTaskOrder() {
+    const ck = $id('mda-deploy-ack');
+    if (!(ck && ck.checked)) return;
+    const ta = $id('mda-deploy-note');
+    if (ta && state.plan) state.plan.deployNote = ta.value;
+    closeDeployPanel();
+    approvePlan({ confirmed: true });
+}
+
 /* ── [STAFF-4] Human-in-the-loop: อนุมัติ → วางกำลังจริง ─────── */
-function approvePlan() {
+function approvePlan(opt) {
     const plan = state.plan;
     if (!plan || state.deployed || state.running) return;
     _terrainAdjust(plan.assets);   // [v17.1.1 TERRAIN] safety net — เผื่อ land mask เพิ่งพร้อมหลังสร้างแผน
-    const lines = plan.assets.map(a => '· ' + a.label + ' @ ' + a.posTxt + ' — ' + a.mission);
-    const msg = 'ผู้บังคับบัญชาอนุมัติแผน ' + plan.coa.id + ' «' + plan.coa.name + '» หรือไม่?\n\nจะวางกำลังจริงบนแผนที่หลัก:\n' +
-        lines.join('\n') + '\n\n(Human-in-the-loop — การตกลงใจเป็นของผู้บังคับบัญชา)';
-    if (!window.confirm(msg)) return;
+    /* [v17.41.0 DEPLOY] แทน window.confirm ด้วยแผงยืนยันเต็มรูป — ผบ. ต้องเห็นว่าการตรวจทาน
+       ครบทุกด่านก่อนกดส่งคำสั่ง กฎสองคน (ฝสธ.ตรวจ → ผบ.อนุมัติ) ยังคงเดิมทุกประการ */
+    if (!(opt && opt.confirmed)) { openDeployPanel(); return; }
     let ok = 0, fail = 0;
     plan.assets.forEach(a => {
         try {
@@ -41798,6 +42208,7 @@ function approvePlan() {
         } catch (e) { fail++; }
     });
     state.deployed = true;
+    if (plan.review) plan.review.cmdr = true;   // [v17.41.0] บันไดสถานะขั้นสุดท้าย — ผบ. อนุมัติแล้ว
     try { _pipeSetStage(4, 4); } catch (_) {}   // [v18.0.0] สันหลัง: ขั้น ๔ ตกลงใจ & วางกำลังเสร็จสมบูรณ์
 
     // [v17.21.0 FIRES-3] การตกลงใจของ ผบ. ต้องไปถึงไกปืน ไม่ใช่จบที่การวางกำลัง
@@ -42621,8 +43032,17 @@ if (!wire()) {
 }
 
 window.MDA = window.MDA || {};
-window.MDA.StaffPlan = { runPlan, approvePlan, toggleView, state, selectCOA };
+window.MDA.StaffPlan = { runPlan, approvePlan, toggleView, state, selectCOA,
+                         reviewCOA, compareCOAs, openDeployPanel, closeDeployPanel, submitTaskOrder };
 window.selectCOA = selectCOA;
+/* [v17.41.0] ปุ่มบนการ์ด หป. และแผงยืนยันเรียกผ่าน onclick จึงต้องอยู่บน window */
+window.reviewCOA = reviewCOA;
+window.compareCOAs = compareCOAs;
+window.openDeployPanel = openDeployPanel;
+window.closeDeployPanel = closeDeployPanel;
+window.restartReview = restartReview;
+window.submitTaskOrder = submitTaskOrder;
+window._deployAckSync = _deployAckSync;
 
 })();
 </script>
