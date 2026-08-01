@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>การนำเสนอผลงานวิจัย — UDC / THE SHIELD 3.0 (Palantir Gotham C4ISR Theme)</title>
+<!-- Tailwind CSS Integration -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Share+Tech+Mono&family=Saira:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   PALANTIR GOTHAM DEFENSE SYSTEM (HALLMARK HIGH-READABILITY TYPOGRAPHY)
+   ============================================================ */
+:root {
+  --gotham-bg: #06090e;
+  --gotham-panel: #0d1117;
+  --gotham-panel-hover: #161b22;
+  --gotham-border: rgba(0, 229, 255, 0.24);
+  --gotham-border-bright: rgba(0, 229, 255, 0.55);
+  --gotham-border-subtle: rgba(139, 148, 158, 0.2);
+  --gotham-cyan: #00e5ff;
+  --gotham-amber: #ff9e3b;
+  --gotham-red: #ff4136;
+  --gotham-emerald: #10b981;
+  --gotham-purple: #bd93f9;
+  --gotham-text: #e6edf3;
+  --gotham-muted: #8b949e;
+  --gotham-dim: #484f58;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 100%; height: 100%; overflow: hidden;
+  background-color: var(--gotham-bg);
+  color: var(--gotham-text);
+  font-family: 'Prompt', 'Sarabun', 'Chakra Petch', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Background Tactical Grid & Ambient Lighting */
+body::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image: 
+    linear-gradient(rgba(0, 229, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.02) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+body::after {
+  content: ""; position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+  width: 92vw; height: 350px; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse at top, rgba(0, 229, 255, 0.05) 0%, transparent 70%);
+}
+
+/* SATTAHIP MAP WATERMARK BACKGROUND LAYER FOR SLIDE 7 */
+.slide-watermark-sattahip {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image: 
+    linear-gradient(180deg, rgba(6, 9, 14, 0.35) 0%, rgba(6, 9, 14, 0.15) 50%, rgba(6, 9, 14, 0.45) 100%),
+    url('img/sattahip_rayong_sat.jpg');
+  background-size: 175%;
+  background-position: 80% 68%;
+  opacity: 0.70;
+  filter: brightness(1.2) contrast(1.5) saturate(1.25) hue-rotate(170deg);
+}
+
+/* PERFECTLY PROPORTIONED NON-CROPPING SVG ICON STYLING */
+.ico-svg {
+  display: inline-block; vertical-align: middle; flex-shrink: 0;
+  margin-right: 6px; overflow: visible;
+  filter: drop-shadow(0 0 5px rgba(0, 229, 255, 0.45));
+}
+.card.amber .ico-svg { filter: drop-shadow(0 0 5px rgba(255, 158, 59, 0.45)); }
+.card.red .ico-svg { filter: drop-shadow(0 0 5px rgba(255, 65, 54, 0.45)); }
+.card.green .ico-svg { filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.45)); }
+
+/* STANDARD ELEGANT HIGHLIGHT WITH GROWING ANIMATION */
+.udc-highlight {
+  display: inline-block; position: relative;
+  color: var(--gotham-cyan); font-weight: 700;
+  padding: 2px 10px; margin: 0 4px; vertical-align: baseline;
+  background: linear-gradient(90deg, rgba(0, 229, 255, 0.16) 0%, rgba(0, 229, 255, 0.04) 100%);
+  border-bottom: 2px solid var(--gotham-cyan); border-radius: 4px;
+  text-shadow: 0 0 14px rgba(0, 229, 255, 0.35);
+}
+.slide.active .udc-highlight {
+  animation: growHighlight 1.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes growHighlight {
+  0% { clip-path: polygon(0 0, 0 0, 0 100%, 0 100%); opacity: 0; }
+  100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); opacity: 1; }
+}
+
+/* SHINY PILL TEXT SWEEP ANIMATION EFFECT */
+.shiny-pill {
+  position: relative; display: inline-flex; align-items: center; white-space: nowrap; overflow: hidden;
+  vertical-align: baseline;
+}
+.shiny-pill .base-text { color: var(--text-color, inherit); position: relative; z-index: 1; }
+.shiny-pill .shine-text {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; white-space: nowrap;
+  color: var(--shine-color, #ffffff); pointer-events: none; z-index: 2;
+  -webkit-mask-image: linear-gradient(to right, transparent 30%, #000 50%, transparent 70%);
+  mask-image: linear-gradient(to right, transparent 30%, #000 50%, transparent 70%);
+  -webkit-mask-size: 150% auto; mask-size: 150% auto;
+  animation: shinyPillSweep var(--speed, 2.2s) ease-in-out infinite !important;
+}
+@keyframes shinyPillSweep {
+  0% { -webkit-mask-position: 200%; mask-position: 200%; }
+  100% { -webkit-mask-position: -100%; mask-position: -100%; }
+}
+
+/* BREATHING STATUS PULSE ANIMATION SYSTEM FOR C4ISR READINESS */
+.status-pulse {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  margin-right: 6px; vertical-align: middle; flex-shrink: 0;
+  background-color: var(--gotham-cyan);
+  box-shadow: 0 0 8px var(--gotham-cyan);
+  animation: statusBreathe 1.8s ease-in-out infinite;
+}
+.status-pulse.amber {
+  background-color: var(--gotham-amber);
+  box-shadow: 0 0 8px var(--gotham-amber);
+}
+.status-pulse.emerald {
+  background-color: var(--gotham-emerald);
+  box-shadow: 0 0 8px var(--gotham-emerald);
+}
+.status-pulse.red {
+  background-color: var(--gotham-red);
+  box-shadow: 0 0 8px var(--gotham-red);
+}
+
+@keyframes statusBreathe {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.82); }
+}
+
+/* CLEAN STATIC HEADER SECTION (.hud-top) - ENHANCED FONT SIZE */
+.hud-top {
+  position: fixed; top: 0; left: 0; right: 0; height: 40px; display: flex; align-items: center;
+  justify-content: space-between; padding: 0 22px;
+  font-family: 'Chakra Petch', 'Share Tech Mono', monospace; font-size: 12.5px; color: var(--gotham-muted);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.18); background: rgba(6, 9, 14, 0.94);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  z-index: 1000; letter-spacing: .08em;
+}
+.hud-brand { display: flex; align-items: center; gap: 10px; }
+.hud-brand img { height: 21px; filter: drop-shadow(0 0 5px rgba(255, 158, 59, 0.6)); }
+.hud-top .hud-title-text { color: var(--gotham-amber); font-weight: 500; font-family: 'Chakra Petch', 'Share Tech Mono', monospace; font-size: 12.5px; }
+.hud-top .sec { color: var(--gotham-amber); font-weight: 600; font-family: 'Prompt', 'Chakra Petch', sans-serif; font-size: 13px; }
+
+.c4isr-badge {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 4px;
+  background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.3);
+  color: var(--gotham-cyan); font-weight: 600; letter-spacing: 0.08em;
+  font-family: 'Share Tech Mono', 'Chakra Petch', monospace; font-size: 12px;
+}
+.c4isr-badge.amber { background: rgba(255, 158, 59, 0.1); border-color: rgba(255, 158, 59, 0.4); color: var(--gotham-amber); }
+.c4isr-badge.emerald { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.4); color: var(--gotham-emerald); }
+
+/* Slide Viewport & Entrance Animations */
+.deck { width: 100vw; height: 100vh; position: relative; z-index: 1; }
+.slide {
+  position: absolute; inset: 0; display: none; opacity: 0;
+  flex-direction: column; justify-content: space-between;
+  padding: 52px 44px 52px; overflow-y: auto;
+}
+.slide.active {
+  display: flex; opacity: 1;
+  animation: gothamSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes gothamSlideIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* DIRECTIONAL ENTRANCE ANIMATIONS FOR SLIDE CARDS & NODES */
+.slide.active .card-anim-left {
+  animation: cardSlideLeft 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+  opacity: 0;
+}
+.slide.active .card-anim-top {
+  animation: cardSlideTop 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.22s forwards;
+  opacity: 0;
+}
+.slide.active .card-anim-right {
+  animation: cardSlideRight 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.34s forwards;
+  opacity: 0;
+}
+.slide.active .card-anim-bottom {
+  animation: cardSlideBottom 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.46s forwards;
+  opacity: 0;
+}
+
+/* SEQUENTIAL STEP-BY-STEP STAGGERED ANIMATIONS FOR SLIDE 5 */
+.slide.active .card-seq-1 {
+  animation: cardSlideLeft 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+  opacity: 0;
+}
+.slide.active .card-seq-2 {
+  animation: cardSlideLeft 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.35s forwards;
+  opacity: 0;
+}
+.slide.active .card-seq-3 {
+  animation: cardSlideLeft 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
+  opacity: 0;
+}
+.slide.active .card-seq-4 {
+  animation: cardSlideLeft 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.85s forwards;
+  opacity: 0;
+}
+.slide.active .card-seq-5 {
+  animation: cardSlideRight 0.85s cubic-bezier(0.16, 1, 0.3, 1) 1.1s forwards;
+  opacity: 0;
+}
+
+/* WIRING CONNECTOR ANIMATION */
+.slide.active .wiring-anim {
+  animation: wiringFadeIn 0.75s cubic-bezier(0.16, 1, 0.3, 1) 1.35s forwards;
+  opacity: 0;
+}
+
+/* EXCLUDE SHINY PILL & BREATHING STATUS PULSE ANIMATION FROM STATIC SLIDE 14 OVERRIDE */
+#deck .slide:nth-child(14) *:not(.shiny-pill):not(.shiny-pill *):not(.status-pulse) {
+  animation: none !important;
+  transition: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: none !important;
+}
+
+@keyframes wiringFadeIn {
+  0% { opacity: 0; transform: scaleY(0); transform-origin: top center; }
+  100% { opacity: 1; transform: scaleY(1); transform-origin: top center; }
+}
+
+@keyframes cardSlideLeft {
+  from { opacity: 0; transform: translateX(-60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes cardSlideTop {
+  from { opacity: 0; transform: translateY(-50px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes cardSlideRight {
+  from { opacity: 0; transform: translateX(60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes cardSlideBottom {
+  from { opacity: 0; transform: translateY(50px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Typography & Badges - HALLMARK HIGH READABILITY ENHANCEMENTS */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Chakra Petch', 'Share Tech Mono', monospace;
+  font-size: 13.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--gotham-amber); margin-bottom: 6px;
+  background: rgba(255, 158, 59, 0.08); border: 1px solid rgba(255, 158, 59, 0.3);
+  padding: 4px 14px; border-radius: 4px; width: fit-content;
+  position: relative; z-index: 2;
+}
+h1 {
+  font-family: 'Prompt', 'Chakra Petch', sans-serif;
+  font-size: 32px; font-weight: 700; line-height: 1.32; color: var(--gotham-text);
+  letter-spacing: 0.01em; margin-bottom: 12px;
+  position: relative; z-index: 2;
+}
+h1 .hl { color: var(--gotham-cyan); text-shadow: 0 0 14px rgba(0, 229, 255, 0.35); }
+h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 59, 0.35); }
+
+/* Layout Grid System */
+.body-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; width: 100%; max-width: 1280px; margin: 0 auto; position: relative; z-index: 2; }
+.grid { display: grid; gap: 16px; width: 100%; }
+.grid.two { grid-template-columns: 1fr 1fr; }
+.grid.three { grid-template-columns: 1fr 1fr 1fr; }
+.grid.four { grid-template-columns: repeat(4, 1fr); }
+.grid.six { grid-template-columns: repeat(3, 1fr); }
+
+/* Unified Monolithic Gotham Card Styling */
+.card {
+  background: linear-gradient(145deg, rgba(13, 17, 23, 0.94) 0%, rgba(18, 24, 32, 0.88) 100%);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--gotham-border); border-radius: 6px; padding: 18px 22px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.card:hover {
+  transform: translateY(-2px); border-color: var(--gotham-border-bright);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55), 0 0 20px rgba(0, 229, 255, 0.15);
+}
+.card::before {
+  content: ""; position: absolute; top: 0; left: 0; width: 3.5px; height: 100%;
+  background: linear-gradient(180deg, var(--gotham-cyan) 0%, rgba(0, 229, 255, 0.2) 100%);
+}
+.card.amber::before { background: linear-gradient(180deg, var(--gotham-amber) 0%, rgba(255, 158, 59, 0.2) 100%); }
+.card.red::before { background: linear-gradient(180deg, var(--gotham-red) 0%, rgba(255, 65, 54, 0.2) 100%); }
+.card.green::before { background: linear-gradient(180deg, var(--gotham-emerald) 0%, rgba(16, 185, 129, 0.2) 100%); }
+
+/* ANIMATED AMBER RUNNING GLOW BORDER SYSTEM FOR WHY THIS METHOD? CARD */
+.card.card-amber-running-glow {
+  position: relative;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55), 0 0 24px rgba(255, 158, 59, 0.35) !important;
+  overflow: hidden;
+  z-index: 1;
+}
+.card.card-amber-running-glow::before {
+  content: "";
+  position: absolute;
+  top: -50%; left: -50%; width: 200%; height: 200%;
+  background: conic-gradient(
+    transparent 0deg,
+    transparent 260deg,
+    rgba(255, 158, 59, 0.35) 300deg,
+    #ff9e3b 340deg,
+    #ffffff 360deg
+  );
+  animation: rotateRunningGlow 3.6s linear infinite;
+  z-index: -2;
+}
+.card.card-amber-running-glow::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  background: linear-gradient(145deg, rgba(13, 17, 23, 0.96) 0%, rgba(20, 27, 36, 0.94) 100%);
+  border-radius: 5px;
+  z-index: -1;
+}
+
+@keyframes rotateRunningGlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.card .kicker {
+  font-family: 'Share Tech Mono', 'Chakra Petch', monospace; font-size: 11.5px;
+  letter-spacing: 0.2em; color: var(--gotham-muted); text-transform: uppercase; margin-bottom: 4px;
+}
+.card h3 {
+  font-family: 'Prompt', 'Chakra Petch', sans-serif; font-size: 20px; font-weight: 700;
+  color: var(--gotham-cyan); margin-bottom: 8px; letter-spacing: 0.01em;
+  display: flex; align-items: center; gap: 4px;
+}
+.card.amber h3 { color: var(--gotham-amber); }
+.card.red h3 { color: var(--gotham-red); }
+.card.green h3 { color: var(--gotham-emerald); }
+
+.card p, .card li { font-family: 'Sarabun', 'Prompt', sans-serif; font-size: 16px; line-height: 1.55; color: var(--gotham-text); }
+.card ul { list-style: none; }
+.card li { padding-left: 20px; position: relative; margin-bottom: 6px; }
+.card li::before { content: "▸"; position: absolute; left: 0; color: var(--gotham-cyan); font-size: 13px; top: 2px; }
+.card.amber li::before { color: var(--gotham-amber); }
+.card.red li::before { color: var(--gotham-red); }
+.card.green li::before { color: var(--gotham-emerald); }
+
+.card .num {
+  font-family: 'Chakra Petch', 'Saira', sans-serif; font-weight: 700; font-size: 42px;
+  color: var(--gotham-cyan); line-height: 1; margin-bottom: 2px;
+}
+
+/* Flow Node System */
+.flow { display: flex; align-items: center; gap: 12px; width: 100%; }
+.node {
+  flex: 1; background: rgba(13, 17, 23, 0.9); border: 1px solid var(--gotham-border);
+  border-radius: 6px; padding: 16px 20px; text-align: left;
+}
+.node h4 { font-family: 'Prompt', sans-serif; font-size: 18.5px; font-weight: 700; color: var(--gotham-cyan); margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
+.node p { font-family: 'Sarabun', sans-serif; font-size: 15.5px; color: var(--gotham-text); line-height: 1.5; }
+.arr { color: var(--gotham-amber); font-size: 18px; font-family: 'Share Tech Mono', monospace; font-weight: 700; }
+
+/* Evolution Line (Slide 6) */
+.evoline { display: flex; align-items: stretch; gap: 12px; width: 100%; margin-bottom: 0px; }
+.stage {
+  flex: 1; background: rgba(13, 17, 23, 0.9); border: 1px solid var(--gotham-border);
+  border-radius: 6px; padding: 16px 20px; position: relative;
+}
+.stage .tag { font-family: 'Share Tech Mono', monospace; font-size: 11.5px; color: var(--gotham-muted); letter-spacing: 0.1em; display: block; margin-bottom: 3px; }
+.stage .v { font-family: 'Chakra Petch', sans-serif; font-size: 28px; font-weight: 700; color: var(--gotham-cyan); }
+.stage b { font-family: 'Prompt', sans-serif; font-size: 17.5px; color: var(--gotham-text); display: flex; align-items: center; gap: 4px; margin: 3px 0 5px; }
+.stage small { font-family: 'Sarabun', sans-serif; font-size: 14.5px; color: var(--gotham-muted); line-height: 1.45; display: block; }
+
+/* Hero Image Viewport */
+.hero-frame-wrap {
+  position: relative; width: 100%; max-width: 820px; margin: 10px auto 6px;
+  border-radius: 6px; overflow: hidden; border: 1px solid var(--gotham-border-bright);
+  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.65), 0 0 25px rgba(0, 229, 255, 0.18);
+  background: var(--gotham-panel);
+}
+.hero-frame-wrap .hud-label {
+  display: flex; justify-content: space-between; padding: 6px 16px;
+  background: rgba(0, 229, 255, 0.12); border-bottom: 1px solid var(--gotham-border);
+  font-family: 'Share Tech Mono', monospace; font-size: 11.5px; color: var(--gotham-cyan); letter-spacing: 0.15em;
+}
+.hero-frame-img {
+  width: 100%; height: 265px; object-fit: cover; object-position: center 72%; display: block;
+  transition: transform 0.5s ease;
+}
+.hero-frame-wrap:hover .hero-frame-img { transform: scale(1.02); }
+
+.side-frame-wrap {
+  position: relative; width: 100%; border-radius: 6px; overflow: hidden;
+  border: 1px solid var(--gotham-border); background: var(--gotham-panel);
+}
+.side-frame-wrap .hud-label {
+  display: flex; justify-content: space-between; padding: 5px 14px;
+  background: rgba(0, 229, 255, 0.12); border-bottom: 1px solid var(--gotham-border);
+  font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--gotham-cyan);
+}
+.side-frame-img { width: 100%; height: 190px; object-fit: cover; display: block; }
+.side-frame-wrap .caption {
+  padding: 6px 12px; font-family: 'Prompt', 'Sarabun', sans-serif; font-size: 13.5px;
+  color: var(--gotham-cyan); text-align: center; background: rgba(6, 9, 14, 0.85); border-top: 1px solid var(--gotham-border);
+}
+.split-dossier { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 16px; align-items: center; }
+
+/* Note Strip Box */
+.note-strip {
+  margin-top: 12px; padding: 12px 20px; font-family: 'Sarabun', 'Prompt', sans-serif; font-size: 15.5px; color: var(--gotham-text);
+  background: linear-gradient(90deg, rgba(0, 229, 255, 0.08) 0%, rgba(0, 229, 255, 0.02) 100%);
+  border: 1px dashed rgba(0, 229, 255, 0.35); border-radius: 6px; line-height: 1.5;
+  display: flex; align-items: flex-start; gap: 10px; position: relative; z-index: 2;
+}
+.note-strip b { color: var(--gotham-amber); font-weight: 600; }
+
+/* COMMON OPERATING PICTURE CONSOLE LAYOUT FOR SLIDE 9 */
+.console-grid {
+  display: grid; grid-template-columns: 240px 1fr 240px; gap: 14px; width: 100%; height: 395px; margin-top: 4px;
+}
+.console-panel {
+  background: rgba(13, 17, 23, 0.92); border: 1px solid var(--gotham-border);
+  border-radius: 6px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+.console-panel .p-head {
+  font-family: 'Share Tech Mono', monospace; font-size: 11.5px; color: var(--gotham-cyan);
+  letter-spacing: 0.15em; text-transform: uppercase; padding-bottom: 6px; border-bottom: 1px solid var(--gotham-border);
+  margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;
+}
+.telemetry-row {
+  background: rgba(6, 9, 14, 0.6); border: 1px solid rgba(139, 148, 158, 0.15); border-radius: 4px;
+  padding: 7px 10px; margin-bottom: 6px; font-size: 13px;
+}
+.telemetry-row .lbl { font-family: 'Prompt', sans-serif; color: var(--gotham-text); font-weight: 500; font-size: 13px; }
+.telemetry-row .val { font-family: 'Share Tech Mono', monospace; color: var(--gotham-cyan); font-weight: 700; margin-top: 2px; font-size: 13.5px; }
+.telemetry-row .val.amber { color: var(--gotham-amber); }
+.telemetry-row .val.emerald { color: var(--gotham-emerald); }
+
+.zonemap-container {
+  position: relative; width: 100%; height: 100%;
+  border-radius: 6px; overflow: hidden; border: 1.5px solid var(--gotham-border-bright);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+}
+.zonemap-container svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+
+/* Palantir C4ISR Footer Navigation */
+.c4isr-footer {
+  position: fixed; bottom: 0; left: 0; right: 0; height: 48px; z-index: 1000;
+  background: rgba(6, 9, 14, 0.94);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--gotham-border);
+  display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+  font-family: 'Share Tech Mono', 'Chakra Petch', monospace; font-size: 12.5px;
+}
+.c4isr-nav-btns { display: flex; gap: 6px; }
+.c4isr-btn {
+  background: rgba(22, 27, 34, 0.8); border: 1px solid var(--gotham-border);
+  color: var(--gotham-text); padding: 5px 16px; border-radius: 4px; cursor: pointer;
+  font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 12.5px; letter-spacing: 0.08em;
+  transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 4px;
+}
+.c4isr-btn:hover {
+  background: rgba(0, 229, 255, 0.15); border-color: var(--gotham-cyan); color: #fff;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.3); transform: translateY(-1.5px);
+}
+.c4isr-btn:active { transform: translateY(1px); }
+.c4isr-slide-matrix { display: flex; gap: 4px; }
+.matrix-pill {
+  width: 28px; height: 20px; display: flex; align-items: center; justify-content: center;
+  border-radius: 3px; background: rgba(22, 27, 34, 0.6); border: 1px solid rgba(139, 148, 158, 0.2);
+  color: var(--gotham-muted); font-size: 11px; cursor: pointer; transition: all 0.2s;
+}
+.matrix-pill:hover { border-color: var(--gotham-cyan); color: var(--gotham-cyan); transform: translateY(-1px); }
+.matrix-pill.active {
+  background: rgba(0, 229, 255, 0.2); border-color: var(--gotham-cyan);
+  color: var(--gotham-cyan); font-weight: 700; box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
+}
+
+/* Custom Table for Slide 8 (Command Matrix) & Slide 10 (5W1H) - PERFECTED ALIGNMENT & WRAPPING */
+.gotham-table {
+  width: 100%; border-collapse: collapse; margin-top: 2px;
+  font-size: 14.5px; background: rgba(13, 17, 23, 0.9); border-radius: 6px; overflow: hidden;
+  border: 1px solid var(--gotham-border);
+}
+.gotham-table th {
+  background: rgba(0, 229, 255, 0.12); color: var(--gotham-cyan); font-family: 'Prompt', 'Chakra Petch', sans-serif;
+  font-weight: 700; font-size: 15px; padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--gotham-border-bright);
+  letter-spacing: 0.04em; vertical-align: middle;
+}
+.gotham-table td {
+  padding: 10px 12px; border-bottom: 1px solid rgba(139, 148, 158, 0.2); color: var(--gotham-text);
+  line-height: 1.5; font-family: 'Sarabun', 'Prompt', sans-serif; font-size: 14.5px;
+  vertical-align: middle;
+}
+.gotham-table tr:last-child td { border-bottom: none; }
+.gotham-table tr:hover td { background: rgba(0, 229, 255, 0.04); }
+.gotham-table .lvl-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 3px; font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; font-weight: 700; background: rgba(255, 158, 59, 0.15); color: var(--gotham-amber);
+  border: 1px solid rgba(255, 158, 59, 0.3);
+}
+.gotham-table .dom {
+  font-family: 'Prompt', sans-serif; font-weight: 700; color: var(--gotham-cyan);
+  display: flex; align-items: center; gap: 6px; font-size: 14.5px; white-space: nowrap;
+}
+</style>
+</head>
+<body>
+
+<!-- SVG REUSABLE ICONS SYMBOLS LIBRARY WITH EXACT VIEWBOX 0 0 24 24 DEFINITION -->
+<svg style="display:none;">
+  <defs>
+    <!-- Shield Icon -->
+    <g id="icon-shield">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <!-- Anchor Icon -->
+    <g id="icon-anchor">
+      <circle cx="12" cy="5" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+      <line x1="12" y1="7.5" x2="12" y2="21" stroke="currentColor" stroke-width="2"/>
+      <path d="M5 12H2a10 10 0 0 0 20 0h-3" fill="none" stroke="currentColor" stroke-width="2"/>
+      <line x1="9" y1="11" x2="15" y2="11" stroke="currentColor" stroke-width="2"/>
+    </g>
+    <!-- Radar / Sonar Icon -->
+    <g id="icon-radar">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <line x1="12" y1="12" x2="18.5" y2="5.5" stroke="currentColor" stroke-width="2"/>
+      <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+    </g>
+    <!-- Warning Alert Icon -->
+    <g id="icon-warning">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="none" stroke="currentColor" stroke-width="2"/>
+      <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+      <circle cx="12" cy="17" r="1" fill="currentColor"/>
+    </g>
+    <!-- Air Domain Icon -->
+    <g id="icon-air">
+      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13 8.5 4.8 6.7c-.7-.1-1.3.3-1.5.9l-.3 1.2c-.2.7.2 1.4.9 1.7l5.2 2.6-3.3 3.3-2.6-.7c-.4-.1-.8.1-1 .4l-.6.6c-.3.4-.2.9.2 1.2l3 2.3 2.3 3c.3.4.8.5 1.2.2l.6-.6c.3-.2.5-.6.4-1l-.7-2.6 3.3-3.3 2.6 5.2c.3.7 1 1.1 1.7.9l1.2-.3c.6-.2 1-.8.9-1.5z" fill="none" stroke="currentColor" stroke-width="1.8"/>
+    </g>
+    <!-- Surface Ship Icon -->
+    <g id="icon-surface">
+      <path d="M2 19l2.5-7h15l2.5 7H2z" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M7 12V6l4-2v8" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M14 12V8l3-1.5V12" fill="none" stroke="currentColor" stroke-width="1.8"/>
+    </g>
+    <!-- Subsurface Submarine Icon -->
+    <g id="icon-subsurface">
+      <path d="M2 13c0 3.2 4.5 5.8 10 5.8s10-2.6 10-5.8-4.5-5.8-10-5.8S2 9.8 2 13z" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 7.2V3h3" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <circle cx="8" cy="13" r="1.2" fill="currentColor"/>
+      <circle cx="16" cy="13" r="1.2" fill="currentColor"/>
+    </g>
+    <!-- Seabed ROV Icon -->
+    <g id="icon-seabed">
+      <rect x="4" y="6" width="16" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M7 16v4M17 16v4" stroke="currentColor" stroke-width="1.8"/>
+      <circle cx="9" cy="11" r="1.8" fill="currentColor"/>
+      <circle cx="15" cy="11" r="1.8" fill="currentColor"/>
+    </g>
+    <!-- Coastal Defense Icon -->
+    <g id="icon-coastal">
+      <path d="M3 21h18" stroke="currentColor" stroke-width="2"/>
+      <path d="M5 21V7l7-4 7 4v14" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M9 11h6M9 15h6" stroke="currentColor" stroke-width="1.8"/>
+    </g>
+    <!-- Cyber Security Icon -->
+    <g id="icon-cyber">
+      <path d="M12 2L3 7v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V7l-9-5z" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="1.8"/>
+    </g>
+    <!-- Legal Scales Icon -->
+    <g id="icon-legal">
+      <path d="M12 3v17M5 7h14M5 7L2 13h6L5 7zM19 7l-3 6h6l-3-6zM9 20h6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+    </g>
+    <!-- Network API Icon -->
+    <g id="icon-api">
+      <circle cx="18" cy="5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <circle cx="6" cy="12" r="2.8" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <circle cx="18" cy="19" r="2.8" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <line x1="8.5" y1="13.3" x2="15.5" y2="17.2" stroke="currentColor" stroke-width="1.8"/>
+      <line x1="15.5" y1="6.8" x2="8.5" y2="10.7" stroke="currentColor" stroke-width="1.8"/>
+    </g>
+    <!-- Book / Research Icon -->
+    <g id="icon-book">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" fill="none" stroke="currentColor" stroke-width="1.8"/>
+    </g>
+    <!-- Target / Goal Icon -->
+    <g id="icon-target">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <circle cx="12" cy="12" r="2" fill="currentColor"/>
+    </g>
+  </defs>
+</svg>
+
+<!-- ================= CLEAN STATIC HEADER SECTION (.hud-top) ================= -->
+<div class="hud-top">
+  <span class="hud-brand">
+    <img src="rtn_emblem.png" alt="ตราราชนาวี">
+    <span class="hud-title-text">NAVAL COMMAND AND STAFF COLLEGE — CLASS 86 - RESEARCH DEFENSE</span>
+  </span>
+  <span><span class="status-pulse emerald"></span><span class="sec" id="hudSection">ตอนที่ ๑ ชื่อเรื่องและความสำคัญ</span></span>
+</div>
+
+<div class="deck" id="deck">
+
+<!-- ================= S1 : TITLE (ตอน ๑) ================= -->
+<section class="slide active" data-sec="1">
+  <div class="body-wrap" style="text-align:center; align-items:center;">
+    <div style="display:flex; justify-content:center; margin-bottom:10px;">
+      <div class="badge">
+        <svg class="ico-svg" viewBox="0 0 24 24" width="18" height="18"><use href="#icon-shield"/></svg>
+        THE SHIELD 3.0 · RESEARCH DEFENSE
+      </div>
+    </div>
+    
+    <h1 style="max-width:1250px; font-size:32px; margin-bottom:12px; line-height:1.35;">การศึกษาแนวทางการกำหนดบทบาทและการจัดระเบียบพื้นที่ทางทะเลของกองทัพเรือ<br>
+    ภายใต้กรอบแนวคิด <span class="shiny-pill" style="--text-color: var(--gotham-cyan); --shine-color: #ffffff; --speed: 2.2s; font-weight:700; margin: 0 4px; text-shadow: 0 0 14px rgba(0, 229, 255, 0.4);"><span class="base-text">ศูนย์ข้อมูลใต้น้ำ (UDC)</span><span class="shine-text" aria-hidden="true">ศูนย์ข้อมูลใต้น้ำ (UDC)</span></span><br>
+    เพื่อความมั่นคงของโครงสร้างพื้นฐานดิจิทัลภาครัฐตามกลไก ศรชล.</h1>
+    
+    <div style="font-family:'Share Tech Mono',monospace; color:var(--gotham-cyan); font-size:15px; letter-spacing:0.12em; margin-bottom:12px;">
+      <span class="shiny-pill" style="--text-color: var(--gotham-cyan); --shine-color: #ffffff; --speed: 2.8s;"><span class="base-text">UNDERWATER DATA CENTER · MARITIME SPATIAL PLANNING · THAI-MECC</span><span class="shine-text" aria-hidden="true">UNDERWATER DATA CENTER · MARITIME SPATIAL PLANNING · THAI-MECC</span></span>
+    </div>
+    
+    <div class="hero-frame-wrap">
+      <div class="hud-label"><span>◉ UDC CONCEPTUAL DEFENSE ARTWORK</span><span>UDC MODEL 3.0</span></div>
+      <img class="hero-frame-img" src="img/pitch_hero.webp" alt="THE SHIELD UDC Underwater Defense Facility">
+    </div>
+
+    <div style="margin-top:8px;">
+      <div style="font-size:20px; color:var(--gotham-text);">นาวาอากาศโท <b style="color:var(--gotham-amber);">วิศวชิต อินทสุวรรณ์</b></div>
+      <div style="font-size:15.5px; color:var(--gotham-muted); margin-top:2px;">นายทหารนักเรียนหลักสูตรเสนาธิการทหารเรือ รุ่นที่ ๘๖ · ปีการศึกษา ๒๕๖๙</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S2 : WHY & GAP (ตอน ๑) ================= -->
+<section class="slide" data-sec="1">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+    <div class="badge">ตอนที่ ๑ · ความสำคัญของปัญหา</div>
+    <span class="c4isr-badge amber"><span class="status-pulse amber"></span>SOVEREIGN CLOUD // DATA SOVEREIGNTY</span>
+  </div>
+  <h1>ความสำคัญและที่มาของปัญหา <span class="hl">: ความจำเป็นในการคุ้มครองข้อมูลของชาติ</span></h1>
+  <div class="body-wrap">
+    <div class="grid three">
+      <div class="card red card-anim-left">
+        <div class="kicker">THE PROBLEM</div>
+        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-warning"/></svg> ปัญหา</h3>
+        <ul>
+          <li>ข้อมูลภาครัฐพึ่งพา Cloud ต่างชาติ — <b>อธิปไตยทางข้อมูล</b>อยู่ในความเสี่ยง</li>
+          <li>Data Center บนบกใช้พลังงานสูง (PUE 1.6–2.0) และขยายตัวไม่ทัน</li>
+          <li>ปรากฏภัยคุกคามอุบัติใหม่ : <b>สงครามพื้นทะเล (Seabed Warfare)</b> และภัยไซเบอร์–กายภาพ ต่อสายเคเบิลและ CUI</li>
+        </ul>
+      </div>
+      <div class="card card-anim-top">
+        <div class="kicker">THE OPPORTUNITY</div>
+        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-radar"/></svg> ความสำคัญ</h3>
+        <ul>
+          <li>UDC คือคำตอบเชิงเทคโนโลยี (Natick, Highlander 35 ม. ที่ไหหลำ) — PUE &lt; 1.1</li>
+          <li>อ่าวไทยตอนบนมีภูมิศาสตร์เหมาะสม แต่<b>ยังไม่มีผู้ศึกษาการ "คุ้มครอง"</b> อย่างเป็นระบบ</li>
+          <li>ไทยมีกลไก ศรชล. พร้อมใช้ — แต่ยังไม่มีแนวทางบทบาท ทร. ที่ชัดเจน</li>
+        </ul>
+      </div>
+      <div class="card green card-anim-right">
+        <div class="kicker">VALUE TO RTN</div>
+        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-shield"/></svg> คุณค่าที่องค์กรจะได้รับ</h3>
+        <ul>
+          <li>โมเดลการป้องกัน <b>The Shield 3.0</b> พร้อมตารางความรับผิดชอบ ๖ มิติ</li>
+          <li>ข้อเสนอเชิงนโยบาย–กฎหมาย ที่นำไปยกร่างได้ทันที</li>
+          <li>ยกระดับบทบาท ทร. เป็น<b>แกนปฏิบัติการคุ้มครอง CUI</b> ภายใต้ ศรชล.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note-strip card-anim-bottom">
+      <svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20" style="color:var(--gotham-amber)"><use href="#icon-warning"/></svg>
+      <div><b>ช่องว่างการวิจัย (Research Gap) :</b> องค์ความรู้ UDC ในระดับสากลมุ่งเน้นมิติ "เทคโนโลยี" เป็นหลัก — <b>ยังไม่ปรากฏงานที่ศึกษามิติ "การคุ้มครอง" อย่างเป็นระบบ ทั้งด้านโครงสร้างหน่วยปฏิบัติการ แนวทางควบคุมพื้นที่ และฐานทางกฎหมายรองรับ</b> ในบริบทกองทัพเรือไทย</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S3 : OBJECTIVES & RESEARCH QUESTION (ตอน ๒) ================= -->
+<section class="slide" data-sec="2">
+  <div class="badge">ตอนที่ ๒ · วัตถุประสงค์และคำถามวิจัย</div>
+  <h1>วัตถุประสงค์ <span class="hl">๓ ประการ</span></h1>
+  <div class="body-wrap">
+    <div class="grid three">
+      <div class="card card-anim-left">
+        <div class="num">๑</div>
+        <h3 style="margin-top:4px"><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-target"/></svg> ศึกษาสภาพปัญหา</h3>
+        <p>วิเคราะห์ปัญหาโครงสร้างพื้นฐานดิจิทัลภาครัฐ ความเหมาะสมทางภูมิศาสตร์ของอ่าวไทย และภัยคุกคามต่อ CUI</p>
+      </div>
+      <div class="card amber card-anim-top">
+        <div class="num" style="color:var(--gotham-amber);">๒</div>
+        <h3 style="margin-top:4px"><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-shield"/></svg> วิเคราะห์รูปแบบการคุ้มครอง</h3>
+        <p>วิเคราะห์รูปแบบการคุ้มครองที่เหมาะสม โดยเน้นการจัดระเบียบพื้นที่ทางทะเล (MSP) และขีดความสามารถใต้น้ำของ ทร.</p>
+      </div>
+      <div class="card green card-anim-right">
+        <div class="num" style="color:var(--gotham-emerald);">๓</div>
+        <h3 style="margin-top:4px"><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-anchor"/></svg> เสนอแนวทางบทบาท ทร.</h3>
+        <p>เสนอแนวทางการกำหนดบทบาทกองทัพเรือในการคุ้มครอง UDC ภายใต้กลไก ศรชล.</p>
+      </div>
+    </div>
+    <div class="card amber card-anim-bottom" style="margin-top:14px; padding:16px 22px;">
+      <h3><svg class="ico-svg" viewBox="0 0 24 24" width="24" height="24"><use href="#icon-target"/></svg> คำถามวิจัยหลัก</h3>
+      <p style="font-size:19px; margin:6px 0;">"กองทัพเรือควรกำหนดบทบาทและจัดระเบียบพื้นที่ทางทะเล<b style="color:var(--gotham-cyan);">อย่างไร</b> เพื่อคุ้มครองศูนย์ข้อมูลใต้น้ำในฐานะโครงสร้างพื้นฐานวิกฤตของชาติ ภายใต้กลไก ศรชล. ?"</p>
+      <p style="color:var(--gotham-muted); font-size:15px;">งานวิจัยเชิงคุณภาพ — ไม่มีสมมติฐาน ใช้ <b>ข้อเสนอการวิจัย (Research Proposition)</b> เป็นแนวนำทางแทน</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S4 : CONCEPTUAL FRAMEWORK (ตอน ๒) ================= -->
+<section class="slide" data-sec="2">
+  <div class="badge">ตอนที่ ๒ · กรอบแนวคิดการวิจัย</div>
+  <h1>กรอบแนวคิด <span class="hl">INPUT → PROCESS → OUTPUT</span></h1>
+  <div class="body-wrap">
+    <div class="grid three">
+      <div class="card card-anim-left">
+        <div class="num">INPUT</div>
+        <h3 style="margin-top:4px"><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-book"/></svg> ตัวแปรต้น / ปัจจัยนำเข้า</h3>
+        <ul>
+          <li>ภัยคุกคาม CUI · ภูมิศาสตร์อ่าวไทยตอนบน</li>
+          <li>กรอบกฎหมาย (UNCLOS, พ.ร.บ.ศรชล., พ.ร.บ.ไซเบอร์)</li>
+          <li>ขีดความสามารถ ทร. · กรณีศึกษาต่างประเทศ</li>
+        </ul>
+      </div>
+      <div class="card amber card-anim-top">
+        <div class="num" style="color:var(--gotham-amber);">PROCESS</div>
+        <h3 style="margin-top:4px"><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-radar"/></svg> กระบวนการวิเคราะห์</h3>
+        <ul>
+          <li>แนวคิด MSP + MDA + Layered Defense</li>
+          <li>PMESII · SWOT/TOWS · Gap Analysis</li>
+          <li><b style="color:var(--gotham-cyan);">UDC Defense Simulator</b> (เครื่องมือสังเคราะห์)</li>
+          <li>สัมภาษณ์เชิงลึกผู้ทรงคุณวุฒิ ๔ กลุ่ม</li>
+        </ul>
+      </div>
+      <div class="card green card-anim-right">
+        <div class="num" style="color:var(--gotham-emerald);">OUTPUT</div>
+        <h3 style="margin-top:4px"><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-shield"/></svg> ผลผลิต</h3>
+        <ul>
+          <li>โมเดล <b>The Shield 3.0</b></li>
+          <li>แนวทางจัดระเบียบพื้นที่ (MEZ / Buffer / TSS)</li>
+          <li>ข้อเสนอบทบาท ทร. ภายใต้ ศรชล.</li>
+          <li>ข้อเสนอเชิงนโยบาย–กฎหมาย</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid two" style="margin-top:14px;">
+      <div class="card card-anim-left">
+        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-shield"/></svg> ฐานทฤษฎีหลัก ๓ เสา</h3>
+        <ul>
+          <li><b>MSP</b> — การจัดระเบียบพื้นที่ทางทะเล (Maritime Spatial Planning): จัดสรรพื้นที่ทะเลอย่างมีประสิทธิภาพ</li>
+          <li><b>MDA</b> — การตระหนักรู้สถานการณ์ทางทะเล (Maritime Domain Awareness): ตระหนักรู้สถานการณ์หลายมิติ</li>
+          <li><b>Defense-in-Depth</b> — การป้องกันในทางลึกสำหรับโครงสร้างพื้นฐานวิกฤตใต้น้ำ</li>
+        </ul>
+      </div>
+      <div class="card amber card-anim-bottom">
+        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-target"/></svg> ขอบเขตการวิจัย</h3>
+        <ul>
+          <li><b>พื้นที่ :</b> อ่าวไทยตอนบน (พื้นที่รับผิดชอบของ ทรภ.๑)</li>
+          <li><b>เวลา :</b> ปีงบประมาณ ๒๕๖๙ (ต.ค.๖๘ – ก.ย.๖๙)</li>
+          <li><b>เนื้อหา :</b> มิติความมั่นคงและการป้องกัน CUI (ไม่ครอบคลุมเชิงพาณิชย์เต็มรูปแบบ)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S5 : CH1-2 SYNTHESIS & METHODOLOGY (ตอน ๓) ================= -->
+<section class="slide" data-sec="3">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+    <div class="badge">ตอนที่ ๓ · วิธีดำเนินการวิจัย</div>
+    <span class="c4isr-badge emerald"><span class="status-pulse emerald"></span>GDCC SECURE EDGE // 200,000 VMs TARGET</span>
+  </div>
+  <h1>วิจัยเชิงคุณภาพ <span class="hl">๔ เครื่องมือ เสริมกันเป็นระบบ</span></h1>
+  <div class="body-wrap">
+    <div class="grid two" style="grid-template-columns:1.1fr 1fr">
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div class="card card-seq-1">
+          <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-book"/></svg> ๑ · การวิจัยเอกสาร + เทียบกรณีศึกษาต่างประเทศ</h3>
+          <p>Natick (สหรัฐฯ) · Highlander/Lin-gang (จีน) · Panthalassa (ลอยน้ำพลังงานคลื่น) · บทเรียน Baltic Sea และสิงคโปร์ → Benchmarking ๖ เกณฑ์</p>
+        </div>
+        <div class="card amber card-seq-2">
+          <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-radar"/></svg> ๒ · วิเคราะห์ความเหมาะสมพื้นที่ด้วยข้อมูลอุทกศาสตร์</h3>
+          <p>ข้อมูลความลึก สัณฐานพื้นทะเล กระแสน้ำ จาก<b>กรมอุทกศาสตร์</b> — คัดกรองพื้นที่จริง ไม่ใช่สมมติ</p>
+        </div>
+        <div class="card green card-seq-3">
+          <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-target"/></svg> ๓ · เครื่องมือวิเคราะห์เชิงยุทธศาสตร์</h3>
+          <p>PMESII (วิเคราะห์สภาพแวดล้อมยุทธศาสตร์) → SWOT/TOWS → <b>Gap Analysis</b> (As-Is / To-Be) → Model Synthesis</p>
+        </div>
+        <div class="card card-seq-4">
+          <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-api"/></svg> ๔ · สัมภาษณ์เชิงลึกผู้ทรงคุณวุฒิ ๔ กลุ่ม (Purposive Sampling)</h3>
+          <p>ผู้บริหารความมั่นคงทางทะเล · กฎหมายทะเล/พระธรรมนูญ · นโยบายดิจิทัลภาครัฐ · อุทกศาสตร์/สมุทรศาสตร์</p>
+        </div>
+      </div>
+      
+      <!-- WHY THIS METHOD CARD WITH ANIMATED AMBER RUNNING GLOW BORDER -->
+      <div class="card card-amber-running-glow card-seq-5" style="display:flex; flex-direction:column; justify-content:center;">
+        <div class="kicker" style="color:var(--gotham-amber);">WHY THIS METHOD?</div>
+        <h3 style="font-size:21px; color:var(--gotham-amber);"><svg class="ico-svg" viewBox="0 0 24 24" width="24" height="24"><use href="#icon-shield"/></svg> ทำไมจึงเลือกวิธีนี้</h3>
+        <ul style="margin-top:6px;">
+          <li>UDC <b>ยังไม่มีอยู่จริงในไทย</b> — วัดเชิงปริมาณไม่ได้ ต้องสังเคราะห์จากหลักฐานหลายชั้น</li>
+          <li>คำถามวิจัยเป็นเรื่อง "แนวทาง–บทบาท–กลไก" → ต้องการ<b>ความลึก</b> ไม่ใช่ความถี่</li>
+          <li>ใช้ <b>Triangulation</b>: เอกสาร + ข้อมูลอุทกศาสตร์จริง + ผู้เชี่ยวชาญ ๔ มุม ตรวจสอบซึ่งกันและกัน</li>
+          <li>เพิ่ม <b>Simulator</b> เป็นเครื่องมือสังเคราะห์เชิงประจักษ์ — ทำให้โมเดลถูก "ทดสอบ" ก่อนเสนอ</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S6 : SHIELD EVOLUTION (ตอน ๓) ================= -->
+<section class="slide" data-sec="3">
+  <div class="badge">ตอนที่ ๓ · กระบวนการพัฒนาโมเดล</div>
+  <h1>พัฒนาการของโมเดล THE SHIELD <span class="hl">1.0 → 2.0 → 3.0</span> : สังเคราะห์และทดสอบอย่างเป็นลำดับ</h1>
+  <div class="body-wrap">
+    <div class="evoline">
+      <div class="stage card-anim-left">
+        <span class="tag">บทที่ ๒ · กรอบทฤษฎี</span>
+        <div class="v">1.0</div>
+        <b><svg class="ico-svg" viewBox="0 0 24 24" width="18" height="18"><use href="#icon-book"/></svg> โมเดลตั้งต้น (Theory)</b>
+        <small>สังเคราะห์จากวรรณกรรม MSP + MDA + Layered Defense และกรณีศึกษาต่างประเทศ</small>
+      </div>
+      <div class="arr">▶▶</div>
+      <div class="stage card-anim-top" style="border-color:var(--gotham-amber); box-shadow:0 0 20px rgba(255,158,59,0.35);">
+        <span class="tag" style="color:var(--gotham-amber); font-weight:700;">บทที่ ๓ · ทดสอบพื้นที่จริง (เกาะคราม)</span>
+        <div class="v" style="color:var(--gotham-amber);">2.0</div>
+        <b><svg class="ico-svg" viewBox="0 0 24 24" width="18" height="18"><use href="#icon-radar"/></svg> ทดสอบด้วย Simulator (v3)</b>
+        <small>ผูกกับพื้นที่จริงตะวันออกเกาะคราม วิเคราะห์ด้วย PMESII / SWOT / Gap Analysis<br>→ <b style="color:var(--gotham-red); display:block; margin-top:2px;">▼ ค้นพบช่องว่างสำคัญ ๓ ประการ (ในบทที่ ๓)</b></small>
+      </div>
+      <div class="arr">▶▶</div>
+      <div class="stage card-anim-right" style="border-color:var(--gotham-emerald);">
+        <span class="tag" style="color:var(--gotham-emerald); font-weight:700;">บทที่ ๔ · สังเคราะห์โมเดลสมบูรณ์</span>
+        <div class="v" style="color:var(--gotham-emerald);">3.0</div>
+        <b><svg class="ico-svg" viewBox="0 0 24 24" width="18" height="18"><use href="#icon-shield"/></svg> โมเดลสมบูรณ์ (Shield 3.0)</b>
+        <small>ปิดช่องว่างด้วยข้อค้นพบจากผู้ทรงคุณวุฒิ ๔ กลุ่ม → ตารางรับผิดชอบ ๖ มิติ + ห่วงโซ่ตกลงใจ DCDR</small>
+      </div>
+    </div>
+
+    <!-- PURE HTML/CSS FAIL-SAFE WIRING CONNECTOR -->
+    <div class="wiring-container wiring-anim" style="position:relative; width:100%; height:52px; margin:10px 0 8px; pointer-events:none; z-index:100;">
+      <div style="position:absolute; top:0; left:50%; width:4px; height:26px; background:#ff2233; transform:translateX(-50%); box-shadow:0 0 14px #ff2233; z-index:10;"></div>
+      <div style="position:absolute; top:21px; left:50%; width:12px; height:12px; background:#ff2233; border:2px solid #ffffff; border-radius:50%; transform:translateX(-50%); box-shadow:0 0 16px #ff2233; z-index:20;"></div>
+      <div style="position:absolute; top:25px; left:16.66%; right:16.66%; height:3.5px; background:repeating-linear-gradient(90deg, #ff2233 0, #ff2233 10px, transparent 10px, transparent 16px); box-shadow:0 0 12px #ff2233; z-index:10;"></div>
+      <div style="position:absolute; top:22px; left:16.66%; width:10px; height:10px; background:#ff2233; border:2px solid #ffffff; border-radius:50%; transform:translateX(-50%); box-shadow:0 0 12px #ff2233; z-index:20;"></div>
+      <div style="position:absolute; top:22px; left:83.33%; width:10px; height:10px; background:#ff2233; border:2px solid #ffffff; border-radius:50%; transform:translateX(-50%); box-shadow:0 0 12px #ff2233; z-index:20;"></div>
+
+      <div style="position:absolute; top:26px; left:16.66%; width:3.5px; height:22px; background:#ff2233; transform:translateX(-50%); box-shadow:0 0 12px #ff2233; z-index:10;">
+        <div style="position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:9px solid #ff2233; filter:drop-shadow(0 0 6px #ff2233);"></div>
+      </div>
+      <div style="position:absolute; top:26px; left:50%; width:3.5px; height:22px; background:#ff2233; transform:translateX(-50%); box-shadow:0 0 12px #ff2233; z-index:10;">
+        <div style="position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:9px solid #ff2233; filter:drop-shadow(0 0 6px #ff2233);"></div>
+      </div>
+      <div style="position:absolute; top:26px; left:83.33%; width:3.5px; height:22px; background:#ff2233; transform:translateX(-50%); box-shadow:0 0 12px #ff2233; z-index:10;">
+        <div style="position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:9px solid #ff2233; filter:drop-shadow(0 0 6px #ff2233);"></div>
+      </div>
+    </div>
+
+    <!-- 3 GAP CARDS -->
+    <div class="grid three" style="margin-top:2px;">
+      <div class="card red card-anim-bottom" style="border-color:rgba(255,65,54,0.6); box-shadow:0 8px 24px rgba(255,34,51,0.2);">
+        <div class="kicker" style="color:var(--gotham-red); font-weight:700;">GAP IDENTIFIED IN CH.3</div>
+        <h3 style="color:var(--gotham-red);"><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-legal"/></svg> ช่องว่าง ๑ · กฎหมาย (บทที่ ๓)</h3>
+        <p>ไม่มีกลไกคุ้มครอง CUI ที่ชัดเจน โดยเฉพาะเมื่อวางโครงสร้างนอกทะเลอาณาเขต</p>
+        <div style="margin-top:8px; padding-top:6px; border-top:1px dashed rgba(16,185,129,0.3); font-size:14.5px; color:var(--gotham-emerald);">
+          <b>▸ ทางปิดช่องว่าง (บทที่ ๔):</b> พ.ร.ฎ.เขตปลอดภัย ๒๕๓๖ + ยกร่างกฎหมาย CUI
+        </div>
+      </div>
+
+      <div class="card red card-anim-bottom" style="border-color:rgba(255,65,54,0.6); box-shadow:0 8px 24px rgba(255,34,51,0.2);">
+        <div class="kicker" style="color:var(--gotham-red); font-weight:700;">GAP IDENTIFIED IN CH.3</div>
+        <h3 style="color:var(--gotham-red);"><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-radar"/></svg> ช่องว่าง ๒ · Underwater MDA (บทที่ ๓)</h3>
+        <p>ข้อจำกัดในการตระหนักรู้สถานการณ์ใต้น้ำและพื้นท้องทะเล (Seabed Warfare) ของ ทร.</p>
+        <div style="margin-top:8px; padding-top:6px; border-top:1px dashed rgba(16,185,129,0.3); font-size:14.5px; color:var(--gotham-emerald);">
+          <b>▸ ทางปิดช่องว่าง (บทที่ ๔):</b> สายใยแก้ว DAS + โซนาร์ + UUV/ROV + Seabed Sentry
+        </div>
+      </div>
+
+      <div class="card red card-anim-bottom" style="border-color:rgba(255,65,54,0.6); box-shadow:0 8px 24px rgba(255,34,51,0.2);">
+        <div class="kicker" style="color:var(--gotham-red); font-weight:700;">GAP IDENTIFIED IN CH.3</div>
+        <h3 style="color:var(--gotham-red);"><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-api"/></svg> ช่องว่าง ๓ · บูรณาการข้อมูล (บทที่ ๓)</h3>
+        <p>หน่วยงานทางทะเลใน ศรชล. ยังขาดการเชื่อมโยงข้อมูลและผังทะเลรวม (One Marine Chart)</p>
+        <div style="margin-top:8px; padding-top:6px; border-top:1px dashed rgba(16,185,129,0.3); font-size:14.5px; color:var(--gotham-emerald);">
+          <b>▸ ทางปิดช่องว่าง (บทที่ ๔):</b> ม.๒๗ ศรชล. + API กลาง + One Marine Chart
+        </div>
+      </div>
+    </div>
+
+    <div class="note-strip card-anim-bottom" style="margin-top:10px;">
+      <svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20" style="color:var(--gotham-cyan);"><use href="#icon-api"/></svg>
+      <div><b>การเชื่อมโยงระหว่างบท :</b> ช่องว่างทั้ง ๓ ประการนี้ <b>ถูกระบุและพิสูจน์ทราบในบทที่ ๓</b> (จากการวิเคราะห์ Gap Analysis ตารางที่ ๓-๗ ร่วมกับการสัมภาษณ์ผู้ทรงคุณวุฒิ) และนำไปสู่การเสนอแนวทางแก้ไขเพื่อ<b>ปิดช่องว่างเชิงยุทธการในบทที่ ๔ (The Shield 3.0)</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S7 : FINDING 1 SITE (ตอน ๔) ================= -->
+<section class="slide" data-sec="4">
+  <div class="slide-watermark-sattahip"></div>
+
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; position:relative; z-index:2;">
+    <div class="badge">ตอนที่ ๔ · ผลการวิจัย ①</div>
+    <span class="c4isr-badge emerald"><span class="status-pulse emerald"></span>GEOGRAPHIC &amp; BATHYMETRIC OPTIMALITY</span>
+  </div>
+  <h1>พื้นที่ที่เหมาะสมที่สุด : <span class="hl">ด้านตะวันออกของเกาะคราม</span></h1>
+  
+  <div class="body-wrap">
+    <div class="split-dossier">
+      <div class="side-frame-wrap card-anim-left" style="background: rgba(13, 17, 23, 0.70); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+        <div class="hud-label" style="background: rgba(0, 229, 255, 0.16);"><span>BATHYMETRY CHART</span><span>HYDROGRAPHIC DEPT</span></div>
+        <img class="side-frame-img" src="THE_SHIELD_Ch2_gulfseabed.webp" alt="ข้อมูลสัณฐานพื้นทะเลกรมอุทกศาสตร์">
+        <div class="caption" style="background: rgba(6, 9, 14, 0.75);">◉ ข้อมูลสัณฐานพื้นทะเลและอุทกศาสตร์ กรมอุทกศาสตร์ (ความลึก ๓๐–๔๔ ม.)</div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div class="card card-anim-top" style="background: rgba(13, 17, 23, 0.70); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+          <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-seabed"/></svg> เกณฑ์ทางกายภาพ (ข้อมูลกรมอุทกศาสตร์)</h3>
+          <ul>
+            <li>ความลึก <b>๓๐–๔๔ ม.</b> — เหมาะกับการติดตั้งและงานดำน้ำซ่อมบำรุง</li>
+            <li>พื้นทะเล<b>ทราย–โคลนแน่น เสถียร</b> รองรับฐานราก Capsule</li>
+            <li>ตัวเกาะเป็น<b>กำแพงธรรมชาติ</b> กำบังคลื่นลมและบดบังการตรวจการณ์</li>
+          </ul>
+        </div>
+        <div class="card green card-anim-right" style="background: rgba(13, 17, 23, 0.70); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+          <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-shield"/></svg> เกณฑ์ด้านความมั่นคง</h3>
+          <ul>
+            <li>อยู่ใน<b>เขตปลอดภัยในราชการทหาร</b>เดิม (พ.ร.ฎ. ๒๕๓๖) — มีฐานกฎหมายรองรับทันที</li>
+            <li>ชายฝั่งตรงข้ามเป็นที่ตั้งหน่วย <b>นย. / สอ.รฝ.</b> — ควบคุมจุดขึ้นบก (Landing Point)</li>
+            <li>อยู่<b>นอกเส้นทางเดินเรือพาณิชย์ (TSS)</b> — ลดความเสี่ยงสมอลาก</li>
+            <li>ใกล้ฐานทัพเรือสัตหีบ — เวลาในการตอบสนอง (Response Time) ต่ำมากทุกมิติ</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="note-strip card-anim-bottom" style="margin-top:10px; background: linear-gradient(90deg, rgba(13, 17, 23, 0.75) 0%, rgba(18, 24, 32, 0.70) 100%); border-color: var(--gotham-cyan); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+      <svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20" style="color:var(--gotham-amber);"><use href="#icon-radar"/></svg>
+      <div>ข้อสรุปพื้นที่นี้มาจากการซ้อนทับ ๓ ชั้นข้อมูลหลัก: <b>มิติอุทกศาสตร์</b> (ความลึก ๓๐–๔๔ ม./ดินทรายปนโคลนเสถียร) × <b>มิติกฎหมาย</b> (เขตปลอดภัยทหาร/TSS) × <b>มิติยุทธการ</b> (เวลาตอบสนองและการป้องกัน)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S8 : FINDING 2 THREATS (ตอน ๔) ================= -->
+<section class="slide" data-sec="4">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+    <div class="badge">ตอนที่ ๔ · ผลการวิจัย ②</div>
+    <span class="c4isr-badge amber"><span class="status-pulse amber"></span>อ้างอิง: บทที่ ๒ (ข้อ ๒.๒), บทที่ ๔ (ข้อ ๔.๑) &amp; ผนวก ข-ค</span>
+  </div>
+  <h1>ภัยคุกคามที่แท้จริงมิใช่เรือดำน้ำขนาดใหญ่ — <span class="hl">แต่เป็นเป้าขนาดเล็ก ซึ่งตรวจจับยาก ก้ำกึ่งทางกฎหมาย</span></h1>
+  <div class="body-wrap">
+    <div class="split-dossier">
+      <div class="side-frame-wrap" style="border-color:rgba(255,65,54,0.4);">
+        <div class="hud-label" style="background:rgba(255,65,54,0.14); color:var(--gotham-red);"><span>THREAT ANALYSIS MAP</span><span>TSS RISK ZONE</span></div>
+        <img class="side-frame-img" src="THE_SHIELD_Ch2_tss.webp" alt="ผังวิเคราะห์เส้นทางเดินเรือพาณิชย์และพื้นที่เฝ้าระวัง">
+        <div class="caption" style="color:var(--gotham-red);">◉ ผังวิเคราะห์เส้นทางเดินเรือพาณิชย์ (TSS : Traffic Separation Scheme) และพื้นที่เฝ้าระวังภัยสมอลาก</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div class="card red">
+          <div class="kicker" style="color:var(--gotham-red); font-weight:700;">[อ้างอิง: บทที่ ๔ ข้อ ๔.๑ &amp; ผนวก ข ข้อ ๓.๓]</div>
+          <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-subsurface"/></svg> ภัยเจตนาทางทหาร (Hostile / Military)</h3>
+          <ul>
+            <li><b>อ่าวไทยน้ำตื้น (๓๐–๔๔ ม.)</b> เป็นอุปสรรคอะคูสติกต่อเรือดำน้ำขนาดใหญ่</li>
+            <li>ภัยแท้จริงจึงเป็น <b>SDV / เรือดำน้ำขนาดเล็ก (Midget) / UUV</b></li>
+            <li><b>เรือพรางระบบแสดงตน (Dark Vessels)</b> ปิดสัญญาณ AIS แทรกซึม</li>
+          </ul>
+        </div>
+        <div class="card amber">
+          <div class="kicker" style="color:var(--gotham-amber); font-weight:700;">[อ้างอิง: UNCLOS ข้อ ๑๙ &amp; ผนวก ค สัมภาษณ์ผู้ทรงคุณวุฒิ]</div>
+          <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-anchor"/></svg> ภัยก้ำกึ่งทางกฎหมาย (Grey-Zone &amp; Accidental)</h3>
+          <ul>
+            <li><b>การลากสมอ (Anchor Dragging)</b> — สาเหตุหลักภัยคุกคามใต้น้ำ (>๘0% สถิติสากล)</li>
+            <li>ก้ำกึ่งกับ<b>สิทธิการผ่านโดยสุจริต (Innocent Passage)</b> ตาม UNCLOS ข้อ ๑๙</li>
+            <li>การประมงอวนลากหน้าดิน (Bottom Trawling) ในพื้นที่เขตเฝ้าระวัง</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="note-strip" style="margin-top:10px; background:linear-gradient(90deg, rgba(255,65,54,0.1) 0%, rgba(255,158,59,0.04) 100%); border-color:rgba(255,65,54,0.35);">
+      <svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20" style="color:var(--gotham-amber);"><use href="#icon-book"/></svg>
+      <div><b>📌 แหล่งอ้างอิงและที่มาข้อเท็จจริง :</b> สังเคราะห์จาก <b>ผลการจำลองสถานการณ์ด้วยแบบจำลองทางยุทธวิธี (บทที่ ๒ ข้อ ๒.๒.๓ และ ผนวก ข ข้อ ๓.๓)</b> ร่วมกับ <b>ผลการสัมภาษณ์เชิงลึกผู้ทรงคุณวุฒิ ๔ กลุ่ม (ผนวก ค ข้อ ๓)</b> และสถิติภัยคุกคามโครงสร้างใต้น้ำสากล (Project Natick / Baltic Sea Lessons)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S9 : COMMON OPERATING PICTURE (ตอน ๔) ================= -->
+<section class="slide" data-sec="4">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+    <div class="badge">ตอนที่ ๔ · ผลการวิจัย ③</div>
+    <span class="c4isr-badge emerald"><span class="status-pulse emerald"></span>COMMON OPERATING PICTURE (COP)</span>
+  </div>
+  <h1>ผังจัดระเบียบพื้นที่ทางทะเล : <span class="hl">เขตหวงห้ามเด็ดขาด (MEZ) · พื้นที่กันชน (Buffer Zone) · TSS (Traffic Separation Scheme)</span></h1>
+  <div class="body-wrap">
+    <div class="console-grid">
+      <!-- LEFT TELEMETRY PANEL -->
+      <div class="console-panel">
+        <div class="p-head"><span>DAS TELEMETRY</span><span style="color:var(--gotham-emerald); display:inline-flex; align-items:center;"><span class="status-pulse emerald"></span>LIVE</span></div>
+        <div class="telemetry-row">
+          <div class="lbl">สาย ๑ · เกาะคราม (Landing)</div>
+          <div class="val emerald">ACTIVE · 42.5 Hz</div>
+          <div style="font-size:11px; color:var(--gotham-muted);">Noise: -84 dBm | DAS Sensor 01</div>
+        </div>
+        <div class="telemetry-row">
+          <div class="lbl">สาย ๒ · ฐานทัพเรือสัตหีบ</div>
+          <div class="val emerald">ACTIVE · 38.2 Hz</div>
+          <div style="font-size:11px; color:var(--gotham-muted);">Noise: -88 dBm | DAS Sensor 02</div>
+        </div>
+        <div class="telemetry-row">
+          <div class="lbl">สาย ๓ · ทุ่งโปรง (นย.)</div>
+          <div class="val emerald">ACTIVE · 41.0 Hz</div>
+          <div style="font-size:11px; color:var(--gotham-muted);">Noise: -86 dBm | DAS Sensor 03</div>
+        </div>
+        <div class="telemetry-row" style="margin-bottom:0; background:rgba(0,229,255,0.06); border-color:var(--gotham-border);">
+          <div class="lbl" style="color:var(--gotham-cyan);">EDGE AI SENSOR FUSION</div>
+          <div class="val amber">0 ANOMALIES DETECTED</div>
+        </div>
+      </div>
+
+      <!-- CENTER GIS MAP VIEWPORT -->
+      <div class="zonemap-container">
+        <svg viewBox="0 0 1180 440" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <linearGradient id="swpG" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#00e5ff" stop-opacity=".5"/>
+              <stop offset="1" stop-color="#00e5ff" stop-opacity="0"/>
+            </linearGradient>
+            <radialGradient id="podGlow" cx=".5" cy=".5" r=".5">
+              <stop offset="0" stop-color="#00e5ff" stop-opacity=".6"/>
+              <stop offset="1" stop-color="#00e5ff" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="edgeFadeY" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#06090e" stop-opacity=".80"/>
+              <stop offset=".16" stop-color="#06090e" opacity="0"/>
+              <stop offset=".80" stop-color="#06090e" stop-opacity="0"/>
+              <stop offset="1" stop-color="#06090e" stop-opacity=".84"/>
+            </linearGradient>
+            <linearGradient id="edgeFadeX" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#06090e" stop-opacity=".50"/>
+              <stop offset=".09" stop-color="#06090e" stop-opacity="0"/>
+              <stop offset=".91" stop-color="#06090e" stop-opacity="0"/>
+              <stop offset="1" stop-color="#06090e" stop-opacity=".50"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Satellite Basemap Export -->
+          <image href="img/sattahip_rayong_sat.jpg" x="0" y="0" width="1180" height="560" preserveAspectRatio="none" />
+          <rect x="0" y="0" width="1180" height="560" fill="#06090e" opacity=".18"/>
+          <rect x="0" y="0" width="1180" height="560" fill="url(#edgeFadeY)"/>
+          <rect x="0" y="0" width="1180" height="560" fill="url(#edgeFadeX)"/>
+
+          <!-- Graticule Lines -->
+          <g stroke="rgba(0, 229, 255, 0.15)" stroke-width="1">
+            <line x1="0" y1="541.3" x2="1180" y2="541.3"/>
+            <line x1="0" y1="446.4" x2="1180" y2="446.4"/>
+            <line x1="0" y1="351.4" x2="1180" y2="351.4"/>
+            <line x1="0" y1="256.5" x2="1180" y2="256.5"/>
+            <line x1="0" y1="161.6" x2="1180" y2="161.6"/>
+            <line x1="0" y1="66.6" x2="1180" y2="66.6"/>
+            <line x1="108.3" y1="0" x2="108.3" y2="560"/>
+            <line x1="290.5" y1="0" x2="290.5" y2="560"/>
+            <line x1="472.8" y1="0" x2="472.8" y2="560"/>
+            <line x1="655.0" y1="0" x2="655.0" y2="560"/>
+            <line x1="837.2" y1="0" x2="837.2" y2="560"/>
+            <line x1="1019.4" y1="0" x2="1019.4" y2="560"/>
+          </g>
+
+          <g font-family="Share Tech Mono" font-size="11" fill="rgba(139, 148, 158, 0.85)" paint-order="stroke" stroke="#06090e" stroke-width="2.4">
+            <text x="7" y="537.3">12°30'N</text>
+            <text x="7" y="442.4">12°35'N</text>
+            <text x="7" y="347.4">12°40'N</text>
+            <text x="7" y="252.5">12°45'N</text>
+            <text x="7" y="157.6">12°50'N</text>
+            <text x="112.3" y="14">100°20'E</text>
+            <text x="294.5" y="14">100°30'E</text>
+            <text x="476.8" y="14">100°40'E</text>
+            <text x="659.0" y="14">100°50'E</text>
+            <text x="841.2" y="14">101°00'E</text>
+            <text x="1023.4" y="14">101°10'E</text>
+          </g>
+
+          <!-- Military Safety Zone Polyline -->
+          <polyline points="640,-153 352,316 418,852" fill="none" stroke="#00e5ff" stroke-width="1.6" opacity=".62" stroke-dasharray="10 8">
+            <animate attributeName="stroke-dashoffset" from="0" to="-72" dur="3.2s" repeatCount="indefinite"/>
+          </polyline>
+
+          <!-- TSS 3 Sattahip Lane Box -->
+          <rect x="618.0" y="313.0" width="128.0" height="130.0" fill="rgba(0, 229, 255, 0.05)" stroke="#00e5ff" stroke-width="1.3" stroke-dasharray="9 7" opacity=".75"/>
+          <text x="682" y="388" text-anchor="middle" font-family="Share Tech Mono" font-size="12" fill="#00e5ff" letter-spacing="1" paint-order="stroke" stroke="#06090e" stroke-width="3">TSS ๓ · Traffic Separation Scheme (ร่องน้ำสัตหีบ)</text>
+
+          <!-- Defense Rings around UDC (cx=640, cy=300) -->
+          <circle cx="640.0" cy="300.0" r="186.7" fill="rgba(0, 229, 255, 0.035)" stroke="#00e5ff" stroke-width="1.6" stroke-dasharray="12 9">
+            <animate attributeName="stroke-dashoffset" from="0" to="-84" dur="9s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="640.0" cy="300.0" r="93.3" fill="rgba(255, 65, 54, 0.05)" stroke="#ff4136" stroke-width="1.8" stroke-dasharray="7 6">
+            <animate attributeName="stroke-dashoffset" from="0" to="-52" dur="6s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="640.0" cy="300.0" r="37.3" fill="none" stroke="#ff4136" stroke-width="1" stroke-dasharray="3 5" opacity=".45"/>
+
+          <!-- Radar Sensor Sweep -->
+          <g transform="translate(640.0 300.0)">
+            <path d="M0 0 L91 -24 A 93.3 93.3 0 0 1 162 43 Z" fill="url(#swpG)" opacity=".28">
+              <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="8s" repeatCount="indefinite"/>
+            </path>
+          </g>
+
+          <!-- DAS Fiber Optic Cables -->
+          <g fill="none" stroke="#10b981" stroke-width="1.7" opacity=".88">
+            <path d="M640.0 300.0 C 624.0 300.0 607.0 298.0 590.0 297.0" stroke-dasharray="6 5">
+              <animate attributeName="stroke-dashoffset" from="0" to="-44" dur="2.6s" repeatCount="indefinite"/>
+            </path>
+          </g>
+
+          <!-- UDC Pod Marker -->
+          <circle cx="639.9" cy="300.1" r="30" fill="url(#podGlow)" opacity=".55">
+            <animate attributeName="r" values="22;34;22" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          <rect x="619.9" y="292.1" width="40" height="16" rx="8" fill="#070a0e" stroke="#00e5ff" stroke-width="1.6"/>
+          <circle cx="639.9" cy="300.1" r="2.6" fill="#00e5ff"/>
+          <text x="639.9" y="284" text-anchor="middle" font-family="Share Tech Mono" font-size="14" fill="#00e5ff" letter-spacing="2" paint-order="stroke" stroke="#06090e" stroke-width="3">UDC</text>
+          <text x="639.9" y="326" text-anchor="middle" font-family="Share Tech Mono" font-size="12" fill="#e6edf3" paint-order="stroke" stroke="#06090e" stroke-width="2.4">12°42.7'N 100°49.2'E · DEPTH 30–44 m</text>
+
+          <!-- Zone Labels -->
+          <text x="639.9" y="123" text-anchor="middle" font-family="Share Tech Mono" font-size="13.5" fill="#ff4136" letter-spacing="2" paint-order="stroke" stroke="#06090e" stroke-width="3">MEZ · เขตหวงห้ามเด็ดขาด 2–5 nm</text>
+          <text x="450" y="64" text-anchor="middle" font-family="Share Tech Mono" font-size="13.5" fill="#00e5ff" letter-spacing="2" paint-order="stroke" stroke="#06090e" stroke-width="3">BUFFER · เขตควบคุม/พื้นที่กันชน 5–10 nm</text>
+
+          <!-- Animated Vessel (HTMS Suriya) -->
+          <g>
+            <animateMotion dur="24s" repeatCount="indefinite" rotate="0" path="M493 414.6 L401 414.6 L401 500 L493 500 Z"/>
+            <path d="M-13 0 L-7 -8 L9 -8 L15 0 Z" fill="none" stroke="#00e5ff" stroke-width="1.5"/>
+            <text x="0" y="30" text-anchor="middle" font-family="Share Tech Mono" font-size="12.5" fill="#00e5ff" paint-order="stroke" stroke="#06090e" stroke-width="2.4">อศ. · ร.ล.สุริยะ (HTMS Suriya)</text>
+          </g>
+
+          <!-- Centralized C2 Command Node -->
+          <rect x="781" y="55" width="186" height="58" rx="8" fill="rgba(13, 17, 23, 0.94)" stroke="#bd93f9" stroke-width="1.5"/>
+          <text x="874" y="80" text-anchor="middle" font-family="Share Tech Mono" font-size="14" fill="#ffffff" letter-spacing="1">ศปก.ทร. / ศรชล. (RTNOC / THAIMECC)</text>
+          <text x="874" y="98" text-anchor="middle" font-family="Share Tech Mono" font-size="11.5" fill="#bd93f9" letter-spacing="2">CENTRALIZED C2</text>
+        </svg>
+      </div>
+
+      <!-- RIGHT UNIT READINESS PANEL -->
+      <div class="console-panel">
+        <div class="p-head"><span>C2 UNIT READINESS</span><span style="color:var(--gotham-amber); display:inline-flex; align-items:center;"><span class="status-pulse amber"></span>DEFCON 1</span></div>
+        <div class="telemetry-row">
+          <div class="lbl">บก.ทรภ.๑ (1st NAC HQ)</div>
+          <div class="val emerald">COP ONLINE // READY</div>
+          <div style="font-size:11px; color:var(--gotham-muted);">Surface & Air Domain Command</div>
+        </div>
+        <div class="telemetry-row">
+          <div class="lbl">สอ.รฝ. เขาคลองถูป (ACDC)</div>
+          <div class="val emerald">RADAR 25nm ACTIVE</div>
+          <div style="font-size:11px; color:var(--gotham-muted);">Coastal Surveillance Active</div>
+        </div>
+        <div class="telemetry-row">
+          <div class="lbl">ศสต.ศปก.ทร. (UWOC)</div>
+          <div class="val emerald">SENSORS ONLINE</div>
+          <div style="font-size:11px; color:var(--gotham-muted);">Subsurface Acoustic Monitor</div>
+        </div>
+        <div class="telemetry-row" style="margin-bottom:0; background:rgba(255,158,59,0.06); border-color:rgba(255,158,59,0.3);">
+          <div class="lbl" style="color:var(--gotham-amber);">LEGAL DECREE LAYER</div>
+          <div class="val amber">MILITARY ZONE 2536</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid two" style="margin-top:8px;">
+      <div class="card red"><h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-legal"/></svg> ชั้นที่ ๑ · กฎหมายที่มีอยู่</h3><p>ประกาศพระราชกฤษฎีกา<b>เขตปลอดภัยในราชการทหาร</b> (ตาม พ.ร.บ. ๒๔๗๘) ครอบพิกัด UDC — บังคับใช้ทางยุทธการได้ทันที</p></div>
+      <div class="card amber"><h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-shield"/></svg> ชั้นที่ ๒ · กฎหมายเฉพาะ</h3><p>ผลักดัน<b>กฎหมายคุ้มครองโครงสร้างพื้นฐานวิกฤตใต้น้ำ (CUI)</b> ระยะยาวเพื่อปิดช่องว่างความมั่นคงทางทะเล</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S10 : FINDING 4 SHIELD 3.0 (ตอน ๔) ================= -->
+<section class="slide" data-sec="4">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+    <div class="badge">ตอนที่ ๔ · ผลการวิจัย ④</div>
+    <span class="c4isr-badge"><span class="status-pulse cyan"></span>OPEN &amp; INTEROPERABLE // ANTI-LOCK-IN API (ม.๒๗ ศรชล.)</span>
+  </div>
+  <h1>การป้องกันพหุมิติ <span class="hl">๖ มิติ · ผู้รับผิดชอบชัดเจน (5W1H)</span></h1>
+  <div class="body-wrap">
+    <div class="grid two" style="grid-template-columns: 0.95fr 1.2fr; gap:16px; align-items:stretch;">
+      <!-- LEFT COLUMN: 5W1H 6-DOMAIN OPERATIONAL MATRIX TABLE -->
+      <div class="card card-anim-left" style="padding:12px 14px; display:flex; flex-direction:column; justify-content:space-between;">
+        <div class="kicker" style="color:var(--gotham-cyan); font-weight:700;">TABLE 4-2 · 5W1H OPERATIONAL MATRIX</div>
+        <table class="gotham-table">
+          <thead>
+            <tr>
+              <th style="width:28%; white-space:nowrap;">มิติการป้องกัน</th>
+              <th style="width:42%">ภารกิจปฏิบัติการหลัก</th>
+              <th style="width:30%">หน่วยรับผิดชอบหลัก (+สนับสนุน)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="dom" style="white-space:nowrap;"><svg class="ico-svg" viewBox="0 0 24 24" width="18" height="18"><use href="#icon-air"/></svg> ① ทางอากาศ</td><td>เฝ้าตรวจและสกัดกั้นภัยทางอากาศ/UAV</td><td>สอ.รฝ. + ทรภ.๑</td></tr>
+            <tr><td class="dom" style="white-space:nowrap;"><svg class="ico-svg" viewBox="0 0 24 24" width="18" height="18"><use href="#icon-surface"/></svg> ② ผิวน้ำ</td><td>ลาดตระเวนและพิสูจน์ทราบเรือพรางตน (Dark Vessels)</td><td>ทรภ.๑ (+ตำรวจน้ำ, เจ้าท่า)</td></tr>
+            <tr><td class="dom" style="white-space:nowrap;"><svg class="ico-svg" viewBox="0 0 24 24" width="18" height="18"><use href="#icon-subsurface"/></svg> ③ ใต้น้ำ</td><td>ตรวจจับยานใต้น้ำ (SDV/UUV) ด้วยโซนาร์และ DAS</td><td>ศูนย์สงครามใต้น้ำ + อศ.</td></tr>
+            <tr><td class="dom" style="white-space:nowrap;"><svg class="ico-svg" viewBox="0 0 24 24" width="18" height="18"><use href="#icon-seabed"/></svg> ④ พื้นท้องทะเล</td><td>สำรวจวัตถุพื้นท้องทะเล (Multibeam/ROV)</td><td>อศ. + กองเรือทุ่นระเบิด</td></tr>
+            <tr><td class="dom" style="white-space:nowrap;"><svg class="ico-svg" viewBox="0 0 24 24" width="18" height="18"><use href="#icon-coastal"/></svg> ⑤ ชายฝั่ง/ขึ้นฝั่ง</td><td>รักษาความปลอดภัยสถานีเคเบิลและ Landing Point</td><td>นย. + สอ.รฝ.</td></tr>
+            <tr><td class="dom" style="white-space:nowrap;"><svg class="ico-svg" viewBox="0 0 24 24" width="18" height="18"><use href="#icon-cyber"/></svg> ⑥ ไซเบอร์/ข้อมูล</td><td>เฝ้าระวังความมั่นคงเครือข่ายและการควบคุมทางดิจิทัล</td><td>ศูนย์ไซเบอร์ ทร. (+สกมช., สดช.)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- RIGHT COLUMN: EXPANDED LIVE ANIMATED C4ISR DEPLOYMENT VIDEO -->
+      <div class="side-frame-wrap card-anim-right" style="border-color:var(--gotham-border-bright); box-shadow:0 12px 36px rgba(0,0,0,0.65); display:flex; flex-direction:column; justify-content:space-between;">
+        <div class="hud-label" style="padding:6px 14px; background:rgba(0, 229, 255, 0.14); display:flex; justify-content:space-between; align-items:center;">
+          <span>◉ MULTI-DOMAIN C4ISR ANIMATED SCHEMA (EXPANDED VIEW)</span>
+          <span style="color:var(--gotham-emerald); font-weight:700; display:inline-flex; align-items:center;"><span class="status-pulse emerald"></span>LIVE VIDEO</span>
+        </div>
+        <div style="position:relative; width:100%; flex:1; min-height:280px; background:#06090e; overflow:hidden;">
+          <video class="opsvid" width="1760" height="983" autoplay loop muted playsinline poster="THE_SHIELD_Ch4_ops_poster.webp" style="width:100%; height:100%; object-fit:cover; display:block;">
+            <source src="THE_SHIELD_Ch4_ops.webm" type="video/webm">
+            <source src="THE_SHIELD_Ch4_ops.mp4" type="video/mp4">
+            <img src="THE_SHIELD_Ch4_ops_poster.webp" alt="แผนภาพการวางกำลังพหุมิติ ๖ มิติ (5W1H)">
+          </video>
+        </div>
+        <div class="caption" style="padding:6px 12px; font-size:13.5px; color:var(--gotham-cyan); background:rgba(6, 9, 14, 0.92); text-align:center;">
+          ◉ แผนภาพจำลองการจัดกำลังพหุมิติ ๖ มิติ ตามกรอบ 5W1H (บทที่ ๔)
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S11 : FINDING 5 RTN ROLE (ตอน ๔) ================= -->
+<section class="slide" data-sec="4">
+  <div class="badge">ตอนที่ ๔ · ผลการวิจัย ⑤</div>
+  <h1>กองทัพเรือ = <span class="hl">แกนปฏิบัติการ</span> ภายใต้กลไกอำนวยการของ ศรชล.</h1>
+  <div class="body-wrap">
+    <div class="flow">
+      <div class="node card-anim-left">
+        <h4><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-shield"/></svg> ศรชล. — กลไกอำนวยการ</h4>
+        <p>นายกรัฐมนตรี = ผอ.ศรชล.<br>ผบ.ทร. = รอง ผอ. · เสธ.ทร. = เลขาธิการ<br>บูรณาการ ๗ หน่วยงานทางทะเล</p>
+      </div>
+      <div class="arr card-anim-top">▶</div>
+      <div class="node card-anim-top" style="border-color:var(--gotham-cyan);">
+        <h4><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-anchor"/></svg> ทร. — แกนปฏิบัติการ</h4>
+        <p>หน่วยเดียวที่มีขีดความสามารถครบ ๖ มิติ<br>(กำลังรบ ๓ มิติ + อศ. + นย. + ไซเบอร์)<br>รับผิดชอบผ่าน ทรภ.๑ / ศปก.ทร.</p>
+      </div>
+      <div class="arr card-anim-top">▶</div>
+      <div class="node card-anim-right" style="border-color:var(--gotham-emerald);">
+        <h4><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-api"/></svg> เครื่องมือบูรณาการข้อมูล</h4>
+        <p><b>ม.๒๗ พ.ร.บ.ศรชล. ๒๕๖๒</b> → นปท.<br>หน่วยงานเปิด API แลกเปลี่ยนข้อมูล<br>สู่ <b>One Marine Chart</b> (ผังทะเลรวม)</p>
+      </div>
+    </div>
+    <div class="grid three" style="margin-top:14px;">
+      <div class="card green card-anim-left"><h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-legal"/></svg> ตอบช่องว่าง ๑ · กฎหมาย</h3><p>ฐาน ๒ ชั้น: เขตปลอดภัยในราชการทหาร + ผลักดันกฎหมาย CUI/CII</p></div>
+      <div class="card green card-anim-bottom"><h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-radar"/></svg> ตอบช่องว่าง ๒ · Underwater MDA</h3><p>DAS + Passive Sonar + UUV/ROV + Seabed Sentry ใน Shield 3.0</p></div>
+      <div class="card green card-anim-right"><h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-api"/></svg> ตอบช่องว่าง ๓ · บูรณาการ</h3><p>ม.๒๗ → API กลาง → GDCC Secure Edge → One Marine Chart</p></div>
+    </div>
+    <div class="note-strip card-anim-bottom">
+      <svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20" style="color:var(--gotham-amber);"><use href="#icon-book"/></svg>
+      <div>ตาราง ๔–๑ ในรายงานฉบับสมบูรณ์ เปรียบเทียบ Shield 2.0 → 3.0 ครบ ๘ ด้าน</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S12 : DISCUSSION (ตอน ๕) ================= -->
+<section class="slide" data-sec="5">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+    <div class="badge">ตอนที่ ๕ · อภิปรายผล</div>
+    <span class="c4isr-badge amber"><span class="status-pulse amber"></span>MULTI-LAYERED SECURITY // DATA SOVEREIGNTY</span>
+  </div>
+  <h1>ผลการวิจัยนี้ <span class="hl">ยืนยัน–ต่อยอด–เติมเต็ม</span> องค์ความรู้เดิมอย่างไร</h1>
+  <div class="body-wrap">
+    <div class="grid three">
+      <div class="card card-anim-left">
+        <div class="kicker">CONFIRMS THEORY</div>
+        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-shield"/></svg> สอดคล้องกับทฤษฎี</h3>
+        <ul>
+          <li>ยืนยันหลัก <b>MSP</b>: การแบ่งเขต MEZ/Buffer/TSS ลดความขัดแย้งเชิงพื้นที่และรักษาความปลอดภัยได้จริง</li>
+          <li>ยืนยัน <b>Defense-in-Depth</b>: โครงสร้างวิกฤตใต้น้ำต้องป้องกันหลายชั้นและบูรณาการพหุมิติ</li>
+        </ul>
+      </div>
+      <div class="card amber card-anim-top">
+        <div class="kicker">EXTENDS PRIOR WORK</div>
+        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-radar"/></svg> ต่อยอดงานวิจัยเดิม</h3>
+        <ul>
+          <li>ขยายความรู้จาก UDC ทั่วไป (Natick, Highlander, Panthalassa) จากแค่พลังงาน/วิศวกรรม สู่มิติ <b>"การคุ้มครอง (Protection)"</b></li>
+          <li>พัฒนาการตระหนักรู้สถานการณ์จาก ๒ มิติไปสู่ <b>Underwater MDA</b> ในระดับท้องทะเลลึก</li>
+        </ul>
+      </div>
+      <div class="card green card-anim-right">
+        <div class="kicker">RTN CONTEXT</div>
+        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-anchor"/></svg> บริบท ทร. / ศรชล.</h3>
+        <ul>
+          <li>บทเรียนจาก <b>Baltic Sea</b> ชี้ให้เห็นว่าควรประกาศ "กฎเกณฑ์ล่วงหน้า" ก่อนดำเนินการติดตั้งสิ่งก่อสร้าง</li>
+          <li>ใช้กลไกของ <b>ศรชล.</b> และกำลังรบของ ทร. ที่มีอยู่แล้วในการขับเคลื่อน โดยไม่ต้องจัดตั้งหน่วยงานใหม่</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card amber card-anim-bottom" style="margin-top:14px; padding:14px 20px;">
+      <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-warning"/></svg> ข้อจำกัดที่ผู้วิจัยตระหนัก</h3>
+      <p style="font-size:15.5px; margin:0;">ผลการวิเคราะห์อิงพื้นที่อ่าวไทยตอนบนเท่านั้น · ข้อมูล Shared-MDA ใน Simulator เป็น<b>ข้อมูลจำลองเพื่อการสาธิต</b> · การยืนยันสมรรถนะจริงต้องผ่านการทดสอบภาคสนามและการทดสอบร่วม — ระบุไว้ในข้อเสนอแนะการวิจัยต่อยอดแล้ว</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S13 : RECOMMENDATIONS (ตอน ๖) ================= -->
+<section class="slide" data-sec="6">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+    <div class="badge">ตอนที่ ๖ · ข้อเสนอแนะ</div>
+    <span class="c4isr-badge emerald"><span class="status-pulse emerald"></span>COMMON OPERATING PICTURE INTEGRATION</span>
+  </div>
+  <h1>ข้อเสนอแนะ <span class="hl">๓ ระดับ</span> — จากระดับนโยบายสู่แนวทางปฏิบัติ</h1>
+  <div class="body-wrap">
+    <div class="grid three">
+      <div class="card amber card-anim-left">
+        <div class="kicker">POLICY</div>
+        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-legal"/></svg> เชิงนโยบาย</h3>
+        <ul>
+          <li>ยกร่าง <b>พระราชกฤษฎีกาเขตปลอดภัยในราชการทหาร</b> คุมพิกัด UDC</li>
+          <li>แก้ไขเพิ่มเติม <b>พ.ร.บ.ไซเบอร์ฯ ๒๕๖๒</b> — บรรจุ UDC เป็นสถานะ CII</li>
+          <li>เสนอวาระความมั่นคงต่อ <b>สมช.</b> บูรณาการ UDC เข้าสู่ระบบ GDCC Secure Edge</li>
+          <li>รับรองโมเดล <b>Shield 3.0 เป็นหลักนิยมการปฏิบัติร่วม</b> ภายใต้ ศรชล.</li>
+        </ul>
+      </div>
+      <div class="card card-anim-top">
+        <div class="kicker">PRACTICE</div>
+        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-anchor"/></svg> เชิงปฏิบัติสำหรับ ทร. / ศรชล.</h3>
+        <ul>
+          <li>พัฒนาระบบการสงครามที่ใช้เครือข่ายเป็นศูนย์กลาง (NCW) / National Tactical Data Link</li>
+          <li>จัดหาขีดความสามารถใต้น้ำ: <b>DAS · Passive Sonar · UUV/ROV · Seabed Sentry</b></li>
+          <li>เร่งรัดโครงสร้างพื้นฐานข้อมูล (MSDI) พัฒนาผังทะเลรวม (One Marine Chart)</li>
+          <li>บังคับใช้ ม.๒๗ บูรณาการแลกเปลี่ยนข้อมูล + กำหนดวงรอบการซ่อมบำรุง Biofouling</li>
+        </ul>
+      </div>
+      <div class="card green card-anim-right">
+        <div class="kicker">FUTURE RESEARCH</div>
+        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-target"/></svg> งานวิจัยเพื่อการต่อยอด</h3>
+        <ul>
+          <li>ขยายการศึกษาหาความเหมาะสมไปยังฝั่ง<b>อันดามัน</b></li>
+          <li>ศึกษาทดสอบภาคสนามแนวทางป้องกันการเกาะติดของสิ่งมีชีวิตทางทะเล (Biofouling) ในอ่าวไทย</li>
+          <li>ทดสอบการทำงานของระบบและขั้นตอนปฏิบัติมาตรฐาน (SOP) ด้วยการซ้อมทางทะเลจริง</li>
+          <li>ขยายความร่วมมือในการตระหนักรู้สถานการณ์และศึกษาผลกระทบต่อสิ่งมีชีวิตทางทะเล</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note-strip card-anim-bottom">
+      <svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20" style="color:var(--gotham-emerald);"><use href="#icon-shield"/></svg>
+      <div>ข้อสรุปและข้อเสนอแนะทั้งหมดตอบวัตถุประสงค์การวิจัยครบทั้ง ๓ ข้อ : <b>สภาพปัญหา → รูปแบบการคุ้มครอง → บทบาท ทร. ภายใต้ ศรชล.</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S14 : TAKE-HOME & CLOSING (ตอน ๖) ================= -->
+<section class="slide" data-sec="6" style="text-align:center;">
+  <div class="body-wrap" style="align-items:center;">
+    <div class="badge" style="margin-bottom:12px;">
+      <svg class="ico-svg" viewBox="0 0 24 24" width="18" height="18"><use href="#icon-shield"/></svg>
+      TAKE-HOME MESSAGE
+    </div>
+    <img src="rtn_emblem.png" alt="RTN Emblem" style="height:92px; margin-bottom:14px; filter:drop-shadow(0 0 16px rgba(255, 158, 59, 0.5));">
+    
+    <div style="background:rgba(13, 17, 23, 0.9); border:1px solid var(--gotham-border-bright); border-radius:8px; padding:26px 36px; max-width:880px; margin-bottom:18px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+      <p style="font-size:24px; line-height:1.55; font-family:'Prompt', 'Sarabun', sans-serif;">
+        "ท้องทะเลไทยพร้อมเป็น<span class="shiny-pill" style="--text-color: var(--gotham-cyan); --shine-color: #ffffff; --speed: 2.2s; font-weight:700; margin: 0 4px;"><span class="base-text">ที่ตั้งอันมั่นคงของข้อมูลชาติ</span><span class="shine-text" aria-hidden="true">ที่ตั้งอันมั่นคงของข้อมูลชาติ</span></span> —<br>
+        และกองทัพเรือพร้อมเป็น<span class="shiny-pill" style="--text-color: var(--gotham-amber); --shine-color: #ffffff; --speed: 2.2s; font-weight:700; margin: 0 4px;"><span class="base-text">โล่คุ้มครองอธิปไตยทางข้อมูล</span><span class="shine-text" aria-hidden="true">โล่คุ้มครองอธิปไตยทางข้อมูล</span></span><br>
+        ด้วยแนวทางที่ชอบด้วยกฎหมาย ภายใต้กลไก ศรชล."
+      </p>
+    </div>
+
+    <div style="display:flex; gap:14px; justify-content:center; margin-bottom:12px;">
+      <a class="c4isr-btn" href="THE_SHIELD_Pitch.html" style="padding:10px 24px; font-size:13.5px; background:rgba(0, 229, 255, 0.15); border-color:var(--gotham-cyan);">
+        ▶ <span class="shiny-pill" style="--text-color: var(--gotham-cyan); --shine-color: #ffffff; --speed: 2.5s;"><span class="base-text">ชมการนำเสนอฉบับ PITCH (ผู้บริหาร)</span><span class="shine-text" aria-hidden="true">ชมการนำเสนอฉบับ PITCH (ผู้บริหาร)</span></span>
+      </a>
+      <a class="c4isr-btn" href="UDC_Simulator_17.html" target="_blank" style="padding:10px 24px; font-size:13.5px;">
+        ◉ <span class="shiny-pill" style="--text-color: var(--gotham-cyan); --shine-color: #ffffff; --speed: 2.5s;"><span class="base-text">UDC DEFENSE SIMULATOR v17</span><span class="shine-text" aria-hidden="true">UDC DEFENSE SIMULATOR v17</span></span>
+      </a>
+    </div>
+    
+    <p style="color:var(--gotham-muted); font-size:16px;">พร้อมรับข้อซักถามจากคณะกรรมการ · นาวาอากาศโท วิศวชิต อินทสุวรรณ์ · นทน.หลักสูตรเสนาธิการทหารเรือ รุ่นที่ ๘๖</p>
+  </div>
+</section>
+
+</div>
+
+<!-- ================= C4ISR FOOTER NAV ================= -->
+<div class="c4isr-footer">
+  <div class="c4isr-nav-btns">
+    <button class="c4isr-btn" onclick="prevSlide()">◄ PREV</button>
+    <button class="c4isr-btn" onclick="nextSlide()">NEXT ►</button>
+  </div>
+  <div class="c4isr-slide-matrix" id="slideMatrix"></div>
+  <div style="color:var(--gotham-muted); font-size:12px;">
+    SLIDE <span id="currentSlideNum" style="color:var(--gotham-cyan); font-weight:700;">01</span> / 14
+  </div>
+</div>
+
+<script>
+let curSlide = 0;
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+const slideMatrix = document.getElementById('slideMatrix');
+const currentSlideNum = document.getElementById('currentSlideNum');
+const hudSection = document.getElementById('hudSection');
+
+const sectionNames = {
+  1: 'ตอนที่ ๑ ชื่อเรื่องและความสำคัญ',
+  2: 'ตอนที่ ๒ วัตถุประสงค์และกรอบแนวคิด',
+  3: 'ตอนที่ ๓ วิธีดำเนินการวิจัย',
+  4: 'ตอนที่ ๔ ผลการวิจัย',
+  5: 'ตอนที่ ๕ อภิปรายผล',
+  6: 'ตอนที่ ๖ ข้อเสนอแนะและคุณค่า'
+};
+
+// Initialize Slide Matrix Pills
+for (let i = 0; i < totalSlides; i++) {
+  const pill = document.createElement('div');
+  pill.className = `matrix-pill ${i === 0 ? 'active' : ''}`;
+  pill.innerText = (i + 1).toString().padStart(2, '0');
+  pill.onclick = (e) => { e.stopPropagation(); showSlide(i); };
+  slideMatrix.appendChild(pill);
+}
+
+function showSlide(index) {
+  if (index < 0) index = 0;
+  if (index >= totalSlides) index = totalSlides - 1;
+  
+  slides[curSlide].classList.remove('active');
+  document.querySelectorAll('.matrix-pill')[curSlide].classList.remove('active');
+  
+  curSlide = index;
+  slides[curSlide].classList.add('active');
+  document.querySelectorAll('.matrix-pill')[curSlide].classList.add('active');
+  
+  currentSlideNum.innerText = (curSlide + 1).toString().padStart(2, '0');
+  const sec = +slides[curSlide].dataset.sec;
+  hudSection.innerText = sectionNames[sec] || "";
+  location.hash = `s${curSlide + 1}`;
+}
+
+function nextSlide() { showSlide(curSlide + 1); }
+function prevSlide() { showSlide(curSlide - 1); }
+
+// Keyboard Navigation
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { nextSlide(); }
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { prevSlide(); }
+  else if (e.key === 'Home') { showSlide(0); }
+  else if (e.key === 'End') { showSlide(totalSlides - 1); }
+  else if (/^[1-6]$/.test(e.key)) {
+    const idx = Array.from(slides).findIndex(s => +s.dataset.sec === +e.key);
+    if (idx >= 0) showSlide(idx);
+  }
+});
+
+// Click Navigation
+document.addEventListener('click', (e) => {
+  if (e.target.closest('a, button, .matrix-pill, .zonemap-container')) return;
+  if (e.clientX > window.innerWidth / 2) nextSlide();
+  else prevSlide();
+});
+
+// Hash Sync
+const m = location.hash.match(/^#s(\\d+)$/);
+showSlide(m ? +m[1] - 1 : 0);
+</script>
+</body>
+</html>

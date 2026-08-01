@@ -1,6 +1,16 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.42.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.43.0 · 7-Domain + AI Staff)
+  · [v17.43.0] ความลึกของธีม Gotham — แสงจากด้านบน แทนเงาที่ทอดลงบนพื้นเกือบดำ
+      · แก้สัดส่วนผสมของบันไดระนาบ: --plane-2/3 เดิม ๘๔%/๗๔% ให้ผลจริงเป็น #3f4349 / #55595e
+        (กระโดดไปถึง dark-gray5 และหลุดบันไดเทาเข้มไปเลย) เจตนาเดิมคือ #252a31 / #2f343c
+        สัดส่วนที่ถูกต้องคือ ๙๖% / ๙๑% — hover จึงอ่านว่า "ยกขึ้นหนึ่งชั้น" ไม่ใช่ "กะพริบ"
+      · เพิ่มโทเคนแสง ๓ ตัว --sheen-top / --sheen-bot / --ring-dark (เป็น box-shadow ทั้งหมด
+        จึงไม่กินเนื้อที่และไม่ขยับ layout) — บนพื้น #111418 เงาดำแทบไม่มีที่ให้มืดลงต่อ
+        ความลึกบนจอมืดต้องมาจากขอบที่รับแสง ไม่ใช่เงาที่ทอดลง
+      · วงดำ ๑px รอบแผงรับหน้าที่แยกขอบจากภาพดาวเทียมที่สว่างเป็นหย่อม ๆ แทนเงาเรืองไซแอนเดิม
+      · แถบเครดิตก้นจอ #udc-author-credit ทึบสนิท (เดิมโปร่ง ๘% แผนที่ใต้มันทำให้ความสว่างแกว่ง)
+        + สันรับแสงขอบบน + เงาทอดขึ้น — ไม่เพิ่มมาร์กอัปหรือช่องข้อมูลใหม่
   · [v17.42.0] บันไดระดับความรุนแรงแผ่นดินไหวชุดเดียว (PGA_LADDER) — เลิกพิมพ์เกณฑ์ซ้ำ ๓ จุด
       · เดิมเกณฑ์ PGA→ระดับ/สี/แถบสถานะ ถูกพิมพ์ซ้ำ ๓ แห่ง และแห่งที่ ๓ ตกหล่นไป ๒ ขั้น
         (SEVERE·HIGH·MODERATE กลายเป็นสีแดงเหมือนกันหมดบนแถบสถานะ)
@@ -1834,12 +1844,12 @@
          ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker
          v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump
          display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.42.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.43.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.42.0';
+        const APP_VERSION = '17.43.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -6937,15 +6947,34 @@
             --radius-2xl:  6px;
             /* --radius-pill คงเดิม */
 
-            /* C — ระนาบทึบ ไล่ค่าความสว่างขึ้นทีละขั้น */
+            /* C — ระนาบทึบ ไล่ค่าความสว่างขึ้นทีละขั้น
+               [v17.43.0 GOTHAM-DEPTH-1] แก้สัดส่วนผสมที่เลยเป้า — เจตนาที่เขียนไว้
+               ข้างบน (มาตรการ C) คือไล่ #1c2127 → #2f343c ตามบันไดเทาเข้มของ Blueprint
+               แต่ 84%/74% ให้ผลจริงเป็น #3f4349 / #55595e : ขั้นที่สองกระโดดข้ามไปถึง
+               dark-gray5 ส่วนขั้นที่สามหลุดพ้นบันไดเทาเข้มไปทั้งบันได ตาจึงอ่าน hover
+               ว่า "กะพริบ" ไม่ใช่ "ยกขึ้นหนึ่งชั้น" · สัดส่วนที่ตกลงบน dark-gray2 และ
+               dark-gray3 พอดีคือ ๙๖% และ ๙๑% */
             --plane-1-bg: var(--bg-panel);
-            --plane-2-bg: color-mix(in srgb, var(--bg-panel) 84%, var(--n-100));
-            --plane-3-bg: color-mix(in srgb, var(--bg-panel) 74%, var(--n-100));
+            --plane-2-bg: color-mix(in srgb, var(--bg-panel) 96%, var(--n-100));
+            --plane-3-bg: color-mix(in srgb, var(--bg-panel) 91%, var(--n-100));
             --elev-1: 0 1px 2px rgb(0 0 0 / .30);
             --elev-2: 0 2px 6px rgb(0 0 0 / .36);
             --elev-3: 0 6px 18px rgb(0 0 0 / .46);
             --hairline: 1px solid color-mix(in srgb, var(--n-600) 82%, transparent);
             --ring-accent: color-mix(in srgb, var(--cyan-mid) 34%, transparent);
+
+            /* [v17.43.0 GOTHAM-DEPTH-2] แสงจากด้านบน — ตัวสร้างมิติจริงบนพื้นเกือบดำ
+               เงาดำที่ทอดลงบนพื้น #111418 แทบไม่มีที่ให้มืดลงต่อ ความลึกบนจอมืดจึงต้อง
+               มาจาก "ขอบที่รับแสง" ไม่ใช่ "เงาที่ทอดลง" · ค่า ๕.๕% ยกขอบบนขึ้นราว
+               ๑๑ หน่วยความสว่าง อ่านเป็นสัน ๑px ได้ชัดโดยไม่กลายเป็นปุ่มนูน
+               (ธีม glass ใช้ ๒๕% ซึ่งแรงเกินไปสำหรับบันไดที่บีบแล้วของ Gotham)
+               --ring-dark เป็นข้อจำเป็นเฉพาะของเราที่ Palantir ไม่มี: แผงของเราวางบน
+               ภาพดาวเทียมซึ่งสว่างเป็นหย่อม ๆ วงดำ ๑px รับหน้าที่แยกขอบแทนเงาเรือง
+               ไซแอนเดิม โดยไม่ต้องเรืองแสง · ทั้งสามเป็น box-shadow จึงไม่กินเนื้อที่
+               และไม่ขยับ layout แม้แต่พิกเซลเดียว */
+            --sheen-top: inset 0  1px 0 rgb(246 247 249 / .055);
+            --sheen-bot: inset 0 -1px 0 rgb(0 0 0 / .45);
+            --ring-dark: 0 0 0 1px rgb(0 0 0 / .55);
 
             /* A — เหลือ ๓ ค่า หน่วย em ล้วน */
             --track-body:    0;
@@ -6971,12 +7000,14 @@
         body[data-panel="gotham"] .side-panel {
             /* พื้นทึบชั้นเดียว ไม่มีไล่สี ไม่มีแถบแสงเฉียง ไม่มีเบลอทะลุ —
                ตรงกับที่วัดได้จริงจาก palantir.com: ทั้งหน้ามีเงาแค่ ๓ ชุด
-               และหนึ่งในนั้นโปร่งใสสนิท */
+               และหนึ่งในนั้นโปร่งใสสนิท
+               [v17.43.0 GOTHAM-DEPTH-3] เพิ่มสันรับแสง ๑px ที่ขอบบน + วงดำ ๑px รอบนอก
+               เรียงตามลำดับ "ในสุด → นอกสุด" ให้ตรงกับทางเดินของแสงจริง */
             background: var(--plane-1-bg) !important;
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
             border: var(--hairline) !important;
-            box-shadow: var(--elev-1) !important;
+            box-shadow: var(--sheen-top), var(--ring-dark), var(--elev-1) !important;
             border-radius: var(--radius-sm) !important;
             padding: var(--space-3) var(--space-4) !important;
         }
@@ -6986,7 +7017,19 @@
         body[data-panel="gotham"] .side-panel:hover {
             background: var(--plane-2-bg) !important;
             border-color: var(--ring-accent) !important;
-            box-shadow: var(--elev-2) !important;
+            box-shadow: var(--sheen-top), var(--ring-dark), var(--elev-2) !important;
+        }
+
+        /* [v17.43.0 GOTHAM-DEPTH-4] แถบเครดิตก้นจอ = "ฐาน" ของหน้าจอ คู่กับหัวจอ
+           เดิมพื้นเป็น rgb(bg-dark / .92) คือยังโปร่งอยู่ ๘% — แผนที่ที่เลื่อนผ่านใต้มัน
+           ทำให้ความสว่างของแถบเปลี่ยนไปมา ซึ่งเป็นปัญหาเดียวกับที่มาตรการ C แก้ให้
+           ระนาบแผงไปแล้ว · ที่นี่ทำให้ทึบสนิท แล้วให้ความลึกด้วยสันรับแสงที่ขอบบน
+           กับเงาที่ทอดขึ้น (ทิศตรงข้ามกับหัวจอ เพราะแถบนี้คือขอบล่างของแผ่น)
+           ไม่เพิ่มมาร์กอัปหรือช่องข้อมูลใหม่แม้แต่ชิ้นเดียว — เป็นการทับสไตล์ล้วน ๆ */
+        body[data-panel="gotham"] #udc-author-credit {
+            background: var(--bg-dark);
+            border-top: var(--hairline);
+            box-shadow: var(--sheen-top), 0 -2px 8px rgb(0 0 0 / .55);
         }
 
         /* ── [Stage 6] Group divider ใน popover Panel section ── */
@@ -10293,7 +10336,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.42.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.43.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -10767,7 +10810,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.42.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.43.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -10786,7 +10829,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.42.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.43.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา
                  — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
@@ -11766,7 +11809,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.42.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.43.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
