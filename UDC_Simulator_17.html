@@ -1,6 +1,13 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.41.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.42.0 · 7-Domain + AI Staff)
+  · [v17.42.0] บันไดระดับความรุนแรงแผ่นดินไหวชุดเดียว (PGA_LADDER) — เลิกพิมพ์เกณฑ์ซ้ำ ๓ จุด
+      · เดิมเกณฑ์ PGA→ระดับ/สี/แถบสถานะ ถูกพิมพ์ซ้ำ ๓ แห่ง และแห่งที่ ๓ ตกหล่นไป ๒ ขั้น
+        (SEVERE·HIGH·MODERATE กลายเป็นสีแดงเหมือนกันหมดบนแถบสถานะ)
+      · รวมเป็นตารางเดียว {min, level, mmi, color, sev} + ตัวช่วย pgaBand() เปิดผ่าน MDA
+      · ⚠ ผลที่เปลี่ยน: แถบ "Seismic PGA @ UDC" ยึดเส้นแบ่งความเสียหายแล้ว —
+        red = MMI VII+ (คาดว่าเสียหาย) · amber = MODERATE · yellow = LOW/WEAK · green = ไม่รู้สึก
+        ตรงกับสีหมุดบนแผนที่และกับตาราง riskCls (s-alert/s-warn/s-ok) ที่มีอยู่เดิม
   · [v17.41.0] แผงหนทางปฏิบัติ (หป.) — อ่านเทียบกันได้ และซื่อสัตย์ว่า "อะไรที่ยังไม่รู้"
       อ้างอิงรูปแบบการนำเสนอของ Palantir Gotham (ECOA/COA) แต่คงเกณฑ์ ๑๒ ข้อของเราไว้ครบ
       · แถวข้อมูลจัดคอลัมน์ ":" ตรงกันทั้ง ๔ แถว — เวลาถึง CDP-1 · ความเป็นไปได้ ·
@@ -1827,12 +1834,12 @@
          ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker
          v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump
          display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.41.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.42.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.41.0';
+        const APP_VERSION = '17.42.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -10286,7 +10293,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.41.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.42.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -10760,7 +10767,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.41.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.42.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -10779,7 +10786,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.41.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.42.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา
                  — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
@@ -11759,7 +11766,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.41.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.42.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -34837,6 +34844,35 @@ window.toggleSat3D = toggleSat3D;
         return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     };
 
+    /** ── บันไดระดับความรุนแรงแผ่นดินไหว "ชุดเดียวของระบบ" ─────────────────────
+     *  วัตถุประสงค์ : รวมเกณฑ์ PGA → ระดับ/สี/แถบสถานะ ที่เคยพิมพ์ซ้ำ ๓ จุด ให้เหลือชุดเดียว
+     *  แหล่งข้อมูล  : Wald et al. (1999) — สมการแปลงความเร่งพื้นดินเป็นระดับ MMI
+     *  หลักการ     : เรียงจากรุนแรงมากไปน้อย — คืนรายการแรกที่ pga_g ≥ min
+     *  การแสดงผล   : color = หมุด/วงบนแผนที่ · sev = สีขอบแถบ status-board (ตาราง SEVCOL)
+     *  ข้อจำกัด    : sev มีคำศัพท์เพียง ๕ คำ (red·amber·yellow·green·teal) จึงยุบ ๖ ระดับ
+     *                เหลือ ๔ โดยยึด "เส้นแบ่งความเสียหาย" — red = คาดว่าเสียหาย (MMI VII+)
+     *  เชื่อมโยง   : computeUDCImpact() · riskColor() · แถบ Seismic PGA @ UDC
+     *  ───────────────────────────────────────────────────────────────────── */
+    const PGA_LADDER = [
+        { min: 0.34,  level: 'SEVERE',     mmi: 'VIII+', color: '#ff1744', sev: 'red'    },
+        { min: 0.18,  level: 'HIGH',       mmi: 'VII',   color: '#ff5722', sev: 'red'    },
+        { min: 0.092, level: 'MODERATE',   mmi: 'VI',    color: '#ff9800', sev: 'amber'  },
+        { min: 0.039, level: 'LOW',        mmi: 'V',     color: '#ffc107', sev: 'yellow' },
+        { min: 0.014, level: 'WEAK',       mmi: 'IV',    color: '#90caf9', sev: 'yellow' },
+        { min: 0,     level: 'NEGLIGIBLE', mmi: 'III-',  color: '#607d8b', sev: 'green'  }
+    ];
+
+    /** คืนขั้นบันไดที่ตรงกับความเร่งพื้นดินที่ให้มา (ค่าที่อ่านไม่ได้ = ขั้นต่ำสุด) */
+    const pgaBand = (pga_g) => {
+        const g = Number(pga_g) || 0;
+        for (let i = 0; i < PGA_LADDER.length; i++) {
+            if (g >= PGA_LADDER[i].min) return PGA_LADDER[i];
+        }
+        return PGA_LADDER[PGA_LADDER.length - 1];
+    };
+    MDA.PGA_LADDER = PGA_LADDER;   // เปิดให้สคริปต์บล็อกอื่น (แถบสถานะ) ใช้ชุดเดียวกัน
+    MDA.pgaBand    = pgaBand;
+
     /** ประเมินผลแผ่นดินไหวต่อศูนย์ข้อมูลใต้น้ำ — ระยะ เวลาคลื่นมาถึง และความเสี่ยงสายเคเบิล
      *  ★ ใช้สูตร Joyner–Boore (1981) หาความเร่งพื้นดิน แล้วแปลงเป็นระดับตาม Wald (1999)
      *  ★ เวลาคลื่น P/S จากความเร็วเปลือกโลก 6.5 / 3.7 km/s — ใช้เป็นเวลาแจ้งเตือนล่วงหน้า
@@ -34852,14 +34888,8 @@ window.toggleSat3D = toggleSat3D;
         const logPGA = 0.41 * mag - Math.log10(R_jb + 7) - 0.0026 * R_jb - 1.66;
         const pga_g  = Math.max(0, Math.pow(10, logPGA));
 
-        // ── ระดับความเสี่ยง (แปลงความเร่งพื้นดินเป็นระดับความรุนแรงตามวอลด์ 1999)
-        const riskLevel =
-            pga_g >= 0.34  ? 'SEVERE'    :   // MMI VIII+ — heavy damage
-            pga_g >= 0.18  ? 'HIGH'      :   // MMI VII   — light damage
-            pga_g >= 0.092 ? 'MODERATE'  :   // MMI VI    — strong shaking
-            pga_g >= 0.039 ? 'LOW'       :   // MMI V     — moderate shaking
-            pga_g >= 0.014 ? 'WEAK'      :   // MMI IV    — light shaking
-                             'NEGLIGIBLE';   // MMI III-  — barely felt
+        // ── ระดับความเสี่ยง — อ่านจากบันไดกลาง PGA_LADDER (ตามวอลด์ 1999) ไม่พิมพ์เกณฑ์ซ้ำ
+        const riskLevel = pgaBand(pga_g).level;
 
         // ── เวลาที่คลื่น P และคลื่น S มาถึง (ตามตำราแผ่นดินไหว ใช้ค่าเฉลี่ยของเปลือกโลก)
         const pVel = 6.5, sVel = 3.7;
@@ -35089,14 +35119,7 @@ window.toggleSat3D = toggleSat3D;
            ─────────────────────────────────────────────────────────── */
 
         // ── v12.6-B: ใช้สีตามระดับแรงสั่นที่กระทบ UDC (ตามวอลด์ 1999) ไม่ใช่ขนาดแผ่นดินไหวดิบ
-        const riskColor = (pga_g) => {
-            if (pga_g >= 0.34)  return '#ff1744';  // SEVERE   (MMI VIII+)
-            if (pga_g >= 0.18)  return '#ff5722';  // HIGH     (MMI VII)
-            if (pga_g >= 0.092) return '#ff9800';  // MODERATE (MMI VI)
-            if (pga_g >= 0.039) return '#ffc107';  // LOW      (MMI V)
-            if (pga_g >= 0.014) return '#90caf9';  // WEAK     (MMI IV)
-            return '#607d8b';                       // NEGLIGIBLE
-        };
+        const riskColor = (pga_g) => pgaBand(pga_g).color;
 
         /* ── parseTMDRss : แปลงข้อมูล XML ของกรมอุตุฯ เป็นรายการเหตุการณ์มาตรฐาน ── */
         function parseTMDRss(xmlText) {
@@ -47591,7 +47614,8 @@ window.MDA.Jurisdiction = (function () {
           var pga = top.impact.pga_g||0, mg=(pga*1000);
           var lvl = top.impact.riskLevel||'—', cr = top.impact.cableRisk||'—';
           var place = (top.feat && top.feat.properties && top.feat.properties.place) || '?';
-          var sev = pga>=0.092?'red' : pga>=0.039?'amber' : pga>=0.014?'yellow':'green';
+          // สีแถบ: อ่านจากบันไดกลาง MDA.pgaBand เพื่อให้ตรงกับสีหมุดบนแผนที่เสมอ
+          var sev = (window.MDA && MDA.pgaBand) ? MDA.pgaBand(pga).sev : 'green';
           rows.push({
             kind:udcIco('trending-up'), label:'Seismic PGA @ UDC · M'+((top.mag!=null)?top.mag.toFixed(1):'?'),
             src:'USGS/TMD',
