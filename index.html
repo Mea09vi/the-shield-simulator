@@ -1,6 +1,17 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.43.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.44.0 · 7-Domain + AI Staff)
+  · [v17.44.0] แสงนวลกลางกล่อง — ยกแผงข้างและแถบก้นจอขึ้นไปทัดเทียมหัวจอ
+      · เดิมมีแต่ header ที่มีไล่สี ส่วนแผงอื่นเรียบสนิท สายตาจึงอ่านว่าหัวจอเป็นวัสดุคนละชนิด
+        กับที่เหลือ · ทางแก้คือยกที่เหลือขึ้นไปหาหัวจอ ไม่ใช่ลบไล่สีของหัวจอทิ้ง
+      · เพิ่มโทเคน ๒ ตัว --lume-v (กล่องแนวตั้ง จุดกำเนิดแสงขอบบน) และ --lume-h
+        (แถบแนวนอน จุดกำเนิดกลางกล่อง) — ทิศของแสงเดินตามแกนยาวของกล่อง
+      · เป็นชั้นแสงโปร่งวางทับพื้นทึบ ผลรวมจึงยังทึบ ๑๐๐% ข้อห้ามของมาตรการ C
+        (ความเป็นชั้นต้องไม่ขึ้นกับสิ่งที่อยู่ข้างใต้) ยังอยู่ครบ — แก้เฉพาะคำอธิบายเดิม
+        ที่เขียนว่า "ไม่มีไล่สี" ให้ตรงกับเจตนาที่แท้จริง เป็นการแก้หลักการโดยตั้งใจ
+      · ต่อสาย --sheen-bot ที่ประกาศไว้ตั้งแต่ v17.43.0 แต่ยังไม่มีกฎใดเรียกใช้
+        ขอบล่างมืด ๑px คู่กับขอบบนสว่าง ทำให้แผงอ่านเป็น "แผ่นที่มีความหนา"
+      · ไม่เพิ่มมาร์กอัป ไม่ขยับ layout แม้แต่พิกเซลเดียว
   · [v17.43.0] ความลึกของธีม Gotham — แสงจากด้านบน แทนเงาที่ทอดลงบนพื้นเกือบดำ
       · แก้สัดส่วนผสมของบันไดระนาบ: --plane-2/3 เดิม ๘๔%/๗๔% ให้ผลจริงเป็น #3f4349 / #55595e
         (กระโดดไปถึง dark-gray5 และหลุดบันไดเทาเข้มไปเลย) เจตนาเดิมคือ #252a31 / #2f343c
@@ -1844,12 +1855,12 @@
          ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker
          v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump
          display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.43.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.44.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.43.0';
+        const APP_VERSION = '17.44.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -6976,6 +6987,23 @@
             --sheen-bot: inset 0 -1px 0 rgb(0 0 0 / .45);
             --ring-dark: 0 0 0 1px rgb(0 0 0 / .55);
 
+            /* [v17.44.0 GOTHAM-LUME-1] แสงนวลกลางกล่อง — ทำให้แผงข้างและแถบก้นจอ
+               "มีมิติ" ทัดเทียมหัวจอ โดยไม่ต้องลดทอนหัวจอลงมาหา
+               เดิมมีแต่ <header> ที่มีไล่สี ส่วนแผงอื่นเรียบสนิท สายตาจึงอ่านว่า
+               หัวจอเป็นวัสดุคนละชนิดกับที่เหลือ · ทางแก้คือยกที่เหลือขึ้นไปหาหัวจอ
+               ด้วยแสงบาง ๆ ชั้นเดียว ไม่ใช่ลบไล่สีของหัวจอทิ้ง
+               ทิศของแสงเดินตามแกนยาวของกล่อง:
+                 --lume-v กล่องแนวตั้ง (แผงข้าง) จุดกำเนิดอยู่ขอบบน 50% 0%
+                          เพราะแสงกลางกล่องบนกล่องสูงจะอ่านเป็น "ไฟส่องจากหลัง"
+                          ซึ่งเป็นภาษาแบบ glass ที่ Gotham ตัดทิ้งไปแล้ว
+                          และการวางไว้ขอบบนยังสอดคล้องกับ --sheen-top พอดี
+                 --lume-h แถบแนวนอน (แถบเครดิตก้นจอ) จุดกำเนิดกลางกล่องจริง 50% 50%
+                          ตรงตามที่ผู้ใช้อธิบายไว้ เพราะกล่องเตี้ยและกว้าง
+               ยอดความสว่างตั้งไว้ ๓.๕% และ ๓.๐% คือราว ๘ หน่วย — ต่ำกว่าสันขอบบน
+               (๑๑ หน่วย) หนึ่งขั้นเสมอ เพื่อให้ขอบยังเป็นตัวนำสายตา ไม่ใช่พื้น */
+            --lume-v: radial-gradient(120% 100% at 50%  0%, rgb(246 247 249 / .035), rgb(246 247 249 / 0) 62%);
+            --lume-h: radial-gradient(100% 260% at 50% 50%, rgb(246 247 249 / .030), rgb(246 247 249 / 0) 70%);
+
             /* A — เหลือ ๓ ค่า หน่วย em ล้วน */
             --track-body:    0;
             --track-label:   .04em;
@@ -6998,16 +7026,24 @@
         body[data-panel="gotham"] .panel,
         body[data-panel="gotham"] .legacy-panel,
         body[data-panel="gotham"] .side-panel {
-            /* พื้นทึบชั้นเดียว ไม่มีไล่สี ไม่มีแถบแสงเฉียง ไม่มีเบลอทะลุ —
-               ตรงกับที่วัดได้จริงจาก palantir.com: ทั้งหน้ามีเงาแค่ ๓ ชุด
-               และหนึ่งในนั้นโปร่งใสสนิท
+            /* พื้นทึบ ไม่มีแถบแสงเฉียง ไม่มีเบลอทะลุ — ตรงกับที่วัดได้จริงจาก
+               palantir.com: ทั้งหน้ามีเงาแค่ ๓ ชุด และหนึ่งในนั้นโปร่งใสสนิท
                [v17.43.0 GOTHAM-DEPTH-3] เพิ่มสันรับแสง ๑px ที่ขอบบน + วงดำ ๑px รอบนอก
-               เรียงตามลำดับ "ในสุด → นอกสุด" ให้ตรงกับทางเดินของแสงจริง */
-            background: var(--plane-1-bg) !important;
+               เรียงตามลำดับ "ในสุด → นอกสุด" ให้ตรงกับทางเดินของแสงจริง
+               [v17.44.0 GOTHAM-LUME-2] แก้ข้อความเดิมที่เขียนว่า "ไม่มีไล่สี" ไว้ —
+               นี่คือการแก้หลักการโดยตั้งใจ ไม่ใช่การละเมิด · ข้อห้ามจริงของมาตรการ C
+               คือ "ความเป็นชั้นของแผงต้องไม่ขึ้นกับสิ่งที่อยู่ข้างใต้" ซึ่งถูกละเมิดโดย
+               opacity และ backdrop-filter เท่านั้น ไม่ใช่โดยไล่สีในตัวมันเอง
+               --lume-v เป็นชั้นแสงโปร่งที่วางทับพื้นทึบ ผลรวมจึงยังทึบ ๑๐๐%
+               ข้อห้ามเดิมยังอยู่ครบ ที่เปลี่ยนคือคำอธิบายให้ตรงกับเจตนาที่แท้จริง
+               [v17.44.0 GOTHAM-LUME-3] --sheen-bot ที่ประกาศไว้ตั้งแต่ v17.43.0 แต่ยัง
+               ไม่มีกฎใดเรียกใช้ ถูกต่อสายที่นี่ — ขอบล่างมืดลง ๑px คู่กับขอบบนที่สว่าง
+               ทำให้แผงอ่านเป็น "แผ่นที่มีความหนา" ไม่ใช่ "สี่เหลี่ยมที่มีขีดบน" */
+            background: var(--lume-v), var(--plane-1-bg) !important;
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
             border: var(--hairline) !important;
-            box-shadow: var(--sheen-top), var(--ring-dark), var(--elev-1) !important;
+            box-shadow: var(--sheen-top), var(--sheen-bot), var(--ring-dark), var(--elev-1) !important;
             border-radius: var(--radius-sm) !important;
             padding: var(--space-3) var(--space-4) !important;
         }
@@ -7015,9 +7051,12 @@
         body[data-panel="gotham"] .panel:hover,
         body[data-panel="gotham"] .legacy-panel:hover,
         body[data-panel="gotham"] .side-panel:hover {
-            background: var(--plane-2-bg) !important;
+            /* [v17.44.0 GOTHAM-LUME-4] ต้องคงชั้น --lume-v ไว้ในสถานะ hover ด้วย
+               ถ้าปล่อยให้เหลือแต่พื้นทึบ แสงกลางกล่องจะดับวูบตอนเมาส์แตะ
+               ซึ่งจะอ่านเป็น "กะพริบ" อีกแบบหนึ่ง แทนที่จะเป็น "ยกขึ้นหนึ่งชั้น" */
+            background: var(--lume-v), var(--plane-2-bg) !important;
             border-color: var(--ring-accent) !important;
-            box-shadow: var(--sheen-top), var(--ring-dark), var(--elev-2) !important;
+            box-shadow: var(--sheen-top), var(--sheen-bot), var(--ring-dark), var(--elev-2) !important;
         }
 
         /* [v17.43.0 GOTHAM-DEPTH-4] แถบเครดิตก้นจอ = "ฐาน" ของหน้าจอ คู่กับหัวจอ
@@ -7026,8 +7065,12 @@
            ระนาบแผงไปแล้ว · ที่นี่ทำให้ทึบสนิท แล้วให้ความลึกด้วยสันรับแสงที่ขอบบน
            กับเงาที่ทอดขึ้น (ทิศตรงข้ามกับหัวจอ เพราะแถบนี้คือขอบล่างของแผ่น)
            ไม่เพิ่มมาร์กอัปหรือช่องข้อมูลใหม่แม้แต่ชิ้นเดียว — เป็นการทับสไตล์ล้วน ๆ */
+        /* [v17.44.0 GOTHAM-LUME-5] แถบก้นจอเป็นกล่องกว้างและเตี้ย แกนยาวจึงเป็นแนวนอน
+           ใช้ --lume-h ซึ่งจุดกำเนิดแสงอยู่กลางกล่องจริง (50% 50%) ต่างจากแผงข้าง
+           ผลคือกลางแถบสว่างกว่าปลายทั้งสองราว ๘ หน่วย อ่านเป็นแผ่นโค้งรับแสง
+           ไม่ใช่แถบสีเรียบ · ยังทึบ ๑๐๐% เหมือนเดิม ไม่มีมาร์กอัปใหม่ */
         body[data-panel="gotham"] #udc-author-credit {
-            background: var(--bg-dark);
+            background: var(--lume-h), var(--bg-dark);
             border-top: var(--hairline);
             box-shadow: var(--sheen-top), 0 -2px 8px rgb(0 0 0 / .55);
         }
@@ -10336,7 +10379,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.43.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.44.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -10810,7 +10853,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.43.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.44.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -10829,7 +10872,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.43.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.44.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา
                  — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
@@ -11809,7 +11852,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.43.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.44.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
