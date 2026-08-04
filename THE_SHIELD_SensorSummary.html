@@ -12,7 +12,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Saira:wght@300;400;500;600;700;800&family=Prompt:wght@300;400;500;600;700&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   
-.seq-num{text-align:center;font-family:var(--f-mono);color:var(--teal);font-weight:700;font-size:13px;background:rgba(0,212,255,.02);border-right:1px solid rgba(0,212,255,.08)}
+.seq-num{text-align:center;font-family:var(--f-mono);color:var(--teal);font-weight:700;
+    font-size:12.5px;padding-left:6px;padding-right:6px;
+    background:rgba(0,212,255,.03);border-right:1px solid rgba(0,212,255,.10)}
   /* ===== Embedded Sarabun (open-source twin of TH SarabunPSK) ===== */
   @font-face{font-family:'Sarabun';font-style:normal;font-weight:400;font-display:swap;
     src:url(data:font/woff2;base64,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) format('woff2');
@@ -166,6 +168,10 @@
 
   /* ---- Section ---- */
   section{padding:8px 40px 24px}
+  @media (max-width:1180px){
+    section{padding:8px 18px 22px;overflow-x:auto}
+    table{min-width:1060px}   /* คงคอลัมน์แบบ fixed ไว้ แล้วให้ section เลื่อนแนวนอนแทน */
+  }
   .sec-head{display:flex;align-items:center;gap:12px;margin:24px 0 12px;flex-wrap:wrap}
   .sec-pill{font-family:var(--f-mono);font-size:12px;font-weight:400;color:#021019;
     padding:5px 13px;border-radius:5px;letter-spacing:.5px}
@@ -174,25 +180,28 @@
   .sec-head h2{font-size:20px;font-weight:800;color:#fff}
   .sec-head .note{font-size:13.5px;color:var(--text-muted);font-weight:400}
 
-  table{width:100%;border-collapse:collapse;font-size:14.5px;
+  table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:14.5px;
     border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:4px}
-  thead th{background:rgba(0,212,255,.1);color:var(--cyan);text-align:left;padding:10px 13px;
-    font-family:var(--f-mono);font-weight:400;font-size:12.5px;letter-spacing:.4px;
-    border-bottom:1px solid var(--bakedBd)}
-  tbody td{padding:9px 13px;border-top:1px solid var(--line-soft);vertical-align:top;color:var(--text-main)}
+  thead th{background:rgba(0,212,255,.1);color:var(--cyan);text-align:left;padding:11px 14px;
+    font-family:var(--f-mono);font-weight:400;font-size:12px;letter-spacing:.3px;line-height:1.45;
+    vertical-align:bottom;border-bottom:1px solid var(--bakedBd)}
+  tbody td{padding:11px 14px;border-top:1px solid var(--line-soft);vertical-align:top;
+    color:var(--text-main);line-height:1.62;overflow-wrap:break-word}
+  tbody tr:nth-child(even) td{background:rgba(255,255,255,.022)}
+  tbody td+td{border-left:1px solid rgba(148,163,184,.07)}
   tbody tr{transition:background .18s}
   tbody tr:hover{background:rgba(0,212,255,.05)}
-  td.name{font-weight:700;color:#fff;white-space:nowrap}
-  td.src{color:var(--text-muted)}
+  td.name{font-weight:700;color:#fff;line-height:1.5}
+  td.src{color:var(--text-muted);line-height:1.7}
   td.src b{color:var(--text-main)} td.src small{color:var(--text-dim)}
-  .tag{display:inline-block;font-family:var(--f-mono);font-size:12px;font-weight:400;
-    padding:2px 8px;border-radius:5px;margin-left:6px;letter-spacing:.3px}
+  .tag{display:inline-block;font-family:var(--f-mono);font-size:11.5px;font-weight:400;
+    padding:2px 8px;border-radius:5px;margin:2px 0 2px 5px;letter-spacing:.3px;
+    line-height:1.5;vertical-align:2px;max-width:100%;overflow-wrap:break-word}
   .tag.official{background:rgba(0,212,255,.12);color:var(--cyan);border:1px solid var(--line)}
   /* ---- Domain chips — colours locked to UDC_Simulator_17 domain accents ---- */
-  td.dom{white-space:nowrap}
-  .dchip{display:inline-block;font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;
-    line-height:1.35;white-space:nowrap;margin:1px 0;border:1px solid}
-  .dchip+.dchip{margin-left:3px}
+  td.dom{line-height:1.9}
+  .dchip{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:6px;
+    line-height:1.35;white-space:nowrap;margin:2px 4px 2px 0;border:1px solid}
   .d-air {color:#5ce1ff;background:rgba(0,212,255,.1); border-color:rgba(0,212,255,.42)}  /* AIR & SPACE  #00d4ff */
   .d-surf{color:#22d3ee;background:rgba(6,182,212,.12);border-color:rgba(6,182,212,.45)}  /* SURFACE      #06b6d4 */
   .d-sub {color:#2dd4bf;background:rgba(20,184,166,.12);border-color:rgba(20,184,166,.45)} /* SUBSURFACE   #14b8a6 */
@@ -221,8 +230,8 @@
   .ai-card .lbl{display:inline-block;font-family:var(--f-mono);font-size:12px;font-weight:400;
     padding:2px 8px;border-radius:5px;margin-bottom:8px;
     background:rgba(189,147,249,.12);color:var(--purple);border:1px solid var(--aiBd)}
-  .prov{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:5px;
-    white-space:nowrap;border:1px solid}
+  .prov{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:5px;
+    line-height:1.45;max-width:100%;border:1px solid}
   .prov-g{color:#8ab4f8;background:rgba(26,115,232,.16);border-color:rgba(138,180,248,.4)}
   .prov-cf{color:var(--amber);background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.4)}
   .prov-z{color:#c084fc;background:rgba(147,51,234,.16);border-color:rgba(192,132,252,.4)}
@@ -248,6 +257,10 @@
   code{font-family:var(--f-mono)}
 
   @media print{
+    section{overflow:visible !important;padding:6px 18px 16px !important}
+    table{table-layout:fixed !important;min-width:0 !important;font-size:11.5px}
+    thead th{font-size:10px;padding:7px 8px} tbody td{padding:7px 8px;line-height:1.45}
+    .dchip{font-size:9.5px;padding:2px 5px} .tag{font-size:9.5px;padding:1px 5px}
     body{background:#fff;color:#0b1220;padding:0;font-size:13px;background-image:none}
     body::before,#topnav{display:none !important}
     .page{box-shadow:none;border:none;border-radius:0;margin:0;max-width:100%;background:#fff}
@@ -325,7 +338,7 @@
       <span class="note">— การเชื่อมต่อเครือข่ายอินเทอร์เน็ตเพื่อดึงข้อมูลจริงจากผู้ให้บริการระดับสากล ณ เวลาปัจจุบัน</span>
     </div>
     <table>
-      <thead><tr><th style="width:5%;text-align:center">ลำดับ</th><th style="width:17%">เซ็นเซอร์ / ชั้นข้อมูล</th><th style="width:13%">โดเมนที่ใช้ Monitor</th><th style="width:28%">แหล่งข้อมูล (Resource)</th><th>ประโยชน์ต่อการ Monitor</th></tr></thead>
+      <thead><tr><th style="width:4%;text-align:center">ลำดับ</th><th style="width:15%">เซ็นเซอร์ / ชั้นข้อมูล</th><th style="width:15%">โดเมนที่ใช้ Monitor</th><th style="width:23%">แหล่งข้อมูล (Resource)</th><th>ประโยชน์ต่อการ Monitor</th></tr></thead>
       <tbody class="group-live">
         <tr><td class="seq-num">01</td><td class="name">AIS เรือผิวน้ำ</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span></td><td class="src">AISStream.io <span class="tag official">WebSocket</span></td><td>ข้อมูลตำแหน่ง เข็มทิศ ความเร็ว และประเภทเรือพาณิชย์/ประมง แบบเวลาจริง</td></tr>
         <tr><td class="seq-num">02</td><td class="name">SeaVision</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span></td><td class="src">US DOT / VOLPE <span class="tag official">ทางการสหรัฐฯ</span></td><td>ระบบติดตามตำแหน่งเรือสำรอง สำหรับตรวจสอบความถูกต้องร่วมกับข้อมูล AIS</td></tr>
@@ -339,7 +352,7 @@
         <tr><td class="seq-num">10</td><td class="name">เรดาร์ฝน</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">RainViewer</td><td>ตรวจสอบพื้นที่ปริมาณฝนและประเมินทัศนวิสัยการบินและเดินเรือ</td></tr>
         <tr><td class="seq-num">11</td><td class="name">ดัชนีพายุสุริยะ Kp</td><td class="dom"><span class="dchip d-air">🛰 อากาศ-อวกาศ</span></td><td class="src">NOAA SWPC <span class="tag official">ทางการสหรัฐฯ</span></td><td>การแจ้งเตือนความเสื่อมสภาพของคลื่นวิทยุความถี่สูง (HF) สัญญาณ GPS และ DGPS ซึ่งส่งผลกระทบต่อระบบ C4ISR</td></tr>
         <tr><td class="seq-num">12</td><td class="name">ข่าว / เหตุการณ์ภูมิภาค</td><td class="dom"><span class="dchip d-cyb">📡 ไซเบอร์-สเปกตรัม</span></td><td class="src">GDELT 2.0 (TH/VN/KH/MM/MY)</td><td>การเฝ้าระวังข่าวสารสถานการณ์ที่มีความสำคัญต่อมิติภูมิรัฐศาสตร์ทางทะเลและการทหาร</td></tr>
-        <tr><td class="seq-num">13</td><td class="name">ภัยคุกคามไซเบอร์สด (IOC)</td><td class="dom"><span class="dchip d-cyb">📡 ไซเบอร์-สเปกตรัม</span></td><td class="src">abuse.ch — ThreatFox / Feodo / URLhaus <span class="tag official">ผ่าน Cloudflare Worker · keyless</span></td><td>ตัวบ่งชี้การถูกโจมตีสด (C2 · botnet · URL มัลแวร์) และเหตุการณ์ Ransomware ในไทยย้อนหลัง 7 วัน เพื่อประเมินความเสี่ยงโครงสร้างพื้นฐานสำคัญ (CII) รอบ UDC</td></tr>
+        <tr><td class="seq-num">13</td><td class="name">ภัยคุกคามไซเบอร์สด (IOC)</td><td class="dom"><span class="dchip d-cyb">📡 ไซเบอร์-สเปกตรัม</span></td><td class="src">abuse.ch — ThreatFox / Feodo / URLhaus <span class="tag official">ผ่าน Worker · keyless</span></td><td>ตัวบ่งชี้การถูกโจมตีสด (C2 · botnet · URL มัลแวร์) และเหตุการณ์ Ransomware ในไทยย้อนหลัง 7 วัน เพื่อประเมินความเสี่ยงโครงสร้างพื้นฐานสำคัญ (CII) รอบ UDC</td></tr>
         <tr><td class="seq-num">14</td><td class="name">ช่องโหว่ที่ถูกใช้โจมตีจริง (KEV)</td><td class="dom"><span class="dchip d-cyb">📡 ไซเบอร์-สเปกตรัม</span></td><td class="src">CISA Known Exploited Vulnerabilities <span class="tag official">ทางการสหรัฐฯ · keyless</span></td><td>บัญชีช่องโหว่ที่มีหลักฐานว่าถูกใช้โจมตีจริง ใช้จัดลำดับความเร่งด่วนของการปิดช่องโหว่ (ไม่มีหมุดบนแผนที่ — เป็นข้อมูลประกอบการตัดสินใจ)</td></tr>
         <tr><td class="seq-num">15</td><td class="name">ช่องโหว่ระบบควบคุมอุตสาหกรรม (CVE)</td><td class="dom"><span class="dchip d-cyb">📡 ไซเบอร์-สเปกตรัม</span></td><td class="src">NVD / NIST REST API v2 <span class="tag official">ทางการสหรัฐฯ</span></td><td>ช่องโหว่ระดับ HIGH/CRITICAL ของระบบ ICS/SCADA ในรอบ 30 วัน สำหรับประเมินความเสี่ยงระบบควบคุมของท่าเรือและอู่</td></tr>
         <tr><td class="seq-num">16</td><td class="name">การรบกวนสัญญาณ GNSS</td><td class="dom"><span class="dchip d-cyb">📡 ไซเบอร์-สเปกตรัม</span></td><td class="src">gpsjam.org (ADS-B NIC aggregate)</td><td>ประเมินวงรัศมีรบกวนสัญญาณ GNSS/GPS (Denial Bubble) และระดับ Jitter รอบ UDC — ข้อมูลเป็นภาพรวมของวันก่อนหน้า</td></tr>
@@ -360,7 +373,7 @@
       <span class="note">— ข้อมูลเชิงสถิตและข้อมูลอ้างอิงจากหน่วยงานราชการที่บันทึกไว้ในระบบ (ปรับปรุงตามรอบข้อมูล)</span>
     </div>
     <table>
-      <thead><tr><th style="width:5%;text-align:center">ลำดับ</th><th style="width:17%">เซ็นเซอร์ / ชั้นข้อมูล</th><th style="width:13%">โดเมนที่ใช้ Monitor</th><th style="width:28%">แหล่งข้อมูล (Resource)</th><th>ประโยชน์ต่อการ Monitor</th></tr></thead>
+      <thead><tr><th style="width:4%;text-align:center">ลำดับ</th><th style="width:15%">เซ็นเซอร์ / ชั้นข้อมูล</th><th style="width:15%">โดเมนที่ใช้ Monitor</th><th style="width:23%">แหล่งข้อมูล (Resource)</th><th>ประโยชน์ต่อการ Monitor</th></tr></thead>
       <tbody class="group-baked">
         <tr><td class="seq-num">01</td><td class="name">4D Ocean <span class="star">★</span></td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span></td><td class="src"><b>HYCOM 1/12°</b> — NRL / FNMOC <span class="tag official">ทางการสหรัฐฯ</span><br><small>ชุดข้อมูล ESPC-D-V02 (uv3z + ts3z) ที่สกัดและฝังไว้ในไฟล์ล่วงหน้า — ไม่มีการเรียกแม่ข่าย HYCOM ขณะทำงาน</small></td><td>แบบจำลองโครงสร้างมวลน้ำ 4 มิติ (กระแสน้ำและโปรไฟล์ความเร็วเสียง) เพื่อคำนวณระยะการตรวจจับของโซนาร์ตามสภาพสิ่งแวดล้อมที่แท้จริง</td></tr>
         <tr><td class="seq-num">02</td><td class="name">ตะกอนพื้นทะเล</td><td class="dom"><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td class="src">กรมทรัพยากรธรณี (DMR) <span class="tag official">ทางการไทย</span></td><td>การวิเคราะห์ระดับการดูดซับเสียงของดินตะกอนก้นทะเล (Bottom-loss / Reverberation) เพื่อนำเข้าสมการคำนวณระยะตรวจจับ</td></tr>
@@ -385,7 +398,7 @@
 
     <div class="sub-label">3ก. แบบจำลองเชิงวิทยาศาสตร์ยุทธวิธีและวิศวกรรม (Engineering & Physics-based Simulation Model)</div>
     <table>
-      <thead><tr><th style="width:5%;text-align:center">ลำดับ</th><th style="width:22%">ระบบ</th><th style="width:13%">โดเมนที่ใช้ Monitor</th><th style="width:28%">ขับเคลื่อนด้วย</th><th>ประโยชน์</th></tr></thead>
+      <thead><tr><th style="width:4%;text-align:center">ลำดับ</th><th style="width:18%">ระบบ</th><th style="width:15%">โดเมนที่ใช้ Monitor</th><th style="width:22%">ขับเคลื่อนด้วย</th><th>ประโยชน์</th></tr></thead>
       <tbody class="group-sim">
         <tr><td class="seq-num">01</td><td class="name">สมการโซนาร์ + วงระยะตรวจจับ</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span></td><td class="src">SL−TL−NL=DT (Thorp/WOA23 + Wenz sea-state)</td><td>คำนวณขีดความสามารถและระยะการตรวจจับของเป้าหมายใต้น้ำตามสภาพแวดล้อมจริง</td></tr>
         <tr><td class="seq-num">02</td><td class="name">Transmission Loss (TL)</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span></td><td class="src">WOA23 ray-trace + HYCOM SVP</td><td>การสูญเสียพลังงานการแพร่กระจายเสียงในน้ำตามระยะและความลึก</td></tr>
@@ -397,7 +410,7 @@
 
     <div class="sub-label">3ข. การกำหนดพารามิเตอร์และสัญลักษณ์ทางยุทธวิธีจำลอง (สำหรับการจำลองสถานการณ์และการวางแผน)</div>
     <table>
-      <thead><tr><th style="width:5%;text-align:center">ลำดับ</th><th style="width:30%">ระบบ</th><th style="width:18%">โดเมนที่ใช้ Monitor</th><th>ประโยชน์</th></tr></thead>
+      <thead><tr><th style="width:4%;text-align:center">ลำดับ</th><th style="width:26%">ระบบ</th><th style="width:16%">โดเมนที่ใช้ Monitor</th><th>ประโยชน์</th></tr></thead>
       <tbody class="group-sim">
         <tr><td class="seq-num">01</td><td class="name">กำลังฝ่ายเรา (PV / GUUV / ฮ.)</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span><span class="dchip d-air">🛰 อากาศ</span></td><td>ใช้สำหรับวางแผนการวางกำลังปฏิบัติภารกิจและการคุ้มกันการโจมตี</td></tr>
         <tr><td class="seq-num">02</td><td class="name">สนามทุ่นระเบิด / FLS cone / แนวสำรวจ</td><td class="dom"><span class="dchip d-sub">🌊 ใต้ผิวน้ำ</span><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td>จำลองสถานการณ์การรบปราบเรือดำน้ำ (ASW) การต่อต้านทุ่นระเบิด (MCM) และการสำรวจทางอุทกศาสตร์</td></tr>
@@ -409,7 +422,7 @@
 
     <div class="sub-label">3ค. ชุดข้อมูลสำหรับทดสอบระบบกรณีไม่มีการเชื่อมต่อภายนอก (Fallback Test Data)</div>
     <table>
-      <thead><tr><th style="width:5%;text-align:center">ลำดับ</th><th style="width:30%">ระบบ</th><th style="width:18%">โดเมนที่ใช้ Monitor</th><th>หมายเหตุ</th></tr></thead>
+      <thead><tr><th style="width:4%;text-align:center">ลำดับ</th><th style="width:26%">ระบบ</th><th style="width:16%">โดเมนที่ใช้ Monitor</th><th>หมายเหตุ</th></tr></thead>
       <tbody class="group-sim">
         <tr><td class="seq-num">01</td><td class="name">AIS จำลอง / Helicorder demo / GFW mock</td><td class="dom"><span class="dchip d-surf">🚢 ผิวน้ำ</span><span class="dchip d-bed">⚓ พื้นท้องทะเล</span></td><td>ระบบสามารถทำงานได้ในสภาวะออฟไลน์โดยแสดงสถานะข้อมูลจำลองไว้อย่างชัดเจน</td></tr>
       </tbody>
@@ -447,9 +460,9 @@
     </div>
 
     <table>
-      <thead><tr><th style="width:5%;text-align:center">ลำดับ</th>
-        <th style="width:24%">โมเดล</th>
-        <th style="width:17%">ผู้ให้บริการ</th>
+      <thead><tr><th style="width:4%;text-align:center">ลำดับ</th>
+        <th style="width:19%">โมเดล</th>
+        <th style="width:15%">ผู้ให้บริการ</th>
         <th style="width:30%">จุดเด่น / บทบาท</th>
         <th>สถานะ &amp; โควตา (ใช้จริง)</th>
       </tr></thead>
