@@ -155,7 +155,9 @@
   .legend{display:flex;gap:14px;flex-wrap:wrap;padding:16px 40px;
     background:rgba(2,12,24,.45);border-bottom:1px solid var(--line-soft)}
   .lg{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600;color:var(--text-main)}
-  .dot{width:13px;height:13px;border-radius:3px;flex:0 0 auto;box-shadow:0 0 8px currentColor}
+  .dot{position:relative;width:11px;height:11px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 6px currentColor}
+  .dot::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:1.5px solid currentColor;opacity:0.8;animation:pulseAura 2s cubic-bezier(0.65,0,0.35,1) infinite}
+  @keyframes pulseAura{0%{transform:scale(0.8);opacity:0.9}50%{transform:scale(1.5);opacity:0.2}100%{transform:scale(2);opacity:0}}
   .dot.live{background:var(--live);color:var(--live)}
   .dot.baked{background:var(--baked);color:var(--baked)}
   .dot.sim{background:var(--sim);color:var(--sim)}
@@ -183,7 +185,7 @@
   td.name{font-weight:700;color:#fff;white-space:nowrap}
   td.src{color:var(--text-muted)}
   td.src b{color:var(--text-main)} td.src small{color:var(--text-dim)}
-  .tag{display:inline-block;font-family:var(--f-mono);font-size:10.5px;font-weight:400;
+  .tag{display:inline-block;font-family:var(--f-mono);font-size:12px;font-weight:400;
     padding:2px 8px;border-radius:5px;margin-left:6px;letter-spacing:.3px}
   .tag.official{background:rgba(0,212,255,.12);color:var(--cyan);border:1px solid var(--line)}
   /* ---- Domain chips — colours locked to UDC_Simulator_17 domain accents ---- */
@@ -199,7 +201,7 @@
   .d-lit {color:#4ade80;background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.45)}   /* LITTORAL     #22c55e */
   .d-all {color:#aab6c8;background:rgba(148,163,184,.12);border-color:rgba(148,163,184,.4)} /* cross-domain #94a3b8 */
   .sub-label{font-family:var(--f-body);font-size:14.5px;font-weight:800;color:var(--orange);
-    margin:18px 0 7px;padding-left:10px;border-left:4px solid var(--simBd)}
+    margin:18px 0 7px;padding-left:10px;}
   .group-live{background:var(--liveBg)} .group-baked{background:var(--bakedBg)}
   .group-sim{background:var(--simBg)} .group-ai{background:var(--aiBg)}
 
@@ -209,26 +211,27 @@
   .ai-intro code{font-family:var(--f-mono);font-size:12px;color:var(--teal);
     background:rgba(100,255,218,.08);padding:1px 5px;border-radius:4px}
   .ai-arch{display:flex;flex-wrap:wrap;gap:12px;margin:4px 0 18px}
-  .ai-card{flex:1 1 280px;background:rgba(8,21,37,.5);border:1px solid var(--aiBd);
-    border-left:4px solid var(--ai);border-radius:10px;padding:14px 16px}
-  .ai-card h4{color:var(--purple);font-size:15px;font-weight:800;margin-bottom:6px}
+  .ai-card{flex:1 1 280px;background:rgba(8,21,37,.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--aiBd);
+    border-radius:10px;padding:16px 18px;box-shadow:0 4px 12px rgba(0,0,0,0.45);transition:transform 0.28s cubic-bezier(0.16,1,0.3,1),border-color 0.28s cubic-bezier(0.16,1,0.3,1)}
+  .ai-card:hover{transform:translateY(-3px);border-color:var(--cyan)}
+  .ai-card h3{color:var(--purple);font-size:15px;font-weight:800;margin-bottom:6px}
   .ai-card p{font-size:13.5px;color:var(--text-muted);line-height:1.65}
   .ai-card code{font-family:var(--f-mono);font-size:12px;color:var(--teal);
     background:rgba(100,255,218,.08);padding:1px 5px;border-radius:4px}
-  .ai-card .lbl{display:inline-block;font-family:var(--f-mono);font-size:11px;font-weight:400;
+  .ai-card .lbl{display:inline-block;font-family:var(--f-mono);font-size:12px;font-weight:400;
     padding:2px 8px;border-radius:5px;margin-bottom:8px;
     background:rgba(189,147,249,.12);color:var(--purple);border:1px solid var(--aiBd)}
-  .prov{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:5px;
+  .prov{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:5px;
     white-space:nowrap;border:1px solid}
   .prov-g{color:#8ab4f8;background:rgba(26,115,232,.16);border-color:rgba(138,180,248,.4)}
   .prov-cf{color:var(--amber);background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.4)}
   .prov-z{color:#c084fc;background:rgba(147,51,234,.16);border-color:rgba(192,132,252,.4)}
-  .badge-def{display:inline-block;font-family:var(--f-mono);font-size:10px;font-weight:400;
+  .badge-def{display:inline-block;font-family:var(--f-mono);font-size:12px;font-weight:400;
     padding:1px 7px;border-radius:4px;background:var(--ai);color:#1a0b2e;margin-left:6px;vertical-align:middle}
 
   /* ---- Caveat box ---- */
   .caveat{margin:6px 40px 30px;background:rgba(245,158,11,.06);
-    border:1px solid rgba(245,158,11,.3);border-left:5px solid var(--amber);
+    border:1px solid rgba(245,158,11,.3);
     border-radius:10px;padding:18px 22px}
   .caveat h3{color:var(--yellow);font-size:17px;margin-bottom:10px;font-weight:800}
   .caveat ol{padding-left:22px}
@@ -249,12 +252,12 @@
     body::before,#topnav{display:none !important}
     .page{box-shadow:none;border:none;border-radius:0;margin:0;max-width:100%;background:#fff}
     header{background:#0a1f3c;border:none}
-    header h1{color:#fff;text-shadow:none} header .sub{color:#cbd5e1} .eyebrow{color:#e8c45a}
+    header h1{color:#ffffff} header .sub{color:#e2e8f0} .eyebrow{color:#f59e0b}
     .sec-head h2{color:#0a1f3c} .sec-head .note{color:#475569}
     thead th{color:#0a1f3c;background:#e6f6ff;border-bottom:1px solid #93c5fd}
     td.name{color:#0a1f3c} tbody td{color:#1e293b} td.src{color:#334155}
     .legend{background:#fff} .lg{color:#1e293b} .legend-title{color:#475569}
-    .ai-card{background:#faf5ff} .ai-card p{color:#4c1d95}
+    .ai-card{background:#faf5ff} .ai-card p{color:#1e1b4b} .ai-card h3{color:#312e81}
     .caveat li{color:#78350f} .caveat h3{color:#92400e}
     footer{color:#475569} footer .mono{color:#64748b}
     section{padding:4px 22px 14px} header{padding:22px 28px}
@@ -429,12 +432,12 @@
     <div class="ai-arch">
       <div class="ai-card">
         <span class="lbl">รูปแบบที่ 1 · ระบบการวิเคราะห์ด้วยกฎเกณฑ์</span>
-        <h4>Rule-based Classifier (R1–R10)</h4>
+        <h3>Rule-based Classifier (R1–R10)</h3>
         <p>ประมวลผลในเครื่อง · ออฟไลน์ได้ · ให้ผลคงที่ ตรวจสอบย้อนกลับได้ — ประเมินระดับความเสี่ยงทางยุทธวิธีจากการพรางสัญญาณเรือ (AIS Spoofing), การลอยลำผิดปกติ, การละเมิดเขตเศรษฐกิจจำเพาะ (EEZ) และความผิดปกติข้ามโดเมน</p>
       </div>
       <div class="ai-card">
         <span class="lbl">รูปแบบที่ 2 · ระบบวิเคราะห์สังเคราะห์ด้วยปัญญาประดิษฐ์ (LLM)</span>
-        <h4>Multi-provider LLM (ผ่าน Cloudflare Worker)</h4>
+        <h3>Multi-provider LLM (ผ่าน Cloudflare Worker)</h3>
         <p>รับผลจากชั้นกฎ + บริบททุกโดเมน → เรียบเรียงเป็นบทประเมินภาษาไทย บทสรุปสำหรับผู้บังคับบัญชา และข้อเสนอการวางกำลัง · Worker เลือกผู้ให้บริการตามชื่อโมเดล (<code>@cf/</code>→Workers AI, <code>gemini-</code>→Gemini)</p>
       </div>
     </div>

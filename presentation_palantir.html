@@ -11,14 +11,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Share+Tech+Mono&family=Saira:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   PALANTIR GOTHAM DEFENSE SYSTEM (HALLMARK HIGH-READABILITY TYPOGRAPHY)
+   PALANTIR GOTHAM DEFENSE SYSTEM — AWARD WINNING C4ISR DESIGN SYSTEM
    ============================================================ */
 :root {
   --gotham-bg: #06090e;
   --gotham-panel: #0d1117;
   --gotham-panel-hover: #161b22;
-  --gotham-border: rgba(0, 229, 255, 0.24);
-  --gotham-border-bright: rgba(0, 229, 255, 0.55);
+  --gotham-border: rgba(0, 229, 255, 0.28);
+  --gotham-border-bright: rgba(0, 229, 255, 0.65);
   --gotham-border-subtle: rgba(139, 148, 158, 0.2);
   --gotham-cyan: #00e5ff;
   --gotham-amber: #ff9e3b;
@@ -28,6 +28,10 @@
   --gotham-text: #e6edf3;
   --gotham-muted: #8b949e;
   --gotham-dim: #484f58;
+
+  /* Hallmark Motion Tokens */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -39,18 +43,76 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
+
+50% {
+    transform: translateY(-40px) skewY(3deg) scaleY(1.08);
+    background-position: 150px 80px;
+  }
+  100% {
+    transform: translateY(30px) skewY(-2deg) scaleY(0.96);
+    background-position: -120px -60px;
+  }
+}
+
+/* DYNAMIC HIGH-VISIBILITY 60FPS GPU AMBIENT LIGHT SWEEP SYSTEM */
+body::after {
+  content: ""; position: fixed; top: -16%; left: -10%;
+  width: 90vw; height: 560px; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse at top, rgba(0, 229, 255, 0.22) 0%, rgba(255, 158, 59, 0.08) 45%, transparent 70%);
+  will-change: transform, opacity;
+  animation: gothamSpotlightSweep 7s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+}
+
+.gotham-ambient-beam {
+  position: fixed; bottom: -16%; right: -10%;
+  width: 85vw; height: 500px; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse at bottom, rgba(0, 229, 255, 0.18) 0%, rgba(16, 185, 129, 0.06) 50%, transparent 68%);
+  will-change: transform, opacity;
+  animation: gothamBeamSweep 9s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+}
+
+@keyframes gothamSpotlightSweep {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate3d(35vw, 40px, 0) scale(1.25);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(-10vw, 20px, 0) scale(0.9);
+    opacity: 0.45;
+  }
+}
+
+@keyframes gothamBeamSweep {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translate3d(-35vw, -45px, 0) scale(1.22);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate3d(15vw, -15px, 0) scale(0.92);
+    opacity: 0.4;
+  }
+}
+
 /* Background Tactical Grid & Ambient Lighting */
 body::before {
   content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
   background-image: 
-    linear-gradient(rgba(0, 229, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 229, 255, 0.02) 1px, transparent 1px);
+    linear-gradient(rgba(0, 229, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.025) 1px, transparent 1px);
   background-size: 44px 44px;
 }
 body::after {
   content: ""; position: fixed; top: 0; left: 50%; transform: translateX(-50%);
-  width: 92vw; height: 350px; pointer-events: none; z-index: 0;
-  background: radial-gradient(ellipse at top, rgba(0, 229, 255, 0.05) 0%, transparent 70%);
+  width: 96vw; height: 400px; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse at top, rgba(0, 229, 255, 0.07) 0%, transparent 72%);
 }
 
 /* SATTAHIP MAP WATERMARK BACKGROUND LAYER FOR SLIDE 7 */
@@ -68,24 +130,23 @@ body::after {
 /* PERFECTLY PROPORTIONED NON-CROPPING SVG ICON STYLING */
 .ico-svg {
   display: inline-block; vertical-align: middle; flex-shrink: 0;
-  margin-right: 6px; overflow: visible;
-  filter: drop-shadow(0 0 5px rgba(0, 229, 255, 0.45));
+  margin-right: 8px; overflow: visible;
+  filter: drop-shadow(0 0 4px rgba(0, 229, 255, 0.4));
 }
-.card.amber .ico-svg { filter: drop-shadow(0 0 5px rgba(255, 158, 59, 0.45)); }
-.card.red .ico-svg { filter: drop-shadow(0 0 5px rgba(255, 65, 54, 0.45)); }
-.card.green .ico-svg { filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.45)); }
+.card.amber .ico-svg { filter: drop-shadow(0 0 4px rgba(255, 158, 59, 0.4)); }
+.card.red .ico-svg { filter: drop-shadow(0 0 4px rgba(255, 65, 54, 0.4)); }
+.card.green .ico-svg { filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.4)); }
 
 /* STANDARD ELEGANT HIGHLIGHT WITH GROWING ANIMATION */
 .udc-highlight {
   display: inline-block; position: relative;
   color: var(--gotham-cyan); font-weight: 700;
   padding: 2px 10px; margin: 0 4px; vertical-align: baseline;
-  background: linear-gradient(90deg, rgba(0, 229, 255, 0.16) 0%, rgba(0, 229, 255, 0.04) 100%);
+  background: linear-gradient(90deg, rgba(0, 229, 255, 0.18) 0%, rgba(0, 229, 255, 0.05) 100%);
   border-bottom: 2px solid var(--gotham-cyan); border-radius: 4px;
-  text-shadow: 0 0 14px rgba(0, 229, 255, 0.35);
 }
 .slide.active .udc-highlight {
-  animation: growHighlight 1.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: growHighlight 1.45s var(--ease-out) forwards;
 }
 @keyframes growHighlight {
   0% { clip-path: polygon(0 0, 0 0, 0 100%, 0 100%); opacity: 0; }
@@ -111,54 +172,56 @@ body::after {
   100% { -webkit-mask-position: -100%; mask-position: -100%; }
 }
 
-/* BREATHING STATUS PULSE ANIMATION SYSTEM FOR C4ISR READINESS */
+/* AWARD-WINNING MULTI-RING BREATHING STATUS PULSE SYSTEM */
 .status-pulse {
-  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
-  margin-right: 6px; vertical-align: middle; flex-shrink: 0;
+  position: relative; display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+  margin-right: 7px; vertical-align: middle; flex-shrink: 0;
   background-color: var(--gotham-cyan);
-  box-shadow: 0 0 8px var(--gotham-cyan);
-  animation: statusBreathe 1.8s ease-in-out infinite;
+  box-shadow: 0 0 6px var(--gotham-cyan);
 }
-.status-pulse.amber {
-  background-color: var(--gotham-amber);
-  box-shadow: 0 0 8px var(--gotham-amber);
+.status-pulse::after {
+  content: ""; position: absolute; inset: -4px; border-radius: 50%;
+  border: 1.5px solid var(--gotham-cyan); opacity: 0.8;
+  animation: pulseAura 2s var(--ease-in-out) infinite;
 }
-.status-pulse.emerald {
-  background-color: var(--gotham-emerald);
-  box-shadow: 0 0 8px var(--gotham-emerald);
-}
-.status-pulse.red {
-  background-color: var(--gotham-red);
-  box-shadow: 0 0 8px var(--gotham-red);
+.status-pulse.amber { background-color: var(--gotham-amber); box-shadow: 0 0 6px var(--gotham-amber); }
+.status-pulse.amber::after { border-color: var(--gotham-amber); }
+
+.status-pulse.emerald { background-color: var(--gotham-emerald); box-shadow: 0 0 6px var(--gotham-emerald); }
+.status-pulse.emerald::after { border-color: var(--gotham-emerald); }
+
+.status-pulse.red { background-color: var(--gotham-red); box-shadow: 0 0 6px var(--gotham-red); }
+.status-pulse.red::after { border-color: var(--gotham-red); }
+
+@keyframes pulseAura {
+  0% { transform: scale(0.8); opacity: 0.9; }
+  50% { transform: scale(1.6); opacity: 0.2; }
+  100% { transform: scale(2.1); opacity: 0; }
 }
 
-@keyframes statusBreathe {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.35; transform: scale(0.82); }
-}
-
-/* CLEAN STATIC HEADER SECTION (.hud-top) - ENHANCED FONT SIZE */
+/* CLEAN STATIC HEADER SECTION (.hud-top) */
 .hud-top {
   position: fixed; top: 0; left: 0; right: 0; height: 40px; display: flex; align-items: center;
   justify-content: space-between; padding: 0 22px;
   font-family: 'Chakra Petch', 'Share Tech Mono', monospace; font-size: 12.5px; color: var(--gotham-muted);
   border-bottom: 1px solid rgba(0, 229, 255, 0.18); background: rgba(6, 9, 14, 0.94);
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  z-index: 1000; letter-spacing: .08em;
+  z-index: 1000; letter-spacing: .04em;
 }
 .hud-brand { display: flex; align-items: center; gap: 10px; }
-.hud-brand img { height: 21px; filter: drop-shadow(0 0 5px rgba(255, 158, 59, 0.6)); }
-.hud-top .hud-title-text { color: var(--gotham-amber); font-weight: 500; font-family: 'Chakra Petch', 'Share Tech Mono', monospace; font-size: 12.5px; }
+.hud-brand img { height: 21px; filter: drop-shadow(0 0 4px rgba(255, 158, 59, 0.5)); }
+.hud-top .hud-title-text { color: var(--gotham-amber); font-weight: 500; font-family: 'Chakra Petch', 'Share Tech Mono', monospace; font-size: 12.5px; letter-spacing: 0.04em; }
 .hud-top .sec { color: var(--gotham-amber); font-weight: 600; font-family: 'Prompt', 'Chakra Petch', sans-serif; font-size: 13px; }
 
 .c4isr-badge {
   display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 4px;
-  background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.3);
-  color: var(--gotham-cyan); font-weight: 600; letter-spacing: 0.08em;
-  font-family: 'Share Tech Mono', 'Chakra Petch', monospace; font-size: 12px;
+  background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.35);
+  color: var(--gotham-cyan); font-weight: 600; letter-spacing: 0.04em;
+  font-family: 'Share Tech Mono', 'Chakra Petch', monospace; font-size: 12.5px;
 }
 .c4isr-badge.amber { background: rgba(255, 158, 59, 0.1); border-color: rgba(255, 158, 59, 0.4); color: var(--gotham-amber); }
 .c4isr-badge.emerald { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.4); color: var(--gotham-emerald); }
+.c4isr-badge.red { background: rgba(255, 65, 54, 0.1); border-color: rgba(255, 65, 54, 0.4); color: var(--gotham-red); }
 
 /* Slide Viewport & Entrance Animations */
 .deck { width: 100vw; height: 100vh; position: relative; z-index: 1; }
@@ -169,7 +232,7 @@ body::after {
 }
 .slide.active {
   display: flex; opacity: 1;
-  animation: gothamSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: gothamSlideIn 0.6s var(--ease-out) forwards;
 }
 @keyframes gothamSlideIn {
   from { opacity: 0; transform: translateY(14px) scale(0.99); }
@@ -177,53 +240,23 @@ body::after {
 }
 
 /* DIRECTIONAL ENTRANCE ANIMATIONS FOR SLIDE CARDS & NODES */
-.slide.active .card-anim-left {
-  animation: cardSlideLeft 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
-  opacity: 0;
-}
-.slide.active .card-anim-top {
-  animation: cardSlideTop 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.22s forwards;
-  opacity: 0;
-}
-.slide.active .card-anim-right {
-  animation: cardSlideRight 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.34s forwards;
-  opacity: 0;
-}
-.slide.active .card-anim-bottom {
-  animation: cardSlideBottom 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.46s forwards;
-  opacity: 0;
-}
+.slide.active .card-anim-left { animation: cardSlideLeft 0.85s var(--ease-out) 0.1s forwards; opacity: 0; }
+.slide.active .card-anim-top { animation: cardSlideTop 0.85s var(--ease-out) 0.22s forwards; opacity: 0; }
+.slide.active .card-anim-right { animation: cardSlideRight 0.85s var(--ease-out) 0.34s forwards; opacity: 0; }
+.slide.active .card-anim-bottom { animation: cardSlideBottom 0.85s var(--ease-out) 0.46s forwards; opacity: 0; }
 
 /* SEQUENTIAL STEP-BY-STEP STAGGERED ANIMATIONS FOR SLIDE 5 */
-.slide.active .card-seq-1 {
-  animation: cardSlideLeft 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
-  opacity: 0;
-}
-.slide.active .card-seq-2 {
-  animation: cardSlideLeft 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.35s forwards;
-  opacity: 0;
-}
-.slide.active .card-seq-3 {
-  animation: cardSlideLeft 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
-  opacity: 0;
-}
-.slide.active .card-seq-4 {
-  animation: cardSlideLeft 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.85s forwards;
-  opacity: 0;
-}
-.slide.active .card-seq-5 {
-  animation: cardSlideRight 0.85s cubic-bezier(0.16, 1, 0.3, 1) 1.1s forwards;
-  opacity: 0;
-}
+.slide.active .card-seq-1 { animation: cardSlideLeft 0.75s var(--ease-out) 0.1s forwards; opacity: 0; }
+.slide.active .card-seq-2 { animation: cardSlideLeft 0.75s var(--ease-out) 0.35s forwards; opacity: 0; }
+.slide.active .card-seq-3 { animation: cardSlideLeft 0.75s var(--ease-out) 0.6s forwards; opacity: 0; }
+.slide.active .card-seq-4 { animation: cardSlideLeft 0.75s var(--ease-out) 0.85s forwards; opacity: 0; }
+.slide.active .card-seq-5 { animation: cardSlideRight 0.85s var(--ease-out) 1.1s forwards; opacity: 0; }
 
 /* WIRING CONNECTOR ANIMATION */
-.slide.active .wiring-anim {
-  animation: wiringFadeIn 0.75s cubic-bezier(0.16, 1, 0.3, 1) 1.35s forwards;
-  opacity: 0;
-}
+.slide.active .wiring-anim { animation: wiringFadeIn 0.75s var(--ease-out) 1.35s forwards; opacity: 0; }
 
 /* EXCLUDE SHINY PILL & BREATHING STATUS PULSE ANIMATION FROM STATIC SLIDE 14 OVERRIDE */
-#deck .slide:nth-child(14) *:not(.shiny-pill):not(.shiny-pill *):not(.status-pulse) {
+#deck .slide:nth-child(14) *:not(.shiny-pill):not(.shiny-pill *):not(.status-pulse):not(.status-pulse *) {
   animation: none !important;
   transition: none !important;
   opacity: 1 !important;
@@ -237,29 +270,29 @@ body::after {
 }
 
 @keyframes cardSlideLeft {
-  from { opacity: 0; transform: translateX(-60px); }
+  from { opacity: 0; transform: translateX(-50px); }
   to { opacity: 1; transform: translateX(0); }
 }
 @keyframes cardSlideTop {
-  from { opacity: 0; transform: translateY(-50px); }
+  from { opacity: 0; transform: translateY(-40px); }
   to { opacity: 1; transform: translateY(0); }
 }
 @keyframes cardSlideRight {
-  from { opacity: 0; transform: translateX(60px); }
+  from { opacity: 0; transform: translateX(50px); }
   to { opacity: 1; transform: translateX(0); }
 }
 @keyframes cardSlideBottom {
-  from { opacity: 0; transform: translateY(50px); }
+  from { opacity: 0; transform: translateY(40px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Typography & Badges - HALLMARK HIGH READABILITY ENHANCEMENTS */
+/* Typography & Badges — PROPER HEADING HIERARCHY (H1 -> H2) */
 .badge {
   display: inline-flex; align-items: center; gap: 6px;
   font-family: 'Chakra Petch', 'Share Tech Mono', monospace;
-  font-size: 13.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  font-size: 13.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
   color: var(--gotham-amber); margin-bottom: 6px;
-  background: rgba(255, 158, 59, 0.08); border: 1px solid rgba(255, 158, 59, 0.3);
+  background: rgba(255, 158, 59, 0.08); border: 1px solid rgba(255, 158, 59, 0.35);
   padding: 4px 14px; border-radius: 4px; width: fit-content;
   position: relative; z-index: 2;
 }
@@ -269,8 +302,8 @@ h1 {
   letter-spacing: 0.01em; margin-bottom: 12px;
   position: relative; z-index: 2;
 }
-h1 .hl { color: var(--gotham-cyan); text-shadow: 0 0 14px rgba(0, 229, 255, 0.35); }
-h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 59, 0.35); }
+h1 .hl { color: var(--gotham-cyan); }
+h1 .hl-amber { color: var(--gotham-amber); }
 
 /* Layout Grid System */
 .body-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; width: 100%; max-width: 1280px; margin: 0 auto; position: relative; z-index: 2; }
@@ -278,35 +311,35 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
 .grid.two { grid-template-columns: 1fr 1fr; }
 .grid.three { grid-template-columns: 1fr 1fr 1fr; }
 .grid.four { grid-template-columns: repeat(4, 1fr); }
-.grid.six { grid-template-columns: repeat(3, 1fr); }
 
-/* Unified Monolithic Gotham Card Styling */
+/* UNIFIED MONOLITHIC GOTHAM CARD STYLING — REFINED ULTRA-CLEAN SHADOW (<12px) */
 .card {
   background: linear-gradient(145deg, rgba(13, 17, 23, 0.94) 0%, rgba(18, 24, 32, 0.88) 100%);
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--gotham-border); border-radius: 6px; padding: 18px 22px;
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--gotham-border); border-radius: 8px; padding: 18px 22px;
   position: relative; overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.08);
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  transition: transform 0.28s var(--ease-out), border-color 0.28s var(--ease-out), box-shadow 0.28s var(--ease-out);
+  will-change: transform, box-shadow;
 }
 .card:hover {
-  transform: translateY(-2px); border-color: var(--gotham-border-bright);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55), 0 0 20px rgba(0, 229, 255, 0.15);
+  transform: translateY(-3px) scale(1.005);
+  border-color: var(--gotham-border-bright);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
 }
-.card::before {
-  content: ""; position: absolute; top: 0; left: 0; width: 3.5px; height: 100%;
-  background: linear-gradient(180deg, var(--gotham-cyan) 0%, rgba(0, 229, 255, 0.2) 100%);
-}
-.card.amber::before { background: linear-gradient(180deg, var(--gotham-amber) 0%, rgba(255, 158, 59, 0.2) 100%); }
-.card.red::before { background: linear-gradient(180deg, var(--gotham-red) 0%, rgba(255, 65, 54, 0.2) 100%); }
-.card.green::before { background: linear-gradient(180deg, var(--gotham-emerald) 0%, rgba(16, 185, 129, 0.2) 100%); }
+.card.amber { border-color: rgba(255, 158, 59, 0.35); }
+.card.amber:hover { border-color: rgba(255, 158, 59, 0.7); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6); }
+.card.red { border-color: rgba(255, 65, 54, 0.35); }
+.card.red:hover { border-color: rgba(255, 65, 54, 0.7); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6); }
+.card.green { border-color: rgba(16, 185, 129, 0.35); }
+.card.green:hover { border-color: rgba(16, 185, 129, 0.7); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6); }
 
 /* ANIMATED AMBER RUNNING GLOW BORDER SYSTEM FOR WHY THIS METHOD? CARD */
 .card.card-amber-running-glow {
   position: relative;
   background: transparent !important;
   border: none !important;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55), 0 0 24px rgba(255, 158, 59, 0.35) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55) !important;
   overflow: hidden;
   z-index: 1;
 }
@@ -329,7 +362,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
   position: absolute;
   inset: 2px;
   background: linear-gradient(145deg, rgba(13, 17, 23, 0.96) 0%, rgba(20, 27, 36, 0.94) 100%);
-  border-radius: 5px;
+  border-radius: 6px;
   z-index: -1;
 }
 
@@ -338,18 +371,14 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
   100% { transform: rotate(360deg); }
 }
 
-.card .kicker {
-  font-family: 'Share Tech Mono', 'Chakra Petch', monospace; font-size: 11.5px;
-  letter-spacing: 0.2em; color: var(--gotham-muted); text-transform: uppercase; margin-bottom: 4px;
-}
-.card h3 {
-  font-family: 'Prompt', 'Chakra Petch', sans-serif; font-size: 20px; font-weight: 700;
+.card h2 {
+  font-family: 'Prompt', 'Chakra Petch', sans-serif; font-size: 20.5px; font-weight: 700;
   color: var(--gotham-cyan); margin-bottom: 8px; letter-spacing: 0.01em;
-  display: flex; align-items: center; gap: 4px;
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
 }
-.card.amber h3 { color: var(--gotham-amber); }
-.card.red h3 { color: var(--gotham-red); }
-.card.green h3 { color: var(--gotham-emerald); }
+.card.amber h2 { color: var(--gotham-amber); }
+.card.red h2 { color: var(--gotham-red); }
+.card.green h2 { color: var(--gotham-emerald); }
 
 .card p, .card li { font-family: 'Sarabun', 'Prompt', sans-serif; font-size: 16px; line-height: 1.55; color: var(--gotham-text); }
 .card ul { list-style: none; }
@@ -367,50 +396,56 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
 /* Flow Node System */
 .flow { display: flex; align-items: center; gap: 12px; width: 100%; }
 .node {
-  flex: 1; background: rgba(13, 17, 23, 0.9); border: 1px solid var(--gotham-border);
-  border-radius: 6px; padding: 16px 20px; text-align: left;
+  flex: 1; background: rgba(13, 17, 23, 0.92); border: 1px solid var(--gotham-border);
+  border-radius: 8px; padding: 16px 20px; text-align: left;
+  transition: transform 0.25s var(--ease-out), border-color 0.25s var(--ease-out);
 }
-.node h4 { font-family: 'Prompt', sans-serif; font-size: 18.5px; font-weight: 700; color: var(--gotham-cyan); margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
+.node:hover { transform: translateY(-2px); border-color: var(--gotham-border-bright); }
+.node h2 { font-family: 'Prompt', sans-serif; font-size: 18.5px; font-weight: 700; color: var(--gotham-cyan); margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
 .node p { font-family: 'Sarabun', sans-serif; font-size: 15.5px; color: var(--gotham-text); line-height: 1.5; }
 .arr { color: var(--gotham-amber); font-size: 18px; font-family: 'Share Tech Mono', monospace; font-weight: 700; }
 
 /* Evolution Line (Slide 6) */
 .evoline { display: flex; align-items: stretch; gap: 12px; width: 100%; margin-bottom: 0px; }
 .stage {
-  flex: 1; background: rgba(13, 17, 23, 0.9); border: 1px solid var(--gotham-border);
-  border-radius: 6px; padding: 16px 20px; position: relative;
+  flex: 1; display: flex; flex-direction: column; justify-content: space-between;
+  background: rgba(13, 17, 23, 0.92); border: 1px solid var(--gotham-border);
+  border-radius: 8px; padding: 16px 20px; position: relative;
+  transition: transform 0.25s var(--ease-out);
 }
-.stage .tag { font-family: 'Share Tech Mono', monospace; font-size: 11.5px; color: var(--gotham-muted); letter-spacing: 0.1em; display: block; margin-bottom: 3px; }
+.stage:hover { transform: translateY(-2px); }
+.stage .tag { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--gotham-muted); letter-spacing: 0.04em; display: block; margin-bottom: 3px; }
 .stage .v { font-family: 'Chakra Petch', sans-serif; font-size: 28px; font-weight: 700; color: var(--gotham-cyan); }
 .stage b { font-family: 'Prompt', sans-serif; font-size: 17.5px; color: var(--gotham-text); display: flex; align-items: center; gap: 4px; margin: 3px 0 5px; }
-.stage small { font-family: 'Sarabun', sans-serif; font-size: 14.5px; color: var(--gotham-muted); line-height: 1.45; display: block; }
+.stage small { font-family: 'Sarabun', sans-serif; font-size: 14.5px; color: var(--gotham-muted); line-height: 1.45; display: block; margin-top: auto; }
 
 /* Hero Image Viewport */
 .hero-frame-wrap {
   position: relative; width: 100%; max-width: 820px; margin: 10px auto 6px;
-  border-radius: 6px; overflow: hidden; border: 1px solid var(--gotham-border-bright);
-  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.65), 0 0 25px rgba(0, 229, 255, 0.18);
+  border-radius: 8px; overflow: hidden; border: 1px solid var(--gotham-border-bright);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.65);
   background: var(--gotham-panel);
 }
 .hero-frame-wrap .hud-label {
   display: flex; justify-content: space-between; padding: 6px 16px;
-  background: rgba(0, 229, 255, 0.12); border-bottom: 1px solid var(--gotham-border);
-  font-family: 'Share Tech Mono', monospace; font-size: 11.5px; color: var(--gotham-cyan); letter-spacing: 0.15em;
+  background: rgba(0, 229, 255, 0.14); border-bottom: 1px solid var(--gotham-border);
+  font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--gotham-cyan); letter-spacing: 0.04em;
 }
 .hero-frame-img {
   width: 100%; height: 265px; object-fit: cover; object-position: center 72%; display: block;
-  transition: transform 0.5s ease;
+  transition: transform 0.5s var(--ease-out);
 }
 .hero-frame-wrap:hover .hero-frame-img { transform: scale(1.02); }
 
 .side-frame-wrap {
-  position: relative; width: 100%; border-radius: 6px; overflow: hidden;
+  position: relative; width: 100%; border-radius: 8px; overflow: hidden;
   border: 1px solid var(--gotham-border); background: var(--gotham-panel);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
 }
 .side-frame-wrap .hud-label {
   display: flex; justify-content: space-between; padding: 5px 14px;
-  background: rgba(0, 229, 255, 0.12); border-bottom: 1px solid var(--gotham-border);
-  font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--gotham-cyan);
+  background: rgba(0, 229, 255, 0.14); border-bottom: 1px solid var(--gotham-border);
+  font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--gotham-cyan); letter-spacing: 0.04em;
 }
 .side-frame-img { width: 100%; height: 190px; object-fit: cover; display: block; }
 .side-frame-wrap .caption {
@@ -423,8 +458,9 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
 .note-strip {
   margin-top: 12px; padding: 12px 20px; font-family: 'Sarabun', 'Prompt', sans-serif; font-size: 15.5px; color: var(--gotham-text);
   background: linear-gradient(90deg, rgba(0, 229, 255, 0.08) 0%, rgba(0, 229, 255, 0.02) 100%);
-  border: 1px dashed rgba(0, 229, 255, 0.35); border-radius: 6px; line-height: 1.5;
+  border: 1px dashed rgba(0, 229, 255, 0.4); border-radius: 8px; line-height: 1.5;
   display: flex; align-items: flex-start; gap: 10px; position: relative; z-index: 2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 .note-strip b { color: var(--gotham-amber); font-weight: 600; }
 
@@ -433,13 +469,13 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
   display: grid; grid-template-columns: 240px 1fr 240px; gap: 14px; width: 100%; height: 395px; margin-top: 4px;
 }
 .console-panel {
-  background: rgba(13, 17, 23, 0.92); border: 1px solid var(--gotham-border);
-  border-radius: 6px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  background: rgba(13, 17, 23, 0.94); border: 1px solid var(--gotham-border);
+  border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 .console-panel .p-head {
-  font-family: 'Share Tech Mono', monospace; font-size: 11.5px; color: var(--gotham-cyan);
-  letter-spacing: 0.15em; text-transform: uppercase; padding-bottom: 6px; border-bottom: 1px solid var(--gotham-border);
+  font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--gotham-cyan);
+  letter-spacing: 0.04em; text-transform: uppercase; padding-bottom: 6px; border-bottom: 1px solid var(--gotham-border);
   margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;
 }
 .telemetry-row {
@@ -453,8 +489,8 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
 
 .zonemap-container {
   position: relative; width: 100%; height: 100%;
-  border-radius: 6px; overflow: hidden; border: 1.5px solid var(--gotham-border-bright);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+  border-radius: 8px; overflow: hidden; border: 1.5px solid var(--gotham-border-bright);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6); padding: 12px;
 }
 .zonemap-container svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
 
@@ -469,32 +505,32 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
 }
 .c4isr-nav-btns { display: flex; gap: 6px; }
 .c4isr-btn {
-  background: rgba(22, 27, 34, 0.8); border: 1px solid var(--gotham-border);
+  background: rgba(22, 27, 34, 0.85); border: 1px solid var(--gotham-border);
   color: var(--gotham-text); padding: 5px 16px; border-radius: 4px; cursor: pointer;
-  font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 12.5px; letter-spacing: 0.08em;
-  transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 4px;
+  font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 12.5px; letter-spacing: 0.04em;
+  transition: all 0.22s var(--ease-out); display: inline-flex; align-items: center; gap: 4px;
 }
 .c4isr-btn:hover {
-  background: rgba(0, 229, 255, 0.15); border-color: var(--gotham-cyan); color: #fff;
-  box-shadow: 0 0 12px rgba(0, 229, 255, 0.3); transform: translateY(-1.5px);
+  background: rgba(0, 229, 255, 0.18); border-color: var(--gotham-cyan); color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 229, 255, 0.3); transform: translateY(-1.5px);
 }
 .c4isr-btn:active { transform: translateY(1px); }
 .c4isr-slide-matrix { display: flex; gap: 4px; }
 .matrix-pill {
   width: 28px; height: 20px; display: flex; align-items: center; justify-content: center;
   border-radius: 3px; background: rgba(22, 27, 34, 0.6); border: 1px solid rgba(139, 148, 158, 0.2);
-  color: var(--gotham-muted); font-size: 11px; cursor: pointer; transition: all 0.2s;
+  color: var(--gotham-muted); font-size: 11px; cursor: pointer; transition: all 0.2s var(--ease-out);
 }
 .matrix-pill:hover { border-color: var(--gotham-cyan); color: var(--gotham-cyan); transform: translateY(-1px); }
 .matrix-pill.active {
-  background: rgba(0, 229, 255, 0.2); border-color: var(--gotham-cyan);
+  background: rgba(0, 229, 255, 0.22); border-color: var(--gotham-cyan);
   color: var(--gotham-cyan); font-weight: 700; box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
 }
 
-/* Custom Table for Slide 8 (Command Matrix) & Slide 10 (5W1H) - PERFECTED ALIGNMENT & WRAPPING */
+/* Custom Table for Slide 8 (Command Matrix) & Slide 10 (5W1H) */
 .gotham-table {
   width: 100%; border-collapse: collapse; margin-top: 2px;
-  font-size: 14.5px; background: rgba(13, 17, 23, 0.9); border-radius: 6px; overflow: hidden;
+  font-size: 14.5px; background: rgba(13, 17, 23, 0.92); border-radius: 8px; overflow: hidden;
   border: 1px solid var(--gotham-border);
 }
 .gotham-table th {
@@ -508,11 +544,11 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
   vertical-align: middle;
 }
 .gotham-table tr:last-child td { border-bottom: none; }
-.gotham-table tr:hover td { background: rgba(0, 229, 255, 0.04); }
+.gotham-table tr:hover td { background: rgba(0, 229, 255, 0.05); }
 .gotham-table .lvl-badge {
   display: inline-block; padding: 2px 8px; border-radius: 3px; font-family: 'Share Tech Mono', monospace;
-  font-size: 11px; font-weight: 700; background: rgba(255, 158, 59, 0.15); color: var(--gotham-amber);
-  border: 1px solid rgba(255, 158, 59, 0.3);
+  font-size: 12px; font-weight: 700; background: rgba(255, 158, 59, 0.15); color: var(--gotham-amber);
+  border: 1px solid rgba(255, 158, 59, 0.35);
 }
 .gotham-table .dom {
   font-family: 'Prompt', sans-serif; font-weight: 700; color: var(--gotham-cyan);
@@ -521,6 +557,12 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
 </style>
 </head>
 <body>
+<div class="gotham-ambient-beam"></div>
+
+<div class="gotham-flag-ribbons"></div>
+  <canvas id="flagWaveCanvas" style="position:absolute; inset:0; width:100%; height:100%; opacity:0.75; pointer-events:none;"></canvas>
+</div>
+
 
 <!-- SVG REUSABLE ICONS SYMBOLS LIBRARY WITH EXACT VIEWBOX 0 0 24 24 DEFINITION -->
 <svg style="display:none;">
@@ -632,10 +674,10 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
     </div>
     
     <h1 style="max-width:1250px; font-size:32px; margin-bottom:12px; line-height:1.35;">การศึกษาแนวทางการกำหนดบทบาทและการจัดระเบียบพื้นที่ทางทะเลของกองทัพเรือ<br>
-    ภายใต้กรอบแนวคิด <span class="shiny-pill" style="--text-color: var(--gotham-cyan); --shine-color: #ffffff; --speed: 2.2s; font-weight:700; margin: 0 4px; text-shadow: 0 0 14px rgba(0, 229, 255, 0.4);"><span class="base-text">ศูนย์ข้อมูลใต้น้ำ (UDC)</span><span class="shine-text" aria-hidden="true">ศูนย์ข้อมูลใต้น้ำ (UDC)</span></span><br>
+    ภายใต้กรอบแนวคิด <span class="shiny-pill" style="--text-color: var(--gotham-cyan); --shine-color: #ffffff; --speed: 2.2s; font-weight:700; margin: 0 4px;"><span class="base-text">ศูนย์ข้อมูลใต้น้ำ (UDC)</span><span class="shine-text" aria-hidden="true">ศูนย์ข้อมูลใต้น้ำ (UDC)</span></span><br>
     เพื่อความมั่นคงของโครงสร้างพื้นฐานดิจิทัลภาครัฐตามกลไก ศรชล.</h1>
     
-    <div style="font-family:'Share Tech Mono',monospace; color:var(--gotham-cyan); font-size:15px; letter-spacing:0.12em; margin-bottom:12px;">
+    <div style="font-family:'Share Tech Mono',monospace; color:var(--gotham-cyan); font-size:15px; letter-spacing:0.04em; margin-bottom:12px;">
       <span class="shiny-pill" style="--text-color: var(--gotham-cyan); --shine-color: #ffffff; --speed: 2.8s;"><span class="base-text">UNDERWATER DATA CENTER · MARITIME SPATIAL PLANNING · THAI-MECC</span><span class="shine-text" aria-hidden="true">UNDERWATER DATA CENTER · MARITIME SPATIAL PLANNING · THAI-MECC</span></span>
     </div>
     
@@ -661,8 +703,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
   <div class="body-wrap">
     <div class="grid three">
       <div class="card red card-anim-left">
-        <div class="kicker">THE PROBLEM</div>
-        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-warning"/></svg> ปัญหา</h3>
+        <h2><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-warning"/></svg> ปัญหา <span class="c4isr-badge red" style="margin-left:auto; font-size:11px;">THE PROBLEM</span></h2>
         <ul>
           <li>ข้อมูลภาครัฐพึ่งพา Cloud ต่างชาติ — <b>อธิปไตยทางข้อมูล</b>อยู่ในความเสี่ยง</li>
           <li>Data Center บนบกใช้พลังงานสูง (PUE 1.6–2.0) และขยายตัวไม่ทัน</li>
@@ -670,8 +711,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
         </ul>
       </div>
       <div class="card card-anim-top">
-        <div class="kicker">THE OPPORTUNITY</div>
-        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-radar"/></svg> ความสำคัญ</h3>
+        <h2><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-radar"/></svg> ความสำคัญ <span class="c4isr-badge" style="margin-left:auto; font-size:11px;">THE OPPORTUNITY</span></h2>
         <ul>
           <li>UDC คือคำตอบเชิงเทคโนโลยี (Natick, Highlander 35 ม. ที่ไหหลำ) — PUE &lt; 1.1</li>
           <li>อ่าวไทยตอนบนมีภูมิศาสตร์เหมาะสม แต่<b>ยังไม่มีผู้ศึกษาการ "คุ้มครอง"</b> อย่างเป็นระบบ</li>
@@ -679,8 +719,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
         </ul>
       </div>
       <div class="card green card-anim-right">
-        <div class="kicker">VALUE TO RTN</div>
-        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-shield"/></svg> คุณค่าที่องค์กรจะได้รับ</h3>
+        <h2><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-shield"/></svg> คุณค่าที่ได้รับ <span class="c4isr-badge emerald" style="margin-left:auto; font-size:11px;">VALUE TO RTN</span></h2>
         <ul>
           <li>โมเดลการป้องกัน <b>The Shield 3.0</b> พร้อมตารางความรับผิดชอบ ๖ มิติ</li>
           <li>ข้อเสนอเชิงนโยบาย–กฎหมาย ที่นำไปยกร่างได้ทันที</li>
@@ -703,22 +742,22 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
     <div class="grid three">
       <div class="card card-anim-left">
         <div class="num">๑</div>
-        <h3 style="margin-top:4px"><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-target"/></svg> ศึกษาสภาพปัญหา</h3>
+        <h2 style="margin-top:4px"><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-target"/></svg> ศึกษาสภาพปัญหา</h2>
         <p>วิเคราะห์ปัญหาโครงสร้างพื้นฐานดิจิทัลภาครัฐ ความเหมาะสมทางภูมิศาสตร์ของอ่าวไทย และภัยคุกคามต่อ CUI</p>
       </div>
       <div class="card amber card-anim-top">
         <div class="num" style="color:var(--gotham-amber);">๒</div>
-        <h3 style="margin-top:4px"><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-shield"/></svg> วิเคราะห์รูปแบบการคุ้มครอง</h3>
+        <h2 style="margin-top:4px"><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-shield"/></svg> วิเคราะห์รูปแบบการคุ้มครอง</h2>
         <p>วิเคราะห์รูปแบบการคุ้มครองที่เหมาะสม โดยเน้นการจัดระเบียบพื้นที่ทางทะเล (MSP) และขีดความสามารถใต้น้ำของ ทร.</p>
       </div>
       <div class="card green card-anim-right">
         <div class="num" style="color:var(--gotham-emerald);">๓</div>
-        <h3 style="margin-top:4px"><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-anchor"/></svg> เสนอแนวทางบทบาท ทร.</h3>
+        <h2 style="margin-top:4px"><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-anchor"/></svg> เสนอแนวทางบทบาท ทร.</h2>
         <p>เสนอแนวทางการกำหนดบทบาทกองทัพเรือในการคุ้มครอง UDC ภายใต้กลไก ศรชล.</p>
       </div>
     </div>
     <div class="card amber card-anim-bottom" style="margin-top:14px; padding:16px 22px;">
-      <h3><svg class="ico-svg" viewBox="0 0 24 24" width="24" height="24"><use href="#icon-target"/></svg> คำถามวิจัยหลัก</h3>
+      <h2><svg class="ico-svg" viewBox="0 0 24 24" width="24" height="24"><use href="#icon-target"/></svg> คำถามวิจัยหลัก (Primary Research Question)</h2>
       <p style="font-size:19px; margin:6px 0;">"กองทัพเรือควรกำหนดบทบาทและจัดระเบียบพื้นที่ทางทะเล<b style="color:var(--gotham-cyan);">อย่างไร</b> เพื่อคุ้มครองศูนย์ข้อมูลใต้น้ำในฐานะโครงสร้างพื้นฐานวิกฤตของชาติ ภายใต้กลไก ศรชล. ?"</p>
       <p style="color:var(--gotham-muted); font-size:15px;">งานวิจัยเชิงคุณภาพ — ไม่มีสมมติฐาน ใช้ <b>ข้อเสนอการวิจัย (Research Proposition)</b> เป็นแนวนำทางแทน</p>
     </div>
@@ -733,7 +772,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
     <div class="grid three">
       <div class="card card-anim-left">
         <div class="num">INPUT</div>
-        <h3 style="margin-top:4px"><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-book"/></svg> ตัวแปรต้น / ปัจจัยนำเข้า</h3>
+        <h2 style="margin-top:4px"><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-book"/></svg> ปัจจัยนำเข้า (Input)</h2>
         <ul>
           <li>ภัยคุกคาม CUI · ภูมิศาสตร์อ่าวไทยตอนบน</li>
           <li>กรอบกฎหมาย (UNCLOS, พ.ร.บ.ศรชล., พ.ร.บ.ไซเบอร์)</li>
@@ -742,7 +781,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
       </div>
       <div class="card amber card-anim-top">
         <div class="num" style="color:var(--gotham-amber);">PROCESS</div>
-        <h3 style="margin-top:4px"><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-radar"/></svg> กระบวนการวิเคราะห์</h3>
+        <h2 style="margin-top:4px"><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-radar"/></svg> กระบวนการ (Process)</h2>
         <ul>
           <li>แนวคิด MSP + MDA + Layered Defense</li>
           <li>PMESII · SWOT/TOWS · Gap Analysis</li>
@@ -752,7 +791,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
       </div>
       <div class="card green card-anim-right">
         <div class="num" style="color:var(--gotham-emerald);">OUTPUT</div>
-        <h3 style="margin-top:4px"><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-shield"/></svg> ผลผลิต</h3>
+        <h2 style="margin-top:4px"><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-shield"/></svg> ผลผลิต (Output)</h2>
         <ul>
           <li>โมเดล <b>The Shield 3.0</b></li>
           <li>แนวทางจัดระเบียบพื้นที่ (MEZ / Buffer / TSS)</li>
@@ -764,7 +803,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
 
     <div class="grid two" style="margin-top:14px;">
       <div class="card card-anim-left">
-        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-shield"/></svg> ฐานทฤษฎีหลัก ๓ เสา</h3>
+        <h2><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-shield"/></svg> ฐานทฤษฎีหลัก ๓ เสา</h2>
         <ul>
           <li><b>MSP</b> — การจัดระเบียบพื้นที่ทางทะเล (Maritime Spatial Planning): จัดสรรพื้นที่ทะเลอย่างมีประสิทธิภาพ</li>
           <li><b>MDA</b> — การตระหนักรู้สถานการณ์ทางทะเล (Maritime Domain Awareness): ตระหนักรู้สถานการณ์หลายมิติ</li>
@@ -772,7 +811,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
         </ul>
       </div>
       <div class="card amber card-anim-bottom">
-        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-target"/></svg> ขอบเขตการวิจัย</h3>
+        <h2><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-target"/></svg> ขอบเขตการวิจัย</h2>
         <ul>
           <li><b>พื้นที่ :</b> อ่าวไทยตอนบน (พื้นที่รับผิดชอบของ ทรภ.๑)</li>
           <li><b>เวลา :</b> ปีงบประมาณ ๒๕๖๙ (ต.ค.๖๘ – ก.ย.๖๙)</li>
@@ -794,27 +833,26 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
     <div class="grid two" style="grid-template-columns:1.1fr 1fr">
       <div style="display:flex; flex-direction:column; gap:10px;">
         <div class="card card-seq-1">
-          <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-book"/></svg> ๑ · การวิจัยเอกสาร + เทียบกรณีศึกษาต่างประเทศ</h3>
+          <h2><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-book"/></svg> ๑ · การวิจัยเอกสาร + เทียบกรณีศึกษาต่างประเทศ</h2>
           <p>Natick (สหรัฐฯ) · Highlander/Lin-gang (จีน) · Panthalassa (ลอยน้ำพลังงานคลื่น) · บทเรียน Baltic Sea และสิงคโปร์ → Benchmarking ๖ เกณฑ์</p>
         </div>
         <div class="card amber card-seq-2">
-          <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-radar"/></svg> ๒ · วิเคราะห์ความเหมาะสมพื้นที่ด้วยข้อมูลอุทกศาสตร์</h3>
+          <h2><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-radar"/></svg> ๒ · วิเคราะห์ความเหมาะสมพื้นที่ด้วยข้อมูลอุทกศาสตร์</h2>
           <p>ข้อมูลความลึก สัณฐานพื้นทะเล กระแสน้ำ จาก<b>กรมอุทกศาสตร์</b> — คัดกรองพื้นที่จริง ไม่ใช่สมมติ</p>
         </div>
         <div class="card green card-seq-3">
-          <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-target"/></svg> ๓ · เครื่องมือวิเคราะห์เชิงยุทธศาสตร์</h3>
+          <h2><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-target"/></svg> ๓ · เครื่องมือวิเคราะห์เชิงยุทธศาสตร์</h2>
           <p>PMESII (วิเคราะห์สภาพแวดล้อมยุทธศาสตร์) → SWOT/TOWS → <b>Gap Analysis</b> (As-Is / To-Be) → Model Synthesis</p>
         </div>
         <div class="card card-seq-4">
-          <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-api"/></svg> ๔ · สัมภาษณ์เชิงลึกผู้ทรงคุณวุฒิ ๔ กลุ่ม (Purposive Sampling)</h3>
+          <h2><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-api"/></svg> ๔ · สัมภาษณ์เชิงลึกผู้ทรงคุณวุฒิ ๔ กลุ่ม (Purposive Sampling)</h2>
           <p>ผู้บริหารความมั่นคงทางทะเล · กฎหมายทะเล/พระธรรมนูญ · นโยบายดิจิทัลภาครัฐ · อุทกศาสตร์/สมุทรศาสตร์</p>
         </div>
       </div>
       
       <!-- WHY THIS METHOD CARD WITH ANIMATED AMBER RUNNING GLOW BORDER -->
       <div class="card card-amber-running-glow card-seq-5" style="display:flex; flex-direction:column; justify-content:center;">
-        <div class="kicker" style="color:var(--gotham-amber);">WHY THIS METHOD?</div>
-        <h3 style="font-size:21px; color:var(--gotham-amber);"><svg class="ico-svg" viewBox="0 0 24 24" width="24" height="24"><use href="#icon-shield"/></svg> ทำไมจึงเลือกวิธีนี้</h3>
+        <h2 style="font-size:21px; color:var(--gotham-amber);"><svg class="ico-svg" viewBox="0 0 24 24" width="24" height="24"><use href="#icon-shield"/></svg> ทำไมจึงเลือกวิธีนี้ <span class="c4isr-badge amber" style="margin-left:auto; font-size:11px;"><span class="status-pulse amber"></span>WHY THIS METHOD</span></h2>
         <ul style="margin-top:6px;">
           <li>UDC <b>ยังไม่มีอยู่จริงในไทย</b> — วัดเชิงปริมาณไม่ได้ ต้องสังเคราะห์จากหลักฐานหลายชั้น</li>
           <li>คำถามวิจัยเป็นเรื่อง "แนวทาง–บทบาท–กลไก" → ต้องการ<b>ความลึก</b> ไม่ใช่ความถี่</li>
@@ -833,71 +871,112 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
   <div class="body-wrap">
     <div class="evoline">
       <div class="stage card-anim-left">
-        <span class="tag">บทที่ ๒ · กรอบทฤษฎี</span>
-        <div class="v">1.0</div>
-        <b><svg class="ico-svg" viewBox="0 0 24 24" width="18" height="18"><use href="#icon-book"/></svg> โมเดลตั้งต้น (Theory)</b>
-        <small>สังเคราะห์จากวรรณกรรม MSP + MDA + Layered Defense และกรณีศึกษาต่างประเทศ</small>
+        <div>
+          <span class="tag">บทที่ ๒ · กรอบทฤษฎี</span>
+          <div class="v">1.0</div>
+          <b><svg class="ico-svg" viewBox="0 0 24 24" width="18" height="18"><use href="#icon-book"/></svg> โมเดลตั้งต้น (Theory)</b>
+        </div>
+        <small>สังเคราะห์จากวรรณกรรม MSP + MDA + Layered Defense และกรณีศึกษาต่างประเทศ<br><b style="color:var(--gotham-cyan); display:block; margin-top:4px;">▸ กรอบทฤษฎีตั้งต้นสังเคราะห์ ๖ เกณฑ์</b></small>
       </div>
-      <div class="arr">▶▶</div>
-      <div class="stage card-anim-top" style="border-color:var(--gotham-amber); box-shadow:0 0 20px rgba(255,158,59,0.35);">
-        <span class="tag" style="color:var(--gotham-amber); font-weight:700;">บทที่ ๓ · ทดสอบพื้นที่จริง (เกาะคราม)</span>
-        <div class="v" style="color:var(--gotham-amber);">2.0</div>
-        <b><svg class="ico-svg" viewBox="0 0 24 24" width="18" height="18"><use href="#icon-radar"/></svg> ทดสอบด้วย Simulator (v3)</b>
-        <small>ผูกกับพื้นที่จริงตะวันออกเกาะคราม วิเคราะห์ด้วย PMESII / SWOT / Gap Analysis<br>→ <b style="color:var(--gotham-red); display:block; margin-top:2px;">▼ ค้นพบช่องว่างสำคัญ ๓ ประการ (ในบทที่ ๓)</b></small>
+      <div class="arr" style="align-self:center;">▶▶</div>
+      <div class="stage card-anim-top" style="border-color:var(--gotham-amber);">
+        <div>
+          <span class="tag" style="color:var(--gotham-amber); font-weight:700;">บทที่ ๓ · ทดสอบพื้นที่จริง (เกาะคราม)</span>
+          <div class="v" style="color:var(--gotham-amber);">2.0</div>
+          <b><svg class="ico-svg" viewBox="0 0 24 24" width="18" height="18"><use href="#icon-radar"/></svg> ทดสอบด้วย Simulator (v3)</b>
+        </div>
+        <small>ผูกกับพื้นที่จริงตะวันออกเกาะคราม วิเคราะห์ด้วย PMESII / SWOT / Gap Analysis<br><b style="color:var(--gotham-red); display:block; margin-top:4px;">▼ ค้นพบช่องว่างสำคัญ ๓ ประการ (ในบทที่ ๓)</b></small>
       </div>
-      <div class="arr">▶▶</div>
+      <div class="arr" style="align-self:center;">▶▶</div>
       <div class="stage card-anim-right" style="border-color:var(--gotham-emerald);">
-        <span class="tag" style="color:var(--gotham-emerald); font-weight:700;">บทที่ ๔ · สังเคราะห์โมเดลสมบูรณ์</span>
-        <div class="v" style="color:var(--gotham-emerald);">3.0</div>
-        <b><svg class="ico-svg" viewBox="0 0 24 24" width="18" height="18"><use href="#icon-shield"/></svg> โมเดลสมบูรณ์ (Shield 3.0)</b>
-        <small>ปิดช่องว่างด้วยข้อค้นพบจากผู้ทรงคุณวุฒิ ๔ กลุ่ม → ตารางรับผิดชอบ ๖ มิติ + ห่วงโซ่ตกลงใจ DCDR</small>
+        <div>
+          <span class="tag" style="color:var(--gotham-emerald); font-weight:700;">บทที่ ๔ · สังเคราะห์โมเดลสมบูรณ์</span>
+          <div class="v" style="color:var(--gotham-emerald);">3.0</div>
+          <b><svg class="ico-svg" viewBox="0 0 24 24" width="18" height="18"><use href="#icon-shield"/></svg> โมเดลสมบูรณ์ (Shield 3.0)</b>
+        </div>
+        <small>ปิดช่องว่างด้วยข้อค้นพบจากผู้ทรงคุณวุฒิ ๔ กลุ่ม<br><b style="color:var(--gotham-emerald); display:block; margin-top:4px;">▸ ตารางรับผิดชอบ ๖ มิติ + ห่วงโซ่ตกลงใจ DCDR</b></small>
       </div>
     </div>
 
-    <!-- PURE HTML/CSS FAIL-SAFE WIRING CONNECTOR -->
-    <div class="wiring-container wiring-anim" style="position:relative; width:100%; height:52px; margin:10px 0 8px; pointer-events:none; z-index:100;">
-      <div style="position:absolute; top:0; left:50%; width:4px; height:26px; background:#ff2233; transform:translateX(-50%); box-shadow:0 0 14px #ff2233; z-index:10;"></div>
-      <div style="position:absolute; top:21px; left:50%; width:12px; height:12px; background:#ff2233; border:2px solid #ffffff; border-radius:50%; transform:translateX(-50%); box-shadow:0 0 16px #ff2233; z-index:20;"></div>
-      <div style="position:absolute; top:25px; left:16.66%; right:16.66%; height:3.5px; background:repeating-linear-gradient(90deg, #ff2233 0, #ff2233 10px, transparent 10px, transparent 16px); box-shadow:0 0 12px #ff2233; z-index:10;"></div>
-      <div style="position:absolute; top:22px; left:16.66%; width:10px; height:10px; background:#ff2233; border:2px solid #ffffff; border-radius:50%; transform:translateX(-50%); box-shadow:0 0 12px #ff2233; z-index:20;"></div>
-      <div style="position:absolute; top:22px; left:83.33%; width:10px; height:10px; background:#ff2233; border:2px solid #ffffff; border-radius:50%; transform:translateX(-50%); box-shadow:0 0 12px #ff2233; z-index:20;"></div>
+    <!-- PURE HTML/CSS FAIL-SAFE SYMMETRICAL WIRING CONNECTOR HARNESS -->
+    <div class="wiring-container wiring-anim" style="position:relative; width:100%; height:48px; margin:8px 0 6px; pointer-events:none; z-index:100;">
+      <!-- TOP CONNECTING STEMS FROM 3 STAGES -->
+      <div style="position:absolute; top:0; left:16.66%; width:3.5px; height:24px; background:#ff2233; transform:translateX(-50%); z-index:10;"></div>
+      <div style="position:absolute; top:0; left:50%; width:3.5px; height:24px; background:#ff2233; transform:translateX(-50%); z-index:10;"></div>
+      <div style="position:absolute; top:0; left:83.33%; width:3.5px; height:24px; background:#ff2233; transform:translateX(-50%); z-index:10;"></div>
 
-      <div style="position:absolute; top:26px; left:16.66%; width:3.5px; height:22px; background:#ff2233; transform:translateX(-50%); box-shadow:0 0 12px #ff2233; z-index:10;">
-        <div style="position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:9px solid #ff2233; filter:drop-shadow(0 0 6px #ff2233);"></div>
+      <!-- HORIZONTAL DASHED CIRCUIT BUS LINE -->
+      <div style="position:absolute; top:23px; left:16.66%; right:16.66%; height:3.5px; background:repeating-linear-gradient(90deg, #ff2233 0, #ff2233 10px, transparent 10px, transparent 16px); z-index:10;"></div>
+
+      <!-- 3 JUNCTION NODES -->
+      <div style="position:absolute; top:20px; left:16.66%; width:10px; height:10px; background:#ff2233; border:2px solid #ffffff; border-radius:50%; transform:translateX(-50%); z-index:20;"></div>
+      <div style="position:absolute; top:19px; left:50%; width:12px; height:12px; background:#ff2233; border:2px solid #ffffff; border-radius:50%; transform:translateX(-50%); z-index:20;"></div>
+      <div style="position:absolute; top:20px; left:83.33%; width:10px; height:10px; background:#ff2233; border:2px solid #ffffff; border-radius:50%; transform:translateX(-50%); z-index:20;"></div>
+
+      <!-- BOTTOM ARROWS DOWN TO 3 GAP CARDS -->
+      <div style="position:absolute; top:24px; left:16.66%; width:3.5px; height:22px; background:#ff2233; transform:translateX(-50%); z-index:10;">
+        <div style="position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:9px solid #ff2233;"></div>
       </div>
-      <div style="position:absolute; top:26px; left:50%; width:3.5px; height:22px; background:#ff2233; transform:translateX(-50%); box-shadow:0 0 12px #ff2233; z-index:10;">
-        <div style="position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:9px solid #ff2233; filter:drop-shadow(0 0 6px #ff2233);"></div>
+      <div style="position:absolute; top:24px; left:50%; width:3.5px; height:22px; background:#ff2233; transform:translateX(-50%); z-index:10;">
+        <div style="position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:9px solid #ff2233;"></div>
       </div>
-      <div style="position:absolute; top:26px; left:83.33%; width:3.5px; height:22px; background:#ff2233; transform:translateX(-50%); box-shadow:0 0 12px #ff2233; z-index:10;">
-        <div style="position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:9px solid #ff2233; filter:drop-shadow(0 0 6px #ff2233);"></div>
+      <div style="position:absolute; top:24px; left:83.33%; width:3.5px; height:22px; background:#ff2233; transform:translateX(-50%); z-index:10;">
+        <div style="position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:9px solid #ff2233;"></div>
       </div>
     </div>
 
-    <!-- 3 GAP CARDS -->
-    <div class="grid three" style="margin-top:2px;">
-      <div class="card red card-anim-bottom" style="border-color:rgba(255,65,54,0.6); box-shadow:0 8px 24px rgba(255,34,51,0.2);">
-        <div class="kicker" style="color:var(--gotham-red); font-weight:700;">GAP IDENTIFIED IN CH.3</div>
-        <h3 style="color:var(--gotham-red);"><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-legal"/></svg> ช่องว่าง ๑ · กฎหมาย (บทที่ ๓)</h3>
-        <p>ไม่มีกลไกคุ้มครอง CUI ที่ชัดเจน โดยเฉพาะเมื่อวางโครงสร้างนอกทะเลอาณาเขต</p>
-        <div style="margin-top:8px; padding-top:6px; border-top:1px dashed rgba(16,185,129,0.3); font-size:14.5px; color:var(--gotham-emerald);">
+    <!-- 3 GAP CARDS (EQUAL HEIGHT + EYEBROW BAR + FULL UNTRUNCATED HEADERS) -->
+    <div class="grid three" style="margin-top:2px; align-items:stretch;">
+      <div class="card red card-anim-bottom" style="border-color:rgba(255,65,54,0.6); display:flex; flex-direction:column; justify-content:space-between;">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--gotham-red); font-weight:700; letter-spacing:0.04em; display:inline-flex; align-items:center; gap:6px;">
+              <svg class="ico-svg" viewBox="0 0 24 24" width="16" height="16"><use href="#icon-legal"/></svg> GAP ANALYSIS 01
+            </span>
+            <span class="c4isr-badge red" style="font-size:11px; margin:0;"><span class="status-pulse red"></span>GAP 1</span>
+          </div>
+          <h2 style="color:var(--gotham-red); font-size:19px; font-weight:700; margin-bottom:8px; line-height:1.35; display:block;">
+            ช่องว่าง ๑ · กฎหมาย (บทที่ ๓)
+          </h2>
+          <p style="margin-bottom:8px;">ไม่มีกลไกคุ้มครอง CUI ที่ชัดเจน โดยเฉพาะเมื่อวางโครงสร้างนอกทะเลอาณาเขต</p>
+        </div>
+        <div style="margin-top:auto; padding-top:6px; border-top:1px dashed rgba(16,185,129,0.3); font-size:14.5px; color:var(--gotham-emerald);">
           <b>▸ ทางปิดช่องว่าง (บทที่ ๔):</b> พ.ร.ฎ.เขตปลอดภัย ๒๕๓๖ + ยกร่างกฎหมาย CUI
         </div>
       </div>
 
-      <div class="card red card-anim-bottom" style="border-color:rgba(255,65,54,0.6); box-shadow:0 8px 24px rgba(255,34,51,0.2);">
-        <div class="kicker" style="color:var(--gotham-red); font-weight:700;">GAP IDENTIFIED IN CH.3</div>
-        <h3 style="color:var(--gotham-red);"><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-radar"/></svg> ช่องว่าง ๒ · Underwater MDA (บทที่ ๓)</h3>
-        <p>ข้อจำกัดในการตระหนักรู้สถานการณ์ใต้น้ำและพื้นท้องทะเล (Seabed Warfare) ของ ทร.</p>
-        <div style="margin-top:8px; padding-top:6px; border-top:1px dashed rgba(16,185,129,0.3); font-size:14.5px; color:var(--gotham-emerald);">
+      <div class="card red card-anim-bottom" style="border-color:rgba(255,65,54,0.6); display:flex; flex-direction:column; justify-content:space-between;">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--gotham-red); font-weight:700; letter-spacing:0.04em; display:inline-flex; align-items:center; gap:6px;">
+              <svg class="ico-svg" viewBox="0 0 24 24" width="16" height="16"><use href="#icon-radar"/></svg> GAP ANALYSIS 02
+            </span>
+            <span class="c4isr-badge red" style="font-size:11px; margin:0;"><span class="status-pulse red"></span>GAP 2</span>
+          </div>
+          <h2 style="color:var(--gotham-red); font-size:19px; font-weight:700; margin-bottom:8px; line-height:1.35; display:block;">
+            ช่องว่าง ๒ · Underwater MDA (บทที่ ๓)
+          </h2>
+          <p style="margin-bottom:8px;">ข้อจำกัดในการตระหนักรู้สถานการณ์ใต้น้ำและพื้นท้องทะเล (Seabed Warfare) ของ ทร.</p>
+        </div>
+        <div style="margin-top:auto; padding-top:6px; border-top:1px dashed rgba(16,185,129,0.3); font-size:14.5px; color:var(--gotham-emerald);">
           <b>▸ ทางปิดช่องว่าง (บทที่ ๔):</b> สายใยแก้ว DAS + โซนาร์ + UUV/ROV + Seabed Sentry
         </div>
       </div>
 
-      <div class="card red card-anim-bottom" style="border-color:rgba(255,65,54,0.6); box-shadow:0 8px 24px rgba(255,34,51,0.2);">
-        <div class="kicker" style="color:var(--gotham-red); font-weight:700;">GAP IDENTIFIED IN CH.3</div>
-        <h3 style="color:var(--gotham-red);"><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-api"/></svg> ช่องว่าง ๓ · บูรณาการข้อมูล (บทที่ ๓)</h3>
-        <p>หน่วยงานทางทะเลใน ศรชล. ยังขาดการเชื่อมโยงข้อมูลและผังทะเลรวม (One Marine Chart)</p>
-        <div style="margin-top:8px; padding-top:6px; border-top:1px dashed rgba(16,185,129,0.3); font-size:14.5px; color:var(--gotham-emerald);">
+      <div class="card red card-anim-bottom" style="border-color:rgba(255,65,54,0.6); display:flex; flex-direction:column; justify-content:space-between;">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--gotham-red); font-weight:700; letter-spacing:0.04em; display:inline-flex; align-items:center; gap:6px;">
+              <svg class="ico-svg" viewBox="0 0 24 24" width="16" height="16"><use href="#icon-api"/></svg> GAP ANALYSIS 03
+            </span>
+            <span class="c4isr-badge red" style="font-size:11px; margin:0;"><span class="status-pulse red"></span>GAP 3</span>
+          </div>
+          <h2 style="color:var(--gotham-red); font-size:19px; font-weight:700; margin-bottom:8px; line-height:1.35; display:block;">
+            ช่องว่าง ๓ · บูรณาการข้อมูล (บทที่ ๓)
+          </h2>
+          <p style="margin-bottom:8px;">หน่วยงานทางทะเลใน ศรชล. ยังขาดการเชื่อมโยงข้อมูลและผังทะเลรวม (One Marine Chart)</p>
+        </div>
+        <div style="margin-top:auto; padding-top:6px; border-top:1px dashed rgba(16,185,129,0.3); font-size:14.5px; color:var(--gotham-emerald);">
           <b>▸ ทางปิดช่องว่าง (บทที่ ๔):</b> ม.๒๗ ศรชล. + API กลาง + One Marine Chart
         </div>
       </div>
@@ -930,7 +1009,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
 
       <div style="display:flex; flex-direction:column; gap:10px;">
         <div class="card card-anim-top" style="background: rgba(13, 17, 23, 0.70); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
-          <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-seabed"/></svg> เกณฑ์ทางกายภาพ (ข้อมูลกรมอุทกศาสตร์)</h3>
+          <h2><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-seabed"/></svg> เกณฑ์ทางกายภาพ (ข้อมูลกรมอุทกศาสตร์)</h2>
           <ul>
             <li>ความลึก <b>๓๐–๔๔ ม.</b> — เหมาะกับการติดตั้งและงานดำน้ำซ่อมบำรุง</li>
             <li>พื้นทะเล<b>ทราย–โคลนแน่น เสถียร</b> รองรับฐานราก Capsule</li>
@@ -938,7 +1017,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
           </ul>
         </div>
         <div class="card green card-anim-right" style="background: rgba(13, 17, 23, 0.70); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
-          <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-shield"/></svg> เกณฑ์ด้านความมั่นคง</h3>
+          <h2><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-shield"/></svg> เกณฑ์ด้านความมั่นคง</h2>
           <ul>
             <li>อยู่ใน<b>เขตปลอดภัยในราชการทหาร</b>เดิม (พ.ร.ฎ. ๒๕๓๖) — มีฐานกฎหมายรองรับทันที</li>
             <li>ชายฝั่งตรงข้ามเป็นที่ตั้งหน่วย <b>นย. / สอ.รฝ.</b> — ควบคุมจุดขึ้นบก (Landing Point)</li>
@@ -972,8 +1051,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
       </div>
       <div style="display:flex; flex-direction:column; gap:10px;">
         <div class="card red">
-          <div class="kicker" style="color:var(--gotham-red); font-weight:700;">[อ้างอิง: บทที่ ๔ ข้อ ๔.๑ &amp; ผนวก ข ข้อ ๓.๓]</div>
-          <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-subsurface"/></svg> ภัยเจตนาทางทหาร (Hostile / Military)</h3>
+          <h2><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-subsurface"/></svg> ภัยเจตนาทางทหาร (Hostile / Military) <span class="c4isr-badge red" style="margin-left:auto; font-size:11px;"><span class="status-pulse red"></span>MILITARY</span></h2>
           <ul>
             <li><b>อ่าวไทยน้ำตื้น (๓๐–๔๔ ม.)</b> เป็นอุปสรรคอะคูสติกต่อเรือดำน้ำขนาดใหญ่</li>
             <li>ภัยแท้จริงจึงเป็น <b>SDV / เรือดำน้ำขนาดเล็ก (Midget) / UUV</b></li>
@@ -981,8 +1059,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
           </ul>
         </div>
         <div class="card amber">
-          <div class="kicker" style="color:var(--gotham-amber); font-weight:700;">[อ้างอิง: UNCLOS ข้อ ๑๙ &amp; ผนวก ค สัมภาษณ์ผู้ทรงคุณวุฒิ]</div>
-          <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-anchor"/></svg> ภัยก้ำกึ่งทางกฎหมาย (Grey-Zone &amp; Accidental)</h3>
+          <h2><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-anchor"/></svg> ภัยก้ำกึ่งทางกฎหมาย (Grey-Zone &amp; Accidental) <span class="c4isr-badge amber" style="margin-left:auto; font-size:11px;"><span class="status-pulse amber"></span>GREY-ZONE</span></h2>
           <ul>
             <li><b>การลากสมอ (Anchor Dragging)</b> — สาเหตุหลักภัยคุกคามใต้น้ำ (>๘0% สถิติสากล)</li>
             <li>ก้ำกึ่งกับ<b>สิทธิการผ่านโดยสุจริต (Innocent Passage)</b> ตาม UNCLOS ข้อ ๑๙</li>
@@ -1013,17 +1090,17 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
         <div class="telemetry-row">
           <div class="lbl">สาย ๑ · เกาะคราม (Landing)</div>
           <div class="val emerald">ACTIVE · 42.5 Hz</div>
-          <div style="font-size:11px; color:var(--gotham-muted);">Noise: -84 dBm | DAS Sensor 01</div>
+          <div style="font-size:12px; color:var(--gotham-muted);">Noise: -84 dBm | DAS Sensor 01</div>
         </div>
         <div class="telemetry-row">
           <div class="lbl">สาย ๒ · ฐานทัพเรือสัตหีบ</div>
           <div class="val emerald">ACTIVE · 38.2 Hz</div>
-          <div style="font-size:11px; color:var(--gotham-muted);">Noise: -88 dBm | DAS Sensor 02</div>
+          <div style="font-size:12px; color:var(--gotham-muted);">Noise: -88 dBm | DAS Sensor 02</div>
         </div>
         <div class="telemetry-row">
           <div class="lbl">สาย ๓ · ทุ่งโปรง (นย.)</div>
           <div class="val emerald">ACTIVE · 41.0 Hz</div>
-          <div style="font-size:11px; color:var(--gotham-muted);">Noise: -86 dBm | DAS Sensor 03</div>
+          <div style="font-size:12px; color:var(--gotham-muted);">Noise: -86 dBm | DAS Sensor 03</div>
         </div>
         <div class="telemetry-row" style="margin-bottom:0; background:rgba(0,229,255,0.06); border-color:var(--gotham-border);">
           <div class="lbl" style="color:var(--gotham-cyan);">EDGE AI SENSOR FUSION</div>
@@ -1079,7 +1156,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
             <line x1="1019.4" y1="0" x2="1019.4" y2="560"/>
           </g>
 
-          <g font-family="Share Tech Mono" font-size="11" fill="rgba(139, 148, 158, 0.85)" paint-order="stroke" stroke="#06090e" stroke-width="2.4">
+          <g font-family="Share Tech Mono" font-size="12" fill="rgba(139, 148, 158, 0.85)" paint-order="stroke" stroke="#06090e" stroke-width="2.4">
             <text x="7" y="537.3">12°30'N</text>
             <text x="7" y="442.4">12°35'N</text>
             <text x="7" y="347.4">12°40'N</text>
@@ -1158,17 +1235,17 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
         <div class="telemetry-row">
           <div class="lbl">บก.ทรภ.๑ (1st NAC HQ)</div>
           <div class="val emerald">COP ONLINE // READY</div>
-          <div style="font-size:11px; color:var(--gotham-muted);">Surface & Air Domain Command</div>
+          <div style="font-size:12px; color:var(--gotham-muted);">Surface & Air Domain Command</div>
         </div>
         <div class="telemetry-row">
           <div class="lbl">สอ.รฝ. เขาคลองถูป (ACDC)</div>
           <div class="val emerald">RADAR 25nm ACTIVE</div>
-          <div style="font-size:11px; color:var(--gotham-muted);">Coastal Surveillance Active</div>
+          <div style="font-size:12px; color:var(--gotham-muted);">Coastal Surveillance Active</div>
         </div>
         <div class="telemetry-row">
           <div class="lbl">ศสต.ศปก.ทร. (UWOC)</div>
           <div class="val emerald">SENSORS ONLINE</div>
-          <div style="font-size:11px; color:var(--gotham-muted);">Subsurface Acoustic Monitor</div>
+          <div style="font-size:12px; color:var(--gotham-muted);">Subsurface Acoustic Monitor</div>
         </div>
         <div class="telemetry-row" style="margin-bottom:0; background:rgba(255,158,59,0.06); border-color:rgba(255,158,59,0.3);">
           <div class="lbl" style="color:var(--gotham-amber);">LEGAL DECREE LAYER</div>
@@ -1178,8 +1255,8 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
     </div>
 
     <div class="grid two" style="margin-top:8px;">
-      <div class="card red"><h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-legal"/></svg> ชั้นที่ ๑ · กฎหมายที่มีอยู่</h3><p>ประกาศพระราชกฤษฎีกา<b>เขตปลอดภัยในราชการทหาร</b> (ตาม พ.ร.บ. ๒๔๗๘) ครอบพิกัด UDC — บังคับใช้ทางยุทธการได้ทันที</p></div>
-      <div class="card amber"><h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-shield"/></svg> ชั้นที่ ๒ · กฎหมายเฉพาะ</h3><p>ผลักดัน<b>กฎหมายคุ้มครองโครงสร้างพื้นฐานวิกฤตใต้น้ำ (CUI)</b> ระยะยาวเพื่อปิดช่องว่างความมั่นคงทางทะเล</p></div>
+      <div class="card red"><h2><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-legal"/></svg> ชั้นที่ ๑ · กฎหมายที่มีอยู่</h2><p>ประกาศพระราชกฤษฎีกา<b>เขตปลอดภัยในราชการทหาร</b> (ตาม พ.ร.บ. ๒๔๗๘) ครอบพิกัด UDC — บังคับใช้ทางยุทธการได้ทันที</p></div>
+      <div class="card amber"><h2><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-shield"/></svg> ชั้นที่ ๒ · กฎหมายเฉพาะ</h2><p>ผลักดัน<b>กฎหมายคุ้มครองโครงสร้างพื้นฐานวิกฤตใต้น้ำ (CUI)</b> ระยะยาวเพื่อปิดช่องว่างความมั่นคงทางทะเล</p></div>
     </div>
   </div>
 </section>
@@ -1195,7 +1272,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
     <div class="grid two" style="grid-template-columns: 0.95fr 1.2fr; gap:16px; align-items:stretch;">
       <!-- LEFT COLUMN: 5W1H 6-DOMAIN OPERATIONAL MATRIX TABLE -->
       <div class="card card-anim-left" style="padding:12px 14px; display:flex; flex-direction:column; justify-content:space-between;">
-        <div class="kicker" style="color:var(--gotham-cyan); font-weight:700;">TABLE 4-2 · 5W1H OPERATIONAL MATRIX</div>
+        <div class="c4isr-badge" style="margin-bottom:6px;"><span class="status-pulse cyan"></span>TABLE 4-2 · 5W1H OPERATIONAL MATRIX</div>
         <table class="gotham-table">
           <thead>
             <tr>
@@ -1216,7 +1293,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
       </div>
 
       <!-- RIGHT COLUMN: EXPANDED LIVE ANIMATED C4ISR DEPLOYMENT VIDEO -->
-      <div class="side-frame-wrap card-anim-right" style="border-color:var(--gotham-border-bright); box-shadow:0 12px 36px rgba(0,0,0,0.65); display:flex; flex-direction:column; justify-content:space-between;">
+      <div class="side-frame-wrap card-anim-right" style="border-color:var(--gotham-border-bright); box-shadow:0 6px 16px rgba(0,0,0,0.65); display:flex; flex-direction:column; justify-content:space-between;">
         <div class="hud-label" style="padding:6px 14px; background:rgba(0, 229, 255, 0.14); display:flex; justify-content:space-between; align-items:center;">
           <span>◉ MULTI-DOMAIN C4ISR ANIMATED SCHEMA (EXPANDED VIEW)</span>
           <span style="color:var(--gotham-emerald); font-weight:700; display:inline-flex; align-items:center;"><span class="status-pulse emerald"></span>LIVE VIDEO</span>
@@ -1243,24 +1320,24 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
   <div class="body-wrap">
     <div class="flow">
       <div class="node card-anim-left">
-        <h4><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-shield"/></svg> ศรชล. — กลไกอำนวยการ</h4>
+        <h2><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-shield"/></svg> ศรชล. — กลไกอำนวยการ</h2>
         <p>นายกรัฐมนตรี = ผอ.ศรชล.<br>ผบ.ทร. = รอง ผอ. · เสธ.ทร. = เลขาธิการ<br>บูรณาการ ๗ หน่วยงานทางทะเล</p>
       </div>
       <div class="arr card-anim-top">▶</div>
       <div class="node card-anim-top" style="border-color:var(--gotham-cyan);">
-        <h4><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-anchor"/></svg> ทร. — แกนปฏิบัติการ</h4>
+        <h2><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-anchor"/></svg> ทร. — แกนปฏิบัติการ</h2>
         <p>หน่วยเดียวที่มีขีดความสามารถครบ ๖ มิติ<br>(กำลังรบ ๓ มิติ + อศ. + นย. + ไซเบอร์)<br>รับผิดชอบผ่าน ทรภ.๑ / ศปก.ทร.</p>
       </div>
       <div class="arr card-anim-top">▶</div>
       <div class="node card-anim-right" style="border-color:var(--gotham-emerald);">
-        <h4><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-api"/></svg> เครื่องมือบูรณาการข้อมูล</h4>
+        <h2><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-api"/></svg> เครื่องมือบูรณาการข้อมูล</h2>
         <p><b>ม.๒๗ พ.ร.บ.ศรชล. ๒๕๖๒</b> → นปท.<br>หน่วยงานเปิด API แลกเปลี่ยนข้อมูล<br>สู่ <b>One Marine Chart</b> (ผังทะเลรวม)</p>
       </div>
     </div>
     <div class="grid three" style="margin-top:14px;">
-      <div class="card green card-anim-left"><h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-legal"/></svg> ตอบช่องว่าง ๑ · กฎหมาย</h3><p>ฐาน ๒ ชั้น: เขตปลอดภัยในราชการทหาร + ผลักดันกฎหมาย CUI/CII</p></div>
-      <div class="card green card-anim-bottom"><h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-radar"/></svg> ตอบช่องว่าง ๒ · Underwater MDA</h3><p>DAS + Passive Sonar + UUV/ROV + Seabed Sentry ใน Shield 3.0</p></div>
-      <div class="card green card-anim-right"><h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-api"/></svg> ตอบช่องว่าง ๓ · บูรณาการ</h3><p>ม.๒๗ → API กลาง → GDCC Secure Edge → One Marine Chart</p></div>
+      <div class="card green card-anim-left"><h2><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-legal"/></svg> ตอบช่องว่าง ๑ · กฎหมาย</h2><p>ฐาน ๒ ชั้น: เขตปลอดภัยในราชการทหาร + ผลักดันกฎหมาย CUI/CII</p></div>
+      <div class="card green card-anim-bottom"><h2><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-radar"/></svg> ตอบช่องว่าง ๒ · Underwater MDA</h2><p>DAS + Passive Sonar + UUV/ROV + Seabed Sentry ใน Shield 3.0</p></div>
+      <div class="card green card-anim-right"><h2><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-api"/></svg> ตอบช่องว่าง ๓ · บูรณาการ</h2><p>ม.๒๗ → API กลาง → GDCC Secure Edge → One Marine Chart</p></div>
     </div>
     <div class="note-strip card-anim-bottom">
       <svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20" style="color:var(--gotham-amber);"><use href="#icon-book"/></svg>
@@ -1277,34 +1354,63 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
   </div>
   <h1>ผลการวิจัยนี้ <span class="hl">ยืนยัน–ต่อยอด–เติมเต็ม</span> องค์ความรู้เดิมอย่างไร</h1>
   <div class="body-wrap">
-    <div class="grid three">
-      <div class="card card-anim-left">
-        <div class="kicker">CONFIRMS THEORY</div>
-        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-shield"/></svg> สอดคล้องกับทฤษฎี</h3>
-        <ul>
-          <li>ยืนยันหลัก <b>MSP</b>: การแบ่งเขต MEZ/Buffer/TSS ลดความขัดแย้งเชิงพื้นที่และรักษาความปลอดภัยได้จริง</li>
-          <li>ยืนยัน <b>Defense-in-Depth</b>: โครงสร้างวิกฤตใต้น้ำต้องป้องกันหลายชั้นและบูรณาการพหุมิติ</li>
-        </ul>
+    <div class="grid three" style="align-items:stretch;">
+      <div class="card card-anim-left" style="display:flex; flex-direction:column; justify-content:space-between;">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--gotham-cyan); font-weight:700; letter-spacing:0.04em; display:inline-flex; align-items:center; gap:6px;">
+              <svg class="ico-svg" viewBox="0 0 24 24" width="16" height="16"><use href="#icon-shield"/></svg> FINDINGS 01
+            </span>
+            <span class="c4isr-badge" style="font-size:11px; margin:0;"><span class="status-pulse cyan"></span>CONFIRMS THEORY</span>
+          </div>
+          <h2 style="color:var(--gotham-cyan); font-size:19.5px; font-weight:700; text-align:center; margin-top:2px; margin-bottom:10px; line-height:1.35; display:block;">
+            สอดคล้องกับทฤษฎี
+          </h2>
+          <ul>
+            <li>ยืนยันหลัก <b>MSP</b>: การแบ่งเขต MEZ/Buffer/TSS ลดความขัดแย้งเชิงพื้นที่และรักษาความปลอดภัยได้จริง</li>
+            <li>ยืนยัน <b>Defense-in-Depth</b>: โครงสร้างวิกฤตใต้น้ำต้องป้องกันหลายชั้นและบูรณาการพหุมิติ</li>
+          </ul>
+        </div>
       </div>
-      <div class="card amber card-anim-top">
-        <div class="kicker">EXTENDS PRIOR WORK</div>
-        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-radar"/></svg> ต่อยอดงานวิจัยเดิม</h3>
-        <ul>
-          <li>ขยายความรู้จาก UDC ทั่วไป (Natick, Highlander, Panthalassa) จากแค่พลังงาน/วิศวกรรม สู่มิติ <b>"การคุ้มครอง (Protection)"</b></li>
-          <li>พัฒนาการตระหนักรู้สถานการณ์จาก ๒ มิติไปสู่ <b>Underwater MDA</b> ในระดับท้องทะเลลึก</li>
-        </ul>
+
+      <div class="card amber card-anim-top" style="display:flex; flex-direction:column; justify-content:space-between;">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--gotham-amber); font-weight:700; letter-spacing:0.04em; display:inline-flex; align-items:center; gap:6px;">
+              <svg class="ico-svg" viewBox="0 0 24 24" width="16" height="16"><use href="#icon-radar"/></svg> FINDINGS 02
+            </span>
+            <span class="c4isr-badge amber" style="font-size:11px; margin:0;"><span class="status-pulse amber"></span>EXTENDS PRIOR WORK</span>
+          </div>
+          <h2 style="color:var(--gotham-amber); font-size:19.5px; font-weight:700; text-align:center; margin-top:2px; margin-bottom:10px; line-height:1.35; display:block;">
+            ต่อยอดงานวิจัยเดิม
+          </h2>
+          <ul>
+            <li>ขยายความรู้จาก UDC ทั่วไป (Natick, Highlander, Panthalassa) จากแค่พลังงาน/วิศวกรรม สู่มิติ <b>"การคุ้มครอง (Protection)"</b></li>
+            <li>พัฒนาการตระหนักรู้สถานการณ์จาก ๒ มิติไปสู่ <b>Underwater MDA</b> ในระดับท้องทะเลลึก</li>
+          </ul>
+        </div>
       </div>
-      <div class="card green card-anim-right">
-        <div class="kicker">RTN CONTEXT</div>
-        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="22" height="22"><use href="#icon-anchor"/></svg> บริบท ทร. / ศรชล.</h3>
-        <ul>
-          <li>บทเรียนจาก <b>Baltic Sea</b> ชี้ให้เห็นว่าควรประกาศ "กฎเกณฑ์ล่วงหน้า" ก่อนดำเนินการติดตั้งสิ่งก่อสร้าง</li>
-          <li>ใช้กลไกของ <b>ศรชล.</b> และกำลังรบของ ทร. ที่มีอยู่แล้วในการขับเคลื่อน โดยไม่ต้องจัดตั้งหน่วยงานใหม่</li>
-        </ul>
+
+      <div class="card green card-anim-right" style="display:flex; flex-direction:column; justify-content:space-between;">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--gotham-emerald); font-weight:700; letter-spacing:0.04em; display:inline-flex; align-items:center; gap:6px;">
+              <svg class="ico-svg" viewBox="0 0 24 24" width="16" height="16"><use href="#icon-anchor"/></svg> FINDINGS 03
+            </span>
+            <span class="c4isr-badge emerald" style="font-size:11px; margin:0;"><span class="status-pulse emerald"></span>RTN CONTEXT</span>
+          </div>
+          <h2 style="color:var(--gotham-emerald); font-size:19.5px; font-weight:700; text-align:center; margin-top:2px; margin-bottom:10px; line-height:1.35; display:block;">
+            บริบท ทร. / ศรชล.
+          </h2>
+          <ul>
+            <li>บทเรียนจาก <b>Baltic Sea</b> ชี้ให้เห็นว่าควรประกาศ "กฎเกณฑ์ล่วงหน้า" ก่อนดำเนินการติดตั้งสิ่งก่อสร้าง</li>
+            <li>ใช้กลไกของ <b>ศรชล.</b> และกำลังรบของ ทร. ที่มีอยู่แล้วในการขับเคลื่อน โดยไม่ต้องจัดตั้งหน่วยงานใหม่</li>
+          </ul>
+        </div>
       </div>
     </div>
     <div class="card amber card-anim-bottom" style="margin-top:14px; padding:14px 20px;">
-      <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-warning"/></svg> ข้อจำกัดที่ผู้วิจัยตระหนัก</h3>
+      <h2><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-warning"/></svg> ข้อจำกัดที่ผู้วิจัยตระหนัก</h2>
       <p style="font-size:15.5px; margin:0;">ผลการวิเคราะห์อิงพื้นที่อ่าวไทยตอนบนเท่านั้น · ข้อมูล Shared-MDA ใน Simulator เป็น<b>ข้อมูลจำลองเพื่อการสาธิต</b> · การยืนยันสมรรถนะจริงต้องผ่านการทดสอบภาคสนามและการทดสอบร่วม — ระบุไว้ในข้อเสนอแนะการวิจัยต่อยอดแล้ว</p>
     </div>
   </div>
@@ -1320,8 +1426,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
   <div class="body-wrap">
     <div class="grid three">
       <div class="card amber card-anim-left">
-        <div class="kicker">POLICY</div>
-        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-legal"/></svg> เชิงนโยบาย</h3>
+        <h2><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-legal"/></svg> เชิงนโยบาย <span class="c4isr-badge amber" style="margin-left:auto; font-size:11px;"><span class="status-pulse amber"></span>POLICY LEVEL</span></h2>
         <ul>
           <li>ยกร่าง <b>พระราชกฤษฎีกาเขตปลอดภัยในราชการทหาร</b> คุมพิกัด UDC</li>
           <li>แก้ไขเพิ่มเติม <b>พ.ร.บ.ไซเบอร์ฯ ๒๕๖๒</b> — บรรจุ UDC เป็นสถานะ CII</li>
@@ -1330,8 +1435,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
         </ul>
       </div>
       <div class="card card-anim-top">
-        <div class="kicker">PRACTICE</div>
-        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-anchor"/></svg> เชิงปฏิบัติสำหรับ ทร. / ศรชล.</h3>
+        <h2><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-anchor"/></svg> เชิงปฏิบัติสำหรับ ทร. / ศรชล. <span class="c4isr-badge" style="margin-left:auto; font-size:11px;"><span class="status-pulse cyan"></span>PRACTICE LEVEL</span></h2>
         <ul>
           <li>พัฒนาระบบการสงครามที่ใช้เครือข่ายเป็นศูนย์กลาง (NCW) / National Tactical Data Link</li>
           <li>จัดหาขีดความสามารถใต้น้ำ: <b>DAS · Passive Sonar · UUV/ROV · Seabed Sentry</b></li>
@@ -1340,8 +1444,7 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
         </ul>
       </div>
       <div class="card green card-anim-right">
-        <div class="kicker">FUTURE RESEARCH</div>
-        <h3><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-target"/></svg> งานวิจัยเพื่อการต่อยอด</h3>
+        <h2><svg class="ico-svg" viewBox="0 0 24 24" width="20" height="20"><use href="#icon-target"/></svg> งานวิจัยเพื่อการต่อยอด <span class="c4isr-badge emerald" style="margin-left:auto; font-size:11px;"><span class="status-pulse emerald"></span>FUTURE RESEARCH</span></h2>
         <ul>
           <li>ขยายการศึกษาหาความเหมาะสมไปยังฝั่ง<b>อันดามัน</b></li>
           <li>ศึกษาทดสอบภาคสนามแนวทางป้องกันการเกาะติดของสิ่งมีชีวิตทางทะเล (Biofouling) ในอ่าวไทย</li>
@@ -1364,9 +1467,9 @@ h1 .hl-amber { color: var(--gotham-amber); text-shadow: 0 0 14px rgba(255, 158, 
       <svg class="ico-svg" viewBox="0 0 24 24" width="18" height="18"><use href="#icon-shield"/></svg>
       TAKE-HOME MESSAGE
     </div>
-    <img src="rtn_emblem.png" alt="RTN Emblem" style="height:92px; margin-bottom:14px; filter:drop-shadow(0 0 16px rgba(255, 158, 59, 0.5));">
+    <img src="rtn_emblem.png" alt="RTN Emblem" style="height:92px; margin-bottom:14px; filter:drop-shadow(0 0 12px rgba(255, 158, 59, 0.4));">
     
-    <div style="background:rgba(13, 17, 23, 0.9); border:1px solid var(--gotham-border-bright); border-radius:8px; padding:26px 36px; max-width:880px; margin-bottom:18px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+    <div style="background:rgba(13, 17, 23, 0.92); border:1px solid var(--gotham-border-bright); border-radius:10px; padding:26px 36px; max-width:880px; margin-bottom:18px; box-shadow:0 6px 16px rgba(0,0,0,0.65);">
       <p style="font-size:24px; line-height:1.55; font-family:'Prompt', 'Sarabun', sans-serif;">
         "ท้องทะเลไทยพร้อมเป็น<span class="shiny-pill" style="--text-color: var(--gotham-cyan); --shine-color: #ffffff; --speed: 2.2s; font-weight:700; margin: 0 4px;"><span class="base-text">ที่ตั้งอันมั่นคงของข้อมูลชาติ</span><span class="shine-text" aria-hidden="true">ที่ตั้งอันมั่นคงของข้อมูลชาติ</span></span> —<br>
         และกองทัพเรือพร้อมเป็น<span class="shiny-pill" style="--text-color: var(--gotham-amber); --shine-color: #ffffff; --speed: 2.2s; font-weight:700; margin: 0 4px;"><span class="base-text">โล่คุ้มครองอธิปไตยทางข้อมูล</span><span class="shine-text" aria-hidden="true">โล่คุ้มครองอธิปไตยทางข้อมูล</span></span><br>
@@ -1470,5 +1573,6 @@ document.addEventListener('click', (e) => {
 const m = location.hash.match(/^#s(\\d+)$/);
 showSlide(m ? +m[1] - 1 : 0);
 </script>
+
 </body>
 </html>

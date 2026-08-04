@@ -43,9 +43,8 @@
   .hero-inner{position:relative; padding:54px 0 40px}
   .crest{display:inline-flex; align-items:center; gap:11px; font-family:'Chakra Petch'; font-weight:700;
     letter-spacing:3px; font-size:13px; color:var(--cyan); text-transform:uppercase}
-  .crest .dot{width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 14px var(--cyan)}
-  .hero h1{font-size:clamp(28px,4.6vw,46px); margin:16px 0 6px; font-weight:700;
-    background:linear-gradient(120deg,#eaf3ff,#8fd9ff 55%,#64ffda); -webkit-background-clip:text; background-clip:text; color:transparent}
+  .crest .dot{width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 6px var(--cyan)}
+  .hero h1{font-size:clamp(22px,3.2vw,34px); margin:14px 0 8px; font-weight:700; color:#f0f6fc}
   .hero .sub{font-size:clamp(15px,2vw,19px); color:var(--ink-dim); max-width:760px}
   .hero .meta{margin-top:22px; display:flex; flex-wrap:wrap; gap:10px}
   .chip{font-size:12.5px; padding:7px 13px; border-radius:999px; border:1px solid var(--line2);
@@ -59,7 +58,7 @@
   nav.toc a{font-size:13.5px; color:var(--ink-dim); border:1px solid transparent; border-radius:10px;
     padding:6px 12px; font-weight:500}
   nav.toc a:hover{color:var(--ink); background:var(--panel2); border-color:var(--line)}
-  nav.toc .tag{margin-left:auto; font-size:11.5px; color:var(--ink-mute); letter-spacing:1px}
+  nav.toc .tag{margin-left:auto; font-size:12px; color:var(--ink-mute); letter-spacing:1px}
   nav.toc a.home-btn{display:inline-flex;align-items:center;gap:7px;margin-right:8px;padding:7px 13px;color:#64ffda;background:rgba(100,255,218,.06);border:1px solid rgba(100,255,218,.40);border-radius:9px;font-family:ui-monospace,'JetBrains Mono','Sarabun',Consolas,monospace;font-weight:600;font-size:13px;letter-spacing:.04em;line-height:1;white-space:nowrap;text-decoration:none;transition:background .18s,border-color .18s,box-shadow .18s,transform .18s}nav.toc a.home-btn .hb-ico{flex:none;transition:transform .18s}nav.toc a.home-btn:hover{background:rgba(100,255,218,.13);border-color:#64ffda;box-shadow:0 0 0 1px rgba(100,255,218,.22),0 4px 16px rgba(100,255,218,.16)}nav.toc a.home-btn:hover .hb-ico{transform:translateY(-1px)}nav.toc a.home-btn:active{transform:translateY(0)}nav.toc a.home-btn:focus-visible{outline:2px solid #64ffda;outline-offset:2px}
 
   /* ---------- SECTIONS ---------- */
@@ -109,7 +108,7 @@
   ul.clean li::before{content:'▸'; position:absolute; left:0; color:var(--cyan)}
   ul.clean li b{color:var(--ink); font-weight:600}
 
-  .pill{display:inline-block; font-size:11.5px; padding:3px 9px; border-radius:999px; font-weight:600; letter-spacing:.4px}
+  .pill{display:inline-block; font-size:12px; padding:3px 9px; border-radius:999px; font-weight:600; letter-spacing:.4px}
   .pill.hi{background:rgba(94,224,160,.15); color:var(--green); border:1px solid rgba(94,224,160,.3)}
   .pill.warn{background:rgba(245,196,81,.14); color:var(--gold); border:1px solid rgba(245,196,81,.3)}
 
@@ -122,15 +121,15 @@
   .tbl .b{color:var(--baltic)} .tbl .s{color:var(--singapore)}
 
   /* recommendation tiers */
-  .tier{border-left:3px solid var(--cyan); padding:4px 0 4px 18px; margin-bottom:18px}
-  .tier.t2{border-color:var(--gold)} .tier.t3{border-color:var(--violet)}
+  .tier{background:rgba(8,21,37,.6); border:1px solid var(--line); border-radius:12px; padding:16px 20px; margin-bottom:14px; box-shadow:0 4px 12px rgba(0,0,0,0.35); transition:transform 0.25s cubic-bezier(0.16,1,0.3,1)}
+  .tier:hover{transform:translateY(-2px); border-color:var(--cyan)}
   .tier .h{font-family:'Chakra Petch'; font-weight:600; font-size:16px; color:var(--ink); margin-bottom:4px}
   .tier .h small{color:var(--ink-mute); font-weight:500; font-family:'Sarabun'; letter-spacing:0; font-size:13px}
   .tier p{margin:0; font-size:15px; color:var(--ink-dim)}
 
   /* references */
   .ref-group{margin-bottom:22px}
-  .ref-group h4{font-size:14.5px; color:var(--ink); margin-bottom:10px; letter-spacing:.5px}
+  .ref-group h3{font-size:14.5px; color:var(--ink); margin-bottom:10px; letter-spacing:.5px}
   ol.refs{margin:0; padding-left:22px}
   ol.refs li{margin-bottom:8px; font-size:13.5px; color:var(--ink-dim)}
 
@@ -150,7 +149,7 @@
   figure.fig.tall img{height:340px}
   figure.fig figcaption{padding:12px 16px 14px; font-size:13.5px; color:var(--ink-dim); line-height:1.55}
   figure.fig figcaption b{color:var(--ink); font-weight:600}
-  figure.fig .cred{display:block; margin-top:6px; font-size:11px; color:var(--ink-mute); letter-spacing:.2px}
+  figure.fig .cred{display:block; margin-top:6px; font-size:12px; color:var(--ink-mute); letter-spacing:.2px}
   figure.fig .cred a{color:var(--ink-mute); border-bottom:1px dotted rgba(120,160,210,.45)}
   figure.fig .cred a:hover{color:var(--teal); border-color:var(--teal)}
 
@@ -218,7 +217,7 @@
     .lessons.sg{ background:#fdf5f3 !important; border:1px solid #f0cdc4 !important; }
     .lessons h4{ color:#0e7490 !important; }
     .lessons.sg h4{ color:#c0492f !important; }
-    .lead,.kpi .l,ul.clean li,.tl .ev p,.tier p,.callout p,ol.refs li,.ref-group h4{ color:var(--ink-dim) !important; }
+    .lead,.kpi .l,ul.clean li,.tl .ev p,.tier p,.callout p,ol.refs li,.ref-group h3{ color:var(--ink-dim) !important; }
     ul.clean li b,.tier p b,.callout b,.lessons li b{ color:var(--ink) !important; }
 
     /* table → repeat header, keep rows whole, header tint that always prints */
@@ -581,7 +580,7 @@
 
     <div class="grid g2" style="margin-top:22px">
       <div class="ref-group">
-        <h4 style="color:var(--baltic)">① คาบสมุทรบอลติก</h4>
+        <h3 style="color:var(--baltic); font-size:16px; margin-bottom:10px; letter-spacing:.5px">① คาบสมุทรบอลติก</h3>
         <ol class="refs">
           <li>NATO — <a href="https://www.nato.int/en/news-and-events/articles/news/2025/01/14/nato-launches-baltic-sentry-to-increase-critical-infrastructure-security" target="_blank" rel="noopener">NATO launches ‘Baltic Sentry’ to increase critical infrastructure security</a> (14 ม.ค. 2025)</li>
           <li>Wikipedia — <a href="https://en.wikipedia.org/wiki/2024_Baltic_Sea_submarine_cable_disruptions" target="_blank" rel="noopener">2024 Baltic Sea submarine cable disruptions</a> (Yi Peng 3, C-Lion1, BCS)</li>
@@ -591,7 +590,7 @@
         </ol>
       </div>
       <div class="ref-group">
-        <h4 style="color:var(--singapore)">② สิงคโปร์ / UDC</h4>
+        <h3 style="color:var(--singapore); font-size:16px; margin-bottom:10px; letter-spacing:.5px">② สิงคโปร์ / UDC</h3>
         <ol class="refs">
           <li>MINDEF Singapore — <a href="https://www.mindef.gov.sg/news-and-events/latest-releases/15jul24_nr2/" target="_blank" rel="noopener">Singapore and Thailand Navies Conduct Bilateral Exercise Singsiam</a> (15 ก.ค. 2024)</li>
           <li>South China Morning Post — <a href="https://www.scmp.com/economy/china-economy/article/3328063/china-launches-worlds-first-commercial-underwater-data-centre-hainan" target="_blank" rel="noopener">China launches world’s first commercial underwater data centre in Hainan</a></li>
