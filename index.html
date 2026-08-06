@@ -1,8 +1,21 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.51.1 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.52.0 · 7-Domain + AI Staff)
 
   ── รุ่นล่าสุด · รายละเอียดเต็ม (v17.40.0 ขึ้นไป) ───────────────────
+  · [v17.52.0] แก้ ๒ จุดจากการทดสอบก่อนนำเสนอ
+      ๑) [COA-PICK] การ์ดหนทางปฏิบัติกดเลือกไม่ได้ — ตั้งแต่ v17.41.0 แถวปุ่มปฏิบัติการ
+         ถูกวางไว้ใน .cbody ซึ่ง .collapsed ซ่อนอยู่ ทำให้ หป. ที่ยังไม่ได้เลือกไม่มีปุ่มเลย
+         แก้โดยยกแถวปุ่มออกมานอก .cbody (เห็นทุกใบเสมอ) · หัวการ์ดกลายเป็นปุ่มกาง/ย่อ
+         รายละเอียด (▸/▾ · Enter/Space ได้) · ใบที่เลือกอยู่แสดงปุ่ม "✓ หป. ที่เลือกอยู่"
+         · วางกำลังแล้วกดเลือกจะขึ้นบันทึกบอกเหตุผลแทนที่จะเงียบ
+      ๒) [PVVIEW] แถวคำสั่ง "พื้นที่ตรวจจับ" ในแผงวางกำลัง หมวด PATROL VESSELS —
+         สลับ ๓ ระดับ: เต็ม (เหมือนเดิม) → เฉพาะวง (ตัดร่องรอยกวาดโซนาร์ที่ทับกันจนจอเขียว)
+         → ปิด (ซ่อนพื้นที่ตรวจจับทั้งหมด) · วัดจริงด้วยเรือ ๔ ลำ: พิกเซลที่วาด
+         ๑๕๒,๑๖๖ → ๒๙,๕๕๙ → ๕,๙๐๐ (เฉพาะโทนเขียว ๑๔๗,๙๓๒ → ๖,๗๖๓ → ๔,๗๓๔)
+         เป็นการปรับการแสดงผลล้วน ๆ ระยะและกลไกตรวจจับจริงไม่เปลี่ยน
+         (ไม่ใช้ปุ่มบนแผนที่ เพราะตัวจัดระเบียบ runOrganize เก็บปุ่ม topright ที่ไม่เข้าหมวด
+          ลง #rr-stash ซึ่งซ่อนอยู่ — ชะตากรรมเดียวกับปุ่มวาง/ล้างเรือเดิม)
   · [v17.51.1] แก้ popup ๘ ใบที่ยังเป็นเปลือกขาวปริยายของ Leaflet ให้เข้าธีม CIC มืด —
       Weather · Marine Weather · Wave Field · HYCOM/SVP · น้ำขึ้นน้ำลง HII · SWAN ·
       Storm Surge · พายุหมุน GDACS (คลาส .mda-tooltip ทาสีผิดชั้น: ลงที่ราก .leaflet-popup
@@ -304,12 +317,12 @@
          ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker
          v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump
          display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.51.1 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.52.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.51.1';
+        const APP_VERSION = '17.52.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -7479,7 +7492,6 @@
             margin-bottom:var(--space-2);
             font-size:var(--text-sm); line-height: 1.55;
             color: var(--n-200);
-            cursor: pointer;
             transition: all var(--dur-calm) cubic-bezier(0.4, 0, 0.2, 1);
         }
         #mda-ai-modal .mda-staff-coa:hover {
@@ -7487,10 +7499,21 @@
             background: rgba(15,23,42,0.8);
             box-shadow: none;
         }
+        /* [v17.52.0 COA-PICK] หัวการ์ด = ปุ่มกาง/ย่อรายละเอียด (ดู ไม่ใช่ตกลงใจ)
+           การตกลงใจอยู่ที่แถวปุ่มด้านล่างซึ่งเห็นทุกใบเสมอ */
         #mda-ai-modal .mda-staff-coa .hd {
             display: flex; justify-content: space-between; gap:var(--space-1-5);
             align-items: center;
             font-weight: 700; color: var(--n-100);
+            cursor: pointer; user-select: none;
+        }
+        #mda-ai-modal .mda-staff-coa .hd:hover { color: var(--brass); }
+        #mda-ai-modal .mda-staff-coa .hd:focus-visible {
+            outline: 1px solid rgb(var(--brass-rgb) / .65); outline-offset: 2px;
+        }
+        #mda-ai-modal .mda-staff-coa .cvt {
+            display: inline-block; width: 1em;
+            color: var(--text-muted); font-weight: 400;
         }
         #mda-ai-modal .mda-staff-coa.sel {
             border-color: rgb(var(--brass-rgb) / .55);
@@ -7553,6 +7576,18 @@
         }
         #mda-ai-modal .mda-staff-coa-acts button.go {
             color: var(--ok-hi); border-color: rgb(var(--brass-rgb) / 0.45);
+        }
+        /* [v17.52.0 COA-PICK] แถวปุ่มอยู่นอก .cbody จึงเห็นแม้การ์ดย่อ — กดเลือกได้ทุกใบ */
+        #mda-ai-modal .mda-staff-coa.collapsed .mda-staff-coa-acts { margin-top:var(--space-1); }
+        #mda-ai-modal .mda-staff-coa-acts button.on {
+            color: var(--brass); border-color: rgb(var(--brass-rgb) / 0.55);
+            background: rgb(var(--brass-rgb) / 0.10);
+        }
+        #mda-ai-modal .mda-staff-coa-acts button:disabled {
+            cursor: default; opacity: .85;
+        }
+        #mda-ai-modal .mda-staff-coa-acts button.go:disabled {
+            color: var(--text-muted); border-color: rgba(148,163,184,0.22); opacity: .55;
         }
         /* แถบเทียบ "เวลาถึง CDP-1" ของทุก หป. บนแกนเดียวกัน */
         #mda-ai-modal .mda-coa-gantt {
@@ -8662,6 +8697,14 @@ window.udcIco = udcIco;
                 <span class="label">ล้างเรือที่วางไว้</span>
                 <span class="bf-dp-arrow">›</span>
             </div>
+            <!-- [v17.52.0 PVVIEW-2] สลับระดับการแสดงผลพื้นที่ตรวจจับ — วางไว้ในหมวดเรือตรวจการณ์
+                 เพราะเป็นการควบคุม «การแสดงผล» ของหน่วยในหมวดนี้โดยตรง (ไม่กระทบการตรวจจับจริง) -->
+            <div class="bf-dp-row bf-pv" data-bf-cmd="pv-sensor-view" id="bf-pv-sensor-view"
+                 title="สลับการแสดงผลพื้นที่ตรวจจับ (เต็ม → เฉพาะวง → ปิด) · ไม่กระทบระยะตรวจจับจริง">
+                <span class="bf-dp-ico"><svg class="ico" aria-hidden="true"><use href="#i-radar"/></svg></span>
+                <span class="label">พื้นที่ตรวจจับ: เต็ม</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
         </div>
     </div>
 
@@ -8883,7 +8926,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.51.1 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.52.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9357,7 +9400,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.51.1 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.52.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9376,7 +9419,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.51.1 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.52.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา
                  — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
@@ -10388,7 +10431,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.51.1 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.52.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -13750,6 +13793,58 @@ function addEngLog(msg) {
 
 let pvUserCount     = 0;   // counter for user-placed vessels
 
+/* ── [v17.52.0 PVVIEW-1] ระดับการแสดงผล «พื้นที่ตรวจจับ» ของเรือลาดตระเวน ──────
+   ปัญหา : ร่องรอยกวาดโซนาร์ (swath) ของเรือแต่ละลำเป็นแถบสีเรือ (ปริยาย #64ffda)
+           ที่สะสมย้อนหลัง ๑๕๐ จุด เมื่อวางเรือหลายลำแถบจะทับกันจนจอกลายเป็นสีเขียวทึบ
+           อ่านภาพยุทธการไม่ออก
+   ทางแก้ : ให้ผู้ใช้เลือกระดับการแสดงผลได้ ๓ ระดับ (ปุ่มมุมขวาบนของแผนที่)
+     full  — ร่องรอยกวาด + วงรัศมีเรดาร์/โซนาร์ + ระลอกโซนาร์  (ค่าปริยาย เหมือนเดิม)
+     rings — ตัดร่องรอยกวาดออก เหลือวงรัศมี + ระลอก           (แนะนำเมื่อเรือ ≥ ๓ ลำ)
+     off   — ไม่แสดงพื้นที่ตรวจจับเลย เหลือตัวเรือ · เส้นทางลาดตระเวน · เขตใช้อาวุธ
+   ★ เป็นการปรับ «การแสดงผล» ล้วน ๆ — ระยะตรวจจับจริงและกลไกการตรวจพบไม่เปลี่ยนตาม */
+const PV_SENSOR_VIEWS = ['full', 'rings', 'off'];
+const PV_SENSOR_VIEW_META = {
+    full:  { txt: 'พื้นที่ตรวจจับ: เต็ม',      hint: 'ร่องรอยกวาด + วงรัศมี + ระลอกโซนาร์',        col: 'rgba(100,255,218,.75)', ico: 'i-radar' },
+    rings: { txt: 'พื้นที่ตรวจจับ: เฉพาะวง',  hint: 'ตัดร่องรอยกวาดออก — ลดสีเขียวทับจอ',        col: 'rgba(251,191,36,.85)',  ico: 'i-radar' },
+    off:   { txt: 'พื้นที่ตรวจจับ: ปิด',       hint: 'ซ่อนพื้นที่ตรวจจับทั้งหมด (ยังตรวจจับตามปกติ)', col: 'rgba(148,163,184,.75)', ico: 'i-eye'   },
+};
+let pvSensorView = 'full';
+
+/** ปรับหน้าตาแถวคำสั่งในแผงวางกำลังให้ตรงกับระดับที่เลือกอยู่
+ *  [v17.52.0 PVVIEW-2] ตัวควบคุมอยู่ในแผงวางกำลัง หมวดเรือตรวจการณ์ (#bf-pv-sensor-view) */
+function _pvSensorViewSync() {
+    const m = PV_SENSOR_VIEW_META[pvSensorView] || PV_SENSOR_VIEW_META.full;
+    const row = document.getElementById('bf-pv-sensor-view');
+    if (row) {
+        const ico = row.querySelector('.bf-dp-ico use');
+        const lbl = row.querySelector('.label');
+        if (ico) ico.setAttribute('href', '#' + m.ico);
+        if (lbl) { lbl.textContent = m.txt; lbl.style.color = m.col; }
+        row.title = m.hint + ' — กดเพื่อสลับระดับ (เต็ม → เฉพาะวง → ปิด)';
+    }
+}
+
+/**
+ * ตั้งระดับการแสดงผลพื้นที่ตรวจจับของเรือลาดตระเวน
+ * @param {'full'|'rings'|'off'} mode
+ */
+function setPVSensorView(mode) {
+    if (PV_SENSOR_VIEWS.indexOf(mode) < 0) return;
+    pvSensorView = mode;
+    _pvSensorViewSync();
+    const m = PV_SENSOR_VIEW_META[mode];
+    addLog('👁 การแสดงผลพื้นที่ตรวจจับเรือลาดตระเวน → ' + m.txt.replace('พื้นที่ตรวจจับ: ', '') +
+           ' (' + m.hint + ')', 'var(--teal)');
+}
+
+/** สลับระดับถัดไปแบบวน: เต็ม → เฉพาะวง → ปิด → เต็ม */
+function cyclePVSensorView() {
+    const i = PV_SENSOR_VIEWS.indexOf(pvSensorView);
+    setPVSensorView(PV_SENSOR_VIEWS[(i + 1) % PV_SENSOR_VIEWS.length]);
+}
+window.setPVSensorView   = setPVSensorView;
+window.cyclePVSensorView = cyclePVSensorView;
+
 // ── ปุ่มเปิด-ปิด ──
 const placePatrolBtn = L.control({ position: 'topright' });
 placePatrolBtn.onAdd = function() {
@@ -13805,6 +13900,10 @@ clearPatrolBtn.onAdd = function() {
     return btn;
 };
 clearPatrolBtn.addTo(map);
+
+// [v17.52.0 PVVIEW-2] ตัวสลับระดับการแสดงผลพื้นที่ตรวจจับ ไม่ได้อยู่บนแผนที่แล้ว —
+// ปุ่มบนแผนที่ตำแหน่ง topright ถูกตัวจัดระเบียบ (runOrganize) เก็บเข้า #rr-stash เช่นเดียวกับ
+// ปุ่มวาง/ล้างเรือ จึงย้ายไปเป็นแถวคำสั่งในแผงวางกำลัง หมวด PATROL VESSELS แทน
 
 // ── ปุ่มวางยานใต้น้ำไร้คนขับ Guardian ──────────────────────────────
 const placeGUUVBtn = L.control({ position: 'topright' });
@@ -22227,7 +22326,9 @@ function drawPatrolVessels() {
         }
 
         // ── ๒. ร่องรอยเส้นทางกวาด (แนวทางเดินของลำคลื่นโซนาร์) ────
-        if (v.swathHistory && v.swathHistory.length > 3 && v.sonarNm > 0) {
+        //    [v17.52.0 PVVIEW-1] แสดงเฉพาะระดับ «เต็ม» — ที่เหลือปิด เพราะแถบนี้คือ
+        //    ตัวการหลักที่ทำให้จอเขียวทึบเมื่อวางเรือหลายลำ
+        if (pvSensorView === 'full' && v.swathHistory && v.swathHistory.length > 3 && v.sonarNm > 0) {
             const hw = v.sonarNm * _pnm;
             const pts = v.swathHistory.map(function(p){return pn(p[0],p[1]);});
             const left=[], right=[];
@@ -22264,7 +22365,8 @@ function drawPatrolVessels() {
         }
 
         // ── ๓. วงรัศมีพื้นที่ครอบคลุมของเซนเซอร์ ───────────────────
-        if (v.radarNm > 0) {
+        //    [v17.52.0 PVVIEW-1] ระดับ «ปิด» ซ่อนทั้งวงเรดาร์และวง/ระลอกโซนาร์
+        if (pvSensorView !== 'off' && v.radarNm > 0) {
             const rPx=v.radarNm*_pnm;
             ctx.save(); ctx.setLineDash([4,6]); ctx.lineWidth=0.9;
             ctx.strokeStyle='rgba(100,255,218,0.18)';
@@ -22274,7 +22376,7 @@ function drawPatrolVessels() {
             hudText('R '+v.radarNm+'nm',vx,vy-rPx-3); // [v16.0.5 W5-Q5] halo
             ctx.restore();
         }
-        if (v.sonarNm > 0 && v.hasASW) {
+        if (pvSensorView !== 'off' && v.sonarNm > 0 && v.hasASW) {
             // ระยะโซนาร์ใช้งานจริง = ระยะพื้นฐาน × ผังความเร็วเสียง × การลดทอนจากสภาพทะเล
             const effSonarNm = v.sonarNm * svpMod * SS_MODS.sonarRange[seaState];
             const sPx = effSonarNm * _pnm;
@@ -40234,6 +40336,13 @@ window.toggleSat3D = toggleSat3D;
                             manualCAPHelo();
                         } else if (cmd === 'mine-lay' && typeof layControlledMinefield === 'function') {
                             layControlledMinefield();
+                        } else if (cmd === 'pv-sensor-view' && typeof cyclePVSensorView === 'function') {
+                            /* [v17.52.0 PVVIEW-2] สลับระดับการแสดงผล — ไม่ใช่คำสั่ง one-shot
+                               จึงรายงานสถานะใหม่แทนคำว่า «สั่งการแล้ว» */
+                            cyclePVSensorView();
+                            const l2 = row.querySelector('.label');
+                            if (typeof toast === 'function' && l2) toast('🔵 ' + l2.textContent.trim());
+                            return;
                         }
                     } catch(_) {}
                     // [v16.0.4 W4-UX14] COMMAND rows เป็นคำสั่ง one-shot → ระบุว่า "สั่งการแล้ว" ชัดเจน
@@ -40779,6 +40888,9 @@ const state = {
     running: false,
     deployed: false,
     wired: false,
+    /* [v17.52.0 COA-PICK] การ์ด หป. ใบไหนกางรายละเอียดอยู่ — {id: true|false}
+       ถ้าไม่มีคีย์ของ หป. ใด ให้ถือค่าปริยาย: ใบที่เลือกอยู่กาง ที่เหลือย่อ */
+    coaOpen: {},
 };
 
 function $id(s) { return document.getElementById(s); }
@@ -41634,6 +41746,72 @@ function _coaGantt(plan) {
     return '<div class="mda-coa-gantt"><div class="ghd">เทียบเวลาถึง CDP-1 — แกนร่วม ๐–' + axis + ' นาที</div>' + rows + '</div>';
 }
 
+/**
+ * [v17.52.0 COA-PICK] การ์ด หป. ใบนี้กางรายละเอียดอยู่หรือไม่
+ * ค่าปริยาย (ยังไม่เคยกด) = กางเฉพาะใบที่เลือกอยู่
+ * @param   {object} c    หนทางปฏิบัติ
+ * @param   {object} plan
+ * @returns {boolean}
+ */
+function _coaIsOpen(c, plan) {
+    const o = state.coaOpen || (state.coaOpen = {});
+    return (c.id in o) ? !!o[c.id] : (c.id === plan.coa.id);
+}
+
+/**
+ * [v17.52.0 COA-PICK] วาดการ์ด หป. ทั้งชุด — แยกออกจาก _renderAll เพื่อให้การกาง/ย่อ
+ * รายละเอียดไม่ต้องวาดแผนที่และคอลัมน์อื่นใหม่ทั้งหมด
+ *
+ * เดิม (ตั้งแต่ v17.41.0) แถวปุ่มปฏิบัติการอยู่ใน .cbody ซึ่ง .collapsed ซ่อนไว้
+ * ผลคือ หป. ที่ยังไม่ได้เลือก «ไม่มีปุ่มให้กดเลือกเลย» — ตกลงใจเปลี่ยน หป. ไม่ได้จริง
+ * ทางแก้: ยกแถวปุ่มออกมานอก .cbody ให้เห็นทุกใบเสมอ ส่วนหัวการ์ดใช้กาง/ย่อรายละเอียด
+ * @param {object} plan
+ */
+function _renderCoaCards(plan) {
+    const cb = $id('mda-staff-coas');
+    if (!cb) return;
+    const lock = state.deployed;   // วางกำลังแล้ว = ล็อกการเปลี่ยน หป.
+    cb.innerHTML = plan.coas.map(c => {
+        const sel = c.id === plan.coa.id, tot = c.s + c.f + c.a, open = _coaIsOpen(c, plan);
+        const esc = String(c.id).replace(/'/g, "\\'");
+        return '<div class="mda-staff-coa' + (sel ? ' sel' : '') + (open ? '' : ' collapsed') + '">' +
+               '<div class="hd" role="button" tabindex="0"' +
+               ' title="' + (open ? 'ย่อ' : 'กาง') + 'รายละเอียด ' + c.id + '"' +
+               ' onclick="toggleCOADetail(\'' + esc + '\')"' +
+               ' onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleCOADetail(\'' + esc + '\');}">' +
+               '<span><span class="cvt">' + (open ? '▾' : '▸') + '</span>' + c.id + ' · ' + c.name +
+               ' <span class="src">⚙ กลไกกฎ</span></span>' +
+               (sel ? '<span class="pick">★ ฝสธ. เสนอ</span>' : '<span class="pick" style="color:var(--text-muted);">' + tot + '/300</span>') +
+               '</div><div class="cbody">' + c.concept +
+               '<div style="margin-top:var(--space-0-5);color:var(--n-300);font-size:var(--text-xs);">เหมาะสม ' + c.s + ' · เป็นไปได้ ' + c.f + ' · ยอมรับได้ ' + c.a + ' — รวม ' + tot + '/300</div>' +
+               _coaMeta(c, plan, sel) +
+               '</div>' +
+               '<div class="mda-staff-coa-acts">' +
+               (sel
+                   ? '<button type="button" class="on" disabled>✓ หป. ที่เลือกอยู่</button>'
+                   : '<button type="button" class="go"' + (lock ? ' disabled title="วางกำลังแล้ว — เปลี่ยน หป. ไม่ได้"' : '') +
+                     ' onclick="selectCOA(\'' + esc + '\')">เลือก หป. นี้</button>') +
+               '<button type="button" onclick="reviewCOA(\'' + esc + '\')">ดูรายละเอียด…</button>' +
+               '<button type="button" onclick="compareCOAs()">เปรียบเทียบ…</button>' +
+               '</div></div>';
+    }).join('') + _coaGantt(plan) +
+        (plan.llmCoa ? '<div style="margin-top:var(--space-1-5);color:var(--text-muted);font-size:var(--text-xs);font-style:italic;">' +
+            '🧠 มีข้อเสนอจากผู้ช่วย AI เพิ่มเติม — เป็นคำแนะนำประกอบ ไม่ใช่ ๑ ใน ๓ หป. ที่ให้คะแนนไว้ (ดูช่องผู้ช่วย AI)</div>' : '');
+}
+
+/**
+ * [v17.52.0 COA-PICK] กาง/ย่อรายละเอียดการ์ด หป. — เป็นการ «ดู» ไม่ใช่การ «ตกลงใจ»
+ * @param {string} coaId
+ */
+function toggleCOADetail(coaId) {
+    if (!state.plan) return;
+    const c = state.plan.coas.find(x => x.id === coaId);
+    if (!c) return;
+    if (!state.coaOpen) state.coaOpen = {};
+    state.coaOpen[coaId] = !_coaIsOpen(c, state.plan);
+    _renderCoaCards(state.plan);
+}
+
 function _renderAll(plan) {
     const eb = $id('mda-staff-ecoas');
     if (eb) eb.innerHTML = plan.ecoas.map(e => {
@@ -41646,25 +41824,7 @@ function _renderAll(plan) {
     }).join('');
     const ec = $id('mda-staff-ecoa-count'); if (ec) ec.textContent = plan.ecoas.length + ' ECOA';
     const wgBtn = $id('mda-staff-wargame-btn'); if (wgBtn) wgBtn.style.display = 'inline-block';
-    const cb = $id('mda-staff-coas');
-    /* [v17.41.0] การ์ด หป. — หป. ที่เลือกกางเต็ม ที่เหลือย่อเหลือชื่อ+คะแนนรวม
-       ปุ่มปฏิบัติการแยกออกจากตัวการ์ด: การแตะการ์ดจะไม่กลายเป็นการตกลงใจโดยไม่ตั้งใจอีกต่อไป */
-    if (cb) cb.innerHTML = plan.coas.map(c => {
-        const sel = c.id === plan.coa.id, tot = c.s + c.f + c.a;
-        return '<div class="mda-staff-coa' + (sel ? ' sel' : ' collapsed') + '"><div class="hd"><span>' + c.id + ' · ' + c.name +
-               ' <span class="src">⚙ กลไกกฎ</span></span>' +
-               (sel ? '<span class="pick">★ ฝสธ. เสนอ</span>' : '<span class="pick" style="color:var(--text-muted);">' + tot + '/300</span>') +
-               '</div><div class="cbody">' + c.concept +
-               '<div style="margin-top:var(--space-0-5);color:var(--n-300);font-size:var(--text-xs);">เหมาะสม ' + c.s + ' · เป็นไปได้ ' + c.f + ' · ยอมรับได้ ' + c.a + ' — รวม ' + tot + '/300</div>' +
-               _coaMeta(c, plan, sel) +
-               '<div class="mda-staff-coa-acts">' +
-               '<button type="button" onclick="reviewCOA(\'' + c.id + '\')">ดูรายละเอียด…</button>' +
-               '<button type="button" onclick="compareCOAs()">เปรียบเทียบ…</button>' +
-               (sel ? '' : '<button type="button" class="go" onclick="selectCOA(\'' + c.id + '\')">เลือก หป. นี้</button>') +
-               '</div></div></div>';
-    }).join('') + _coaGantt(plan) +
-        (plan.llmCoa ? '<div style="margin-top:var(--space-1-5);color:var(--text-muted);font-size:var(--text-xs);font-style:italic;">' +
-            '🧠 มีข้อเสนอจากผู้ช่วย AI เพิ่มเติม — เป็นคำแนะนำประกอบ ไม่ใช่ ๑ ใน ๓ หป. ที่ให้คะแนนไว้ (ดูช่องผู้ช่วย AI)</div>' : '');
+    _renderCoaCards(plan);
     const cc = $id('mda-staff-coa-count'); if (cc) cc.textContent = plan.coa.id + ' ★';
     const ob = $id('mda-staff-org');
     if (ob) ob.innerHTML = plan.assets.map(a =>
@@ -41695,6 +41855,7 @@ function runPlan() {
     if (state.running) return;
     state.running = true;
     state.deployed = false;
+    state.coaOpen = {};   // [v17.52.0] แผนใหม่ = การกาง/ย่อการ์ดเดิมเป็นโมฆะ
     try { _pipeSetStage(2, 1); } catch (_) {}   // [v18.0.0] สันหลัง: ขั้น ๒ กำลังพัฒนา หป.
     const pipe = $id('mda-staff-pipe-state'); if (pipe) pipe.textContent = 'กำลังวิเคราะห์…';
     for (let i = 1; i <= 5; i++) { const el = $id('mda-staff-s' + i); if (el) el.classList.remove('run', 'done'); }
@@ -41750,10 +41911,19 @@ function runPlan() {
 
 /* ── เลือกหนทางปฏิบัติ (COA Selection) ────────────────────────── */
 function selectCOA(coaId) {
-    if (!state.plan || state.running || state.deployed) return;
+    if (!state.plan || state.running) return;
+    /* [v17.52.0] วางกำลังแล้วเปลี่ยน หป. ไม่ได้ — แต่ต้องบอกเหตุผล ไม่ใช่เงียบไปเฉย ๆ */
+    if (state.deployed) {
+        try {
+            if (typeof addLog === 'function')
+                addLog('[STAFF] 🔒 วางกำลังตามแผนแล้ว — เปลี่ยน หป. ไม่ได้ ต้องวางแผนใหม่ก่อน', 'var(--amber)');
+        } catch (e) {}
+        return;
+    }
     const coa = state.plan.coas.find(c => c.id === coaId);
     if (!coa) return;
     state.plan.coa = coa;
+    state.coaOpen = {};   // กลับสู่ค่าปริยาย: ใบที่เพิ่งเลือกกางเอง ที่เหลือย่อ
     state.plan.assets = _allocate(coa, state.plan.tp);
     /* เปลี่ยน หป. = การตรวจทานเดิมเป็นโมฆะ ต้องเริ่มบันไดสถานะใหม่ */
     if (state.plan.review) { state.plan.review.staff = false; state.plan.review.cmdr = false; state.plan.review.tStaff = null; }
@@ -41772,6 +41942,8 @@ function selectCOA(coaId) {
 function reviewCOA(coaId) {
     if (!state.plan) return;
     if (coaId && state.plan.coa.id !== coaId) { selectCOA(coaId); }
+    /* กด «ดูรายละเอียด…» ต้องกางการ์ดใบนั้นให้เห็นด้วยเสมอ ไม่ใช่แค่เลื่อนจอ */
+    if (coaId) { if (!state.coaOpen) state.coaOpen = {}; state.coaOpen[coaId] = true; }
     if (state.plan.review) {
         state.plan.review.staff = true;
         state.plan.review.tStaff = _clockTxt();
@@ -42823,10 +42995,12 @@ if (!wire()) {
 
 window.MDA = window.MDA || {};
 window.MDA.StaffPlan = { runPlan, approvePlan, toggleView, state, selectCOA,
-                         reviewCOA, compareCOAs, openDeployPanel, closeDeployPanel, submitTaskOrder };
+                         reviewCOA, toggleCOADetail, compareCOAs,
+                         openDeployPanel, closeDeployPanel, submitTaskOrder };
 window.selectCOA = selectCOA;
 /* [v17.41.0] ปุ่มบนการ์ด หป. และแผงยืนยันเรียกผ่าน onclick จึงต้องอยู่บน window */
 window.reviewCOA = reviewCOA;
+window.toggleCOADetail = toggleCOADetail;   // [v17.52.0 COA-PICK] กาง/ย่อการ์ด หป.
 window.compareCOAs = compareCOAs;
 window.openDeployPanel = openDeployPanel;
 window.closeDeployPanel = closeDeployPanel;
