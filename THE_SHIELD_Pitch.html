@@ -115,6 +115,62 @@
 
   --f-mono:'JetBrains Mono','Share Tech Mono',monospace;
 
+  /* mono stack that also covers Thai glyphs (JetBrains/Share Tech Mono have none) */
+
+  --f-mono-th:'JetBrains Mono','Share Tech Mono','Sarabun','TH Sarabun New',monospace;
+
+  /* ---- semantic: glow / boot surface ---- */
+
+  --glow-cyan:rgba(0,212,255,.6);
+
+  --track-line:rgba(0,212,255,.12);
+
+  --bg-boot-glow:#04263f;
+
+  /* ---- z-index scale (single source of truth — see stacking order below) ---- */
+
+  --z-raised:2;
+
+  --z-rail:900;
+
+  --z-nav:1000;
+
+  --z-nav-top:1002;
+
+  --z-progress:1200;
+
+  --z-modal:99990;
+
+  --z-boot:99995;
+
+  --z-grain:2147483000;
+
+  /* ---- duration scale ---- */
+
+  --dur-fast:.25s;
+
+  --dur-mid:.6s;
+
+  --dur-slow:.7s;
+
+  /* ---- mono type scale ---- */
+
+  --fs-mono-xs:9.5px;
+
+  --fs-mono-sm:10px;
+
+  --fs-mono-md:11px;
+
+  --fs-mono-lg:12.5px;
+
+  --track-wide:.42em;
+
+  --track-mid:.28em;
+
+  --track-disp:.16em;
+
+  --track-tight:.12em;
+
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
@@ -259,7 +315,7 @@ h2.sec-title{
 
 #topnav{
 
-  position:fixed;inset:0 0 auto 0;z-index:1000;
+  position:fixed;inset:0 0 auto 0;z-index:var(--z-nav);
 
   display:flex;align-items:center;justify-content:space-between;
 
@@ -285,7 +341,7 @@ h2.sec-title{
 
 }
 
-.nav-logo{display:flex;align-items:center;gap:11px;z-index:1002}
+.nav-logo{display:flex;align-items:center;gap:11px;z-index:var(--z-nav-top)}
 
 .nav-logo svg{width:26px;height:26px;flex:none}
 
@@ -333,7 +389,7 @@ h2.sec-title{
 
 #burger{
 
-  display:none;z-index:1002;background:none;border:0;cursor:pointer;
+  display:none;z-index:var(--z-nav-top);background:none;border:0;cursor:pointer;
 
   width:40px;height:40px;position:relative;
 
@@ -791,7 +847,7 @@ body.menu-open #burger span:nth-child(3){top:19px;transform:rotate(-45deg)}
 
 .reel-backdrop{
 
-  position:fixed;inset:0;z-index:99990;
+  position:fixed;inset:0;z-index:var(--z-modal);
 
   display:flex;align-items:center;justify-content:center;padding:2vh 2vw;
 
@@ -1775,9 +1831,9 @@ footer .mono-line{
 
   <div class="boot-skip">
 
-    <span class="lang-th">กดปุ่มใดก็ได้เพื่อข้าม</span>
+    <span class="lang-th">กดปุ่มใดก็ได้ หรือแตะหน้าจอ เพื่อข้าม</span>
 
-    <span class="lang-en">Press any key to skip</span>
+    <span class="lang-en">Press any key or tap the screen to skip</span>
 
   </div>
 
@@ -4755,23 +4811,30 @@ footer .mono-line{
 
 /* ============ HERO BOOT SEQUENCE ============ */
 
-#bootSeq{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;
+/* Fail-safe: the overlay is HIDDEN by default and only shown once JS adds .arm.
+   If JS is disabled or throws before the timers are set, the page stays usable. */
 
-  background:radial-gradient(120% 80% at 50% 38%,#04263f,#010d1a 72%);font-family:var(--f-mono);
+#bootSeq{position:fixed;inset:0;z-index:var(--z-boot);display:none;flex-direction:column;align-items:center;justify-content:center;
 
-  transition:opacity .7s ease,visibility .7s ease}
+  background:radial-gradient(120% 80% at 50% 38%,var(--bg-boot-glow),var(--bg-dark) 72%);font-family:var(--f-mono-th);
+
+  transition:opacity var(--dur-slow) ease,visibility var(--dur-slow) ease}
+
+#bootSeq.arm{display:flex}
 
 #bootSeq.done{opacity:0;visibility:hidden;pointer-events:none}
 
 #bootSeq .boot-wrap{width:min(560px,86vw)}
 
-#bootSeq .boot-crest{font-size:11px;letter-spacing:.42em;color:var(--teal);text-align:center;margin-bottom:8px;opacity:.85}
+#bootSeq .boot-crest{font-size:var(--fs-mono-md);letter-spacing:var(--track-wide);color:var(--teal);text-align:center;margin-bottom:8px;opacity:.85}
 
-#bootSeq .boot-sys{font-size:10px;letter-spacing:.28em;color:var(--text-muted);text-align:center;margin-bottom:24px}
+#bootSeq .boot-sys{font-size:var(--fs-mono-sm);letter-spacing:var(--track-mid);color:var(--text-muted);text-align:center;margin-bottom:24px}
 
-#bootSeq .boot-lines{min-height:152px;font-size:12.5px;line-height:2.05;color:var(--text-muted)}
+/* min-height is expressed in em so it tracks the type scale instead of assuming 5 lines @12.5px */
 
-#bootSeq .boot-lines .bl{opacity:0;transform:translateY(4px);transition:opacity .25s ease,transform .25s ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#bootSeq .boot-lines{min-height:calc(2.05em * 5);font-size:var(--fs-mono-lg);line-height:2.05;color:var(--text-muted)}
+
+#bootSeq .boot-lines .bl{opacity:0;transform:translateY(4px);transition:opacity var(--dur-fast) ease,transform var(--dur-fast) ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 #bootSeq .boot-lines .bl.in{opacity:1;transform:none}
 
@@ -4779,19 +4842,44 @@ footer .mono-line{
 
 #bootSeq .boot-lines .sec{color:var(--green)}
 
-#bootSeq .boot-bar{height:2px;width:100%;background:rgba(0,212,255,.12);margin:18px 0 28px;border-radius:2px;overflow:hidden}
+#bootSeq .boot-bar{height:2px;width:100%;background:var(--track-line);margin:18px 0 28px;border-radius:2px;overflow:hidden}
 
 #bootSeq .boot-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--teal))}
 
-#bootSeq.run .boot-bar i{width:100%;transition:width 2.05s cubic-bezier(.4,0,.1,1)}
+/* --boot-bar-dur is written by the boot script so the bar lands exactly on the ONLINE reveal */
 
-#bootSeq .boot-online{text-align:center;font-family:var(--f-disp);font-size:clamp(22px,4.6vw,42px);font-weight:800;letter-spacing:.16em;
+#bootSeq.run .boot-bar i{width:100%;transition:width var(--boot-bar-dur,1.95s) cubic-bezier(.4,0,.1,1)}
 
-  color:var(--white);opacity:0;transform:scale(.96);transition:opacity .6s ease,transform .6s ease;text-shadow:0 0 28px rgba(0,212,255,.6)}
+/* 5.2vw keeps the wordmark on ONE line inside the 86vw/560px wrap at every width (measured) */
+
+#bootSeq .boot-online{text-align:center;font-family:var(--f-disp);font-size:clamp(14px,5.2vw,34px);font-weight:800;letter-spacing:var(--track-disp);
+
+  white-space:nowrap;
+
+  color:var(--white);opacity:0;transform:scale(.96);transition:opacity var(--dur-mid) ease,transform var(--dur-mid) ease;text-shadow:0 0 28px var(--glow-cyan)}
 
 #bootSeq.online .boot-online{opacity:1;transform:none}
 
-#bootSeq .boot-skip{position:absolute;right:18px;bottom:15px;font-size:9.5px;letter-spacing:.12em;color:var(--text-muted);opacity:.55}
+#bootSeq .boot-skip{position:absolute;right:18px;bottom:15px;font-size:var(--fs-mono-xs);letter-spacing:var(--track-tight);color:var(--text-muted);opacity:.55;
+
+  max-width:70vw;text-align:right;line-height:1.6}
+
+/* Narrow screens: wrap the log lines (with hanging indent) instead of truncating them —
+   at 375px four of five lines used to be cut off by the ellipsis. */
+
+@media (max-width:560px){
+
+  /* rebind the tokens for this breakpoint rather than hardcoding sizes on the components */
+
+  #bootSeq{--fs-mono-lg:clamp(10px,2.9vw,12.5px);--track-disp:.1em}
+
+  #bootSeq .boot-wrap{width:92vw}
+
+  #bootSeq .boot-lines{line-height:1.95}
+
+  #bootSeq .boot-lines .bl{white-space:normal;overflow-wrap:anywhere;text-overflow:clip;padding-left:1.1em;text-indent:-1.1em}
+
+}
 
 @media (prefers-reduced-motion:reduce){ #bootSeq{display:none!important} }
 
@@ -7001,71 +7089,151 @@ if(cv && cv.getContext){
 
 (function(){ "use strict";
 
-  var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   var bs = document.getElementById('bootSeq');
 
   if(!bs) return;
 
-  if(RM){ if(bs.parentNode) bs.parentNode.removeChild(bs); return; }
+  /* ---- timing: single source of truth. The CSS bar duration is derived from these,
+         so adding or removing a LINES entry can never desync the bar from the reveal. ---- */
 
-  var host = document.getElementById('bootLines');
+  var LEAD = 260,        // delay before the first line / the bar starts
 
-  var LINES = [
+      STEP = 340,        // gap between log lines
 
-    ['> INITIALIZING MARITIME DOMAIN AWARENESS CORE …',''],
+      ONLINE_GAP = 250,  // pause after the last line before "ONLINE"
 
-    ['> LOADING BATHYMETRY · DMR 1:50,000 SURVEY GRID … ','OK'],
+      HOLD = 1050,       // how long "ONLINE" stays before the fade-out
 
-    ['> FUSING AIS / RADAR / SONAR SENSOR FEEDS … ','OK'],
+      FADE = 700;        // must match --dur-slow
 
-    ['> ESTABLISHING ศรชล. C2 SECURE UPLINK … ','SECURE'],
+  var timers = [], done = false, locked = false;
 
-    ['> THE SHIELD 3.0 — ALL STATIONS MANNED','']
+  /* Fail-safe armed FIRST: whatever throws below, the overlay can never trap the page. */
 
-  ];
+  var failsafe = setTimeout(teardown, 8000);
 
-  var nodes = LINES.map(function(pair){
+  function teardown(){
 
-    var d = document.createElement('div'); d.className='bl';
-
-    d.appendChild(document.createTextNode(pair[0]));
-
-    if(pair[1]){ var s=document.createElement('span'); s.className=(pair[1]==='SECURE'?'sec':'ok'); s.textContent=pair[1]; d.appendChild(s); }
-
-    host.appendChild(d); return d;
-
-  });
-
-  var timers=[], done=false;
-
-  function finish(){
-
-    if(done) return; done=true;
+    clearTimeout(failsafe);
 
     for(var i=0;i<timers.length;i++) clearTimeout(timers[i]);
-
-    bs.classList.add('done');
-
-    setTimeout(function(){ if(bs.parentNode) bs.parentNode.removeChild(bs); }, 760);
 
     window.removeEventListener('keydown', finish, true);
 
     window.removeEventListener('pointerdown', finish, true);
 
+    if(locked){ document.documentElement.style.overflow=''; locked = false; }
+
+    if(bs && bs.parentNode) bs.parentNode.removeChild(bs);
+
   }
 
-  nodes.forEach(function(n,i){ timers.push(setTimeout(function(){ n.classList.add('in'); }, 260 + i*340)); });
+  function finish(){
 
-  timers.push(setTimeout(function(){ bs.classList.add('run'); }, 260));
+    if(done) return; done = true;
 
-  timers.push(setTimeout(function(){ bs.classList.add('online'); }, 260 + nodes.length*340 + 250));
+    for(var i=0;i<timers.length;i++) clearTimeout(timers[i]);
 
-  timers.push(setTimeout(finish, 260 + nodes.length*340 + 1300));
+    bs.classList.add('done');
 
-  window.addEventListener('keydown', finish, true);
+    setTimeout(teardown, FADE + 60);
 
-  window.addEventListener('pointerdown', finish, true);
+  }
+
+  try {
+
+    /* Set the language before the first paint so .lang-th/.lang-en never flash together. */
+
+    var lang = 'th';
+
+    try { lang = localStorage.getItem('currentLang') || 'th'; } catch(e){}
+
+    if(!document.body.getAttribute('data-lang')) document.body.setAttribute('data-lang', lang);
+
+    var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* Plays once per tab session; ?boot=1 or #boot forces a replay (useful when presenting). */
+
+    var force = /[?&]boot=1/.test(location.search) || location.hash === '#boot';
+
+    var seen = false;
+
+    try { seen = sessionStorage.getItem('shieldBootSeen') === '1'; } catch(e){}
+
+    if(RM || (seen && !force)){ teardown(); return; }
+
+    try { sessionStorage.setItem('shieldBootSeen','1'); } catch(e){}
+
+    var host = document.getElementById('bootLines');
+
+    var LINES = (lang === 'en') ? [
+
+      ['> INITIALIZING MARITIME DOMAIN AWARENESS CORE …',''],
+
+      ['> LOADING BATHYMETRY · DMR 1:50,000 SURVEY GRID … ','OK'],
+
+      ['> FUSING AIS / RADAR / SONAR SENSOR FEEDS … ','OK'],
+
+      ['> ESTABLISHING ศรชล. C2 SECURE UPLINK … ','SECURE'],
+
+      ['> THE SHIELD 3.0 — ALL STATIONS MANNED','']
+
+    ] : [
+
+      ['> กำลังเริ่มการทำงานศูนย์ตระหนักรู้สถานการณ์ทางทะเล …',''],
+
+      ['> โหลดข้อมูลความลึกท้องทะเล · DMR มาตราส่วน 1:50,000 … ','OK'],
+
+      ['> หลอมรวมสัญญาณ AIS / RADAR / SONAR … ','OK'],
+
+      ['> เชื่อมโยงข่ายควบคุมบัญชาการ ศรชล. … ','SECURE'],
+
+      ['> THE SHIELD 3.0 — พร้อมปฏิบัติการทุกสถานี','']
+
+    ];
+
+    var nodes = LINES.map(function(pair){
+
+      var d = document.createElement('div'); d.className='bl';
+
+      d.appendChild(document.createTextNode(pair[0]));
+
+      if(pair[1]){ var s=document.createElement('span'); s.className=(pair[1]==='SECURE'?'sec':'ok'); s.textContent=pair[1]; d.appendChild(s); }
+
+      host.appendChild(d); return d;
+
+    });
+
+    var onlineAt = LEAD + nodes.length*STEP + ONLINE_GAP;
+
+    /* The bar starts at LEAD and must be full exactly when "ONLINE" appears. */
+
+    bs.style.setProperty('--boot-bar-dur', (onlineAt - LEAD) + 'ms');
+
+    bs.classList.add('arm');
+
+    document.documentElement.style.overflow = 'hidden'; locked = true;
+
+    nodes.forEach(function(n,i){ timers.push(setTimeout(function(){ n.classList.add('in'); }, LEAD + i*STEP)); });
+
+    timers.push(setTimeout(function(){ bs.classList.add('run'); }, LEAD));
+
+    timers.push(setTimeout(function(){ bs.classList.add('online'); }, onlineAt));
+
+    timers.push(setTimeout(finish, onlineAt + HOLD));
+
+    /* Any key (including Tab) or any tap dismisses it — that is also the keyboard escape
+       hatch, so nobody can tab into content sitting behind the opaque overlay. */
+
+    window.addEventListener('keydown', finish, true);
+
+    window.addEventListener('pointerdown', finish, true);
+
+  } catch(err){
+
+    teardown();
+
+  }
 
 })();
 
@@ -7144,12 +7312,12 @@ body{
   background-attachment:fixed;
 }
 #hm2Grain{
-  position:fixed;inset:0;z-index:2147483000;pointer-events:none;opacity:.05;
+  position:fixed;inset:0;z-index:var(--z-grain);pointer-events:none;opacity:.05;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* ---- scroll progress hairline ---- */
-#hm2Progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:1200;pointer-events:none}
+#hm2Progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:var(--z-progress);pointer-events:none}
 #hm2Progress i{
   display:block;height:100%;
   background:linear-gradient(90deg,var(--cyan),var(--teal));
@@ -7159,7 +7327,7 @@ body{
 
 /* ---- fixed HUD rail (wide screens only) ---- */
 #hm2Rail{
-  position:fixed;left:20px;top:50%;transform:translateY(-50%);z-index:900;
+  position:fixed;left:20px;top:50%;transform:translateY(-50%);z-index:var(--z-rail);
   display:flex;flex-direction:column;align-items:center;gap:14px;pointer-events:none;
 }
 #hm2Rail .r-line{width:1px;height:72px;background:linear-gradient(180deg,transparent,var(--hm2-hair))}
