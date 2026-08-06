@@ -1,8 +1,12 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.51.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.51.1 · 7-Domain + AI Staff)
 
   ── รุ่นล่าสุด · รายละเอียดเต็ม (v17.40.0 ขึ้นไป) ───────────────────
+  · [v17.51.1] แก้ popup ๘ ใบที่ยังเป็นเปลือกขาวปริยายของ Leaflet ให้เข้าธีม CIC มืด —
+      Weather · Marine Weather · Wave Field · HYCOM/SVP · น้ำขึ้นน้ำลง HII · SWAN ·
+      Storm Surge · พายุหมุน GDACS (คลาส .mda-tooltip ทาสีผิดชั้น: ลงที่ราก .leaflet-popup
+      ซึ่งถูก .leaflet-popup-content-wrapper สีขาวปิดทับ) · แยกกฎ tooltip/popup ออกจากกัน
   · [v17.51.0] แถบใหม่ "CCTV เมืองพัทยา" (เกาะล้าน ๕๐ + ชายหาด ๘๕) — สแนปช็อตฝัง หมุด ◈ เขียว/ม่วง
       กดหมุด → deep-link เปิดดูสดบนเว็บพัทยา (ผู้ใช้ยืนยัน Turnstile เอง · ไม่เล่นในแผง คนละโดเมน/WS-FLV)
   · [v17.50.0] ฉากดำน้ำ 3 มิติ: texture ถอดรหัส sRGB · extinction ทั้งฉาก · เทอร์โมไคลน์ตาม SVP ·
@@ -300,12 +304,12 @@
          ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker
          v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump
          display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.51.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.51.1 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.51.0';
+        const APP_VERSION = '17.51.1';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -8879,7 +8883,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.51.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.51.1 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9353,7 +9357,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.51.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.51.1 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9372,7 +9376,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.51.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.51.1 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา
                  — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
@@ -10384,7 +10388,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.51.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.51.1 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -39352,8 +39356,35 @@ window.toggleSat3D = toggleSat3D;
                 text-transform: uppercase; letter-spacing: .05em; }
             .mda-empty { color: var(--text-muted); text-align:center; padding:var(--space-5) var(--space-2);
                 font-style: italic; font-size:var(--text-sm); }
-            .mda-tooltip { background: rgb(var(--bg-panel-rgb) / .92) !important; color:var(--n-100) !important;
+            /* [v17.51.1] คลาส .mda-tooltip ถูกใช้สองหน้าที่: เป็น tooltip จริง (bindTooltip)
+               และเป็น className ของ popup (bindPopup) อีก ๘ จุด — Weather · Marine Weather ·
+               Wave Field · HYCOM/SVP · น้ำขึ้นน้ำลง HII · SWAN · Storm Surge · พายุหมุน GDACS
+               กฎเดิมทาสีที่ราก .leaflet-popup ซึ่ง Leaflet เอา .leaflet-popup-content-wrapper
+               สีขาวปิดทับไว้ทั้งใบ ทั้ง ๘ popup จึงออกมาขาวสว่างกลางแผนที่ CIC มืด
+               จึงแยกเป็นสองกฎ: ตัวที่เป็น tooltip คงเดิม · ตัวที่เป็น popup เจาะเข้า
+               -content-wrapper / -tip / -close-button ตามแบบเดียวกับ .mda-cyber-popup */
+            .leaflet-tooltip.mda-tooltip { background: rgb(var(--bg-panel-rgb) / .92) !important; color:var(--n-100) !important;
                 border:1px solid var(--mda-edge) !important; font-size:var(--text-xs) !important; }
+            .leaflet-popup.mda-tooltip .leaflet-popup-content-wrapper {
+                background: rgb(var(--bg-panel-rgb) / .96) !important;
+                border:1px solid var(--mda-edge) !important;
+                border-radius:var(--radius-md) !important;
+                box-shadow:0 0 16px rgba(0,0,0,.5), 0 4px 14px rgba(0,0,0,.6) !important;
+                color:var(--n-100) !important;
+                font-size:var(--text-xs) !important;
+                padding:var(--space-0-5) !important;
+            }
+            .leaflet-popup.mda-tooltip .leaflet-popup-content { margin:var(--space-2) var(--space-3) !important; line-height:1.5 !important; }
+            .leaflet-popup.mda-tooltip .leaflet-popup-tip {
+                background: rgb(var(--bg-panel-rgb) / .96) !important;
+                border:1px solid var(--mda-edge) !important;
+            }
+            .leaflet-popup.mda-tooltip .leaflet-popup-close-button {
+                color:var(--n-300) !important; top:5px !important; right:7px !important; font-size:var(--text-xl) !important;
+            }
+            .leaflet-popup.mda-tooltip .leaflet-popup-close-button:hover { color:var(--crit-hi) !important; }
+            /* รูปกราฟใน popup (PM Spectrum · SVP) มีพื้นขาวของตัวเอง — คุมความกว้างไว้ไม่ให้ล้นเปลือก */
+            .leaflet-popup.mda-tooltip .leaflet-popup-content img { max-width:100% !important; }
             /* [v13.0.7] Seamark popup — solid CIC-dark chrome ให้อ่านชัดบน satellite
                [v17.32.0 P2-A · เป็นการตัดสินใจ ไม่ใช่การเผลอ] คำว่า "seamark" อยู่ใน
                บัญชีห้ามแปลงของ TOK-4 ซึ่งตั้งไว้เพื่อคุ้มครอง "สีเครื่องหมายทางเรือ
