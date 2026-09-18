@@ -12,24 +12,33 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 
 ## Current Version
 
-**v17.3.5 · 7-Domain + AI Staff**
+**v17.52.0 · 7-Domain + AI Staff**
 
 | Version | สิ่งสำคัญ |
 |---------|-----------|
-| v17.3.5 | เติม changelog เชิงบรรยาย **v16 + v17** กลับเข้า comment ส่วนหัวของ `UDC_Simulator_17.html` (เดิมหยุดที่ v15) · เอกสารล้วน ไม่แตะ logic |
-| v17.3.4 | อัปเดต comment ให้ตรงเอกสารวิจัย (บท ๓–๔) · bug audit ครบ ๙ ข้อสั่งการ · แก้ป้ายเวอร์ชันค้าง v16.0 → v17.3.4 |
-| v17.3.1–3 | UI ซีกขวา: ย้าย **LAYERS & TOOLS** ขึ้น header (ข้าง THEME) + ทำเป็น pop-up panel · เก็บกวาดป้าย/กรอบ DEPLOY ที่ค้าง |
-| v17.3.0 | **ชุดใหญ่ — ๙ ข้อสั่งการ + ขยาย Multi-Domain:** ROE Panel (ผ่าครึ่ง Threat-Vector Timeline · บันได EOF SHOUT→SHOW→SHOVE→SHOOT) · Plan Status Indicator · Jurisdiction & Legal-Authority · Underwater/Seabed COP + Sonar Grid · Shared-MDA (IFC-SG / ศรชล. Joint COP) · Strategic Analysis (PMESII/SWOT/TOWS · บทที่ ๓) · แก้ HERO/SONAR ปิดไม่ได้ · แก้ Copperhead 3D ค้าง · declutter ซีกขวา (default collapsed) |
-| v17.2.5 | ปุ่ม **PITCH** ใน header → ลิงก์กลับหน้านำเสนอ `THE_SHIELD_Pitch.html` |
-| v17.2.4 | ปรับยศผู้พัฒนาในส่วนหัวไฟล์ |
-| v17.0.0 | **ฝ่ายเสนาธิการ AI (AI Staff Planner)** — ผู้ช่วยวางแผนเชิงยุทธการ |
-| v16.x   | 7-Domain MDA, FXAA/SSAO 3D pipeline, UI regroup |
-| v15.x   | ขยาย font set (Thai + HUD), 4D ocean (HYCOM live) |
-| v13–v14 | Static seamark/cable snapshots, AI proxy worker |
+| v17.52.0 | แก้ ๒ จุดจากการทดสอบก่อนนำเสนอ — **COA-PICK** การ์ดหนทางปฏิบัติกดเลือกไม่ได้ (แถวปุ่มติดอยู่ใน `.cbody` ที่ `.collapsed` ซ่อน ตั้งแต่ v17.41.0) · **PVVIEW** ปุ่มสลับ "พื้นที่ตรวจจับ" ๓ ระดับ (เต็ม → เฉพาะวง → ปิด) ในหมวด PATROL VESSELS |
+| v17.51.x | popup ๘ ใบเข้าธีม CIC มืด (`.mda-tooltip` ทาสีผิดชั้น) · แถบใหม่ **CCTV เมืองพัทยา** (เกาะล้าน ๕๐ + ชายหาด ๘๕ · deep-link ดูสด) |
+| v17.50.0 | **ฉากดำน้ำ ๓ มิติ** — texture ถอดรหัส sRGB · extinction ทั้งฉาก · เทอร์โมไคลน์ตาม SVP |
+| v17.47–.49 | แผง **Tidal Monitor** — จัดการแสดงผลใหม่ทั้งแผง (ไม่แตะ logic และ id ที่ JS เขียนถึง) |
+| v17.46.0 | **ENV-1** SST จริง + ดวงจันทร์/IWI (ต่อยอด Baan-Pla Link · มจธ.) |
+| v17.45.0 | **CCTV-1** แถบเซนเซอร์ "CCTV Street" ในโดเมนฝั่ง-ชายฝั่ง |
+| v17.40–.44 | **ธีม GOTHAM** — ถอดบทเรียนงานออกแบบ Palantir Gotham/Blueprint เป็น "ตัวเลือก" ๒ แกน · ความลึกจากแสงด้านบนบนพื้นเกือบดำ · ยกแผงข้าง/แถบก้นจอขึ้นทัดเทียมหัวจอ · เขตแดน EEC/กองเรือเป็นฉากหลัง |
+| v17.41–.42 | แผง **หนทางปฏิบัติ (หป.)** อ่านเทียบกันได้ + ซื่อสัตย์ว่า "อะไรที่ยังไม่รู้" · บันไดความรุนแรงแผ่นดินไหวชุดเดียว (`PGA_LADDER`) |
+| v17.39.x | **D3** ยกเครื่องแผนที่ ๓ มิติ ๒ รอบ (three.js r128) · SEA-USE legend เป็นกุญแจแผนที่จริง · สีฟ้าบนหัวจอ = "เปิดอยู่" ไม่ใช่ "สำคัญ" |
+| v17.32–.38 | **OPERATIONAL CALM** เฟส ๒–๕ (ระนาบความลึก · กริด ๘px · `data-threat` · วงแหวนโฟกัส) · SCENARIO INJECT ยกเครื่องแผงจำลองภัยคุกคาม + ๔ ฉากใหม่ |
+| v17.25–.31 | ชั้น **token สี** เต็มระบบ + เขตสงวน SYMBOLOGY · แถบหัวจอจัดเป็น ๓ เขต · อีโมจิ → ไอคอนเส้น SVG · ตาราง IFF · ป้ายบนแผนที่อ่านออกทุกป้าย |
+| v17.19–.24 | กระสุนมีวันหมด + นาฬิกา kill-chain · คุณภาพ track ๓ ระดับ + ประตูปล่อยอาวุธ + CEC · WTA/shoot-look-shoot · กล้องชายฝั่ง · AIS Live แบบไร้คีย์ฝังไฟล์ · ThaiLLM (BDI) |
+| v17.11–.18 | Audit consolidation (VER/SEC/WORKER/AVI/CYBER) · hardening `fetchViaAnyProxy` · **UDC COMMAND CORE** + SCHEMATIC view · EMSO ในโดเมน Cyber-EM · มติ taxonomy DAS+SEIS → SEA |
+| v17.7.x | **HALLMARK REDESIGN** — emoji → Lucide SVG icon system · electric border + boot sequence · circuit breaker กัน retry storm · COA Planner (World State JSON) |
+| v17.0–v17.3.5 | **ฝ่ายเสนาธิการ AI (AI Staff Planner)** · ชุด "๙ ข้อสั่งการ" + ขยาย Multi-Domain (ROE · Jurisdiction · Seabed COP · Shared-MDA · PMESII/SWOT/TOWS) · Joint-Pub 3-04 alignment |
+| v16.x   | 7-Domain MDA, FXAA/SSAO 3D pipeline, UI regroup (v16.3.1 = ฐานที่ v17.0.0 นำไป copy) |
+| v15.x   | ขยาย font set (Thai + HUD), 4D ocean (HYCOM live), Own-Force-Aware Force Deployment |
+| v13–v14 | Static seamark/cable snapshots, AI proxy worker, multi-provider LLM router |
 | v11–v12 | 3D Dive, SVP acoustic model, time-replay, code cleanup |
 | v09–v10 | AIS WebSocket, DEM offline cache |
 
 > Changelog แบบละเอียดอยู่ใน comment ส่วนหัวของ `UDC_Simulator_17.html` (tag `[vXX.x.x]`)
+> — รุ่น v17.39.1 ขึ้นไปมีรายละเอียดเต็ม ส่วนรุ่นเก่ากว่านั้นเป็นบรรทัดสรุป
 
 ---
 
@@ -42,12 +51,15 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 | `index.html` | **จุดเข้า GitHub Pages** — สำเนาตรงของ `UDC_Simulator_17.html` (byte-identical) |
 | `UDC_Simulator_17.html` | **ตัวจำลองหลัก** (single-file). ปุ่ม PITCH ลิงก์ไป `THE_SHIELD_Pitch.html` |
 | `THE_SHIELD_Pitch.html` | หน้านำเสนอ (hub) — ลิงก์ไปไดอะแกรม, สรุปเซ็นเซอร์, บทเรียน และบทวิจัย |
-| `THE_SHIELD_Ch1.html` / `THE_SHIELD_Ch2.html` | บทวิจัย 1–2 (พร้อมภาพประกอบใน `img/`) |
+| `THE_SHIELD_Ch1.html` … `THE_SHIELD_Ch5.html` | บทวิจัย ๑–๕ (พร้อมภาพประกอบใน `img/` และสื่อ `THE_SHIELD_Ch*.webp/.mp4` ที่ root) |
 | `THE_SHIELD_บทเรียนวิจัย_Baltic_Singapore.html` | กรณีศึกษา Baltic / Singapore |
 | `THE_SHIELD_SensorSummary.html` | สรุปแหล่งข้อมูล/เซ็นเซอร์ (CNS) — *เดิมชื่อ `Sensor_Summary_CNS.html`* |
-| `THE_SHIELD_SystemArchitecture.html` | ไดอะแกรมสถาปัตยกรรมระบบ (standalone) |
 | `THE_SHIELD_SystemArchitecture_Cocoon.html` | ไดอะแกรมสถาปัตยกรรม (เลย์เอาต์ Cocoon) — ลิงก์จาก Pitch |
-| `THE_SHIELD_KnowledgeFlowchart.html` | ผังความรู้/กระบวนการ (standalone) |
+| `THE_SHIELD_Biofouling_Protection.html` | เกราะกันเพรียงทะเล — การปกป้องแคปซูล UDC จาก biofouling |
+| `presentation_palantir.html` | หน้านำเสนอผลงานวิจัย (ธีม Palantir Gotham C4ISR) — มีโหมดสไลด์สำรองสำหรับรอบตอบข้อซักถาม |
+
+> **หมายเหตุ:** ไดอะแกรมสถาปัตยกรรมมีฉบับเดียวคือ `_Cocoon` (ไม่เคยมีไฟล์ `THE_SHIELD_SystemArchitecture.html`
+> แบบ standalone ในรีโป) · `THE_SHIELD_KnowledgeFlowchart.html` เคยมีแต่ถูกถอดออกในคอมมิต `8afbc3e` (folder reorg)
 
 > **หมายเหตุการเปลี่ยนชื่อ (v17.2.5 reorg):** หน้าที่ deploy ทั้งหมดใช้ prefix `THE_SHIELD_` มาตรฐานแล้ว
 > (เดิม `TheShield_*` และ `Sensor_Summary_CNS.html`). ลิงก์ภายในทุกจุดถูกแก้ตามแล้ว
@@ -77,16 +89,14 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 ├── index.html                       ← GitHub Pages entry (สำเนา UDC_Simulator_17.html)
 ├── UDC_Simulator_17.html            ← ตัวจำลองหลัก (single file)
 ├── THE_SHIELD_*.html                ← เอกสารชุด (ดู Page Ecosystem ด้านบน)
-├── cables-static.js                 ← ข้อมูลสายเคเบิลใต้น้ำ (สร้างจาก scripts/cables/)
-├── seamarks-static.js               ← ข้อมูล IALA seamark (offline fallback)
-├── ocean4d_live_server.js           ← Node helper: serve folder + /ocean4d (HYCOM live)
+├── presentation_palantir.html       ← หน้านำเสนอ (ธีม Palantir Gotham)
 ├── README.md   ·   .gitignore
 │
 ├── data/
 │   ├── gis/        bathy_all · bathy_sattahip_dmr · eec_region (.geojson)
 │   ├── dem/        land_elevation_sattahip.json (+ cache/ — gitignored)
 │   ├── ocean/      svp_sattahip_annual.json · tl_grid.json/.bin
-│   └── AIS (SeaVision)/   searches-export-*.json
+│   └── AIS (SeaVision)/   searches-export-*.json  (gitignored)
 │
 ├── assets/         navy_logo.png (boot-screen logo)
 ├── img/            ภาพประกอบบทวิจัย (Baltic cable damage, Eagle S, HTMS Bhumibol ฯลฯ)
@@ -106,6 +116,15 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 └── (gitignored)    _scratch/ · _เวอร์ชันเก่า/ · _bathy/ · _data_raw/
 ```
 
+> **ไฟล์ที่ไม่ได้อยู่ในรีโป (local-only)** — ถูกถอดออกในคอมมิต `8afbc3e` (folder reorg) และต้องสร้าง/วางเองที่ root
+> เมื่อต้องการใช้ฟีเจอร์ที่เกี่ยวข้อง ตัวจำลองโหลดแบบ best-effort จึงเปิดใช้งานได้ตามปกติแม้ไม่มีไฟล์เหล่านี้:
+>
+> | ไฟล์ | ใช้ทำอะไร | ถ้าไม่มี |
+> |------|-----------|---------|
+> | `cables-static.js` | สแนปช็อตสายเคเบิลใต้น้ำ (สร้างจาก `scripts/cables/`) | เตือนใน console → โหมด Overpass อย่างเดียว |
+> | `seamarks-static.js` | สแนปช็อต IALA seamark (offline fallback) | เตือนใน console → ปิด offline fallback |
+> | `ocean4d_live_server.js` | Node helper: serve folder + `/ocean4d` (HYCOM live) | ใช้ baked snapshot ที่ฝังในตัวจำลอง |
+
 ---
 
 ## Running
@@ -117,6 +136,7 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 - **AI Staff Planner** → deploy `workers/ai-proxy.js` (ดู `workers/DEPLOY.md`)
 - **AIS / Kpler proxy** → deploy `infrastructure/cloudflare-worker-ais-proxy.js`
 - **4D Ocean live** → รัน `node ocean4d_live_server.js` แล้วเปิดผ่าน localhost (same-origin)
+  — ไฟล์นี้เป็น local-only (ดูตารางท้าย Repository Structure) ถ้าไม่มีจะใช้ baked snapshot แทน
 
 ---
 
