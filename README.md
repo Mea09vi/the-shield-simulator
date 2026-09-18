@@ -112,6 +112,7 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 │   │               + raw JSON inputs + สคริปต์ตรวจสอบ (_filter_tg / _check_gulf / _inspect)
 │   └── tools/      build_tl_grid.py · fetch_svp_woa23.py · rewrite_section_markers.py
 │                   check_js_syntax.js (ตรวจ syntax ของ inline <script> ทุกบล็อก)
+│                   smoke_test.js     (เปิดจริงในเบราว์เซอร์ · จับ error ตอนรัน)
 │
 └── (gitignored)    _scratch/ · _เวอร์ชันเก่า/ · _bathy/ · _data_raw/
 ```
@@ -137,6 +138,29 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 - **AIS / Kpler proxy** → deploy `infrastructure/cloudflare-worker-ais-proxy.js`
 - **4D Ocean live** → รัน `node ocean4d_live_server.js` แล้วเปิดผ่าน localhost (same-origin)
   — ไฟล์นี้เป็น local-only (ดูตารางท้าย Repository Structure) ถ้าไม่มีจะใช้ baked snapshot แทน
+
+---
+
+## Testing
+
+ไม่มีชุดทดสอบอัตโนมัติ — มีสคริปต์ตรวจ ๒ ชั้น รันก่อน commit ทุกครั้งที่แก้ `UDC_Simulator_17.html`:
+
+```bash
+node scripts/tools/check_js_syntax.js UDC_Simulator_17.html   # ชั้น ๑ — ไวยากรณ์ JS ทุกบล็อก
+npm i playwright-core                                          # (ครั้งเดียว)
+node scripts/tools/smoke_test.js                               # ชั้น ๒ — บูตจริงในเบราว์เซอร์
+node scripts/tools/smoke_test.js --shot /tmp/shot.png          # + เก็บภาพหน้าจอ
+```
+
+`check_js_syntax.js` ผ่านได้ทั้งที่แอปพังตอนรัน (ตรวจแค่ไวยากรณ์) — `smoke_test.js`
+จึงเปิดไฟล์จริงแล้วรายงาน uncaught error · ไฟล์ที่โหลดไม่สำเร็จ · จำนวน DOM/canvas/panel · เวลาบูต
+
+> ⚠ `smoke_test.js` **ต้องต่อเน็ตถึง CDN ได้** (Leaflet · Three.js · Chart.js โหลดจาก CDN)
+> ถ้าเน็ตถูกบล็อกจะเห็น `ReferenceError: L is not defined` เป็นทอด ๆ ซึ่งเป็นผลจากเน็ต
+> ไม่ใช่บั๊กของตัวจำลอง — สคริปต์ตรวจจับกรณีนี้แล้วเตือนให้เอง
+
+> สองสคริปต์นี้ตรวจว่า "ยังบูตขึ้น" เท่านั้น **ไม่ได้** ตรวจว่าฟีเจอร์ทำงานถูก
+> หรือสีถูกตามหลักนิยม IFF — ส่วนนั้นยังต้องดูด้วยตา
 
 ---
 
