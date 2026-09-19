@@ -1,8 +1,30 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.52.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.53.0 · 7-Domain + AI Staff)
 
   ── รุ่นล่าสุด · รายละเอียดเต็ม (v17.40.0 ขึ้นไป) ───────────────────
+  · [v17.53.0 TOUCH-1] ใช้งานบนแท็บเล็ตได้จริง — การ "ลาก" ทุกจุดรองรับนิ้ว
+      อาการเดิม: บนแท็บเล็ต กดปุ่มได้ (click ทำงานบนสัมผัสอยู่แล้ว) แต่ "ลาก" ไม่ได้เลย
+      — ย้ายหน้าต่างไม่ได้ · ปรับความกว้างช่องแผนที่ไม่ได้ · หมุนกล้องฉากดำน้ำ ๓ มิติ ไม่ได้
+      เพราะตัวลาก ๑๒ จุดผูกกับ mousedown/mousemove/mouseup ซึ่งนิ้วไม่ยิงให้
+      (อีก ๗ จุดในไฟล์ย้ายไป Pointer Events ไปก่อนหน้านี้แล้ว — ชุดนี้คือส่วนที่ตกค้าง)
+      ๑) แปลงตัวฟัง ๓๕ จุดเป็น Pointer Events — pointerdown/pointermove/pointerup
+         รับได้ทั้งเมาส์ ปากกา และนิ้ว ด้วยโค้ดชุดเดียว · ตัว event มี clientX/clientY/button
+         เหมือน MouseEvent ทุกประการ เนื้อในตัวจัดการจึงไม่ต้องแก้แม้แต่บรรทัดเดียว
+      ๒) เพิ่ม pointercancel ๑๐ จุด (รวมเป็น ๑๕) — บนสัมผัส ระบบยกเลิกนิ้วกลางคันได้
+         (สายเรียกเข้า · ฝ่ามือแตะขอบจอ) ถ้าไม่ดัก ตัวแปร dragging จะค้าง true
+         แล้วหน้าต่างจะ "ติดนิ้ว" วิ่งตามไปเรื่อย ๆ ทั้งที่ปล่อยไปแล้ว
+      ๓) touch-action:none ที่ "จุดจับ" ๑๓ ตัว + #dive3dCanvas — ลำพัง Pointer Events
+         ยังไม่พอ เพราะค่าปริยาย auto ทำให้เบราว์เซอร์ยึดท่าทางไปเลื่อนหน้าแล้วยิง
+         pointercancel ใส่เรา การลากจึงหลุดทุกครั้งโดยที่โค้ดไม่ผิด
+         ★ ประกาศเฉพาะแถบหัว/ตัวแยกช่อง ไม่ประกาศที่ตัวหน้าต่างหรือ body
+           มิฉะนั้นจะเลื่อนอ่านเนื้อหาในแผงด้วยนิ้วไม่ได้
+      ๔) ตัวแยกช่องกว้าง ๘px นิ้วแตะพลาดง่าย — ขยายพื้นที่แตะเป็น ๒๒px ด้วย ::before
+         โปร่งใส เฉพาะอุปกรณ์สัมผัส @media (hover:none) · เส้นที่ตาเห็นไม่ขยับ
+      วัดจริง (Chromium · viewport 1024×768 · hasTouch): ลากตัวแยกช่องด้วย pointerType
+      'touch' แล้ว --col-l เปลี่ยน (unset → 271px) · ยิง pointercancel กลางคันแล้ว
+      สถานะลากถูกปล่อย และการขยับต่อไม่ทำให้ขนาดเปลี่ยนอีก · DOM/canvas/แผง/heap
+      เท่าเดิมทุกค่า (4766 / 15 / 12 / 17MB) — เป็นงานรองรับสัมผัสล้วน ไม่เปลี่ยนพฤติกรรมเมาส์
   · [v17.52.0] แก้ ๒ จุดจากการทดสอบก่อนนำเสนอ
       ๑) [COA-PICK] การ์ดหนทางปฏิบัติกดเลือกไม่ได้ — ตั้งแต่ v17.41.0 แถวปุ่มปฏิบัติการ
          ถูกวางไว้ใน .cbody ซึ่ง .collapsed ซ่อนอยู่ ทำให้ หป. ที่ยังไม่ได้เลือกไม่มีปุ่มเลย
@@ -317,12 +339,12 @@
          ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker
          v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump
          display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.52.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.53.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
         //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.52.0';
+        const APP_VERSION = '17.53.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -1325,6 +1347,43 @@
         }
         .layout-splitter.ls-left  { left:calc(var(--col-l,210px) + 3px); }
         .layout-splitter.ls-right { right:calc(var(--col-r,210px) + 3px); }
+
+        /* ══════════════════════════════════════════════════════════════
+           [TOUCH-1] จุดจับลาก — ต้องประกาศ touch-action:none
+           ──────────────────────────────────────────────────────────────
+           ตัวลากทุกตัวในไฟล์นี้ย้ายมาใช้ Pointer Events แล้ว (pointerdown/
+           pointermove/pointerup/pointercancel) ซึ่งรับได้ทั้งเมาส์ ปากกา และนิ้ว
+           แต่ลำพัง Pointer Events ยังไม่พอบนแท็บเล็ต:
+
+           ค่าปริยายของ touch-action คือ auto = เบราว์เซอร์ "ขอจองท่าทาง" ไว้เลื่อนหน้า
+           พอนิ้วขยับเกินระยะหนึ่ง เบราว์เซอร์จะยึดท่าทางไปเลื่อนจอ แล้วยิง
+           pointercancel ใส่เรา — การลากจะหลุดกลางคันทุกครั้ง โดยที่โค้ดไม่ผิดเลย
+           touch-action:none คือการบอกว่า "จุดนี้ฉันจัดการเอง อย่ายึดไป"
+
+           ★ ประกาศเฉพาะ "จุดจับ" (แถบหัวหน้าต่าง / ตัวแยกช่อง) เท่านั้น
+             ห้ามประกาศที่ตัวหน้าต่างหรือ body มิฉะนั้นจะเลื่อนอ่านเนื้อหาในแผงไม่ได้
+           ★ .p3-head ฯลฯ เป็นแถบหัวที่ "ลากได้" อยู่แล้วบนเมาส์ — กฎนี้ทำให้
+             พฤติกรรมเดียวกันเกิดขึ้นบนนิ้วด้วย ไม่ได้เพิ่มความสามารถใหม่
+           ══════════════════════════════════════════════════════════════ */
+        .layout-splitter,
+        .pv-modal-hdr, .tmp-head, .p3-head, .o4-head,
+        .mda-lp-head, .sb-l2-head, .bf-dp-head,
+        #coastCamHdr, #sonarEqnHdr, #marine-wx-hdr,
+        #mda-spectrum-hdr, #rmp-head {
+            touch-action:none;
+        }
+        /* ฉากดำน้ำ ๓ มิติ — หมุนกล้องด้วยการลากนิ้ว จึงต้องกันหน้าเลื่อนเช่นกัน */
+        #dive3dCanvas { touch-action:none; }
+
+        /* [TOUCH-1] ตัวแยกช่องกว้าง 8px — นิ้วแตะพลาดง่าย บนอุปกรณ์สัมผัสจึงขยาย
+           พื้นที่แตะเป็น 22px ด้วย ::before ที่โปร่งใส (ไม่ขยับเส้นที่ตาเห็น)
+           ใช้ (hover:none) แทน max-width เพราะเกณฑ์คือ "อุปกรณ์สัมผัส" ไม่ใช่ "จอแคบ" */
+        @media (hover: none) {
+            .layout-splitter::before {
+                content:''; position:absolute; top:0; bottom:0;
+                left:-7px; right:-7px;
+            }
+        }
         /* ── ปุ่มปรับขนาดหน้าจอ (บนแถบหัว) — v12.2: ซ่อนไว้เป็นค่าตั้งต้น เปิดด้วย Ctrl+` ── */
         #uiZoomCtl {
             display:none; align-items:center; gap:var(--space-1);
@@ -8926,7 +8985,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.52.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v17.53.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9400,7 +9459,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.52.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.53.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9419,7 +9478,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.52.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.53.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา
                  — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
@@ -9868,7 +9927,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <!-- ── V06: Scenario Briefing Panel (map overlay) ── -->
             <!-- [v16.0.2 UX2] mousedown stopPropagation: กัน click
                  ทะลุไปถึง Leaflet map (แบบเดียวกับ flsWarningPanel) -->
-            <div id="briefingPanel" class="briefing-panel" onmousedown="event.stopPropagation()">
+            <div id="briefingPanel" class="briefing-panel" onmousedown="event.stopPropagation()" onpointerdown="event.stopPropagation()">
                 <!-- [v16.0.2 UX2] ปุ่มปิดการ์ด brief — การ์ดค้างไว้จนผู้ใช้ปิดเอง (ไม่ auto-hide) -->
                 <button class="bp-close" onclick="hideBriefing()" title="ปิดการ์ดสรุปสถานการณ์" aria-label="ปิด"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
                 <div class="bp-hdr" id="bp-header"></div>
@@ -9878,7 +9937,7 @@ window.udcHdrAnchor = udcHdrAnchor;
 
             <!-- ── [v16.0.2 UX4] Legal Authority Card —
                  กรอบอำนาจตามกฎหมาย (toggle จากปุ่ม ⚖️ LEGAL ใน header) ── -->
-            <div id="legalCard" onmousedown="event.stopPropagation()">
+            <div id="legalCard" onmousedown="event.stopPropagation()" onpointerdown="event.stopPropagation()">
                 <button class="bp-close" onclick="document.getElementById('legalCard').classList.remove('lc-show');document.getElementById('legalBtn').classList.remove('active')" title="ปิด" aria-label="ปิด"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
                 <div class="lc-hdr"><svg class="ico" aria-hidden="true"><use href="#i-scale"/></svg> กรอบอำนาจตามกฎหมาย · LEGAL AUTHORITY</div>
                 <div class="lc-item">
@@ -9916,7 +9975,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <!-- onclick/mousedown stopPropagation: กัน click ทะลุไปถึง Leaflet map ด้านล่าง -->
             <div id="flsWarningPanel"
                  onclick="event.stopPropagation()"
-                 onmousedown="event.stopPropagation()"
+                 onmousedown="event.stopPropagation()" onpointerdown="event.stopPropagation()"
                  ontouchstart="event.stopPropagation()">
                 <div class="fls-hdr"><svg class="ico" aria-hidden="true"><use href="#i-triangle-alert"/></svg> FLS DETECTION — HOSTILE CONTACT</div>
 
@@ -9963,7 +10022,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <!-- ── Surface Contact Alert Panel (top-right, no freeze) ── -->
             <div id="surfaceContactPanel"
                  onclick="event.stopPropagation()"
-                 onmousedown="event.stopPropagation()"
+                 onmousedown="event.stopPropagation()" onpointerdown="event.stopPropagation()"
                  ontouchstart="event.stopPropagation()">
                 <div class="sc-hdr"><svg class="ico" aria-hidden="true"><use href="#i-triangle-alert"/></svg> SURFACE CONTACT DETECTED</div>
 
@@ -10012,7 +10071,7 @@ window.udcHdrAnchor = udcHdrAnchor;
                  ══════════════════════════════════════════════════════ -->
             <div id="pvShipModal"
                  onclick="event.stopPropagation()"
-                 onmousedown="event.stopPropagation()">
+                 onmousedown="event.stopPropagation()" onpointerdown="event.stopPropagation()">
 
                 <div class="pv-modal-hdr">
                     <span class="pv-modal-hdr-title"><svg class="ico" aria-hidden="true"><use href="#i-ship"/></svg> STEP 1/2 — เลือกชนิดเรือ Patrol Vessel</span>
@@ -10173,7 +10232,7 @@ window.udcHdrAnchor = udcHdrAnchor;
                  ══════════════════════════════════════════════════════ -->
             <div id="pvPatternModal"
                  onclick="event.stopPropagation()"
-                 onmousedown="event.stopPropagation()">
+                 onmousedown="event.stopPropagation()" onpointerdown="event.stopPropagation()">
 
                 <!-- Header -->
                 <div class="pv-modal-hdr">
@@ -10431,7 +10490,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.52.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v17.53.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -12853,7 +12912,7 @@ function closePVShipModal() {
     const hdr   = modal?.querySelector('.pv-modal-hdr');
     if (!modal || !hdr) return;
 
-    hdr.addEventListener('mousedown', function(e) {
+    hdr.addEventListener('pointerdown', function(e) {
         if (e.button !== 0) return;
         // การลากครั้งแรก: เปลี่ยนจากการจัดกึ่งกลางอัตโนมัติ เป็นการระบุตำแหน่งบน/ซ้ายจริง
         if (!modal.dataset.dragged) {
@@ -12869,7 +12928,7 @@ function closePVShipModal() {
         oy = e.clientY - r.top;
         e.preventDefault();
     });
-    document.addEventListener('mousemove', function(e) {
+    document.addEventListener('pointermove', function(e) {
         if (!dragging) return;
         let nx = e.clientX - ox;
         let ny = e.clientY - oy;
@@ -12879,7 +12938,8 @@ function closePVShipModal() {
         modal.style.left = nx + 'px';
         modal.style.top  = ny + 'px';
     });
-    document.addEventListener('mouseup', function() { dragging = false; });
+    document.addEventListener('pointerup', function() { dragging = false; });
+    document.addEventListener('pointercancel', function() { dragging = false; });   /* [TOUCH-1] */
 
     // คืนตำแหน่งเดิมเมื่อเปิดหน้าต่างใหม่ (ให้กลับมาอยู่กึ่งกลาง)
     const origShow = window.showPVShipModal;
@@ -18785,14 +18845,14 @@ function toggleCoastCam() {
         const pv = document.getElementById('ccPrev'); if (pv) pv.addEventListener('click', (e) => { e.stopPropagation(); ccPrev(); });
 
         let dragging = false, ox = 0, oy = 0;
-        hdr.addEventListener('mousedown', (e) => {
+        hdr.addEventListener('pointerdown', (e) => {
             if (closeBtn && (e.target === closeBtn || closeBtn.contains(e.target))) return;
             dragging = true;
             const r = panel.getBoundingClientRect();
             ox = e.clientX - r.left; oy = e.clientY - r.top;
             e.preventDefault();
         });
-        document.addEventListener('mousemove', (e) => {
+        document.addEventListener('pointermove', (e) => {
             if (!dragging) return;
             const r  = panel.getBoundingClientRect();
             let nx2 = Math.max(0, Math.min(window.innerWidth  - r.width,  e.clientX - ox));
@@ -18800,7 +18860,8 @@ function toggleCoastCam() {
             panel.style.left = nx2 + 'px'; panel.style.top = ny2 + 'px';
             panel.style.right = 'auto';    panel.style.bottom = 'auto';
         });
-        document.addEventListener('mouseup', () => { dragging = false; });
+        document.addEventListener('pointerup', () => { dragging = false; });
+        document.addEventListener('pointercancel', () => { dragging = false; });   /* [TOUCH-1] */
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
     else init();
@@ -24625,9 +24686,10 @@ function init3D() {
 
     // ── การควบคุมมุมกล้อง ──
     // [v16.0.6 W5S2-2] ทุก input ประทับเวลา (ตัดสิน idle orbit) — drag ยกเลิก flight ด้วย
-    canvas.addEventListener('mousedown', e=>{ d3_drag.on=true; d3_drag.x=e.clientX; d3_drag.y=e.clientY; _d3LastInput = performance.now(); _d3FlyAnim = null; });
-    window.addEventListener('mouseup', ()=>{ d3_drag.on=false; });
-    window.addEventListener('mousemove', e=>{
+    canvas.addEventListener('pointerdown', e=>{ d3_drag.on=true; d3_drag.x=e.clientX; d3_drag.y=e.clientY; _d3LastInput = performance.now(); _d3FlyAnim = null; });
+    window.addEventListener('pointerup', ()=>{ d3_drag.on=false; });
+    window.addEventListener('pointercancel', ()=>{ d3_drag.on=false; });   /* [TOUCH-1] */
+    window.addEventListener('pointermove', e=>{
         if(!d3_drag.on||!d3_active) return;
         // [v16.0.5 W5-Q7] เขียนที่ goal — render loop lerp ตามให้นุ่ม
         d3_camGoal.theta -= (e.clientX-d3_drag.x)*0.006;
@@ -31171,12 +31233,12 @@ function initLayoutSplitters() {
         const sp = document.createElement('div');
         sp.className = 'layout-splitter ' + cls;
         sp.title = 'ลากเพื่อปรับขนาดช่องแผนที่';
-        sp.addEventListener('mousedown', e => {
+        sp.addEventListener('pointerdown', e => {
             drag = isLeft; sp.classList.add('dragging'); e.preventDefault();
         });
         layout.appendChild(sp);
     });
-    document.addEventListener('mousemove', e => {
+    document.addEventListener('pointermove', e => {
         if (drag === null) return;
         const z = parseFloat(document.body.style.zoom) || 1;
         const rect = layout.getBoundingClientRect();
@@ -31186,13 +31248,17 @@ function initLayoutSplitters() {
         layout.style.setProperty(drag ? '--col-l' : '--col-r', w + 'px');
         if (typeof map !== 'undefined' && map) map.invalidateSize();
     });
-    document.addEventListener('mouseup', () => {
+    /* [TOUCH-1] ปล่อยตัวแยกช่อง — ผูกทั้ง pointerup และ pointercancel
+       (บนแท็บเล็ต นิ้วถูกยกเลิกกลางคันได้ ถ้าไม่ดักไว้ ตัวแยกจะค้างสถานะลาก) */
+    const _splitRelease = () => {
         if (drag === null) return;
         drag = null;
         document.querySelectorAll('.layout-splitter.dragging')
             .forEach(s => s.classList.remove('dragging'));
         if (typeof map !== 'undefined' && map) setTimeout(() => map.invalidateSize(), 50);
-    });
+    };
+    document.addEventListener('pointerup', _splitRelease);
+    document.addEventListener('pointercancel', _splitRelease);
 }
 
 function toggleFullscreen() {
@@ -31951,7 +32017,7 @@ sonarEqnBtn.onAdd = function() {
         // [v15.5d] ลากย้ายพาเนลได้จากแถบหัว (leak-free: ผูก move/up ตอน mousedown ถอดตอน mouseup)
         const _hdr = panel.querySelector('#sonarEqnHdr');
         if (_hdr) {
-            _hdr.addEventListener('mousedown', function(e){
+            _hdr.addEventListener('pointerdown', function(e){
                 if (e.button !== 0) return;
                 const r = panel.getBoundingClientRect();
                 panel.style.left = r.left + 'px';
@@ -31966,9 +32032,10 @@ sonarEqnBtn.onAdd = function() {
                     panel.style.left = nx + 'px';
                     panel.style.top  = ny + 'px';
                 }
-                function _up(){ document.removeEventListener('mousemove', _mv); document.removeEventListener('mouseup', _up); }
-                document.addEventListener('mousemove', _mv);
-                document.addEventListener('mouseup', _up);
+                function _up(){ document.removeEventListener('pointermove', _mv); document.removeEventListener('pointerup', _up); document.removeEventListener('pointercancel', _up); }
+                document.addEventListener('pointermove', _mv);
+                document.addEventListener('pointerup', _up);
+                document.addEventListener('pointercancel', _up);   /* [TOUCH-1] นิ้วถูกยกเลิกกลางคัน (สายเรียกเข้า ฯลฯ) ต้องหยุดลากด้วย */
                 e.preventDefault();
             });
         }
@@ -35455,7 +35522,7 @@ window.toggleSat3D = toggleSat3D;
             const closeBtn = document.getElementById('marine-wx-close');
             if (!panel || !hdr) return;
             let dragging = false, ox = 0, oy = 0;
-            hdr.addEventListener('mousedown', (e) => {
+            hdr.addEventListener('pointerdown', (e) => {
                 if (e.target === closeBtn) return;
                 dragging = true;
                 const r = panel.getBoundingClientRect();
@@ -35463,7 +35530,7 @@ window.toggleSat3D = toggleSat3D;
                 oy = e.clientY - r.top;
                 e.preventDefault();
             });
-            document.addEventListener('mousemove', (e) => {
+            document.addEventListener('pointermove', (e) => {
                 if (!dragging) return;
                 let nx = e.clientX - ox;
                 let ny = e.clientY - oy;
@@ -35473,7 +35540,8 @@ window.toggleSat3D = toggleSat3D;
                 panel.style.top  = ny + 'px';
                 panel.style.right = 'auto';
             });
-            document.addEventListener('mouseup', () => { dragging = false; });
+            document.addEventListener('pointerup', () => { dragging = false; });
+            document.addEventListener('pointercancel', () => { dragging = false; });   /* [TOUCH-1] */
             if (closeBtn) {
                 closeBtn.addEventListener('click', () => {
                     panel.style.display = 'none';
@@ -44519,14 +44587,15 @@ window._deployAckSync = _deployAckSync;
 
     // ── ลากย้ายที่แถบหัว ───────────────────────────────────────
     const head=P.querySelector('.tmp-head'); let drag=null;
-    head.addEventListener('mousedown', e=>{
+    head.addEventListener('pointerdown', e=>{
       if(e.target.closest('.tmp-x')) return;
       const r=P.getBoundingClientRect();
       P.style.transform='none'; P.style.left=r.left+'px'; P.style.top=r.top+'px';
       drag={dx:e.clientX-r.left, dy:e.clientY-r.top}; e.preventDefault();
     });
-    window.addEventListener('mousemove', e=>{ if(!drag)return; P.style.left=(e.clientX-drag.dx)+'px'; P.style.top=(e.clientY-drag.dy)+'px'; });
-    window.addEventListener('mouseup', ()=>{ drag=null; });
+    window.addEventListener('pointermove', e=>{ if(!drag)return; P.style.left=(e.clientX-drag.dx)+'px'; P.style.top=(e.clientY-drag.dy)+'px'; });
+    window.addEventListener('pointerup', ()=>{ drag=null; });
+    window.addEventListener('pointercancel', ()=>{ drag=null; });   /* [TOUCH-1] */
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
@@ -45852,7 +45921,7 @@ function buildUI(){
   }
   const p = document.createElement('div');
   p.id = 'demoStepper';
-  p.addEventListener('mousedown', e=>e.stopPropagation());
+  p.addEventListener('pointerdown', e=>e.stopPropagation());
   p.innerHTML =
     '<div class="ds-top"><span class="ds-phase" id="ds-phase"></span><span class="ds-count" id="ds-count"></span></div>' +
     '<div class="ds-title" id="ds-title"></div>' +
@@ -48755,11 +48824,12 @@ window.MDA.EmsoSpectrum = (function(){
     const hdr=document.getElementById('mda-spectrum-hdr'), panel=document.getElementById('mda-spectrum-panel');
     if(hdr && panel){
       let sx,sy,ox,oy,drag=false;
-      hdr.addEventListener('mousedown',e=>{ if(e.target.closest('.mspec-close'))return;
+      hdr.addEventListener('pointerdown',e=>{ if(e.target.closest('.mspec-close'))return;
         drag=true; sx=e.clientX; sy=e.clientY; const r=panel.getBoundingClientRect(); ox=r.left; oy=r.top;
         panel.style.right='auto'; panel.style.bottom='auto'; panel.style.left=ox+'px'; panel.style.top=oy+'px'; e.preventDefault(); });
-      document.addEventListener('mousemove',e=>{ if(!drag)return; panel.style.left=(ox+e.clientX-sx)+'px'; panel.style.top=(oy+e.clientY-sy)+'px'; });
-      document.addEventListener('mouseup',()=>{ drag=false; });
+      document.addEventListener('pointermove',e=>{ if(!drag)return; panel.style.left=(ox+e.clientX-sx)+'px'; panel.style.top=(oy+e.clientY-sy)+'px'; });
+      document.addEventListener('pointerup',()=>{ drag=false; });
+      document.addEventListener('pointercancel',()=>{ drag=false; });   /* [TOUCH-1] */
     }
   }
   function on(){ _wire(); const p=document.getElementById('mda-spectrum-panel'); if(p)p.style.display=''; render();
@@ -54178,7 +54248,7 @@ window.CommandCore = (function () {
         buildRing();
         buildSchematic();
         buildDcCells();
-        g('commandCore').addEventListener('mousedown', e => { if (e.target === g('commandCore')) close(); });
+        g('commandCore').addEventListener('pointerdown', e => { if (e.target === g('commandCore')) close(); });
         document.addEventListener('keydown', e => {
             if (isOpen && e.key === 'Escape') { e.stopPropagation(); close(); }
         }, true);
@@ -54919,13 +54989,13 @@ window.MDA.SeaUse = (function () {
       var y = Math.max(0, Math.min(window.innerHeight - 40, oy + e.clientY - sy));
       p.style.left = x + 'px'; p.style.top = y + 'px';
     }
-    function up(){ moving = false; document.removeEventListener('mousemove', mv); document.removeEventListener('mouseup', up); }
-    head.addEventListener('mousedown', function(e){
+    function up(){ moving = false; document.removeEventListener('pointermove', mv); document.removeEventListener('pointerup', up); document.removeEventListener('pointercancel', up); }
+    head.addEventListener('pointerdown', function(e){
       if (e.target && e.target.id === 'su-x') return;           // ไม่ลากเมื่อกดปุ่มปิด
       var r = p.getBoundingClientRect();
       p.style.right = 'auto'; p.style.left = r.left + 'px'; p.style.top = r.top + 'px';
       sx = e.clientX; sy = e.clientY; ox = r.left; oy = r.top; moving = true;
-      document.addEventListener('mousemove', mv); document.addEventListener('mouseup', up);
+      document.addEventListener('pointermove', mv); document.addEventListener('pointerup', up); document.addEventListener('pointercancel', up);
       e.preventDefault();
     });
   }
@@ -55234,7 +55304,7 @@ window.MDA.SeaUse = (function () {
     }
     p.style.zIndex = (++topZ);
   }
-  document.addEventListener('mousedown', function(ev){
+  document.addEventListener('pointerdown', function(ev){
     var node = ev.target, hop = 0;
     while (node && node !== document.body && hop < 14){
       if (node.id && ZSET[node.id]){ focus(node); return; }
@@ -55273,7 +55343,8 @@ window.MDA.SeaUse = (function () {
     });
   }
   var snapT = null;
-  document.addEventListener('mouseup', function(){
+  document.addEventListener('pointercancel', function(){ clearTimeout(snapT); });   /* [TOUCH-1] นิ้วถูกยกเลิก = ไม่ต้องจัดเข้าแนว */
+  document.addEventListener('pointerup', function(){
     clearTimeout(snapT);
     snapT = setTimeout(function(){
       var SNAP = 14, floor = topFloor();
