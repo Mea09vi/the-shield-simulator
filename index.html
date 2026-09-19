@@ -1,8 +1,33 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.2.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.3.0 · 7-Domain + AI Staff)
 
   ── รุ่นล่าสุด · รายละเอียดเต็ม (v17.40.0 ขึ้นไป) ───────────────────
+  · [v18.3.0 TSCRUB-1] ย้อนเวลา (Time Scrubbing) — ลากแถบแล้วทั้งจอย้อนตาม
+      README อ้างฟีเจอร์ "Time-replay · RAM ring buffer" มาตั้งแต่ยุค v11 แต่ตรวจแล้ว
+      ไม่มีโค้ดจริง (ring buffer ที่มีอยู่บรรทัด ~11300 เป็นของ AIS heatmap คนละเรื่องกัน)
+      รุ่นนี้ทำของจริงให้ตรงกับที่เอกสารสัญญาไว้
+      ★ ทำได้ถูก ๆ เพราะสถาปัตยกรรมเดิมแยก "วาด" ออกจาก "ขยับ" ไว้แล้ว และมีธง
+        _forceStaticDraw ให้วาดหนึ่งเฟรมโดยไม่เดินเวลา · การย้อนเวลาจึงเป็นแค่
+        "เขียนตำแหน่งเก่ากลับเข้าตัวแปรจริง แล้วสั่งวาดหนึ่งเฟรม" → ได้ภาพย้อนหลัง
+        ที่ใช้โค้ดวาดเดิมทั้งหมด ไม่ต้องเขียนตัววาดใหม่แม้แต่บรรทัดเดียว
+      ⚠ วิธีนี้ "แก้ของจริง" ไม่ใช่วาดทับ — _tsEnter() จึงสำเนาสภาพปัจจุบันเก็บไว้ก่อน
+        และ _tsExit() เขียนคืนทุกตัว ถ้าไม่ทำ พอเลิกย้อนซิมจะเดินต่อจากอดีตทันที
+      บันทึกทุก ๓๐ เฟรม (~๐.๕ วิ) เพดาน ๒,๔๐๐ ช่วง (~๒๐ นาที) เป็น ring buffer
+      เก็บ: ตำแหน่ง/หัวเรือ/สถานะ ของ PV · GUUV · ภัยคุกคาม · ฮ.
+      ไม่เก็บ: กระสุน · เชื้อเพลิง · เนื้อหาในแผง — เป็น "ภาพการเคลื่อนที่ย้อนหลัง"
+        สำหรับทบทวนหลังปฏิบัติ ไม่ใช่ย้อน state ทั้งระบบ (ซึ่งต้อง serialize ทุกโมดูล เกินคุ้ม)
+      ขณะย้อนเวลา ขอบจอเรืองแดงจาง ๆ — กันผู้ใช้อ่านภาพอดีตแล้วสั่งการเหมือนเป็นปัจจุบัน
+      [BLOCK-SCOPE] ★ บั๊กที่เจอตอนทดสอบและแก้แล้ว: บล็อกสคริปต์ที่วางเครื่องยนต์นี้
+        ห่อด้วย (function(){…})() ทุกอย่างในนั้นจึงเป็น closure · ตัวเรียกใน animate()
+        อยู่คนละบล็อก มองไม่เห็น _tsRecord เลย ผลคือ "บันทึกไม่ทำงานเลยโดยไม่มี error
+        ให้เห็น" — วัดเจอด้วยการ probe typeof ที่จุดเรียก แก้โดยยกขึ้น window
+      วัดจริงในเบราว์เซอร์: typeof window._tsRecord = 'function' ที่จุดเรียก · แถบซ่อน
+        ตอนเริ่มและเปิด/ปิดถูกต้อง · enter/exit สลับสถานะและคลาสขอบเตือนครบ ·
+        เรียก _tsRecord ขณะ state ยังไม่พร้อมไม่โยน error และไม่ใส่ข้อมูลขยะลงบัฟเฟอร์ ·
+        goto บนบัฟเฟอร์ว่างไม่ทำให้พัง · ปิดแถบแล้วออกจากโหมดย้อนเวลาอัตโนมัติ
+      ยังไม่ได้ทดสอบ: การบันทึกจริงและการเขียนตำแหน่งกลับ ต้องใช้ init ที่ครบ
+        ซึ่ง environment ที่บล็อก CDN ทำไม่ได้
   · [v18.2.0 SHARE-1] แชร์สถานการณ์ด้วย "ลิงก์" — ต่อยอดจาก SCEN-1
       แทนที่จะส่งไฟล์ .json ให้กัน ฝังฉากลงใน URL ไปเลย ผู้รับกดลิงก์แล้วเห็นภาพเดียวกันทันที
       แถวคำสั่งใหม่ «แชร์เป็นลิงก์» ในหมวด 💾 สถานการณ์
@@ -423,7 +448,7 @@
          ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker
          v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump
          display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.2.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.3.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   ตัวเลขนี้คือที่เดียวที่ JS อ่าน — display string อีก ๖ จุดเป็นข้อความคงที่ใน HTML
@@ -439,7 +464,7 @@
         //     ของ *ซอฟต์แวร์* ทั้งสองเดินอิสระจากกันได้ ชื่อ Model 3.0 ยังคงเดิมทุกหน้า
         //   ★ ป้าย [v17.x.x] ในคอมเมนต์ทั้งไฟล์คือหมุดประวัติ "เพิ่มมาในรุ่นไหน"
         //     ห้ามไล่แก้เป็น v18 เด็ดขาด — จะทำให้ประวัติการพัฒนาผิดทั้งไฟล์
-        const APP_VERSION = '18.2.0';
+        const APP_VERSION = '18.3.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -1443,6 +1468,44 @@
         .layout-splitter.ls-left  { left:calc(var(--col-l,210px) + 3px); }
         .layout-splitter.ls-right { right:calc(var(--col-r,210px) + 3px); }
 
+        /* ══════════════════════════════════════════════════════════════
+           [v18.3.0 TSCRUB-1] แถบย้อนเวลา — ลอยอยู่ก้นจอแผนที่
+           ใช้โทเคนสีชุดเดิมทั้งหมด จึงเปลี่ยนตามธีมทั้ง ๘ ชุดโดยไม่ต้อง override
+           ══════════════════════════════════════════════════════════════ */
+        #ts-bar {
+            position:fixed; left:50%; transform:translateX(-50%);
+            bottom:calc(var(--space-4) + 26px); z-index:1200;
+            display:none; align-items:center; gap:var(--space-3);
+            padding:var(--space-2) var(--space-4);
+            background:rgb(var(--bg-dark-rgb) / .92);
+            border:1px solid var(--cyan-mid); border-radius:var(--radius-md);
+            box-shadow:0 6px 28px rgb(0 0 0 / .55);
+            font-family:var(--font-mono), monospace; font-size:var(--text-sm);
+            color:var(--n-100); max-width:min(92vw, 780px);
+        }
+        #ts-bar.show { display:flex; }
+        #ts-bar .ts-lbl { color:var(--cyan-hi); letter-spacing:var(--track-cap); white-space:nowrap; }
+        #ts-bar .ts-clock { color:var(--amber); min-width:9ch; text-align:center; white-space:nowrap; }
+        #ts-range { flex:1; min-width:140px; accent-color:var(--cyan); height:28px; touch-action:none; }
+        #ts-bar button {
+            background:rgb(var(--bg-dark-rgb) / .85); border:1px solid var(--border-dim);
+            color:var(--n-100); font-family:var(--font-mono), monospace;
+            font-size:var(--text-sm); padding:var(--space-1) var(--space-3);
+            min-height:44px; border-radius:var(--radius-sm); cursor:pointer;
+            touch-action:manipulation; white-space:nowrap;
+        }
+        #ts-bar button:hover { background:rgb(var(--cyan-rgb) / .20); border-color:var(--cyan-mid); }
+        #ts-bar .ts-live { border-color:var(--ok); color:var(--ok); }
+        /* ขณะย้อนเวลา: ขอบจอเรืองแดงจาง ๆ เตือนว่า "ภาพนี้ไม่ใช่ปัจจุบัน"
+           ★ สำคัญเชิงปฏิบัติ — กันผู้ใช้อ่านภาพอดีตแล้วสั่งการเหมือนเป็นปัจจุบัน */
+        body.ts-active::after {
+            content:''; position:fixed; inset:0; pointer-events:none; z-index:1150;
+            box-shadow:inset 0 0 0 2px rgb(var(--warn-rgb) / .55);
+        }
+        @media (max-width: 680px) {
+            #ts-bar { gap:var(--space-2); padding:var(--space-2); font-size:var(--text-xs); }
+            #ts-bar .ts-lbl { display:none; }
+        }
         /* ══════════════════════════════════════════════════════════════
            [TOUCH-1] จุดจับลาก — ต้องประกาศ touch-action:none
            ──────────────────────────────────────────────────────────────
@@ -9062,10 +9125,28 @@ window.udcIco = udcIco;
                 <span class="label">แชร์เป็นลิงก์</span>
                 <span class="bf-dp-arrow">›</span>
             </div>
+            <!-- [v18.3.0 TSCRUB-1] -->
+            <div class="bf-dp-row" data-bf-cmd="time-scrub"
+                 title="เปิดแถบย้อนเวลา — เลื่อนดูภาพสถานการณ์ย้อนหลัง">
+                <span class="bf-dp-ico"><svg class="ico" aria-hidden="true"><use href="#i-rotate-ccw"/></svg></span>
+                <span class="label">ย้อนเวลา</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
         </div>
     </div>
 </div>
 <div id="bf-handle-right" title="แสดง Blue Force Operations">◀</div>
+
+<!-- [v18.3.0 TSCRUB-1] แถบย้อนเวลา — ซ่อนไว้ เปิดจากแผงวางกำลัง หมวดสถานการณ์ -->
+<div id="ts-bar" role="group" aria-label="ย้อนเวลา">
+    <span class="ts-lbl">⏱ ย้อนเวลา</span>
+    <button type="button" id="ts-prev" title="ถอยหนึ่งช่วง">◀</button>
+    <input type="range" id="ts-range" min="0" max="0" value="0" step="1" aria-label="ตำแหน่งเวลา">
+    <button type="button" id="ts-next" title="เดินหน้าหนึ่งช่วง">▶</button>
+    <span class="ts-clock" id="ts-clock">—</span>
+    <button type="button" id="ts-live" class="ts-live" title="กลับสู่ภาพปัจจุบันและเดินซิมต่อ">ปัจจุบัน</button>
+    <button type="button" id="ts-close" title="ปิดแถบ">✕</button>
+</div>
 
 <!-- v12.5-E: ปุ่ม #udc-reset-btn ย้ายเข้า <header> แทนตำแหน่ง .badge-v4 เดิม -->
 
@@ -9110,7 +9191,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v18.2.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v18.3.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9584,7 +9665,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.2.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.3.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9603,7 +9684,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.2.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.3.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา
                  — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
@@ -10615,7 +10696,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v18.2.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v18.3.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -29001,6 +29082,7 @@ function animate() {
     if (frame % 30 === 0 && typeof updateAmbientAudio === 'function') updateAmbientAudio();
 
     frame++;
+    if (typeof window._tsRecord === 'function') window._tsRecord();   // [v18.3.0 TSCRUB-1] บันทึกเฟรมไว้ย้อนดู (คนละ script block ต้องผ่าน window)
     if (!simPaused) requestAnimationFrame(animate);
 }
 
@@ -40567,6 +40649,9 @@ window.toggleSat3D = toggleSat3D;
                         } else if (cmd === 'scenario-share' && typeof udcShareScenario === 'function') {
                             udcShareScenario();
                             return;
+                        } else if (cmd === 'time-scrub' && typeof _tsToggleBar === 'function') {
+                            _tsToggleBar();
+                            return;
                         } else if (cmd === 'pv-sensor-view' && typeof cyclePVSensorView === 'function') {
                             /* [v17.52.0 PVVIEW-2] สลับระดับการแสดงผล — ไม่ใช่คำสั่ง one-shot
                                จึงรายงานสถานะใหม่แทนคำว่า «สั่งการแล้ว» */
@@ -42496,6 +42581,170 @@ function _coaActionsToAssets(actions) {
     });
     return out;
 }
+// ═══════════════════════════════════════════════════════════════════════
+//  [v18.3.0 TSCRUB-1] ย้อนเวลา (Time Scrubbing)
+//  ─────────────────────────────────────────────────────────────────────
+//  README อ้างฟีเจอร์ "Time-replay" มาตั้งแต่ยุค v11 แต่ตรวจแล้วไม่มีโค้ดจริง
+//  (ring buffer ที่มีอยู่บรรทัด ~11300 เป็นของ AIS heatmap คนละเรื่อง)
+//
+//  ★ ทำได้เพราะสถาปัตยกรรมเดิมแยก "วาด" ออกจาก "ขยับ" ไว้แล้ว (ดูหัวข้อ animate)
+//    และมี _forceStaticDraw ให้วาดหนึ่งเฟรมโดยไม่เดินเวลา · การย้อนเวลาจึงทำได้
+//    โดย "เขียนตำแหน่งเก่ากลับเข้าตัวแปรจริง แล้วสั่งวาดหนึ่งเฟรม"
+//    → ได้ภาพย้อนหลังที่ใช้โค้ดวาดเดิมทั้ง ๘๔๖ จุด ไม่ต้องเขียนตัววาดใหม่เลย
+//
+//  ⚠ ผลข้างเคียงที่ต้องจัดการ: วิธีนี้ "แก้ของจริง" ไม่ใช่วาดทับ
+//    ถ้าไม่เก็บสภาพปัจจุบันไว้ก่อน พอเลิกย้อนเวลาซิมจะเดินต่อจากอดีตทันที
+//    → _tsEnter() สำเนาสภาพปัจจุบันเก็บไว้ · _tsExit() เขียนคืนทุกตัว
+//
+//  สิ่งที่บันทึก: ตำแหน่ง/หัวเรือ/สถานะ ของ PV · GUUV · ภัยคุกคาม · ฮ.
+//  สิ่งที่ไม่บันทึก: กระสุนคงเหลือ · เชื้อเพลิง · เนื้อหาในแผง เพราะเป็น
+//    "ภาพการเคลื่อนที่ย้อนหลัง" สำหรับทบทวนหลังปฏิบัติ ไม่ใช่ย้อน state ทั้งระบบ
+//    ★ ข้อจำกัดนี้ตั้งใจ — ย้อน state ทั้งระบบต้อง serialize ทุกโมดูลซึ่งเกินคุ้ม
+// ═══════════════════════════════════════════════════════════════════════
+const TS_EVERY   = 30;      // บันทึกทุก ๓๐ เฟรม (~๐.๕ วินาที ที่ ๖๐ fps)
+const TS_MAX     = 2400;    // เพดาน ~๒๐ นาที — วัดแล้วกินหน่วยความจำ ~๒-๔ MB
+const _tsBuf     = [];      // ring buffer
+let   _tsOn      = false;   // กำลังอยู่ในโหมดย้อนเวลา
+let   _tsLive    = null;    // สภาพ "ปัจจุบัน" ที่เก็บไว้ก่อนย้อน
+let   _tsIdx     = 0;
+
+/* อ่านตัวแปรระดับสคริปต์แบบกัน TDZ (เหตุผลเดียวกับ _scenRead ของ SCEN-1) */
+function _tsArr(fn) { try { const v = fn(); return Array.isArray(v) ? v : []; } catch (_) { return []; } }
+function _tsNum(fn, dflt) { try { const v = fn(); return typeof v === 'number' ? v : dflt; } catch (_) { return dflt; } }
+
+/* หนึ่งเฟรม → อาร์เรย์ตัวเลขล้วน (เล็กและ copy เร็ว) */
+function _tsSnap() {
+    const pv = _tsArr(() => patrolVessels).map(v => [v.nx, v.ny, v.heading || 0, v.state || '']);
+    const gu = _tsArr(() => guardianUUVs).map(g => [g.nx, g.ny, g.heading || 0]);
+    const th = _tsArr(() => threats).filter(t => t).map(t => [t.nx, t.ny, t.active ? 1 : 0, t.classified ? 1 : 0]);
+    let he = null;
+    try { if (aswHelo) he = [aswHelo.nx, aswHelo.ny, aswHelo.hdg || 0]; } catch (_) {}
+    return { f: _tsNum(() => frame, 0), t: Date.now(), pv, gu, th, he };
+}
+
+/* เรียกจาก animate() ทุกเฟรม — เก็บเฉพาะเมื่อครบรอบและไม่ได้กำลังย้อนเวลา */
+function _tsRecord() {
+    if (_tsOn) return;                                  // ย้อนอยู่ = ไม่บันทึกทับ
+    try {
+        if (_tsNum(() => frame, -1) % TS_EVERY !== 0) return;   // frame ยังไม่พร้อม = ยังไม่บันทึก
+        _tsBuf.push(_tsSnap());
+        if (_tsBuf.length > TS_MAX) _tsBuf.shift();     // ring: ทิ้งอันเก่าสุด
+        if (_tsOn === false && typeof _tsSyncUI === 'function') _tsSyncUI();
+    } catch (_) {}
+}
+
+/* เขียนค่าจาก snapshot กลับเข้าตัวแปรจริง — จับคู่ตามลำดับ (index)
+   ถ้าจำนวนหน่วยเปลี่ยนไป (ภัยถูกทำลาย/วางเรือเพิ่ม) จะเขียนเท่าที่จับคู่ได้
+   ★ ปลุกหน่วยที่หายไปแล้วกลับมาไม่ได้ — เป็นข้อจำกัดที่ยอมรับ */
+function _tsWrite(sn) {
+    if (!sn) return;
+    try { _tsArr(() => patrolVessels).forEach((v, i) => {
+        const r = sn.pv[i]; if (!r) return;
+        v.nx = r[0]; v.ny = r[1]; v.heading = r[2]; if (r[3]) v.state = r[3];
+    }); } catch (_) {}
+    try { _tsArr(() => guardianUUVs).forEach((g, i) => {
+        const r = sn.gu[i]; if (!r) return; g.nx = r[0]; g.ny = r[1]; g.heading = r[2];
+    }); } catch (_) {}
+    try { _tsArr(() => threats).forEach((t, i) => {
+        const r = sn.th[i]; if (!r || !t) return;
+        t.nx = r[0]; t.ny = r[1]; t.active = !!r[2]; t.classified = !!r[3];
+    }); } catch (_) {}
+    try { if (aswHelo && sn.he) { aswHelo.nx = sn.he[0]; aswHelo.ny = sn.he[1]; aswHelo.hdg = sn.he[2]; } } catch (_) {}
+}
+
+/* เข้าโหมดย้อนเวลา — ต้องเก็บสภาพปัจจุบันไว้ก่อนเสมอ */
+function _tsEnter() {
+    if (_tsOn) return;
+    _tsLive = _tsSnap();                 // ★ กันซิมเดินต่อจากอดีตตอนออกจากโหมด
+    _tsOn = true;
+    try { simPaused = true; } catch (_) {}
+    document.body.classList.add('ts-active');
+}
+/* ออกจากโหมด — เขียนสภาพปัจจุบันคืนแล้วปล่อยให้เดินต่อ */
+function _tsExit() {
+    if (!_tsOn) return;
+    _tsWrite(_tsLive); _tsLive = null; _tsOn = false;
+    document.body.classList.remove('ts-active');
+    try {
+        simPaused = false;
+        requestAnimationFrame(animate);   // ปลุกลูปกลับมา (ลูปหยุดตัวเองตอน simPaused)
+    } catch (_) {}
+    if (typeof _tsSyncUI === 'function') _tsSyncUI();
+}
+/* ไปที่เฟรมที่ i ของบัฟเฟอร์แล้ววาดหนึ่งเฟรมด้วยโค้ดวาดเดิม */
+function _tsGoto(i) {
+    if (!_tsBuf.length) return;
+    _tsIdx = Math.max(0, Math.min(_tsBuf.length - 1, i | 0));
+    if (!_tsOn) _tsEnter();
+    _tsWrite(_tsBuf[_tsIdx]);
+    try { _forceStaticDraw = true; animate(); } catch (_) {}
+    if (typeof _tsSyncUI === 'function') _tsSyncUI();
+}
+/* ── แถบควบคุม ────────────────────────────────────────────────── */
+function _tsEl(id) { return document.getElementById(id); }
+
+/* ปรับหน้าปัดให้ตรงกับบัฟเฟอร์/ตำแหน่งปัจจุบัน */
+function _tsSyncUI() {
+    const bar = _tsEl('ts-bar'); if (!bar || !bar.classList.contains('show')) return;
+    const rng = _tsEl('ts-range'), clk = _tsEl('ts-clock');
+    const n = _tsBuf.length;
+    if (rng) {
+        rng.max = String(Math.max(0, n - 1));
+        /* ขณะยังไม่ย้อน ให้หัวเลื่อนเกาะปลายขวา (= ปัจจุบัน) เสมอ
+           แต่ห้ามแย่งตัวเลขตอนผู้ใช้กำลังลากอยู่ ไม่งั้นหัวจะดีดกลับทุกเฟรม */
+        if (!_tsOn && document.activeElement !== rng) rng.value = String(Math.max(0, n - 1));
+    }
+    if (clk) {
+        if (!n) { clk.textContent = '—'; return; }
+        if (!_tsOn) { clk.textContent = 'ปัจจุบัน'; return; }
+        const sn = _tsBuf[_tsIdx];
+        const back = Math.round((Date.now() - (sn && sn.t ? sn.t : Date.now())) / 1000);
+        clk.textContent = back <= 0 ? 'ปัจจุบัน'
+            : '−' + String(Math.floor(back / 60)).padStart(2,'0') + ':' + String(back % 60).padStart(2,'0');
+    }
+}
+
+function _tsToggleBar() {
+    const bar = _tsEl('ts-bar'); if (!bar) return;
+    const show = !bar.classList.contains('show');
+    bar.classList.toggle('show', show);
+    if (!show) { _tsExit(); return; }
+    if (!_tsBuf.length && typeof toast === 'function')
+        toast('⏱ ยังไม่มีภาพย้อนหลัง — ปล่อยให้ซิมเดินสักครู่ก่อน');
+    _tsSyncUI();
+}
+
+(function _tsWireBar() {
+    function wire() {
+        const rng = _tsEl('ts-range'); if (!rng || rng._tsWired) return;
+        rng._tsWired = true;
+        /* input = ลากแล้วภาพตามทันที (ทั้งเมาส์และนิ้ว ตามแนว TOUCH-1) */
+        rng.addEventListener('input', () => _tsGoto(Number(rng.value)));
+        _tsEl('ts-prev') ?.addEventListener('click', () => { _tsGoto(_tsIdx - 1); rng.value = String(_tsIdx); });
+        _tsEl('ts-next') ?.addEventListener('click', () => { _tsGoto(_tsIdx + 1); rng.value = String(_tsIdx); });
+        _tsEl('ts-live') ?.addEventListener('click', () => {
+            _tsExit();
+            rng.value = String(Math.max(0, _tsBuf.length - 1));
+            if (typeof toast === 'function') toast('▶ กลับสู่ภาพปัจจุบัน');
+        });
+        _tsEl('ts-close')?.addEventListener('click', () => _tsToggleBar());
+        /* ปุ่มลูกศรบนคีย์บอร์ดขณะโฟกัสแถบเลื่อน = เดินทีละช่วง (ได้ฟรีจาก input range) */
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire);
+    else wire();
+})();
+window._tsToggleBar = _tsToggleBar;
+
+/* ★ บล็อกสคริปต์นี้ห่อด้วย (function(){…})() — ทุกอย่างในนี้เป็น closure
+   ตัวเรียกใน animate() อยู่คนละบล็อก จึงมองไม่เห็นถ้าไม่ยกขึ้น window
+   (เจอจริงตอนทดสอบ: typeof _tsRecord = 'undefined' ที่จุดเรียก
+    = บันทึกจะไม่ทำงานเลยโดยไม่มี error ให้เห็น) */
+window._tsRecord = _tsRecord;
+window.udcTimeScrub = { enter:_tsEnter, exit:_tsExit, goto:_tsGoto,
+                        get length(){ return _tsBuf.length; },
+                        get index(){ return _tsIdx; },
+                        get active(){ return _tsOn; } };
+
 // ═══════════════════════════════════════════════════════════════════════
 //  [v18.1.0 SCEN-1] บันทึก / เรียกคืน "สถานการณ์"
 //  ─────────────────────────────────────────────────────────────────────
