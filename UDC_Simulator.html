@@ -1,8 +1,35 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.4.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.5.0 · 7-Domain + AI Staff)
 
   ── รุ่นล่าสุด · รายละเอียดเต็ม (v17.40.0 ขึ้นไป) ───────────────────
+  · [v18.5.0 GFX-1] ร่องรอยฝ่ายเรา + เกรดสีลูกโลกให้ตรงกับฉากดำน้ำ
+      ★ หมายเหตุก่อน: ข้อเสนองานกราฟิกที่ตั้งไว้หลายข้อ "มีอยู่แล้ว" เมื่อตรวจโค้ดจริง
+        — ร่องรอยของภัยคุกคามวาดอยู่แล้ว (บรรทัด ~23241) · marching ants มีตั้งแต่
+        v16.0.5 (วงเขต ๑๐ nm) · ACES tone mapping ตั้งไว้แล้วที่ d3_renderer
+        รุ่นนี้จึงทำเฉพาะ ๒ ช่องว่างที่ยืนยันแล้วว่าไม่มีจริง
+      ๑) [TRAIL] ร่องรอยการเคลื่อนที่ของฝ่ายเรา — เดิมมี ๐
+         PV มีแต่ swathHistory ซึ่งเป็น "แนวกวาดโซนาร์" และถูกปิดใน ๒ ใน ๓ โหมด
+         การแสดงผล (v17.52.0 PVVIEW) · GUUV ไม่มีอะไรเลย
+         ผลคือดูจอแล้วไม่รู้ว่าเรือของเรา "มาจากไหน" ซึ่งเป็นข้อมูลที่ต้องอ่านออก
+         ตอนทบทวนหลังปฏิบัติ และยิ่งสำคัญเมื่อใช้คู่กับการย้อนเวลา (v18.3.0)
+         เก็บทุก ๓ เฟรม เพดาน ๙๐ จุด · เก็บแม้ตอนกลับฐาน เพราะเส้นทางถอนตัวคือข้อมูล
+         drawFadingTrail() วาดแบบ "ไล่จาง" — เก่าสุดจางสุด ต่างจากร่องรอยของภัยคุกคาม
+         ที่ใช้ alpha คงที่ทั้งเส้น · การไล่จางทำให้อ่าน "ทิศทางเวลา" ออกทันที
+         โดยไม่ต้องมีหัวลูกศร · ยกกำลัง ๑.๖๕ ให้ช่วงล่าสุดเด่นกว่าช่วงกลาง
+         ★ วาดทีละท่อน เพราะ createLinearGradient รับได้แค่เส้นตรงสองจุด
+           ส่วนร่องรอยเป็นเส้นหักหลายท่อน
+      ๒) [GRADE] renderer ตัวที่ ๒ (Space Globe ISR) ไม่เคยตั้ง toneMapping/
+         outputEncoding เลย ต่างจาก d3_renderer ที่ตั้ง ACESFilmic + sRGB ไว้
+         ภาพลูกโลกจึงสว่างจัดและอิ่มสีต่างจากฉากดำน้ำอย่างเห็นได้ชัดทั้งที่อยู่ในแอปเดียวกัน
+         ตั้งให้เป็นชุดเดียวกัน · exposure 0.72 ต่ำกว่าตัวหลัก (0.78) เล็กน้อย
+         เพราะฉากอวกาศมีดาวเป็นจุดสว่างจัดบนพื้นดำ ถ้าดันเท่ากันดาวจะบาน
+      วัดจริง (ดึง drawFadingTrail ออกมารันกับ ctx จำลอง): เส้น ๖ จุด → ๕ ท่อน ·
+        ความทึบ 0.035 → 0.500 เพิ่มทางเดียว · ท่อนสุดท้าย = maxAlpha พอดี ·
+        รูปแบบสี rgba ถูกต้องทุกท่อน · null/ว่าง/จุดเดียว ไม่โยน error และไม่วาดอะไร ·
+        maxAlpha ปริยาย 0.55
+      ยังไม่ได้ทดสอบ: ภาพบนจอจริง — ต้องใช้ canvas + Leaflet ที่ environment
+        ซึ่งบล็อก CDN ทำไม่ได้
   · [v18.4.0 DST-1] พื้นที่เฝ้า (NAI) + จุดตกลงใจ (Decision Point)
       ช่องว่างที่วัดเจอ: ทั้งไฟล์มีคำว่า "decision point" ๐ ครั้ง · CCIR ๐ ครั้ง
       ทั้งที่มีเครื่องยนต์ wargame เดินฝ่ายแดงอยู่แล้ว — ขาดชั้นที่เชื่อม
@@ -476,7 +503,7 @@
          ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker
          v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump
          display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.4.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.5.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   ตัวเลขนี้คือที่เดียวที่ JS อ่าน — display string อีก ๖ จุดเป็นข้อความคงที่ใน HTML
@@ -492,7 +519,7 @@
         //     ของ *ซอฟต์แวร์* ทั้งสองเดินอิสระจากกันได้ ชื่อ Model 3.0 ยังคงเดิมทุกหน้า
         //   ★ ป้าย [v17.x.x] ในคอมเมนต์ทั้งไฟล์คือหมุดประวัติ "เพิ่มมาในรุ่นไหน"
         //     ห้ามไล่แก้เป็น v18 เด็ดขาด — จะทำให้ประวัติการพัฒนาผิดทั้งไฟล์
-        const APP_VERSION = '18.4.0';
+        const APP_VERSION = '18.5.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -9254,7 +9281,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v18.4.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v18.5.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9728,7 +9755,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.4.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.5.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9747,7 +9774,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.4.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.5.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา
                  — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
@@ -10759,7 +10786,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v18.4.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v18.5.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -22610,6 +22637,8 @@ function logROEGateTransition(g, fromCode, toCode) {
 }
 
 function drawGuardianUUVs() {
+    // [v18.5.0 GFX-1] ร่องรอยใต้น้ำ — โทน --sym-guuv (#00d4ff) จางกว่า PV เล็กน้อย
+    guardianUUVs.forEach(g => { if (g.trail) drawFadingTrail(g.trail, '0,212,255', 0.42, 1.6); });
     // ── เส้นร่างรูปแบบการลาดตระเวน ──
     guardianUUVs.forEach(g=>{
         ctx.save(); ctx.setLineDash([3,6]);
@@ -22813,7 +22842,33 @@ function drawGuardianUUVs() {
 //               → เป็นข้อจำกัดทางกฎหมาย ไม่ใช่ข้อจำกัดทางเทคนิค ห้ามข้ามขั้น
 //  เชื่อมโยง    : รับระดับ ROE จากวงแหวนป้องกัน [ส่วนที่ 5] และเขตปลอดภัย [ส่วนที่ 1.6]
 // ═══════════════════════════════════════════════════════════════════════════
+/* [v18.5.0 GFX-1] วาดร่องรอยแบบ "ไล่จาง" — เก่าสุดจางสุด
+   ต่างจากร่องรอยของภัยคุกคามที่ใช้ alpha คงที่ทั้งเส้น (บรรทัด ~23241)
+   การไล่จางทำให้อ่าน "ทิศทางเวลา" ออกทันทีโดยไม่ต้องมีหัวลูกศร
+   ★ วาดทีละท่อน เพราะ createLinearGradient รับได้แค่เส้นตรงจากจุดหนึ่งไปอีกจุด
+     ส่วนร่องรอยเป็นเส้นหักหลายท่อน จึงต้องไล่ทีละคู่จุด */
+function drawFadingTrail(pts, rgb, maxAlpha, width) {
+    if (!pts || pts.length < 2) return;
+    ctx.save();
+    ctx.lineWidth = width || 1.8;
+    ctx.lineCap = 'round';
+    const n = pts.length;
+    for (let i = 1; i < n; i++) {
+        const a = pn(pts[i-1][0], pts[i-1][1]);
+        const b = pn(pts[i][0],   pts[i][1]);
+        /* ความทึบไล่ตามลำดับ: ปลายเก่า ~0 → ปลายใหม่ = maxAlpha
+           ยกกำลัง ๑.๖๕ ให้ช่วงท้าย (ล่าสุด) เด่นกว่าช่วงกลาง — อ่านหัวเรือง่ายขึ้น */
+        const al = Math.pow(i / (n - 1), 1.65) * (maxAlpha == null ? 0.55 : maxAlpha);
+        if (al <= 0.01) continue;
+        ctx.strokeStyle = 'rgba(' + rgb + ',' + al.toFixed(3) + ')';
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    }
+    ctx.restore();
+}
+
 function drawPatrolVessels() {
+    // [v18.5.0 GFX-1] ร่องรอยฝ่ายเรา — วาดก่อนทุกอย่าง จะได้อยู่ใต้ตัวเรือและป้าย
+    patrolVessels.forEach(v => { if (v.trail) drawFadingTrail(v.trail, '100,255,218', 0.50, 1.8); });
     // ── [v17.21.1 RTB-1] ฐานส่งกำลังบำรุง ทรภ.๑ + เส้นทางกลับฐาน ──
     //    วาดเฉพาะเมื่อมีเรือกำลังกลับฐาน/เทียบท่า เพื่อไม่รกแผนที่ตอนปกติ
     const anyOff = patrolVessels.some(v => pvOffStation(v));
@@ -28646,6 +28701,11 @@ function animate() {
     // Phase B (0.5–2nm):       CHALLENGE 0.8× — ประกบ + acoustic warning
     // Phase C (< 0.5nm):       ABORT           — ถอนตัว broadcast last position
     guardianUUVs.forEach(g=>{
+        /* [v18.5.0 GFX-1] ร่องรอย GUUV — เก็บชุดเดียวกับ PV
+           ยานใต้น้ำไม่มีร่องรอยบนผิวน้ำให้เห็นในโลกจริง แต่บนจอยุทธการ
+           "มันมาจากไหน" คือข้อมูลที่ ผบ. ต้องอ่านออกพอ ๆ กับเรือผิวน้ำ */
+        if (!g.trail) g.trail = [];
+        if (frame % 3 === 0) { g.trail.push([g.nx, g.ny]); if (g.trail.length > 90) g.trail.shift(); }
         if (g.redirected&&g.redirectTarget) {
 
             // ── 3-Phase: คำนวณระยะ GUUV → UDC ──────────────────────
@@ -28851,6 +28911,15 @@ function animate() {
         if (!pvOffStation(v)) {
             v.swathHistory.push([v.nx, v.ny]);
             if (v.swathHistory.length > 150) v.swathHistory.shift();
+        }
+        /* [v18.5.0 GFX-1] ร่องรอยการเคลื่อนที่ของฝ่ายเรา
+           ต่างจาก swathHistory ซึ่งเป็น "แนวกวาดโซนาร์" (ปิดใน ๒ ใน ๓ โหมดการแสดงผล)
+           อันนี้คือ "เรือลำนี้มาจากไหน" — เก็บเสมอไม่ว่าจะเปิดโหมดไหน และเก็บตอน
+           กลับฐานด้วย เพราะเส้นทางถอนตัวคือข้อมูลที่ต้องเห็นตอนทบทวนหลังปฏิบัติ */
+        if (!v.trail) v.trail = [];
+        if (frame % 3 === 0) {          // ทุก ๓ เฟรม พอให้เส้นลื่นโดยไม่เปลืองหน่วยความจำ
+            v.trail.push([v.nx, v.ny]);
+            if (v.trail.length > 90) v.trail.shift();
         }
         // ── ๒. กลไกกฎการปะทะและการตอบโต้การรุกล้ำเขตใช้อาวุธ ──
         // ตอบโต้ contact ที่ละเมิดเขตห้ามเข้าทางทะเล (Maritime Exclusion Zone)
@@ -53159,6 +53228,14 @@ function _sgInitGlobe() {
     sgState.renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true, alpha:false});
     sgState.renderer.setSize(w, h);
     sgState.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    /* [v18.5.0 GFX-1] เกรดสีให้ตรงกับฉากดำน้ำ ๓ มิติ (d3_renderer บรรทัด ~24701)
+       เดิม renderer ตัวนี้ไม่ตั้ง toneMapping/outputEncoding เลย ภาพลูกโลกจึงสว่างจัด
+       และอิ่มสีต่างจากฉากดำน้ำอย่างเห็นได้ชัด ทั้งที่อยู่ในแอปเดียวกัน
+       ACESFilmic + sRGB = ชุดเดียวกับตัวหลัก · exposure ต่ำกว่าเล็กน้อยเพราะฉากอวกาศ
+       มีดาวเป็นจุดสว่างจัดบนพื้นดำ ถ้าดันเท่ากันดาวจะบาน */
+    sgState.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    sgState.renderer.toneMappingExposure = 0.72;
+    sgState.renderer.outputEncoding = THREE.sRGBEncoding;
 
     sgState.scene.add(new THREE.AmbientLight(0xffffff, 0.9));
     var sun = new THREE.DirectionalLight(0xffffff, 1.4);
