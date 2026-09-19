@@ -12,10 +12,11 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 
 ## Current Version
 
-**v18.0.0 · 7-Domain + AI Staff**
+**v18.0.1 · 7-Domain + AI Staff**
 
 | Version | สิ่งสำคัญ |
 |---------|-----------|
+| v18.0.1 | **FNAME-1 — เปลี่ยนชื่อไฟล์ `UDC_Simulator_17.html` → `UDC_Simulator.html`:** ชื่อใหม่ไม่มีเลขรุ่น จะได้ไม่ต้องไล่แก้ลิงก์อีกทุกครั้งที่ขึ้น major · แก้การอ้างถึง ๔๓ จุดใน ๑๑ ไฟล์ (ลิงก์กดได้จริง ๓ จุด: ปุ่ม Launch ใน Pitch · ปุ่มใน palantir · iframe ในบทที่ ๔) · เหลือไฟล์เดิมไว้เป็น **หน้าเปลี่ยนเส้นทาง** กัน URL ที่บุ๊กมาร์กไว้ 404 |
 | v18.0.0 | **ขึ้น major v18 — สิ้นสุดสาย v17 (ยุคงานวิจัย):** v17 ทั้งสาย (v17.0.0 → v17.53.0 · ๕๔ รุ่น) ถูกตรึง major ไว้ที่ 17 โดยเจตนา เพราะเลขรุ่นต้องตรงกับเอกสารวิจัยที่ส่งแล้ว — การอัปเกรดใหญ่จึงถูกยุบเป็น minor ตลอดมา · งานวิจัยสิ้นสุดแล้ว จึงปลดข้อผูกและขึ้น major · v18 = จุดเริ่มช่วง "นำไปใช้จริง" · **เปลี่ยนเฉพาะเลขรุ่นที่แสดง ๗ จุด ไม่แตะพฤติกรรมโปรแกรม** · ชื่อ "THE SHIELD 3.0" (ชื่อ*ตัวแบบ*) ไม่เปลี่ยน |
 | v17.53.0 | **TOUCH-1 — ใช้งานบนแท็บเล็ตได้จริง:** การ "ลาก" ทุกจุดรองรับนิ้ว · แปลงตัวฟัง ๓๕ จุดเป็น Pointer Events (เดิม `mousedown/mousemove/mouseup` ซึ่งนิ้วไม่ยิงให้ → ย้ายหน้าต่าง/ปรับช่องแผนที่/หมุนกล้อง ๓ มิติ ไม่ได้เลย) · `pointercancel` ๑๕ จุด กันสถานะลากค้าง · `touch-action:none` ที่จุดจับ ๑๓ ตัว · ขยายพื้นที่แตะตัวแยกช่องเป็น ๒๒px บนอุปกรณ์สัมผัส |
 | v17.52.0 | แก้ ๒ จุดจากการทดสอบก่อนนำเสนอ — **COA-PICK** การ์ดหนทางปฏิบัติกดเลือกไม่ได้ (แถวปุ่มติดอยู่ใน `.cbody` ที่ `.collapsed` ซ่อน ตั้งแต่ v17.41.0) · **PVVIEW** ปุ่มสลับ "พื้นที่ตรวจจับ" ๓ ระดับ (เต็ม → เฉพาะวง → ปิด) ในหมวด PATROL VESSELS |
@@ -39,7 +40,7 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 | v11–v12 | 3D Dive, SVP acoustic model, time-replay, code cleanup |
 | v09–v10 | AIS WebSocket, DEM offline cache |
 
-> Changelog แบบละเอียดอยู่ใน comment ส่วนหัวของ `UDC_Simulator_17.html` (tag `[vXX.x.x]`)
+> Changelog แบบละเอียดอยู่ใน comment ส่วนหัวของ `UDC_Simulator.html` (tag `[vXX.x.x]`)
 > — รุ่น v17.39.1 ขึ้นไปมีรายละเอียดเต็ม ส่วนรุ่นเก่ากว่านั้นเป็นบรรทัดสรุป
 
 ---
@@ -50,19 +51,21 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 
 | ไฟล์ | บทบาท |
 |------|-------|
-| `index.html` | **จุดเข้า GitHub Pages** — สำเนาตรงของ `UDC_Simulator_17.html` (byte-identical) |
-| `UDC_Simulator_17.html` | **ตัวจำลองหลัก** (single-file) — *เลข 17 ในชื่อไฟล์เป็นของสาย v17 เดิม ยังไม่เปลี่ยนชื่อ (ดูหมายเหตุท้ายตาราง)*. ปุ่ม PITCH ลิงก์ไป `THE_SHIELD_Pitch.html` |
+| `index.html` | **จุดเข้า GitHub Pages** — สำเนาตรงของ `UDC_Simulator.html` (byte-identical) |
+| `UDC_Simulator.html` | **ตัวจำลองหลัก** (single-file). ปุ่ม PITCH ลิงก์ไป `THE_SHIELD_Pitch.html`. ปุ่ม PITCH ลิงก์ไป `THE_SHIELD_Pitch.html` |
 | `THE_SHIELD_Pitch.html` | หน้านำเสนอ (hub) — ลิงก์ไปไดอะแกรม, สรุปเซ็นเซอร์, บทเรียน และบทวิจัย |
 | `THE_SHIELD_Ch1.html` … `THE_SHIELD_Ch5.html` | บทวิจัย ๑–๕ (พร้อมภาพประกอบใน `img/` และสื่อ `THE_SHIELD_Ch*.webp/.mp4` ที่ root) |
 | `THE_SHIELD_บทเรียนวิจัย_Baltic_Singapore.html` | กรณีศึกษา Baltic / Singapore |
 | `THE_SHIELD_SensorSummary.html` | สรุปแหล่งข้อมูล/เซ็นเซอร์ (CNS) — *เดิมชื่อ `Sensor_Summary_CNS.html`* |
 | `THE_SHIELD_SystemArchitecture_Cocoon.html` | ไดอะแกรมสถาปัตยกรรม (เลย์เอาต์ Cocoon) — ลิงก์จาก Pitch |
 | `THE_SHIELD_Biofouling_Protection.html` | เกราะกันเพรียงทะเล — การปกป้องแคปซูล UDC จาก biofouling |
+| `UDC_Simulator_17.html` | *หน้าเปลี่ยนเส้นทาง* → `UDC_Simulator.html` (ชื่อเดิมก่อน v18.0.1) |
 | `presentation_palantir.html` | หน้านำเสนอผลงานวิจัย (ธีม Palantir Gotham C4ISR) — มีโหมดสไลด์สำรองสำหรับรอบตอบข้อซักถาม |
 
-> **หมายเหตุเลขรุ่นในชื่อไฟล์ (v18.0.0):** ซอฟต์แวร์ขึ้น major v18 แล้ว แต่ไฟล์ยังชื่อ `UDC_Simulator_17.html`
-> การเปลี่ยนชื่อกระทบ **URL สาธารณะ** และลิงก์ใน ๘ ไฟล์ (`THE_SHIELD_Pitch.html` ปุ่ม Launch · `presentation_palantir.html`
-> · `THE_SHIELD_Ch4.html` iframe · `_Cocoon` · `workers/DEPLOY.md` · `_worker/` ฯลฯ) จึงแยกเป็นคนละงาน ยังไม่ทำ
+> **`UDC_Simulator_17.html` (v18.0.1):** ไม่ใช่ตัวจำลองแล้ว — เป็น **หน้าเปลี่ยนเส้นทาง** ขนาด ~1.4 KB
+> ที่พาไป `UDC_Simulator.html` ด้วย `<meta http-equiv="refresh">` (ทำงานแม้ปิด JS) มีไว้กัน URL เดิมที่มีผู้
+> บุ๊กมาร์ก/ส่งต่อไปแล้ว 404 · **ลบทิ้งได้ทุกเมื่อ**ถ้ายอมให้ลิงก์เก่าตาย · ชื่อใหม่ไม่มีเลขรุ่นโดยตั้งใจ
+> จะได้ไม่ต้องเปลี่ยนชื่อและไล่แก้ลิงก์อีกตอนขึ้น v19
 
 > **หมายเหตุ:** ไดอะแกรมสถาปัตยกรรมมีฉบับเดียวคือ `_Cocoon` (ไม่เคยมีไฟล์ `THE_SHIELD_SystemArchitecture.html`
 > แบบ standalone ในรีโป) · `THE_SHIELD_KnowledgeFlowchart.html` เคยมีแต่ถูกถอดออกในคอมมิต `8afbc3e` (folder reorg)
@@ -92,8 +95,8 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 
 ```
 01_Simulator/
-├── index.html                       ← GitHub Pages entry (สำเนา UDC_Simulator_17.html)
-├── UDC_Simulator_17.html            ← ตัวจำลองหลัก (single file)
+├── index.html                       ← GitHub Pages entry (สำเนา UDC_Simulator.html)
+├── UDC_Simulator.html            ← ตัวจำลองหลัก (single file)
 ├── THE_SHIELD_*.html                ← เอกสารชุด (ดู Page Ecosystem ด้านบน)
 ├── presentation_palantir.html       ← หน้านำเสนอ (ธีม Palantir Gotham)
 ├── README.md   ·   .gitignore
@@ -136,7 +139,7 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 
 ## Running
 
-เปิดไฟล์ `UDC_Simulator_17.html` (หรือ `index.html`) ในเบราว์เซอร์ได้โดยตรง
+เปิดไฟล์ `UDC_Simulator.html` (หรือ `index.html`) ในเบราว์เซอร์ได้โดยตรง
 (ต้องต่ออินเทอร์เน็ตสำหรับ tile layers + AIS WebSocket + AI Staff)
 
 ฟีเจอร์ที่ต้องมี server ฝั่งหลังบ้าน:
@@ -149,10 +152,10 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 
 ## Testing
 
-ไม่มีชุดทดสอบอัตโนมัติ — มีสคริปต์ตรวจ ๒ ชั้น รันก่อน commit ทุกครั้งที่แก้ `UDC_Simulator_17.html`:
+ไม่มีชุดทดสอบอัตโนมัติ — มีสคริปต์ตรวจ ๒ ชั้น รันก่อน commit ทุกครั้งที่แก้ `UDC_Simulator.html`:
 
 ```bash
-node scripts/tools/check_js_syntax.js UDC_Simulator_17.html   # ชั้น ๑ — ไวยากรณ์ JS ทุกบล็อก
+node scripts/tools/check_js_syntax.js UDC_Simulator.html   # ชั้น ๑ — ไวยากรณ์ JS ทุกบล็อก
 npm i playwright-core                                          # (ครั้งเดียว)
 node scripts/tools/smoke_test.js                               # ชั้น ๒ — บูตจริงในเบราว์เซอร์
 node scripts/tools/smoke_test.js --shot /tmp/shot.png          # + เก็บภาพหน้าจอ

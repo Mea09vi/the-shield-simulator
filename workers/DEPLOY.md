@@ -228,7 +228,7 @@ curl -X POST https://shield-ai-proxy.<your-subdomain>.workers.dev \
 
 ## 6) ตั้งค่าใน UDC Simulator
 
-1. เปิด `UDC_Simulator_17.html`
+1. เปิด `UDC_Simulator.html`
 2. คลิกปุ่ม 🧠 AI ใน header → modal เปิด
 3. ใน toolbar:
    - คลิก ⚙ **Settings** → วาง URL ของ Worker (จากขั้น 3)

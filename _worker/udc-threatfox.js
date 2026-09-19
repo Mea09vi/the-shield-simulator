@@ -17,7 +17,7 @@
                  CISA KEV / ip-api / adsb.lol / ransomware.live / GDELT / Cloudflare DoH
                  (cloudflare-dns.com · v7) เป็น endpoint สาธารณะ keyless ทั้งหมด. ปลอด deploy สาธารณะ
    แคช         : edge cache แยกต่อ feed (caches.default) → browser poll ซ้ำไม่ยิง upstream ใหม่
-   เชื่อมโยง    : ตั้ง MDA.cfg.threatfoxProxy = '<worker-url>' ใน UDC_Simulator_17.html
+   เชื่อมโยง    : ตั้ง MDA.cfg.threatfoxProxy = '<worker-url>' ใน UDC_Simulator.html
                  (feodo/urlhaus/kev/aviation/ransomware/gdelt ต่อ ?feed= เองจาก base เดียวกัน —
                  ไม่ต้องตั้งค่าเพิ่ม)
    หมายเหตุ v5 (CYBER-2) : GDACS/Celestrak/thaiwater(tide,surge,wave) "ไม่" ย้ายมา Worker — ตรวจ
@@ -32,7 +32,7 @@ const URLHAUS_CSV = 'https://urlhaus.abuse.ch/downloads/csv_recent/';
 const KEV_JSON    = 'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json';
 const GEO_API     = 'http://ip-api.com/batch?fields=status,lat,lon,city,countryCode,isp,query';
 // centerLat/centerLon = จุดกึ่งกลาง MDA.cfg.bbox (indochina/อ่าวไทย-อันดามัน lamin5.6/lomin95/lamax21/lomax108)
-// ต้องตรงกับค่าที่ UDC_Simulator_17.html คำนวณเอง (MDA.Aviation) — เปลี่ยน bbox ที่นั่นต้องแก้ที่นี่ด้วย
+// ต้องตรงกับค่าที่ UDC_Simulator.html คำนวณเอง (MDA.Aviation) — เปลี่ยน bbox ที่นั่นต้องแก้ที่นี่ด้วย
 const AVIATION_URL = 'https://api.adsb.lol/v2/lat/13.30/lon/101.50/dist/250';
 // [v17.11.0 CYBER-2] ransomware.live ไม่ส่ง Access-Control-Allow-Origin เลย (ตรวจด้วย curl -H Origin จริง) → ต้อง relay
 const RANSOM_URL   = 'https://api.ransomware.live/v2/countryvictims/TH';
@@ -510,5 +510,5 @@ export default {
       • https://udc-threatfox.rey-mysawa.workers.dev/?feed=aviation      → {"ac":[{"hex":..,"flight":..,"lat":..,"lon":..,...}]}
       • https://udc-threatfox.rey-mysawa.workers.dev/?feed=ransomware    → [{"domain":..,"post_title":..,"group_name":..,"geo":{...}}]
       • https://udc-threatfox.rey-mysawa.workers.dev/?feed=gdelt         → {"articles":[{"title":..,"domain":..,"url":..,...}]}
-   (ฝั่ง UDC_Simulator_17.html ตั้ง MDA.cfg.threatfoxProxy ไว้แล้ว — feodo/urlhaus/kev/aviation/ransomware/gdelt ต่อ ?feed= เอง)
+   (ฝั่ง UDC_Simulator.html ตั้ง MDA.cfg.threatfoxProxy ไว้แล้ว — feodo/urlhaus/kev/aviation/ransomware/gdelt ต่อ ?feed= เอง)
    ════════════════════════════════════════════════════════════════════════ */
