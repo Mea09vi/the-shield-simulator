@@ -1,8 +1,26 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v17.53.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.0.0 · 7-Domain + AI Staff)
 
   ── รุ่นล่าสุด · รายละเอียดเต็ม (v17.40.0 ขึ้นไป) ───────────────────
+  · [v18.0.0 VER-2] ขึ้น major v18 — สิ้นสุดสาย v17 (ยุคงานวิจัย)
+      v17 ทั้งสาย (v17.0.0 → v17.53.0 · ๕๔ รุ่น) คือช่วงที่ตัวจำลองเดินคู่กับเอกสารวิจัย
+      เลขรุ่นจึงถูกตรึงไว้ที่ major 17 โดยเจตนา — VER-1 เขียนข้อห้ามไว้ชัดว่า "ห้ามขึ้น v18"
+      เพราะเลขที่แสดงต้องตรงกับเอกสารที่ส่งแล้ว การอัปเกรดใหญ่จึงถูกยุบเป็น minor แทน
+      ตลอดมา (GOTHAM · OPERATIONAL CALM · ชั้น token · 3D dive ล้วนเป็นแค่ minor)
+
+      บัดนี้งานวิจัยสิ้นสุด ข้อผูกนั้นหมดเหตุผล ผู้พัฒนาจึงปลดข้อห้ามและขึ้น major
+      v18 = จุดเริ่มของช่วง "นำไปใช้จริง" (ต่อยอดจากงานวิจัยสู่การใช้งาน)
+
+      สิ่งที่เปลี่ยน: เลขรุ่นที่แสดง ๗ จุด + ข้อความข้อกำหนดใน VER-1 เท่านั้น
+      ★ ไม่แตะพฤติกรรมของโปรแกรมแม้แต่บรรทัดเดียว — v18.0.0 ทำงานเหมือน v17.53.0 ทุกประการ
+      ★ ชื่อ "THE SHIELD 3.0" ไม่เปลี่ยน — เป็นชื่อรุ่นของ *ตัวแบบ* คนละแกนกับเลข
+        version ของ *ซอฟต์แวร์* หน้าเว็บทุกหน้ายังเรียก Model 3.0 เหมือนเดิม
+      ★ ป้าย [v17.x.x] ในคอมเมนต์ทั่วทั้งไฟล์คงไว้ตามเดิมทุกจุด เป็นหมุดประวัติว่า
+        "ของสิ่งนี้เพิ่มมาในรุ่นไหน" ตามธรรมเนียมท้ายไฟล์ — ไล่แก้เป็น v18 ไม่ได้
+      ยังค้าง: ชื่อไฟล์ UDC_Simulator_17.html ยังมีเลข 17 อยู่ · การเปลี่ยนชื่อกระทบ
+        URL สาธารณะและลิงก์ใน ๘ ไฟล์ (Pitch · palantir · Ch4 · Cocoon ฯลฯ) จึงแยกเป็น
+        คนละงาน ให้ผู้พัฒนาตัดสินใจ ไม่รวมมาในรุ่นนี้
   · [v17.53.0 TOUCH-1] ใช้งานบนแท็บเล็ตได้จริง — การ "ลาก" ทุกจุดรองรับนิ้ว
       อาการเดิม: บนแท็บเล็ต กดปุ่มได้ (click ทำงานบนสัมผัสอยู่แล้ว) แต่ "ลาก" ไม่ได้เลย
       — ย้ายหน้าต่างไม่ได้ · ปรับความกว้างช่องแผนที่ไม่ได้ · หมุนกล้องฉากดำน้ำ ๓ มิติ ไม่ได้
@@ -339,12 +357,23 @@
          ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker
          v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump
          display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v17.53.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.0.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
-        //   งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 = major v17 คงที่ → ห้ามขึ้น v18,
-        //   การอัปเกรดใหญ่ (UNIFIED-PIPELINE ฯลฯ) นับเป็น minor/patch bump แทน (17.11.0)
-        const APP_VERSION = '17.53.0';
+        //   ตัวเลขนี้คือที่เดียวที่ JS อ่าน — display string อีก ๖ จุดเป็นข้อความคงที่ใน HTML
+        //   (title, header title, mda-ai-sub, boot subtitle, statusBox, บรรทัด ๓ ส่วนหัวไฟล์)
+        //   ต้องแก้พร้อมกันทั้ง ๗ จุดเสมอ
+        //
+        // [v18.0.0 VER-2] ★ ยกเลิกข้อห้าม "ห้ามขึ้น v18" ของ VER-1 เดิม
+        //   ข้อความเดิมเขียนไว้ว่า: "งานวิจัย + THE_SHIELD_Pitch.html ระบุ Model 3.0 =
+        //   major v17 คงที่ → ห้ามขึ้น v18, การอัปเกรดใหญ่นับเป็น minor/patch bump แทน"
+        //   เหตุผลนั้นผูกกับ "ช่วงทำวิจัย" ที่เลขรุ่นต้องตรงกับเอกสารที่ส่งแล้ว
+        //   บัดนี้งานวิจัยสิ้นสุด ผู้พัฒนาจึงปลดข้อผูกนี้และขึ้น major เป็น v18
+        //   ★ "THE SHIELD 3.0" คือชื่อรุ่นของ *ตัวแบบ* (Model) — คนละแกนกับเลข version
+        //     ของ *ซอฟต์แวร์* ทั้งสองเดินอิสระจากกันได้ ชื่อ Model 3.0 ยังคงเดิมทุกหน้า
+        //   ★ ป้าย [v17.x.x] ในคอมเมนต์ทั้งไฟล์คือหมุดประวัติ "เพิ่มมาในรุ่นไหน"
+        //     ห้ามไล่แก้เป็น v18 เด็ดขาด — จะทำให้ประวัติการพัฒนาผิดทั้งไฟล์
+        const APP_VERSION = '18.0.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -8985,7 +9014,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v17.53.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v18.0.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9459,7 +9488,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v17.53.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.0.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9478,7 +9507,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v17.53.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.0.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา
                  — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
@@ -10490,7 +10519,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v17.53.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v18.0.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>

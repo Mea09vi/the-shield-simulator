@@ -12,10 +12,11 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 
 ## Current Version
 
-**v17.53.0 · 7-Domain + AI Staff**
+**v18.0.0 · 7-Domain + AI Staff**
 
 | Version | สิ่งสำคัญ |
 |---------|-----------|
+| v18.0.0 | **ขึ้น major v18 — สิ้นสุดสาย v17 (ยุคงานวิจัย):** v17 ทั้งสาย (v17.0.0 → v17.53.0 · ๕๔ รุ่น) ถูกตรึง major ไว้ที่ 17 โดยเจตนา เพราะเลขรุ่นต้องตรงกับเอกสารวิจัยที่ส่งแล้ว — การอัปเกรดใหญ่จึงถูกยุบเป็น minor ตลอดมา · งานวิจัยสิ้นสุดแล้ว จึงปลดข้อผูกและขึ้น major · v18 = จุดเริ่มช่วง "นำไปใช้จริง" · **เปลี่ยนเฉพาะเลขรุ่นที่แสดง ๗ จุด ไม่แตะพฤติกรรมโปรแกรม** · ชื่อ "THE SHIELD 3.0" (ชื่อ*ตัวแบบ*) ไม่เปลี่ยน |
 | v17.53.0 | **TOUCH-1 — ใช้งานบนแท็บเล็ตได้จริง:** การ "ลาก" ทุกจุดรองรับนิ้ว · แปลงตัวฟัง ๓๕ จุดเป็น Pointer Events (เดิม `mousedown/mousemove/mouseup` ซึ่งนิ้วไม่ยิงให้ → ย้ายหน้าต่าง/ปรับช่องแผนที่/หมุนกล้อง ๓ มิติ ไม่ได้เลย) · `pointercancel` ๑๕ จุด กันสถานะลากค้าง · `touch-action:none` ที่จุดจับ ๑๓ ตัว · ขยายพื้นที่แตะตัวแยกช่องเป็น ๒๒px บนอุปกรณ์สัมผัส |
 | v17.52.0 | แก้ ๒ จุดจากการทดสอบก่อนนำเสนอ — **COA-PICK** การ์ดหนทางปฏิบัติกดเลือกไม่ได้ (แถวปุ่มติดอยู่ใน `.cbody` ที่ `.collapsed` ซ่อน ตั้งแต่ v17.41.0) · **PVVIEW** ปุ่มสลับ "พื้นที่ตรวจจับ" ๓ ระดับ (เต็ม → เฉพาะวง → ปิด) ในหมวด PATROL VESSELS |
 | v17.51.x | popup ๘ ใบเข้าธีม CIC มืด (`.mda-tooltip` ทาสีผิดชั้น) · แถบใหม่ **CCTV เมืองพัทยา** (เกาะล้าน ๕๐ + ชายหาด ๘๕ · deep-link ดูสด) |
@@ -50,7 +51,7 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 | ไฟล์ | บทบาท |
 |------|-------|
 | `index.html` | **จุดเข้า GitHub Pages** — สำเนาตรงของ `UDC_Simulator_17.html` (byte-identical) |
-| `UDC_Simulator_17.html` | **ตัวจำลองหลัก** (single-file). ปุ่ม PITCH ลิงก์ไป `THE_SHIELD_Pitch.html` |
+| `UDC_Simulator_17.html` | **ตัวจำลองหลัก** (single-file) — *เลข 17 ในชื่อไฟล์เป็นของสาย v17 เดิม ยังไม่เปลี่ยนชื่อ (ดูหมายเหตุท้ายตาราง)*. ปุ่ม PITCH ลิงก์ไป `THE_SHIELD_Pitch.html` |
 | `THE_SHIELD_Pitch.html` | หน้านำเสนอ (hub) — ลิงก์ไปไดอะแกรม, สรุปเซ็นเซอร์, บทเรียน และบทวิจัย |
 | `THE_SHIELD_Ch1.html` … `THE_SHIELD_Ch5.html` | บทวิจัย ๑–๕ (พร้อมภาพประกอบใน `img/` และสื่อ `THE_SHIELD_Ch*.webp/.mp4` ที่ root) |
 | `THE_SHIELD_บทเรียนวิจัย_Baltic_Singapore.html` | กรณีศึกษา Baltic / Singapore |
@@ -58,6 +59,10 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 | `THE_SHIELD_SystemArchitecture_Cocoon.html` | ไดอะแกรมสถาปัตยกรรม (เลย์เอาต์ Cocoon) — ลิงก์จาก Pitch |
 | `THE_SHIELD_Biofouling_Protection.html` | เกราะกันเพรียงทะเล — การปกป้องแคปซูล UDC จาก biofouling |
 | `presentation_palantir.html` | หน้านำเสนอผลงานวิจัย (ธีม Palantir Gotham C4ISR) — มีโหมดสไลด์สำรองสำหรับรอบตอบข้อซักถาม |
+
+> **หมายเหตุเลขรุ่นในชื่อไฟล์ (v18.0.0):** ซอฟต์แวร์ขึ้น major v18 แล้ว แต่ไฟล์ยังชื่อ `UDC_Simulator_17.html`
+> การเปลี่ยนชื่อกระทบ **URL สาธารณะ** และลิงก์ใน ๘ ไฟล์ (`THE_SHIELD_Pitch.html` ปุ่ม Launch · `presentation_palantir.html`
+> · `THE_SHIELD_Ch4.html` iframe · `_Cocoon` · `workers/DEPLOY.md` · `_worker/` ฯลฯ) จึงแยกเป็นคนละงาน ยังไม่ทำ
 
 > **หมายเหตุ:** ไดอะแกรมสถาปัตยกรรมมีฉบับเดียวคือ `_Cocoon` (ไม่เคยมีไฟล์ `THE_SHIELD_SystemArchitecture.html`
 > แบบ standalone ในรีโป) · `THE_SHIELD_KnowledgeFlowchart.html` เคยมีแต่ถูกถอดออกในคอมมิต `8afbc3e` (folder reorg)
