@@ -1,8 +1,36 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.3.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.4.0 · 7-Domain + AI Staff)
 
   ── รุ่นล่าสุด · รายละเอียดเต็ม (v17.40.0 ขึ้นไป) ───────────────────
+  · [v18.4.0 DST-1] พื้นที่เฝ้า (NAI) + จุดตกลงใจ (Decision Point)
+      ช่องว่างที่วัดเจอ: ทั้งไฟล์มีคำว่า "decision point" ๐ ครั้ง · CCIR ๐ ครั้ง
+      ทั้งที่มีเครื่องยนต์ wargame เดินฝ่ายแดงอยู่แล้ว — ขาดชั้นที่เชื่อม
+      "ภัยเคลื่อนไปถึงไหน" เข้ากับ "แล้วเราจะสั่งอะไร" ซึ่งคือสะพานระหว่างแผน (COA)
+      กับการปฏิบัติ และเป็นผลผลิตจริงของการ wargame ตามหลัก MDMP
+      NAI = พื้นที่ที่ตั้งชื่อไว้เฝ้า (คลิกวางบนแผนที่ · กำหนดรัศมีเป็นไมล์ทะเล)
+      DP  = "ถ้าฝ่ายแดงเข้า NAI-x ก่อนนาทีที่ T → สั่ง Y" · เตือนทันทีที่เงื่อนไขเกิด
+      ★ กรอบเวลาตามหลักนิยม: byMin > 0 ยิงเฉพาะเมื่อข้าศึกเข้ามา "เร็วกว่า" ที่ประเมินไว้
+        เพราะนั่นคือสัญญาณว่าต้องตกลงใจแล้ว · เข้าช้ากว่ากำหนด = ไม่ใช่จุดตกลงใจอีกต่อไป
+        (byMin = 0 → เตือนทันทีที่มีผู้บุกรุก ไม่จำกัดเวลา)
+      งานกราฟิกที่แทรกมาด้วย (จากบทวิเคราะห์เรื่อง Canvas):
+        · 'lighter' — แสงบวกกัน วง NAI ที่ซ้อนกันสว่างขึ้นแทนที่จะทึบทับกัน
+          (ทั้งไฟล์ใช้ globalCompositeOperation อยู่แค่ ๕ จุด ทั้งที่เหมาะกับวงตรวจจับมาก)
+        · createRadialGradient — ขอบวงนุ่ม ไม่ใช่วงกลมแบน
+        · เส้นประวิ่ง (marching ants) ด้วย lineDashOffset ตาม frame — สำนวนแผนที่ทหาร:
+          เส้นวิ่ง = ยังเฝ้าอยู่ · เส้นทึบแดง = เงื่อนไขเกิดแล้ว
+          (ใช้จังหวะเดียวกับวงเขต ๑๐ nm ใน drawZonesGIS ที่ทำไว้ตั้งแต่ v16.0.5)
+      ★ วางโมดูลไว้ใน script block เดียวกับ threats/animate/ctx โดยตั้งใจ — บทเรียนจาก
+        TSCRUB-1 ที่เผลอวางไว้คนละบล็อก (ซึ่งห่อด้วย IIFE) แล้วตัวเรียกมองไม่เห็น
+      ตรวจเงื่อนไข throttle ทุก ๑๐ เฟรม — เป็น O(ภัย × NAI) ซึ่งเล็ก แต่ไม่มีเหตุผล
+        ต้องตรวจ ๖๐ ครั้งต่อวินาที
+      วัดจริง (ดึงตรรกะออกมารันใน harness พร้อม global จำลอง ๑๒ กรณี ผ่านหมด):
+        ไม่มีภัย/ภัยนอกวง → ไม่เกิด · ภัยเข้าวง → เกิดเฉพาะ DP ที่ผูกกับ NAI นั้น ·
+        บันทึกระบุชื่อหน่วยและชื่อพื้นที่ถูก · ยิงซ้ำไม่ได้ · ภัยที่ active=false ไม่นับ ·
+        เข้าช้ากว่ากรอบเวลา → ไม่เกิด · เข้าก่อนกรอบเวลา → เกิด · ลบ NAI แล้ว DP
+        ที่ผูกอยู่หายตาม · รีเซ็ตล้างสถานะครบ · ปฏิเสธ DP ที่อ้าง NAI ไม่มีจริง
+      ยังไม่ได้ทดสอบ: การวาดบนแผนที่จริง — ต้องใช้ canvas + Leaflet ที่ environment
+        ซึ่งบล็อก CDN ทำไม่ได้
   · [v18.3.0 TSCRUB-1] ย้อนเวลา (Time Scrubbing) — ลากแถบแล้วทั้งจอย้อนตาม
       README อ้างฟีเจอร์ "Time-replay · RAM ring buffer" มาตั้งแต่ยุค v11 แต่ตรวจแล้ว
       ไม่มีโค้ดจริง (ring buffer ที่มีอยู่บรรทัด ~11300 เป็นของ AIS heatmap คนละเรื่องกัน)
@@ -448,7 +476,7 @@
          ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker
          v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump
          display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.3.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.4.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   ตัวเลขนี้คือที่เดียวที่ JS อ่าน — display string อีก ๖ จุดเป็นข้อความคงที่ใน HTML
@@ -464,7 +492,7 @@
         //     ของ *ซอฟต์แวร์* ทั้งสองเดินอิสระจากกันได้ ชื่อ Model 3.0 ยังคงเดิมทุกหน้า
         //   ★ ป้าย [v17.x.x] ในคอมเมนต์ทั้งไฟล์คือหมุดประวัติ "เพิ่มมาในรุ่นไหน"
         //     ห้ามไล่แก้เป็น v18 เด็ดขาด — จะทำให้ประวัติการพัฒนาผิดทั้งไฟล์
-        const APP_VERSION = '18.3.0';
+        const APP_VERSION = '18.4.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -9134,6 +9162,41 @@ window.udcIco = udcIco;
             </div>
         </div>
     </div>
+
+    <!-- [v18.4.0 DST-1] พื้นที่เฝ้า & จุดตกลงใจ (collapsed by default) -->
+    <div class="bf-dp-group collapsed" data-bf-group="dst">
+        <div class="bf-dp-group-head">
+            <span class="bf-dp-group-name" style="color:#ffc857;">
+                <span class="bf-dp-chev">▾</span> ◎ พื้นที่เฝ้า &amp; จุดตกลงใจ
+            </span>
+        </div>
+        <div class="bf-dp-group-body">
+            <div class="bf-dp-row" data-bf-cmd="nai-place"
+                 title="คลิกบนแผนที่เพื่อวางพื้นที่เฝ้า (NAI)">
+                <span class="bf-dp-ico"><svg class="ico" aria-hidden="true"><use href="#i-target"/></svg></span>
+                <span class="label">วางพื้นที่เฝ้า (NAI)</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+            <div class="bf-dp-row" data-bf-cmd="dp-add"
+                 title="ผูกจุดตกลงใจกับพื้นที่เฝ้า — ถ้าฝ่ายแดงเข้าพื้นที่ จะเตือนพร้อมคำสั่งที่เตรียมไว้">
+                <span class="bf-dp-ico"><svg class="ico" aria-hidden="true"><use href="#i-scale"/></svg></span>
+                <span class="label">เพิ่มจุดตกลงใจ (DP)</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+            <div class="bf-dp-row" data-bf-cmd="dst-list"
+                 title="ดูรายการพื้นที่เฝ้าและจุดตกลงใจทั้งหมด">
+                <span class="bf-dp-ico"><svg class="ico" aria-hidden="true"><use href="#i-clipboard"/></svg></span>
+                <span class="label" id="dst-count-lbl">รายการ (0 / 0)</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+            <div class="bf-dp-row bf-clear" data-bf-cmd="dst-reset"
+                 title="ล้างสถานะ «เกิดแล้ว» ของจุดตกลงใจทุกจุด ไม่ลบตัวจุด">
+                <span class="bf-dp-ico"><svg class="ico" aria-hidden="true"><use href="#i-rotate-cw"/></svg></span>
+                <span class="label">รีเซ็ตสถานะ DP</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+        </div>
+    </div>
 </div>
 <div id="bf-handle-right" title="แสดง Blue Force Operations">◀</div>
 
@@ -9191,7 +9254,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v18.3.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v18.4.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9665,7 +9728,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.3.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.4.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9684,7 +9747,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.3.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.4.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา
                  — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
@@ -10696,7 +10759,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v18.3.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v18.4.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -15553,6 +15616,25 @@ function toggleSeaZones() {
 })();
 
 // ── คลิกบนแผนที่ → วางเรือ ──
+/* [v18.4.0 DST-1] วาง NAI ด้วยการคลิกแผนที่ — handler แยกตัว ไม่แตะของเดิม */
+map.on('click', function(e) {
+    if (!naiPlaceMode) return;
+    const nx = (e.latlng.lng - LNG_LEFT) / (LNG_RIGHT - LNG_LEFT);
+    const ny = (LAT_TOP - e.latlng.lat)  / (LAT_TOP   - LAT_BOT);
+    if (nx < -0.10 || nx > 1.10 || ny < -0.10 || ny > 1.10) {
+        addLog('⚠️ วางพื้นที่เฝ้านอกขอบเขตไม่ได้'); return;
+    }
+    const rTxt = window.prompt('รัศมีพื้นที่เฝ้า (ไมล์ทะเล)', '3');
+    if (rTxt === null) return;
+    const r = Math.max(0.5, Math.min(30, Number(rTxt) || 3));
+    const nm = window.prompt('ชื่อพื้นที่เฝ้า', 'NAI-' + (naiList.length + 1));
+    if (nm === null) return;
+    naiAdd(nx, ny, r, nm);
+    naiPlaceMode = false;
+    try { map.dragging.enable(); } catch (_) {}
+    document.querySelector('[data-bf-cmd="nai-place"]')?.classList.remove('active');
+});
+
 map.on('click', function(e) {
     if (!placePatrolMode) return;
 
@@ -19529,6 +19611,205 @@ function initPatrolVessels() {
 //               → เป็นข้อเสนอเชิงนโยบาย ยังไม่ใช่เขตที่ได้รับการรับรอง
 //  เชื่อมโยง    : ระดับ ROE ที่ได้ ส่งต่อให้เรือตรวจการณ์ [ส่วนที่ 6.7]
 // ═══════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════
+//  [v18.4.0 DST-1] NAI + จุดตกลงใจ (Decision Support Template)
+//  ─────────────────────────────────────────────────────────────────────
+//  ช่องว่างที่วัดเจอ: ทั้งไฟล์มีคำว่า "decision point" ๐ ครั้ง · CCIR ๐ ครั้ง
+//  ทั้งที่มี wargame engine เดินฝ่ายแดงอยู่แล้ว · ขาดชั้นที่เชื่อม
+//  "ภัยเคลื่อนไปถึงไหน" เข้ากับ "แล้วเราจะสั่งอะไร" ซึ่งคือสะพานระหว่าง
+//  แผน (COA) กับการปฏิบัติ — เป็นผลผลิตจริงของการ wargame ตามหลัก MDMP
+//
+//  NAI (Named Area of Interest) = พื้นที่ที่ตั้งชื่อไว้เฝ้า
+//  DP  (Decision Point)         = "ถ้าฝ่ายแดงเข้า NAI-x ภายในเวลา T → สั่ง Y"
+//
+//  ★ วางไว้ใน script block เดียวกับ threats/animate โดยตั้งใจ — บทเรียนจาก
+//    TSCRUB-1 ที่เผลอวางเครื่องยนต์ไว้คนละบล็อก (ซึ่งห่อด้วย IIFE) แล้วตัวเรียก
+//    มองไม่เห็น กลายเป็นโค้ดที่ไม่เคยทำงานโดยไม่มี error ให้เห็น
+//  ★ ตรวจเงื่อนไขในลูปวาด แต่ throttle ทุก ๑๐ เฟรม — การตรวจ "อยู่ในวงไหม"
+//    เป็น O(ภัย × NAI) ซึ่งเล็กมาก แต่ไม่มีเหตุผลต้องตรวจ ๖๐ ครั้งต่อวินาที
+// ═══════════════════════════════════════════════════════════════════════
+let naiList = [];          // [{id,name,nx,ny,rNm,note}]
+let dpList  = [];          // [{id,naiId,byMin,action,fired,firedAt}]
+let naiPlaceMode = false;
+let _naiSeq = 0, _dpSeq = 0;
+
+/* รัศมี NAI เป็นไมล์ทะเล → ระยะในพิกัดมาตรฐาน (nx/ny 0..1 ครอบคลุมกรอบแผนที่)
+   ใช้สเกลแกนตั้งเป็นหลัก เพราะ ๑ องศาละติจูด = ๖๐ nm คงที่
+   (แกนนอนย่อตาม cos(lat) แต่ที่ละติจูด ~๑๒.๖° ต่างกัน ~๒% ไม่มีนัยสำหรับการเฝ้าพื้นที่) */
+function _naiRadN(rNm) {
+    const degLat = (LAT_TOP - LAT_BOT);
+    return (rNm / 60) / degLat;
+}
+function naiAdd(nx, ny, rNm, name) {
+    const id = 'NAI-' + (++_naiSeq);
+    naiList.push({ id, name: name || id, nx, ny, rNm: rNm || 3, note: '' });
+    if (typeof addLog === 'function')
+        addLog('◎ เพิ่มพื้นที่เฝ้า ' + id + ' · รัศมี ' + (rNm || 3) + ' nm');
+    if (typeof _dstSyncUI === 'function') _dstSyncUI();
+    return id;
+}
+function naiRemove(id) {
+    naiList = naiList.filter(n => n.id !== id);
+    dpList  = dpList.filter(d => d.naiId !== id);   // จุดตกลงใจที่อ้าง NAI นี้ต้องไปด้วย
+    if (typeof _dstSyncUI === 'function') _dstSyncUI();
+}
+function dpAdd(naiId, byMin, action) {
+    if (!naiList.some(n => n.id === naiId)) return null;
+    const id = 'DP-' + (++_dpSeq);
+    dpList.push({ id, naiId, byMin: Number(byMin) || 0, action: String(action || '').slice(0,160),
+                  fired:false, firedAt:null });
+    if (typeof addLog === 'function') addLog('◈ เพิ่มจุดตกลงใจ ' + id + ' ผูกกับ ' + naiId);
+    if (typeof _dstSyncUI === 'function') _dstSyncUI();
+    return id;
+}
+function dpRemove(id) {
+    dpList = dpList.filter(d => d.id !== id);
+    if (typeof _dstSyncUI === 'function') _dstSyncUI();
+}
+function dstReset() {
+    dpList.forEach(d => { d.fired = false; d.firedAt = null; });
+    if (typeof _dstSyncUI === 'function') _dstSyncUI();
+}
+
+/* มีภัยคุกคามที่ยัง active อยู่ในวง NAI นี้ไหม — คืนตัวแรกที่เจอ หรือ null */
+function _naiIntruder(n) {
+    const r = _naiRadN(n.rNm);
+    let found = null;
+    try {
+        threats.forEach(t => {
+            if (found || !t || !t.active) return;
+            const dx = t.nx - n.nx, dy = t.ny - n.ny;
+            if (dx*dx + dy*dy <= r*r) found = t;
+        });
+    } catch (_) {}
+    return found;
+}
+
+/* ตรวจเงื่อนไขจุดตกลงใจทั้งหมด — เรียกจาก animate() แบบ throttle */
+function dstEvaluate() {
+    if (!dpList.length) return;
+    const elapsedMin = (typeof scenarioStartTime === 'number' && scenarioStartTime)
+        ? (Date.now() - scenarioStartTime) / 60000 : 0;
+    dpList.forEach(d => {
+        if (d.fired) return;
+        const n = naiList.find(x => x.id === d.naiId); if (!n) return;
+        const intr = _naiIntruder(n); if (!intr) return;
+        /* byMin = 0 → ไม่จำกัดเวลา (ยิงทันทีที่มีผู้บุกรุก)
+           byMin > 0 → ยิงเฉพาะเมื่อ "เข้ามาก่อน" เวลาที่กำหนด ซึ่งคือความหมาย
+           ตามหลักนิยม: ถ้าข้าศึกถึงจุดนี้ *เร็วกว่า* ที่ประเมิน แปลว่าต้องตกลงใจแล้ว */
+        if (d.byMin > 0 && elapsedMin > d.byMin) return;
+        d.fired = true; d.firedAt = Date.now();
+        const msg = '◈ ถึงจุดตกลงใจ ' + d.id + ' — ' + (intr.label || 'ภัยคุกคาม') +
+                    ' เข้า ' + n.name + (d.action ? ' · สั่ง: ' + d.action : '');
+        try { if (typeof addLog === 'function') addLog(msg, 'var(--warn)'); } catch (_) {}
+        try { if (typeof toast === 'function') toast(msg); } catch (_) {}
+        if (typeof _dstSyncUI === 'function') _dstSyncUI();
+    });
+}
+
+/* วาด NAI ลงบน overlay canvas — เรียกต่อจาก drawZonesGIS()
+   ใช้ geoXY(lat,lng) + _pxNm (พิกเซลต่อไมล์ทะเล) เหมือน drawZonesGIS ทุกประการ
+   NAI เก็บเป็น nx/ny (ชุดเดียวกับ threats เพื่อให้ตรวจระยะได้ตรง ๆ)
+   แล้วแปลงเป็น lat/lng ตอนวาด */
+function _naiLatLng(n) {
+    return { lat: LAT_TOP  - n.ny * (LAT_TOP  - LAT_BOT),
+             lng: LNG_LEFT + n.nx * (LNG_RIGHT - LNG_LEFT) };
+}
+function drawNAI() {
+    if (!naiList.length || typeof ctx === 'undefined' || !ctx) return;
+    naiList.forEach(n => {
+        try {
+            const ll = _naiLatLng(n);
+            const c  = geoXY(ll.lat, ll.lng); if (!c) return;
+            const rPx = _pxNm * n.rNm;
+            if (!isFinite(rPx) || rPx <= 0) return;
+            const armed = dpList.some(d => d.naiId === n.id && !d.fired);
+            const hot   = dpList.some(d => d.naiId === n.id && d.fired);
+            ctx.save();
+            /* 'lighter' = แสงบวกกัน — วง NAI ที่ซ้อนกันสว่างขึ้นแทนที่จะทึบทับกัน
+               (เทคนิคนี้ทั้งไฟล์ใช้อยู่แค่ ๕ จุด ทั้งที่เหมาะกับวงตรวจจับมาก) */
+            ctx.globalCompositeOperation = 'lighter';
+            const g = ctx.createRadialGradient(c.x, c.y, rPx * 0.55, c.x, c.y, rPx);
+            g.addColorStop(0, 'rgba(0,0,0,0)');
+            g.addColorStop(1, hot ? 'rgba(255,92,77,0.20)'
+                                  : armed ? 'rgba(255,200,87,0.14)' : 'rgba(127,178,214,0.10)');
+            ctx.fillStyle = g;
+            ctx.beginPath(); ctx.arc(c.x, c.y, rPx, 0, Math.PI*2); ctx.fill();
+            ctx.globalCompositeOperation = 'source-over';
+            /* เส้นประวิ่ง = ยังเฝ้าอยู่ · เส้นทึบแดง = เงื่อนไขเกิดแล้ว
+               ใช้ frame ขยับ lineDashOffset แบบเดียวกับวงเขต ๑๐ nm ใน drawZonesGIS */
+            if (hot) { ctx.setLineDash([]); ctx.strokeStyle = '#ff5c4d'; ctx.lineWidth = 2.2; }
+            else {
+                ctx.setLineDash([9, 7]);
+                ctx.lineDashOffset = -(frame * 0.22) % 16;
+                ctx.strokeStyle = armed ? '#ffc857' : '#7fb2d6';
+                ctx.lineWidth = 1.5;
+            }
+            ctx.beginPath(); ctx.arc(c.x, c.y, rPx, 0, Math.PI*2); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = hot ? '#ff8a7a' : armed ? '#ffd98a' : '#a8c8e0';
+            ctx.font = '600 11px ' + (getComputedStyle(document.body).getPropertyValue('--font-mono') || 'monospace');
+            ctx.fillText(n.name + (hot ? ' ◈' : armed ? ' ◎' : ''), c.x + rPx + 5, c.y + 3);
+            ctx.restore();
+        } catch (_) {}
+    });
+}
+/* ── หน้าปัดฝั่งผู้ใช้ ──────────────────────────────────────── */
+function _dstSyncUI() {
+    const el = document.getElementById('dst-count-lbl');
+    if (el) el.textContent = 'รายการ (' + naiList.length + ' NAI / ' + dpList.length + ' DP)';
+}
+function _dstPromptAddDP() {
+    if (!naiList.length) {
+        if (typeof toast === 'function') toast('◎ ยังไม่มีพื้นที่เฝ้า — วาง NAI ก่อน');
+        return;
+    }
+    const names = naiList.map(n => n.id + ' = ' + n.name).join('\n');
+    const pick = window.prompt('ผูกจุดตกลงใจกับพื้นที่เฝ้าใด?\n' + names + '\n\nพิมพ์รหัส (เช่น NAI-1)',
+                               naiList[naiList.length - 1].id);
+    if (pick === null) return;
+    const n = naiList.find(x => x.id === String(pick).trim().toUpperCase());
+    if (!n) { if (typeof toast === 'function') toast('⚠️ ไม่พบรหัสนั้น'); return; }
+    const by = window.prompt('ถ้าเข้าพื้นที่ "ก่อน" นาทีที่เท่าใดจึงถือว่าต้องตกลงใจ?\n' +
+                             '(0 = ไม่จำกัดเวลา — เตือนทันทีที่มีผู้บุกรุก)', '0');
+    if (by === null) return;
+    const act = window.prompt('คำสั่งที่เตรียมไว้เมื่อถึงจุดนี้', 'ดัน PV ขึ้นเหนือ · แจ้ง ศรชล.');
+    if (act === null) return;
+    const id = dpAdd(n.id, by, act);
+    if (id && typeof toast === 'function') toast('◈ เพิ่ม ' + id + ' ผูกกับ ' + n.name);
+}
+function _dstShowList() {
+    if (!naiList.length && !dpList.length) {
+        if (typeof toast === 'function') toast('◎ ยังไม่มีพื้นที่เฝ้าหรือจุดตกลงใจ');
+        return;
+    }
+    const lines = [];
+    lines.push('── พื้นที่เฝ้า (NAI) ──');
+    naiList.forEach(n => lines.push('  ' + n.id + ' · ' + n.name + ' · รัศมี ' + n.rNm + ' nm'));
+    if (!naiList.length) lines.push('  (ไม่มี)');
+    lines.push('');
+    lines.push('── จุดตกลงใจ (DP) ──');
+    dpList.forEach(d => {
+        const n = naiList.find(x => x.id === d.naiId);
+        lines.push('  ' + d.id + ' · ' + (n ? n.name : d.naiId) +
+                   (d.byMin > 0 ? ' · ก่อนนาทีที่ ' + d.byMin : ' · ไม่จำกัดเวลา') +
+                   (d.fired ? '  [เกิดแล้ว]' : '  [เฝ้าอยู่]') +
+                   (d.action ? '\n      → ' + d.action : ''));
+    });
+    if (!dpList.length) lines.push('  (ไม่มี)');
+    /* ใช้ alert เพราะเป็นรายการอ่านอย่างเดียว สั้น และต้องอ่านได้ทันทีขณะซ้อมแผน
+       ★ ถ้าโตกว่านี้ควรย้ายไปเป็นแผงจริง — บันทึกไว้เป็นข้อจำกัดที่รู้ตัว */
+    window.alert(lines.join('\n'));
+}
+window._dstSyncUI = _dstSyncUI;
+window._dstPromptAddDP = _dstPromptAddDP;
+window._dstShowList = _dstShowList;
+
+window.udcDST = { naiAdd, naiRemove, dpAdd, dpRemove, dstReset, dstEvaluate,
+                  get nai(){ return naiList; }, get dp(){ return dpList; },
+                  get placeMode(){ return naiPlaceMode; },
+                  setPlaceMode(v){ naiPlaceMode = !!v; } };
+
 function drawZonesGIS() {
     const udc = geoXY(UDC_LAT, UDC_LNG);
     const pnm = _pxNm;
@@ -28321,6 +28602,8 @@ function animate() {
         drawLandElevationOverlay();
         drawGfwOverlay();
         drawZonesGIS();
+        if (typeof drawNAI === 'function') drawNAI();                      // [v18.4.0 DST-1]
+        if (typeof dstEvaluate === 'function' && frame % 10 === 0) dstEvaluate();   // throttle
         drawAirDefense();   // [AD] ฟอง ESSM + ทีม สอ.รฝ.
         drawSonarSweep();
         drawCable();
@@ -40651,6 +40934,24 @@ window.toggleSat3D = toggleSat3D;
                             return;
                         } else if (cmd === 'time-scrub' && typeof _tsToggleBar === 'function') {
                             _tsToggleBar();
+                            return;
+                        } else if (cmd === 'nai-place' && window.udcDST) {
+                            const on = !window.udcDST.placeMode;
+                            window.udcDST.setPlaceMode(on);
+                            row.classList.toggle('active', on);
+                            try { on ? map.dragging.disable() : map.dragging.enable(); } catch (_) {}
+                            if (typeof toast === 'function')
+                                toast(on ? '◎ คลิกบนแผนที่เพื่อวางพื้นที่เฝ้า' : '◎ ยกเลิกโหมดวาง');
+                            return;
+                        } else if (cmd === 'dp-add' && typeof _dstPromptAddDP === 'function') {
+                            _dstPromptAddDP();
+                            return;
+                        } else if (cmd === 'dst-list' && typeof _dstShowList === 'function') {
+                            _dstShowList();
+                            return;
+                        } else if (cmd === 'dst-reset' && window.udcDST) {
+                            window.udcDST.dstReset();
+                            if (typeof toast === 'function') toast('◎ รีเซ็ตสถานะจุดตกลงใจแล้ว');
                             return;
                         } else if (cmd === 'pv-sensor-view' && typeof cyclePVSensorView === 'function') {
                             /* [v17.52.0 PVVIEW-2] สลับระดับการแสดงผล — ไม่ใช่คำสั่ง one-shot
