@@ -1,8 +1,32 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.1.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.2.0 · 7-Domain + AI Staff)
 
   ── รุ่นล่าสุด · รายละเอียดเต็ม (v17.40.0 ขึ้นไป) ───────────────────
+  · [v18.2.0 SHARE-1] แชร์สถานการณ์ด้วย "ลิงก์" — ต่อยอดจาก SCEN-1
+      แทนที่จะส่งไฟล์ .json ให้กัน ฝังฉากลงใน URL ไปเลย ผู้รับกดลิงก์แล้วเห็นภาพเดียวกันทันที
+      แถวคำสั่งใหม่ «แชร์เป็นลิงก์» ในหมวด 💾 สถานการณ์
+      ★ ไม่ต้องมีเซิร์ฟเวอร์ — ฉากอยู่ในตัวลิงก์ทั้งก้อน ใช้บน GitHub Pages ได้เลย
+        ไม่มีค่าใช้จ่าย ไม่มีข้อมูลค้างที่ใคร ไม่ต้องดูแลบริการเพิ่ม
+      ★ ใช้ #hash ไม่ใช่ ?query เพราะส่วน hash เบราว์เซอร์ไม่ส่งไปเซิร์ฟเวอร์
+        แผนการวางกำลังจึงไม่ไปโผล่ใน access log ของ GitHub
+      บีบอัดด้วย CompressionStream('deflate-raw') → base64url · นำหน้าด้วยอักษร ๑ ตัว
+        บอกวิธี (z = บีบอัด · u = ดิบ) ผู้รับจึงถอดได้ถูกเสมอแม้ใช้เบราว์เซอร์คนละรุ่น
+        วัดจริง: ฉาก ๑๔ หน่วยชื่อไทย → JSON 1,109 B → deflate 283 B → ลิงก์รวม ~446
+        ตัวอักษร (ปลอดภัยกับแอปแชตที่มักตัดราว ๒,๐๐๐)
+      กันพลาด ๔ ชั้น:
+        · ล้าง #hash ทิ้งด้วย replaceState ทันทีที่อ่านแล้ว — กดรีเฟรชจะไม่ถูกทับซ้ำ
+          และไม่เพิ่มรายการใน history ให้กดย้อนกลับงง
+        · ถ้าผู้ใช้วางกำลังของตัวเองไว้อยู่แล้ว ถามก่อนทับ (ถ้ายังไม่ได้วาง เปิดให้เลย)
+        · เพดาน ๒๐๐ หน่วยต่อลิงก์ กันลิงก์ที่จงใจยัดหน่วยมหาศาล
+        · รอจน deployPVAt กับ map พร้อมก่อนค่อยเปิดฉาก (เพดาน ๑๒ วิ) — ถ้ายิงเร็วไป
+          หน่วยจะถูกปัดตกทั้งฉากโดยไม่มีอะไรผิดเลย
+      คลิปบอร์ดถูกปฏิเสธ (มักเกิดกับ file://) → เปิด prompt ให้คัดลอกเอง ไม่เงียบ
+        เพราะผู้ใช้จะนึกว่าคัดลอกไปแล้วทั้งที่ยังไม่ได้
+      วัดจริงในเบราว์เซอร์: encode → ใส่ใน location.hash → ให้ตัวอ่านจริงทำงาน
+        วางได้ครบ ๒ หน่วย พิกัด/รุ่นเรือตรง · ธีมถูกเรียกคืน · hash ถูกล้างจริง ·
+        ลิงก์เสียถูกปฏิเสธโดยไม่ทำให้หน้าพัง · payload 319 ตัวอักษร
+      ข้อจำกัดที่ยอมรับ: ไม่ใช่ภาพร่วมแบบ real-time — ใครแก้ฉากต้องส่งลิงก์ใหม่
   · [v18.1.0 SCEN-1] บันทึก / เรียกคืน "สถานการณ์" เป็นไฟล์ .json
       ปัญหาเดิม: ปิดแท็บแล้วการวางกำลังหายหมด · ซ้อมแผนเดิมซ้ำไม่ได้ · ส่งต่อให้คนอื่น
       เปิดดูภาพเดียวกันไม่ได้ — ต้องวางใหม่ทุกครั้ง (localStorage เดิมเก็บแค่ค่าตั้งหน้าจอ
@@ -399,7 +423,7 @@
          ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker
          v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump
          display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.1.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.2.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   ตัวเลขนี้คือที่เดียวที่ JS อ่าน — display string อีก ๖ จุดเป็นข้อความคงที่ใน HTML
@@ -415,7 +439,7 @@
         //     ของ *ซอฟต์แวร์* ทั้งสองเดินอิสระจากกันได้ ชื่อ Model 3.0 ยังคงเดิมทุกหน้า
         //   ★ ป้าย [v17.x.x] ในคอมเมนต์ทั้งไฟล์คือหมุดประวัติ "เพิ่มมาในรุ่นไหน"
         //     ห้ามไล่แก้เป็น v18 เด็ดขาด — จะทำให้ประวัติการพัฒนาผิดทั้งไฟล์
-        const APP_VERSION = '18.1.0';
+        const APP_VERSION = '18.2.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -9031,6 +9055,13 @@ window.udcIco = udcIco;
                 <span class="label">เรียกคืนฉาก</span>
                 <span class="bf-dp-arrow">›</span>
             </div>
+            <!-- [v18.2.0 SHARE-1] แชร์ด้วยลิงก์ — ฉากฝังอยู่ในตัว URL ไม่ต้องมีเซิร์ฟเวอร์ -->
+            <div class="bf-dp-row" data-bf-cmd="scenario-share"
+                 title="สร้างลิงก์ที่ฝังฉากไว้ในตัว — ส่งให้ใครก็เห็นภาพเดียวกัน">
+                <span class="bf-dp-ico"><svg class="ico" aria-hidden="true"><use href="#i-link"/></svg></span>
+                <span class="label">แชร์เป็นลิงก์</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
         </div>
     </div>
 </div>
@@ -9079,7 +9110,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v18.1.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v18.2.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9553,7 +9584,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.1.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.2.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9572,7 +9603,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.1.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.2.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา
                  — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
@@ -10584,7 +10615,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v18.1.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v18.2.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -31699,6 +31730,31 @@ document.getElementById('bootScreen')?.addEventListener('click', function() {
 });
 runBootSequence();
 
+/* [v18.2.0 SHARE-1] เปิดฉากจากลิงก์ หลังหน้าจอเปิดระบบจบและแผนที่พร้อม
+   ── ทำไมต้องรอ: udcApplyScenario() เรียก deployPVAt() ซึ่งต้องการ map,
+   landMask และ PV_SHIP_CATALOG ครบก่อน ถ้ายิงเร็วไป หน่วยจะถูกปัดตกทั้งฉาก
+   โดยไม่มีอะไรผิดเลย · จึงรอจน deployPVAt พร้อม แล้วค่อยเรียกครั้งเดียว
+   เพดาน ~12 วิ กันวนไม่รู้จบเมื่อ init ล้มจริง (เช่น โหลด CDN ไม่ได้) */
+(function consumeShareLinkWhenReady() {
+    if (!/(?:^|[#&])s=/.test(location.hash || '')) return;   // ไม่มีลิงก์ฉาก ไม่ต้องทำอะไร
+    let tries = 0;
+    (function waitReady() {
+        const ready = (typeof deployPVAt === 'function') && (typeof map !== 'undefined' && map);
+        if (ready) {
+            try { udcConsumeScenarioHash(); } catch (_) {}
+            return;
+        }
+        if (++tries > 40) {                                   // 40 × 300ms = 12 วิ
+            try {
+                if (typeof addLog === 'function')
+                    addLog('⚠️ มีฉากในลิงก์ แต่ระบบแผนที่ไม่พร้อมภายใน ๑๒ วินาที — ไม่ได้เปิดฉาก', 'var(--amber)');
+            } catch (_) {}
+            return;
+        }
+        setTimeout(waitReady, 300);
+    })();
+})();
+
 // [v15] โคลนตราสัญลักษณ์กองทัพเรือจาก boot screen → header หน้าหลัก
 // ใช้ data-URI ภาพเดียวกัน ไม่ทำซ้ำสตริง base64 ในไฟล์ (ไม่เพิ่มขนาดไฟล์)
 (function mirrorCrestToHeader(){
@@ -40508,6 +40564,9 @@ window.toggleSat3D = toggleSat3D;
                         } else if (cmd === 'scenario-load' && typeof udcLoadScenario === 'function') {
                             udcLoadScenario();
                             return;
+                        } else if (cmd === 'scenario-share' && typeof udcShareScenario === 'function') {
+                            udcShareScenario();
+                            return;
                         } else if (cmd === 'pv-sensor-view' && typeof cyclePVSensorView === 'function') {
                             /* [v17.52.0 PVVIEW-2] สลับระดับการแสดงผล — ไม่ใช่คำสั่ง one-shot
                                จึงรายงานสถานะใหม่แทนคำว่า «สั่งการแล้ว» */
@@ -42597,6 +42656,125 @@ function udcLoadScenario() {
         if (typeof toast === 'function') toast('⚠️ เปิดไฟล์ไม่สำเร็จ: ' + e.message);
     }
 }
+/* ═══════════════════════════════════════════════════════════════════
+   [v18.2.0 SHARE-1] แชร์สถานการณ์ด้วย "ลิงก์"
+   ─────────────────────────────────────────────────────────────────
+   ต่อยอดจาก SCEN-1: แทนที่จะส่งไฟล์ .json ให้กัน ก็ฝังฉากลงใน URL
+   ไปเลย ผู้รับกดลิงก์แล้วเห็นภาพเดียวกันทันที ไม่ต้องดาวน์โหลด/นำเข้า
+   ★ ไม่ต้องมีเซิร์ฟเวอร์ — ฉากอยู่ในตัวลิงก์ทั้งก้อน ใช้บน GitHub Pages
+     (หรือเปิดจากไฟล์ในเครื่อง) ได้เลย ไม่มีค่าใช้จ่าย ไม่มีข้อมูลค้างที่ใคร
+   ★ ใช้ #hash ไม่ใช่ ?query — ส่วน hash ไม่ถูกส่งไปที่เซิร์ฟเวอร์
+     แผนการวางกำลังจึงไม่ไปโผล่ใน access log ของ GitHub
+   ข้อจำกัดที่ยอมรับ: ไม่ใช่ภาพร่วมแบบ real-time · ใครแก้ต้องส่งลิงก์ใหม่
+
+   ขนาด: ฉาก ๑๔ หน่วยพร้อมชื่อไทย → JSON 1,109 B → deflate 283 B →
+   base64url 378 ตัวอักษร → ทั้ง URL ~446 ตัวอักษร (วัดจริง)
+   ปลอดภัยกับทุกเบราว์เซอร์/แอปแชต ซึ่งมักตัดที่ ~2,000
+   ═══════════════════════════════════════════════════════════════════ */
+const SCEN_HASH_KEY = 's';
+const SCEN_MAX_UNITS = 200;      // กันลิงก์ที่จงใจยัดหน่วยจำนวนมหาศาล
+
+function _b64urlEnc(bytes) {
+    let bin = ''; bytes.forEach(b => bin += String.fromCharCode(b));
+    return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function _b64urlDec(str) {
+    const b = atob(str.replace(/-/g, '+').replace(/_/g, '/'));
+    const out = new Uint8Array(b.length);
+    for (let i = 0; i < b.length; i++) out[i] = b.charCodeAt(i);
+    return out;
+}
+/* บีบอัดด้วย CompressionStream ถ้าเบราว์เซอร์มี · ไม่มีก็ส่งดิบ
+   นำหน้าด้วยอักษร ๑ ตัวบอกวิธี: z = deflate-raw · u = ไม่บีบอัด
+   (ผู้รับจึงถอดได้ถูกเสมอ แม้ผู้ส่งกับผู้รับใช้เบราว์เซอร์คนละรุ่น) */
+async function _scenToHash(scen) {
+    const raw = new TextEncoder().encode(JSON.stringify(scen));
+    if (typeof CompressionStream === 'function') {
+        try {
+            const cs = new CompressionStream('deflate-raw');
+            const w  = cs.writable.getWriter(); w.write(raw); w.close();
+            const buf = await new Response(cs.readable).arrayBuffer();
+            return 'z' + _b64urlEnc(new Uint8Array(buf));
+        } catch (_) { /* ตกไปใช้แบบไม่บีบอัด */ }
+    }
+    return 'u' + _b64urlEnc(raw);
+}
+async function _scenFromHash(payload) {
+    const mode = payload[0], body = _b64urlDec(payload.slice(1));
+    if (mode === 'u') return JSON.parse(new TextDecoder().decode(body));
+    if (mode !== 'z') throw new Error('ลิงก์รูปแบบไม่รู้จัก');
+    if (typeof DecompressionStream !== 'function')
+        throw new Error('เบราว์เซอร์นี้ถอดลิงก์แบบบีบอัดไม่ได้ — ใช้ไฟล์ .json แทน');
+    const ds = new DecompressionStream('deflate-raw');
+    const w = ds.writable.getWriter(); w.write(body); w.close();
+    const buf = await new Response(ds.readable).arrayBuffer();
+    return JSON.parse(new TextDecoder().decode(buf));
+}
+
+/* สร้างลิงก์ + คัดลอกลงคลิปบอร์ด */
+async function udcShareScenario() {
+    try {
+        const def  = 'ฉาก ' + new Date().toLocaleString('th-TH', { dateStyle:'short', timeStyle:'short' });
+        const name = window.prompt('ตั้งชื่อฉากสำหรับลิงก์', def);
+        if (name === null) return;
+        const scen = udcCollectScenario(name);
+        if (!scen.units.length &&
+            !window.confirm('ยังไม่ได้วางกำลังเลย — สร้างลิงก์ฉากว่างหรือไม่?')) return;
+        const url = location.origin + location.pathname + '#' +
+                    SCEN_HASH_KEY + '=' + await _scenToHash(scen);
+        let copied = false;
+        try { await navigator.clipboard.writeText(url); copied = true; } catch (_) {}
+        if (!copied) {
+            /* คลิปบอร์ดถูกปฏิเสธ (มักเกิดกับ file:// หรือเมื่อไม่มี user gesture)
+               — ต้องไม่เงียบ ผู้ใช้จะนึกว่าคัดลอกไปแล้ว จึงเปิด prompt ให้คัดลอกเอง */
+            window.prompt('คัดลอกลิงก์นี้ (Ctrl/Cmd+C)', url);
+        }
+        if (typeof addLog === 'function')
+            addLog('🔗 สร้างลิงก์ฉาก «' + scen.name + '» · ' + scen.units.length +
+                   ' หน่วย · ' + url.length + ' ตัวอักษร' + (copied ? ' · คัดลอกแล้ว' : ''));
+        if (typeof toast === 'function')
+            toast(copied ? '🔗 คัดลอกลิงก์แล้ว · ' + scen.units.length + ' หน่วย'
+                         : '🔗 สร้างลิงก์แล้ว — คัดลอกจากกล่องที่เปิดขึ้น');
+    } catch (e) {
+        if (typeof toast === 'function') toast('⚠️ สร้างลิงก์ไม่สำเร็จ: ' + e.message);
+    }
+}
+
+/* ตอนเปิดหน้า: ถ้า URL มี #s= ให้เรียกคืนฉากนั้น */
+async function udcConsumeScenarioHash() {
+    const m = /(?:^|[#&])s=([A-Za-z0-9\-_]+)/.exec(location.hash || '');
+    if (!m) return false;
+    /* ล้าง hash ทิ้งก่อนเสมอ — กันกดรีเฟรชแล้วฉากถูกทับซ้ำโดยไม่ตั้งใจ
+       ใช้ replaceState จึงไม่เพิ่มรายการใน history ให้กดย้อนกลับงง */
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {}
+    try {
+        const scen = await _scenFromHash(m[1]);
+        if (Array.isArray(scen.units) && scen.units.length > SCEN_MAX_UNITS)
+            throw new Error('ลิงก์มีหน่วยเกิน ' + SCEN_MAX_UNITS + ' — ปฏิเสธ');
+        /* ถ้าผู้ใช้วางกำลังของตัวเองไว้แล้ว การเรียกคืนจะทับของเดิม → ต้องถามก่อน
+           ถ้ายังไม่ได้วางอะไร ก็เปิดให้เลยไม่ต้องกวน */
+        const hasOwn = _scenRead(() => patrolVessels.filter(v => v.userPlaced).length, 0) +
+                       _scenRead(() => guardianUUVs.filter(g => g.userPlaced).length, 0);
+        if (hasOwn && !window.confirm(
+                'ลิงก์นี้มีฉาก «' + (scen.name || '—') + '» (' +
+                (scen.units || []).length + ' หน่วย)\n' +
+                'เปิดแล้วจะแทนที่กำลังที่ท่านวางไว้ ' + hasOwn + ' หน่วย — ดำเนินการหรือไม่?'))
+            return false;
+        const res = udcApplyScenario(scen);
+        const msg = 'เปิดฉากจากลิงก์ «' + res.name + '» · วางได้ ' + res.ok + ' หน่วย' +
+                    (res.fail ? ' · วางไม่ได้ ' + res.fail : '');
+        if (typeof addLog === 'function') addLog('🔗 ' + msg);
+        if (typeof toast === 'function') toast('🔗 ' + msg);
+        return true;
+    } catch (e) {
+        if (typeof addLog === 'function') addLog('⚠️ เปิดลิงก์ฉากไม่สำเร็จ: ' + e.message, 'var(--amber)');
+        if (typeof toast === 'function') toast('⚠️ ลิงก์ฉากใช้ไม่ได้: ' + e.message);
+        return false;
+    }
+}
+window.udcShareScenario = udcShareScenario;
+window.udcConsumeScenarioHash = udcConsumeScenarioHash;
+
 window.udcSaveScenario = udcSaveScenario;
 window.udcLoadScenario = udcLoadScenario;
 window.udcCollectScenario = udcCollectScenario;
