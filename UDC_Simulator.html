@@ -1,8 +1,32 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.0.1 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.1.0 · 7-Domain + AI Staff)
 
   ── รุ่นล่าสุด · รายละเอียดเต็ม (v17.40.0 ขึ้นไป) ───────────────────
+  · [v18.1.0 SCEN-1] บันทึก / เรียกคืน "สถานการณ์" เป็นไฟล์ .json
+      ปัญหาเดิม: ปิดแท็บแล้วการวางกำลังหายหมด · ซ้อมแผนเดิมซ้ำไม่ได้ · ส่งต่อให้คนอื่น
+      เปิดดูภาพเดียวกันไม่ได้ — ต้องวางใหม่ทุกครั้ง (localStorage เดิมเก็บแค่ค่าตั้งหน้าจอ
+      ตำแหน่งแผง · zoom · คีย์ API ไม่เคยเก็บตัวสถานการณ์เลย)
+      แถวคำสั่งใหม่ ๒ แถวในแผงวางกำลัง หมวด «💾 สถานการณ์» — บันทึกฉาก / เรียกคืนฉาก
+      ★ หลักการ: เก็บ "สูตรการตั้งฉาก" ไม่ใช่ snapshot ของวัตถุที่มีชีวิต
+        patrolVessels/guardianUUVs ถือ waypoint · สถานะอาวุธ · marker ของ Leaflet
+        ซึ่ง serialize ตรง ๆ ไม่ได้ (reference วน + DOM node) จึงเก็บแค่
+        {ชนิด, พิกัด, รุ่นเรือ} แล้วตอนเรียกคืน "วางใหม่" ผ่าน deployPVAt()/deployGUUVAt()
+        ซึ่งเป็นทางเดียวกับที่ผู้ใช้กดวางเอง — ฉากที่เรียกคืนจึงผ่านการตรวจภูมิประเทศ
+        และสร้าง waypoint ครบถ้วนเสมอ ไม่มีทางได้ฉากที่ขัดกับกติกาในเกมแบบที่ snapshot ทำได้
+      เก็บด้วย: มุมมองแผนที่ (จุดกึ่งกลาง + zoom) · ธีมที่ใช้อยู่ · ชื่อฉาก · เวลาที่บันทึก
+      ไม่เก็บ: สถานะกลางคัน (เรือกำลังยิง · กระสุนที่ใช้ไป · ภัยคุกคามที่วิ่งอยู่) เพราะนี่คือ
+        "ฉากตั้งต้น" สำหรับซ้อมแผน ไม่ใช่ save game กลางสมรภูมิ — ระบุไว้ในไฟล์ด้วย (kind)
+      ปัดตกอย่างมีเหตุผล: ไฟล์ผิดรูปแบบ · ไฟล์จากรุ่นใหม่กว่า · หน่วยที่พิกัดไม่ใช่ตัวเลข
+        · ชนิดที่ไม่รู้จัก · วางไม่ได้เพราะเต็มโควตา/เป็นบก — รายงานเป็นตัวเลข วางได้/วางไม่ได้
+      [TDZ] _scenRead() อ่านตัวแปรผ่าน try/catch เพราะ patrolVessels ประกาศด้วย `let`
+        ถ้าสคริปต์บล็อกนั้นโยน error ก่อนถึงบรรทัดประกาศ ตัวแปรค้างใน TDZ ซึ่ง `typeof x`
+        **ก็ยังโยน ReferenceError** การ์ด typeof ธรรมดาจึงกันไม่อยู่ · วัดเจอจริงตอนทดสอบ
+        ถ้าไม่ดัก ปุ่มบันทึกจะพังทั้งปุ่มเมื่อ init เสียบางส่วน แทนที่จะบันทึกเท่าที่อ่านได้
+      วัดจริงในเบราว์เซอร์: ฉาก ๕ หน่วย → เรียก deployPVAt/deployGUUVAt ถูกต้อง ๓ ครั้ง
+        (พิกัด/รุ่นเรือตรงทุกตัว) · ปัดตก ๒ ตัวที่พิกัดไม่ใช่ตัวเลขและชนิดไม่รู้จัก ·
+        คืนค่า {ok:3, fail:2} · ธีมถูกเรียกคืนจริง · JSON.parse(JSON.stringify()) ผ่าน ·
+        ไฟล์ผิดรูปแบบและไฟล์รุ่นใหม่กว่าถูกปฏิเสธพร้อมข้อความบอกเหตุ
   · [v18.0.1 FNAME-1] เปลี่ยนชื่อไฟล์ UDC_Simulator_17.html → UDC_Simulator.html
       เลข 17 ในชื่อไฟล์เป็นของสาย v17 ที่จบไปแล้ว · ตั้งชื่อใหม่โดย "ไม่ใส่เลขรุ่น"
       เพื่อไม่ต้องเปลี่ยนชื่อ (และไล่แก้ลิงก์) อีกทุกครั้งที่ขึ้น major ในอนาคต
@@ -375,7 +399,7 @@
          ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker
          v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump
          display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.0.1 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.1.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   ตัวเลขนี้คือที่เดียวที่ JS อ่าน — display string อีก ๖ จุดเป็นข้อความคงที่ใน HTML
@@ -391,7 +415,7 @@
         //     ของ *ซอฟต์แวร์* ทั้งสองเดินอิสระจากกันได้ ชื่อ Model 3.0 ยังคงเดิมทุกหน้า
         //   ★ ป้าย [v17.x.x] ในคอมเมนต์ทั้งไฟล์คือหมุดประวัติ "เพิ่มมาในรุ่นไหน"
         //     ห้ามไล่แก้เป็น v18 เด็ดขาด — จะทำให้ประวัติการพัฒนาผิดทั้งไฟล์
-        const APP_VERSION = '18.0.1';
+        const APP_VERSION = '18.1.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -8986,6 +9010,29 @@ window.udcIco = udcIco;
             </div>
         </div>
     </div>
+
+    <!-- [v18.1.0 SCEN-1] สถานการณ์ — บันทึก/เรียกคืนการวางกำลัง (collapsed by default) -->
+    <div class="bf-dp-group collapsed" data-bf-group="scenario">
+        <div class="bf-dp-group-head">
+            <span class="bf-dp-group-name" style="color:#93c5fd;">
+                <span class="bf-dp-chev">▾</span> 💾 สถานการณ์
+            </span>
+        </div>
+        <div class="bf-dp-group-body">
+            <div class="bf-dp-row" data-bf-cmd="scenario-save"
+                 title="บันทึกการวางกำลัง มุมมองแผนที่ และธีม เป็นไฟล์ .json">
+                <span class="bf-dp-ico"><svg class="ico" aria-hidden="true"><use href="#i-clipboard"/></svg></span>
+                <span class="label">บันทึกฉาก</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+            <div class="bf-dp-row" data-bf-cmd="scenario-load"
+                 title="เรียกคืนฉากจากไฟล์ .json — แทนที่กำลังที่วางเองไว้ทั้งหมด">
+                <span class="bf-dp-ico"><svg class="ico" aria-hidden="true"><use href="#i-folder-open"/></svg></span>
+                <span class="label">เรียกคืนฉาก</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+        </div>
+    </div>
 </div>
 <div id="bf-handle-right" title="แสดง Blue Force Operations">◀</div>
 
@@ -9032,7 +9079,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v18.0.1 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v18.1.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9506,7 +9553,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.0.1 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.1.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9525,7 +9572,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.0.1 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.1.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา
                  — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
@@ -10537,7 +10584,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v18.0.1 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v18.1.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -40451,6 +40498,16 @@ window.toggleSat3D = toggleSat3D;
                             manualCAPHelo();
                         } else if (cmd === 'mine-lay' && typeof layControlledMinefield === 'function') {
                             layControlledMinefield();
+                        } else if (cmd === 'scenario-save' && typeof udcSaveScenario === 'function') {
+                            /* [v18.1.0 SCEN-1] บันทึก/เรียกคืนเป็นการ «จัดการไฟล์»
+                               ไม่ใช่คำสั่งทางยุทธการ จึงแจ้งผลจากในฟังก์ชันเอง
+                               (มี prompt/ตัวเลือกไฟล์คั่น) แล้ว return ไม่ให้ตก
+                               ไปถึง toast «สั่งการแล้ว» ท้ายบล็อก */
+                            udcSaveScenario();
+                            return;
+                        } else if (cmd === 'scenario-load' && typeof udcLoadScenario === 'function') {
+                            udcLoadScenario();
+                            return;
                         } else if (cmd === 'pv-sensor-view' && typeof cyclePVSensorView === 'function') {
                             /* [v17.52.0 PVVIEW-2] สลับระดับการแสดงผล — ไม่ใช่คำสั่ง one-shot
                                จึงรายงานสถานะใหม่แทนคำว่า «สั่งการแล้ว» */
@@ -42380,6 +42437,171 @@ function _coaActionsToAssets(actions) {
     });
     return out;
 }
+// ═══════════════════════════════════════════════════════════════════════
+//  [v18.1.0 SCEN-1] บันทึก / เรียกคืน "สถานการณ์"
+//  ─────────────────────────────────────────────────────────────────────
+//  ปัญหาเดิม: ปิดแท็บแล้วการวางกำลังหายหมด ซ้อมแผนเดิมซ้ำไม่ได้
+//  ส่งต่อให้คนอื่นเปิดดูภาพเดียวกันก็ไม่ได้ — ต้องวางใหม่ทุกครั้ง
+//
+//  ★ หลักการ: บันทึก "สูตรการตั้งฉาก" ไม่ใช่ snapshot ของวัตถุที่มีชีวิต
+//    วัตถุ patrolVessels/guardianUUVs ถือ waypoint · สถานะอาวุธ · marker ของ
+//    Leaflet ฯลฯ ซึ่ง serialize ตรง ๆ ไม่ได้ (มี reference วนและ DOM node)
+//    จึงเก็บแค่ {ชนิด, พิกัด, รุ่นเรือ} แล้วตอนเรียกคืนก็ "วางใหม่" ผ่าน
+//    deployPVAt()/deployGUUVAt() ซึ่งเป็นทางเดียวกับที่ผู้ใช้กดวางเอง
+//    ผลพลอยได้: ฉากที่เรียกคืนผ่านการตรวจภูมิประเทศ/สร้าง waypoint ครบถ้วน
+//    เสมอ จึงไม่มีทางได้ฉากที่ "ขัดกับกติกาในเกม" แบบที่ snapshot ทำให้เกิดได้
+//
+//  ไม่เก็บ: สถานะกลางคัน (เรือกำลังยิง · กระสุนที่ใช้ไป · ภัยคุกคามที่วิ่งอยู่)
+//    เพราะนี่คือ "ฉากตั้งต้น" สำหรับซ้อมแผน ไม่ใช่ save game กลางสมรภูมิ
+//    ★ ข้อจำกัดนี้เขียนไว้ในไฟล์ที่บันทึกด้วย (field `kind`) กันเข้าใจผิด
+// ═══════════════════════════════════════════════════════════════════════
+const SCEN_FORMAT = 'udc-scenario';
+const SCEN_VER    = 1;
+
+/* อ่านตัวแปรระดับสคริปต์แบบไม่ทำให้ทั้งฟังก์ชันล้ม
+   ── ทำไมต้องมี: patrolVessels/guardianUUVs ประกาศด้วย `let` ถ้าสคริปต์บล็อก
+   ที่ประกาศมันโยน error ก่อนถึงบรรทัดประกาศ ตัวแปรจะค้างใน TDZ ซึ่ง
+   `typeof x` **ก็ยังโยน ReferenceError** (ต่างจากตัวแปรที่ไม่เคยประกาศเลย
+   ที่ typeof คืน 'undefined' เฉย ๆ) — การ์ด typeof ธรรมดาจึงกันไม่อยู่
+   ผลคือถ้า init พังบางส่วน ปุ่ม «บันทึกฉาก» จะพังตามไปทั้งปุ่ม
+   แทนที่จะบันทึกเท่าที่อ่านได้ · วัดเจอจริงตอนทดสอบในสภาพที่ CDN ถูกบล็อก */
+function _scenRead(fn, dflt) { try { const v = fn(); return v == null ? dflt : v; } catch (_) { return dflt; } }
+
+/* รวบรวมสถานะที่ "ตั้งเอง" ทั้งหมดเป็นอ็อบเจกต์เดียว */
+function udcCollectScenario(name) {
+    const pv = _scenRead(() => patrolVessels, [])
+        .filter(v => v && v.userPlaced)
+        .map(v => ({ kind:'PV', ship: v.shipType || 'naresuan',
+                     lat: LAT_TOP - v.ny * (LAT_TOP - LAT_BOT),
+                     lng: LNG_LEFT + v.nx * (LNG_RIGHT - LNG_LEFT) }));
+    const gu = _scenRead(() => guardianUUVs, [])
+        .filter(g => g && g.userPlaced)
+        .map(g => ({ kind:'GUUV',
+                     lat: LAT_TOP - g.ny * (LAT_TOP - LAT_BOT),
+                     lng: LNG_LEFT + g.nx * (LNG_RIGHT - LNG_LEFT) }));
+    const view = _scenRead(() => {
+        const c = map.getCenter(); return { lat:c.lat, lng:c.lng, zoom: map.getZoom() };
+    }, null);
+    return {
+        format: SCEN_FORMAT, version: SCEN_VER,
+        kind: 'setup-only',   // ฉากตั้งต้น ไม่ใช่ save game กลางสมรภูมิ
+        app: _scenRead(() => APP_VERSION, null),
+        name: String(name || 'สถานการณ์ไม่มีชื่อ').slice(0, 120),
+        savedAt: new Date().toISOString(),
+        theme: document.body.getAttribute('data-theme') || '',
+        view, units: pv.concat(gu)
+    };
+}
+
+/* ลบเฉพาะหน่วยที่ผู้ใช้วางเอง — หน่วยประจำฉากเดิมไม่แตะ */
+function _scenClearUserUnits() {
+    let n = 0;
+    /* แยก try ต่อกลุ่ม — ถ้ากลุ่มหนึ่งอยู่ใน TDZ อีกกลุ่มต้องยังล้างได้ */
+    try {
+        const b = patrolVessels.length;
+        patrolVessels = patrolVessels.filter(v => !v.userPlaced);
+        n += b - patrolVessels.length;
+        try { pvUserCount = 0; } catch (_) {}
+    } catch (_) {}
+    try {
+        const b = guardianUUVs.length;
+        guardianUUVs = guardianUUVs.filter(g => !g.userPlaced);
+        n += b - guardianUUVs.length;
+    } catch (_) {}
+    return n;
+}
+
+/* เรียกคืนฉากจากอ็อบเจกต์ · คืนสรุปผลเป็นข้อความ */
+function udcApplyScenario(data) {
+    if (!data || data.format !== SCEN_FORMAT)
+        throw new Error('ไม่ใช่ไฟล์สถานการณ์ของ UDC');
+    if (Number(data.version) > SCEN_VER)
+        throw new Error('ไฟล์สร้างจากรุ่นใหม่กว่า (v' + data.version + ') — อัปเดตตัวจำลองก่อน');
+
+    const removed = _scenClearUserUnits();
+    let ok = 0, fail = 0;
+    (Array.isArray(data.units) ? data.units : []).forEach(u => {
+        try {
+            if (!u || !isFinite(u.lat) || !isFinite(u.lng)) { fail++; return; }
+            let r = null;
+            if (u.kind === 'PV'   && typeof deployPVAt   === 'function')
+                r = deployPVAt(u.lat, u.lng, { ship: u.ship, note: 'เรียกคืนฉาก' });
+            else if (u.kind === 'GUUV' && typeof deployGUUVAt === 'function')
+                r = deployGUUVAt(u.lat, u.lng, { note: 'เรียกคืนฉาก' });
+            // deploy* คืน null เมื่อเต็มโควตาหรือจุดเป็นบก — นับเป็นวางไม่สำเร็จ
+            if (r) ok++; else fail++;
+        } catch (_) { fail++; }
+    });
+
+    try { if (data.theme != null) {
+        if (data.theme) document.body.setAttribute('data-theme', data.theme);
+        else document.body.removeAttribute('data-theme');
+    } } catch (_) {}
+    try { if (data.view && typeof map !== 'undefined' && map)
+        map.setView([data.view.lat, data.view.lng], data.view.zoom);
+    } catch (_) {}
+
+    return { removed, ok, fail, name: data.name || '' };
+}
+
+/* บันทึกเป็นไฟล์ .json ให้ดาวน์โหลด */
+function udcSaveScenario() {
+    try {
+        const def = 'ฉาก ' + new Date().toLocaleString('th-TH', { dateStyle:'short', timeStyle:'short' });
+        const name = window.prompt('ตั้งชื่อสถานการณ์', def);
+        if (name === null) return;                       // กดยกเลิก
+        const data = udcCollectScenario(name);
+        if (!data.units.length &&
+            !window.confirm('ยังไม่ได้วางกำลังเลย — บันทึกฉากว่างหรือไม่?')) return;
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
+        const url  = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'udc-scenario-' +
+            String(data.name).replace(/[^\w\u0E00-\u0E7F-]+/g, '_').slice(0, 40) + '.json';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 4000);   // ปล่อย blob กันหน่วยความจำรั่ว
+        if (typeof addLog === 'function')
+            addLog('💾 บันทึกสถานการณ์ «' + data.name + '» · ' + data.units.length + ' หน่วย');
+        if (typeof toast === 'function') toast('💾 บันทึกแล้ว · ' + data.units.length + ' หน่วย');
+    } catch (e) {
+        if (typeof toast === 'function') toast('⚠️ บันทึกไม่สำเร็จ: ' + e.message);
+    }
+}
+
+/* เรียกคืนจากไฟล์ที่ผู้ใช้เลือก */
+function udcLoadScenario() {
+    try {
+        const inp = document.createElement('input');
+        inp.type = 'file'; inp.accept = 'application/json,.json';
+        inp.addEventListener('change', () => {
+            const f = inp.files && inp.files[0]; if (!f) return;
+            const fr = new FileReader();
+            fr.onload = () => {
+                try {
+                    const res = udcApplyScenario(JSON.parse(String(fr.result)));
+                    const msg = 'เรียกคืน «' + res.name + '» · วางได้ ' + res.ok + ' หน่วย' +
+                                (res.fail ? ' · วางไม่ได้ ' + res.fail : '') +
+                                (res.removed ? ' · ลบของเดิม ' + res.removed : '');
+                    if (typeof addLog === 'function') addLog('📂 ' + msg);
+                    if (typeof toast === 'function') toast('📂 ' + msg);
+                } catch (e) {
+                    if (typeof addLog === 'function') addLog('⚠️ เรียกคืนไม่สำเร็จ: ' + e.message, 'var(--amber)');
+                    if (typeof toast === 'function') toast('⚠️ ' + e.message);
+                }
+            };
+            fr.readAsText(f);
+        });
+        inp.click();
+    } catch (e) {
+        if (typeof toast === 'function') toast('⚠️ เปิดไฟล์ไม่สำเร็จ: ' + e.message);
+    }
+}
+window.udcSaveScenario = udcSaveScenario;
+window.udcLoadScenario = udcLoadScenario;
+window.udcCollectScenario = udcCollectScenario;
+window.udcApplyScenario = udcApplyScenario;
+
 // ปุ่มเดียว «ขั้น ๒ · พัฒนา หป.» — RULES engine เสมอ (ทำงานได้แน่) + เสริม LLM COA เมื่อเปิด engine=LLM
 async function pipelineGenerateCOA() {
     if (state.running) return;

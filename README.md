@@ -12,10 +12,11 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 
 ## Current Version
 
-**v18.0.1 · 7-Domain + AI Staff**
+**v18.1.0 · 7-Domain + AI Staff**
 
 | Version | สิ่งสำคัญ |
 |---------|-----------|
+| v18.1.0 | **SCEN-1 — บันทึก/เรียกคืนสถานการณ์เป็นไฟล์ `.json`:** เดิมปิดแท็บแล้วการวางกำลังหายหมด ซ้อมแผนเดิมซ้ำหรือส่งต่อให้คนอื่นเปิดดูไม่ได้ · แถวคำสั่งใหม่ในแผงวางกำลัง หมวด «💾 สถานการณ์» · เก็บ **สูตรการตั้งฉาก** (ชนิด/พิกัด/รุ่นเรือ + มุมมองแผนที่ + ธีม) ไม่ใช่ snapshot ของวัตถุ — ตอนเรียกคืนวางใหม่ผ่านทางเดียวกับที่ผู้ใช้กดวางเอง ฉากจึงผ่านการตรวจภูมิประเทศเสมอ · เป็น*ฉากตั้งต้น* ไม่ใช่ save game กลางสมรภูมิ |
 | v18.0.1 | **FNAME-1 — เปลี่ยนชื่อไฟล์ `UDC_Simulator_17.html` → `UDC_Simulator.html`:** ชื่อใหม่ไม่มีเลขรุ่น จะได้ไม่ต้องไล่แก้ลิงก์อีกทุกครั้งที่ขึ้น major · แก้การอ้างถึง ๔๓ จุดใน ๑๑ ไฟล์ (ลิงก์กดได้จริง ๓ จุด: ปุ่ม Launch ใน Pitch · ปุ่มใน palantir · iframe ในบทที่ ๔) · เหลือไฟล์เดิมไว้เป็น **หน้าเปลี่ยนเส้นทาง** กัน URL ที่บุ๊กมาร์กไว้ 404 |
 | v18.0.0 | **ขึ้น major v18 — สิ้นสุดสาย v17 (ยุคงานวิจัย):** v17 ทั้งสาย (v17.0.0 → v17.53.0 · ๕๔ รุ่น) ถูกตรึง major ไว้ที่ 17 โดยเจตนา เพราะเลขรุ่นต้องตรงกับเอกสารวิจัยที่ส่งแล้ว — การอัปเกรดใหญ่จึงถูกยุบเป็น minor ตลอดมา · งานวิจัยสิ้นสุดแล้ว จึงปลดข้อผูกและขึ้น major · v18 = จุดเริ่มช่วง "นำไปใช้จริง" · **เปลี่ยนเฉพาะเลขรุ่นที่แสดง ๗ จุด ไม่แตะพฤติกรรมโปรแกรม** · ชื่อ "THE SHIELD 3.0" (ชื่อ*ตัวแบบ*) ไม่เปลี่ยน |
 | v17.53.0 | **TOUCH-1 — ใช้งานบนแท็บเล็ตได้จริง:** การ "ลาก" ทุกจุดรองรับนิ้ว · แปลงตัวฟัง ๓๕ จุดเป็น Pointer Events (เดิม `mousedown/mousemove/mouseup` ซึ่งนิ้วไม่ยิงให้ → ย้ายหน้าต่าง/ปรับช่องแผนที่/หมุนกล้อง ๓ มิติ ไม่ได้เลย) · `pointercancel` ๑๕ จุด กันสถานะลากค้าง · `touch-action:none` ที่จุดจับ ๑๓ ตัว · ขยายพื้นที่แตะตัวแยกช่องเป็น ๒๒px บนอุปกรณ์สัมผัส |
@@ -83,6 +84,7 @@ Single-file HTML5 tactical simulator — เปิดในเบราว์เ
 - **3D Dive** (Three.js r128) — terrain จาก DEM (offline cache), FFT ocean surface,
   acoustic ray tracing (SVP-aware), shadow zones, UDC sensor model · post-FX: Bloom + SSAO + FXAA
 - **AI Staff Planner** (v17) — ฝ่ายเสนาธิการ AI ผ่าน proxy worker (Cloudflare Workers AI / Google Gemini)
+- **Scenario save/load** (v18.1.0) — บันทึกการวางกำลัง + มุมมอง + ธีม เป็นไฟล์ `.json` ส่งต่อกันได้
 - **Time-replay** — RAM ring buffer (≈ 1 ชม. @ 10 วิ/tick)
 - **AIS** — AISStream.io (WebSocket) + Kpler REST (ผ่าน Cloudflare Worker proxy)
 - **4D Ocean** — HYCOM ESPC-D live (ผ่าน `ocean4d_live_server.js`) → sound speed (Mackenzie 1981),
