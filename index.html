@@ -1,8 +1,38 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.7.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.8.0 · 7-Domain + AI Staff)
 
   ── รุ่นล่าสุด · รายละเอียดเต็ม (v17.40.0 ขึ้นไป) ───────────────────
+  · [v18.8.0 CCIR-1] ข้อมูลข่าวสารสำคัญยิ่งของผู้บังคับบัญชา (CCIR)
+      ช่องว่างที่วัดเจอ: ทั้งไฟล์มีคำว่า CCIR ๐ ครั้ง ทั้งที่เครื่องมือตรวจจับมีครบ
+      ขาดแค่ "ชั้นเกณฑ์" ที่ให้ ผบ. ประกาศล่วงหน้าว่าอะไรที่ต้องรู้ทันที
+      แบ่งตามหลักนิยม ๒ สาย ตัววัดสายละ ๔ ตัว:
+        PIR  (ข้าศึก/สภาพแวดล้อม) — ภัยที่ยังไม่พิสูจน์ฝ่าย · ภัยที่ยังเคลื่อนไหว ·
+             ระยะภัยที่ใกล้ UDC ที่สุด · สถานะทะเล
+        FFIR (กำลังฝ่ายเรา) — เรือพร้อมปฏิบัติ · เชื้อเพลิงต่ำสุด · เรือที่กระสุนหมด ·
+             ยานใต้น้ำที่ใช้งานได้
+      เงื่อนไข < · <= · > · >= เทียบกับเกณฑ์ที่ ผบ. ตั้ง
+      ★★ ต่างจากจุดตกลงใจ (DP ของ DST-1) ที่ "อายุการใช้งาน" ซึ่งเป็นหัวใจ:
+        DP ยิงครั้งเดียวแล้วจบ — จุดตกลงใจที่ผ่านไปแล้วคือผ่านไปแล้ว
+        CCIR เป็น "การเฝ้ายืน" — เงื่อนไขคลายแล้วกลับมาใหม่ต้องเตือนอีกครั้ง
+        เช่น เชื้อเพลิงตกต่ำกว่าเกณฑ์ → เติมกลับขึ้น → ตกอีก = ต้องรู้อีก
+        จึงยิงตอนเปลี่ยนจาก "ไม่เข้าเกณฑ์" เป็น "เข้าเกณฑ์" และล้างเองเมื่อคลาย
+        (ล้างแบบเงียบ ไม่แจ้ง เพราะการคลายไม่ใช่เหตุที่ ผบ. ต้องถูกปลุก)
+      ★ ตัววัดคืน null เมื่อ "ยังวัดไม่ได้" ไม่ใช่คืน 0 — สำคัญมาก เพราะ
+        "ไม่มีเรือเลย" กับ "เชื้อเพลิงเหลือ ๐%" คนละเรื่องกันสิ้นเชิง ถ้าคืน 0 มั่ว
+        เกณฑ์ «เชื้อเพลิง < 30%» จะเตือนตลอดเวลาที่ยังไม่ได้วางเรือ = สัญญาณลวง
+        และเมื่อวัดไม่ได้ จะไม่ตัดสินและไม่ล้างสถานะเดิมด้วย
+      throttle ทุก ๑๕ เฟรม (ถี่กว่า DST ที่ ๑๐ ไม่ได้ เพราะ CCIR อ่านค่ารวมทั้งกองเรือ)
+      วางไว้ใน script block เดียวกับ threats/patrolVessels/animate (บทเรียน TSCRUB-1)
+      วัดจริง (ดึงเครื่องยนต์ออกมารันกับ global จำลอง ๒๐ กรณี ผ่านหมด):
+        ปฏิเสธตัววัด/เงื่อนไข/ค่าที่ผิดรูปแบบ · เชื้อเพลิงคืน null เมื่อไม่มีเรือ ·
+        ระยะภัยคืน null เมื่อไม่มีภัย · จำนวนภัยคืน 0 ไม่ใช่ null ·
+        ยังไม่มีเรือ → ไม่เตือน · เชื้อเพลิงเต็ม → ไม่เข้าเกณฑ์ · เชื้อเพลิงตก → เข้าเกณฑ์
+        และบันทึกมีทั้งค่าจริงและคำสั่งที่เตรียมไว้ · ยิงซ้ำไม่ได้ขณะยังเข้าเกณฑ์ ·
+        ★ คลายเกณฑ์แล้วกลับมาใหม่ → เตือนอีกครั้งจริง · PIR ภัยไม่พิสูจน์ฝ่าย ๑ ตัว
+        ไม่ถึงเกณฑ์ ๒ ตัวถึง · พิสูจน์ฝ่ายแล้วเกณฑ์คลายเอง · reset/remove ทำงานครบ
+      ยังไม่ได้ทดสอบ: การทำงานร่วมกับซิมจริง — ต้องใช้ init ที่ครบ ซึ่ง environment
+        ที่บล็อก CDN ทำไม่ได้
   · [v18.7.0 PBR-2] แสงรอบทิศฉากอวกาศ (PMREM) + แปลง Phong ๔ ตัวสุดท้าย
       ปิดงานที่ PBR-1 เว้นไว้: ฉากลูกโลก ISR ไม่เคยมี envMap วัสดุ ๔ ตัวจึงยังติด
       อยู่กับ Phong เพราะแปลงทั้งที่ไม่มีแสงรอบทิศจะยิ่งมืดลง · ตอนนี้ทั้งไฟล์
@@ -560,7 +590,7 @@
          ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker
          v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump
          display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.7.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.8.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   ตัวเลขนี้คือที่เดียวที่ JS อ่าน — display string อีก ๖ จุดเป็นข้อความคงที่ใน HTML
@@ -576,7 +606,7 @@
         //     ของ *ซอฟต์แวร์* ทั้งสองเดินอิสระจากกันได้ ชื่อ Model 3.0 ยังคงเดิมทุกหน้า
         //   ★ ป้าย [v17.x.x] ในคอมเมนต์ทั้งไฟล์คือหมุดประวัติ "เพิ่มมาในรุ่นไหน"
         //     ห้ามไล่แก้เป็น v18 เด็ดขาด — จะทำให้ประวัติการพัฒนาผิดทั้งไฟล์
-        const APP_VERSION = '18.7.0';
+        const APP_VERSION = '18.8.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -9279,6 +9309,19 @@ window.udcIco = udcIco;
                 <span class="label">รีเซ็ตสถานะ DP</span>
                 <span class="bf-dp-arrow">›</span>
             </div>
+            <!-- [v18.8.0 CCIR-1] ข้อมูลข่าวสารสำคัญยิ่งของ ผบ. -->
+            <div class="bf-dp-row" data-bf-cmd="ccir-add"
+                 title="ประกาศเกณฑ์ที่ต้องรู้ทันที — PIR (ข้าศึก) หรือ FFIR (ฝ่ายเรา)">
+                <span class="bf-dp-ico"><svg class="ico" aria-hidden="true"><use href="#i-siren"/></svg></span>
+                <span class="label">เพิ่มเกณฑ์ CCIR</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+            <div class="bf-dp-row" data-bf-cmd="ccir-list"
+                 title="ดูเกณฑ์ CCIR ทั้งหมดพร้อมค่าปัจจุบัน">
+                <span class="bf-dp-ico"><svg class="ico" aria-hidden="true"><use href="#i-eye"/></svg></span>
+                <span class="label" id="ccir-count-lbl">เกณฑ์ CCIR (0)</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
         </div>
     </div>
 </div>
@@ -9338,7 +9381,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v18.7.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v18.8.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9812,7 +9855,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.7.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.8.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9831,7 +9874,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.7.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.8.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา
                  — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
@@ -10843,7 +10886,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v18.7.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v18.8.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -19790,6 +19833,189 @@ function dstEvaluate() {
         if (typeof _dstSyncUI === 'function') _dstSyncUI();
     });
 }
+
+// ═══════════════════════════════════════════════════════════════════════
+//  [v18.8.0 CCIR-1] ข้อมูลข่าวสารสำคัญยิ่งของผู้บังคับบัญชา (CCIR)
+//  ─────────────────────────────────────────────────────────────────────
+//  ช่องว่างที่วัดเจอ: ทั้งไฟล์มีคำว่า CCIR ๐ ครั้ง ทั้งที่เครื่องมือตรวจจับมีครบ
+//  — ขาดแค่ "ชั้นเกณฑ์" ที่ให้ ผบ. ประกาศล่วงหน้าว่า *อะไรที่ต้องรู้ทันที*
+//
+//  CCIR แบ่งตามหลักนิยมเป็น ๒ สาย:
+//    PIR  (Priority Intelligence Requirements) — เรื่องข้าศึกและสภาพแวดล้อม
+//    FFIR (Friendly Force Information Requirements) — เรื่องกำลังฝ่ายเรา
+//
+//  ★ ต่างจากจุดตกลงใจ (DP) ของ DST-1 ตรง "อายุการใช้งาน" ซึ่งสำคัญมาก:
+//    DP ยิงครั้งเดียวแล้วจบ — เพราะจุดตกลงใจที่ผ่านไปแล้วคือผ่านไปแล้ว
+//    CCIR เป็น "การเฝ้ายืน" — เงื่อนไขคลายแล้วกลับมาใหม่ต้องเตือนอีกครั้ง
+//    เช่น เชื้อเพลิงเรือตกต่ำกว่าเกณฑ์ → เติมกลับขึ้นไป → ตกอีก = ต้องรู้อีก
+//    จึงยิงตอน "เปลี่ยนสถานะจากไม่เข้าเกณฑ์เป็นเข้าเกณฑ์" และล้างเองเมื่อคลาย
+//
+//  ★ วางไว้ใน script block เดียวกับ threats/patrolVessels/animate (บทเรียน TSCRUB-1)
+// ═══════════════════════════════════════════════════════════════════════
+let ccirList = [];      // [{id,kind,metric,op,value,note,met,metAt}]
+let _ccirSeq = 0;
+
+/* ทะเบียนตัววัด — แต่ละตัวคืน "ตัวเลข" ตัวเดียวที่เอาไปเทียบกับเกณฑ์ได้
+   ★ คืน null เมื่อยังวัดไม่ได้ (ข้อมูลไม่พร้อม/ไม่มีหน่วย) ต่างจากคืน 0
+     เพราะ "ไม่มีเรือเลย" กับ "เชื้อเพลิงเหลือ ๐%" คนละเรื่องกันโดยสิ้นเชิง
+     ถ้าคืน 0 มั่ว เกณฑ์ «เชื้อเพลิง < 30%» จะเตือนตลอดเวลาที่ยังไม่ได้วางเรือ */
+const CCIR_METRICS = {
+    threat_unknown: { kind:'PIR',  label:'ภัยที่ยังไม่พิสูจน์ฝ่าย (ตัว)', unit:'ตัว',
+        fn: () => { try { return threats.filter(t => t && t.active && !t.classified).length; }
+                    catch (_) { return null; } } },
+    threat_active:  { kind:'PIR',  label:'ภัยคุกคามที่ยังเคลื่อนไหว (ตัว)', unit:'ตัว',
+        fn: () => { try { return threats.filter(t => t && t.active).length; } catch (_) { return null; } } },
+    threat_near_udc:{ kind:'PIR',  label:'ระยะภัยที่ใกล้ UDC ที่สุด (nm)', unit:'nm',
+        fn: () => { try {
+            let best = null;
+            threats.forEach(t => {
+                if (!t || !t.active) return;
+                const d = haversineNm(nyToLat(t.ny), nxToLng(t.nx), UDC_LAT, UDC_LNG);
+                if (isFinite(d) && (best === null || d < best)) best = d;
+            });
+            return best;                      // ไม่มีภัยเลย = null ไม่ใช่ 0
+        } catch (_) { return null; } } },
+    sea_state:      { kind:'PIR',  label:'สถานะทะเล (ระดับ)', unit:'ระดับ',
+        fn: () => { try { return typeof seaState === 'number' ? seaState : null; } catch (_) { return null; } } },
+
+    pv_ready:       { kind:'FFIR', label:'เรือตรวจการณ์พร้อมปฏิบัติ (ลำ)', unit:'ลำ',
+        fn: () => { try {
+            return patrolVessels.filter(v => v && v.state !== 'RTB' && v.state !== 'REARM'
+                                          && v.state !== 'DAMAGED').length;
+        } catch (_) { return null; } } },
+    pv_min_fuel:    { kind:'FFIR', label:'เชื้อเพลิงต่ำสุดในหมู่เรือ (%)', unit:'%',
+        fn: () => { try {
+            let m = null;
+            patrolVessels.forEach(v => {
+                if (!v || typeof v.fuel !== 'number') return;
+                const pct = v.fuel * 100;
+                if (m === null || pct < m) m = pct;
+            });
+            return m === null ? null : Math.round(m);
+        } catch (_) { return null; } } },
+    pv_winchester:  { kind:'FFIR', label:'เรือที่กระสุนหมด (ลำ)', unit:'ลำ',
+        fn: () => { try { return patrolVessels.filter(v => v && v.winchester).length; }
+                    catch (_) { return null; } } },
+    guuv_active:    { kind:'FFIR', label:'ยานใต้น้ำที่ใช้งานได้ (ลำ)', unit:'ลำ',
+        fn: () => { try { return guardianUUVs.length; } catch (_) { return null; } } },
+};
+const CCIR_OPS = {
+    '<':  (a,b) => a <  b,  '<=': (a,b) => a <= b,
+    '>':  (a,b) => a >  b,  '>=': (a,b) => a >= b,
+};
+
+function ccirAdd(metric, op, value, note) {
+    const m = CCIR_METRICS[metric];
+    if (!m || !CCIR_OPS[op] || !isFinite(Number(value))) return null;
+    const id = m.kind + '-' + (++_ccirSeq);
+    ccirList.push({ id, kind:m.kind, metric, op, value:Number(value),
+                    note:String(note || '').slice(0,160), met:false, metAt:null });
+    if (typeof addLog === 'function')
+        addLog('◆ เพิ่ม ' + m.kind + ' ' + id + ' — ' + m.label + ' ' + op + ' ' + value);
+    if (typeof _ccirSyncUI === 'function') _ccirSyncUI();
+    return id;
+}
+function ccirRemove(id) {
+    ccirList = ccirList.filter(c => c.id !== id);
+    if (typeof _ccirSyncUI === 'function') _ccirSyncUI();
+}
+function ccirReset() {
+    ccirList.forEach(c => { c.met = false; c.metAt = null; });
+    if (typeof _ccirSyncUI === 'function') _ccirSyncUI();
+}
+/* อ่านค่าปัจจุบันของทุกเกณฑ์ — ใช้ทั้งตอนประเมินและตอนแสดงรายการ */
+function ccirRead(c) {
+    const m = CCIR_METRICS[c.metric];
+    return m ? m.fn() : null;
+}
+
+/* ประเมินทุกเกณฑ์ — เรียกจาก animate() แบบ throttle เช่นเดียวกับ dstEvaluate() */
+function ccirEvaluate() {
+    if (!ccirList.length) return;
+    ccirList.forEach(c => {
+        const m = CCIR_METRICS[c.metric]; if (!m) return;
+        const val = m.fn();
+        if (val === null || !isFinite(val)) {   // วัดไม่ได้ = ไม่ตัดสิน และไม่ล้างสถานะเดิม
+            return;
+        }
+        const hit = CCIR_OPS[c.op](val, c.value);
+        if (hit && !c.met) {
+            c.met = true; c.metAt = Date.now();
+            const msg = '◆ ' + c.kind + ' ' + c.id + ' เข้าเกณฑ์ — ' + m.label +
+                        ' = ' + val + ' (' + c.op + ' ' + c.value + ')' +
+                        (c.note ? ' · ' + c.note : '');
+            try { if (typeof addLog === 'function') addLog(msg, 'var(--warn)'); } catch (_) {}
+            try { if (typeof toast === 'function') toast(msg); } catch (_) {}
+            if (typeof _ccirSyncUI === 'function') _ccirSyncUI();
+        } else if (!hit && c.met) {
+            /* คลายเกณฑ์ — ล้างสถานะเงียบ ๆ ไม่ต้องแจ้ง เพื่อให้เตือนได้อีกครั้ง
+               ถ้ากลับมาเข้าเกณฑ์ (นี่คือจุดที่ต่างจาก DP ซึ่งยิงครั้งเดียวจบ) */
+            c.met = false; c.metAt = null;
+            if (typeof _ccirSyncUI === 'function') _ccirSyncUI();
+        }
+    });
+}
+/* ── หน้าปัดฝั่งผู้ใช้ ──────────────────────────────────────── */
+function _ccirSyncUI() {
+    const el = document.getElementById('ccir-count-lbl');
+    if (!el) return;
+    const hot = ccirList.filter(c => c.met).length;
+    el.textContent = 'เกณฑ์ CCIR (' + ccirList.length + (hot ? ' · เข้าเกณฑ์ ' + hot : '') + ')';
+}
+function _ccirPromptAdd() {
+    const keys = Object.keys(CCIR_METRICS);
+    const menu = keys.map((k, i) => '  ' + (i+1) + '. [' + CCIR_METRICS[k].kind + '] ' +
+                                    CCIR_METRICS[k].label).join('\n');
+    const pick = window.prompt('เลือกตัววัด (พิมพ์หมายเลข)\n\n' + menu, '1');
+    if (pick === null) return;
+    const idx = Number(pick) - 1;
+    const key = keys[idx];
+    if (!key) { if (typeof toast === 'function') toast('⚠️ หมายเลขไม่ถูกต้อง'); return; }
+    const m = CCIR_METRICS[key];
+    const cur = m.fn();
+    const op = window.prompt('เงื่อนไข — พิมพ์  <  หรือ  <=  หรือ  >  หรือ  >=\n\n' +
+                             m.label + '\nค่าปัจจุบัน: ' + (cur === null ? 'ยังวัดไม่ได้' : cur),
+                             m.kind === 'FFIR' ? '<' : '>=');
+    if (op === null) return;
+    if (!CCIR_OPS[String(op).trim()]) { if (typeof toast === 'function') toast('⚠️ เงื่อนไขไม่ถูกต้อง'); return; }
+    const val = window.prompt('เกณฑ์ (' + m.unit + ')', '1');
+    if (val === null) return;
+    const note = window.prompt('สิ่งที่ต้องทำเมื่อเข้าเกณฑ์ (ไม่บังคับ)', '');
+    if (note === null) return;
+    const id = ccirAdd(key, String(op).trim(), val, note);
+    if (id) { if (typeof toast === 'function') toast('◆ เพิ่ม ' + id + ' แล้ว'); }
+    else    { if (typeof toast === 'function') toast('⚠️ เพิ่มไม่สำเร็จ — ตรวจค่าที่กรอก'); }
+}
+function _ccirShowList() {
+    if (!ccirList.length) {
+        if (typeof toast === 'function') toast('◆ ยังไม่มีเกณฑ์ CCIR');
+        return;
+    }
+    const lines = [];
+    ['PIR', 'FFIR'].forEach(kind => {
+        const grp = ccirList.filter(c => c.kind === kind);
+        lines.push('── ' + kind + (kind === 'PIR' ? ' (ข้าศึก/สภาพแวดล้อม)' : ' (กำลังฝ่ายเรา)') + ' ──');
+        if (!grp.length) lines.push('  (ไม่มี)');
+        grp.forEach(c => {
+            const m = CCIR_METRICS[c.metric];
+            const now = ccirRead(c);
+            lines.push('  ' + c.id + ' · ' + (m ? m.label : c.metric));
+            lines.push('      เกณฑ์: ' + c.op + ' ' + c.value + '  ·  ตอนนี้: ' +
+                       (now === null ? 'ยังวัดไม่ได้' : now) +
+                       (c.met ? '   ◆ เข้าเกณฑ์' : '   เฝ้าอยู่'));
+            if (c.note) lines.push('      → ' + c.note);
+        });
+        lines.push('');
+    });
+    window.alert(lines.join('\n'));
+}
+window._ccirSyncUI = _ccirSyncUI;
+window._ccirPromptAdd = _ccirPromptAdd;
+window._ccirShowList = _ccirShowList;
+
+window.udcCCIR = { add:ccirAdd, remove:ccirRemove, reset:ccirReset,
+                   evaluate:ccirEvaluate, read:ccirRead,
+                   get list(){ return ccirList; }, metrics:CCIR_METRICS, ops:CCIR_OPS };
 
 /* วาด NAI ลงบน overlay canvas — เรียกต่อจาก drawZonesGIS()
    ใช้ geoXY(lat,lng) + _pxNm (พิกเซลต่อไมล์ทะเล) เหมือน drawZonesGIS ทุกประการ
@@ -28761,6 +28987,7 @@ function animate() {
         drawZonesGIS();
         if (typeof drawNAI === 'function') drawNAI();                      // [v18.4.0 DST-1]
         if (typeof dstEvaluate === 'function' && frame % 10 === 0) dstEvaluate();   // throttle
+        if (typeof ccirEvaluate === 'function' && frame % 15 === 0) ccirEvaluate();  // [v18.8.0 CCIR-1]
         drawAirDefense();   // [AD] ฟอง ESSM + ทีม สอ.รฝ.
         drawSonarSweep();
         drawCable();
@@ -41119,6 +41346,12 @@ window.toggleSat3D = toggleSat3D;
                             return;
                         } else if (cmd === 'dst-list' && typeof _dstShowList === 'function') {
                             _dstShowList();
+                            return;
+                        } else if (cmd === 'ccir-add' && typeof _ccirPromptAdd === 'function') {
+                            _ccirPromptAdd();
+                            return;
+                        } else if (cmd === 'ccir-list' && typeof _ccirShowList === 'function') {
+                            _ccirShowList();
                             return;
                         } else if (cmd === 'dst-reset' && window.udcDST) {
                             window.udcDST.dstReset();
