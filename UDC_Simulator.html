@@ -1,8 +1,36 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.6.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.7.0 · 7-Domain + AI Staff)
 
   ── รุ่นล่าสุด · รายละเอียดเต็ม (v17.40.0 ขึ้นไป) ───────────────────
+  · [v18.7.0 PBR-2] แสงรอบทิศฉากอวกาศ (PMREM) + แปลง Phong ๔ ตัวสุดท้าย
+      ปิดงานที่ PBR-1 เว้นไว้: ฉากลูกโลก ISR ไม่เคยมี envMap วัสดุ ๔ ตัวจึงยังติด
+      อยู่กับ Phong เพราะแปลงทั้งที่ไม่มีแสงรอบทิศจะยิ่งมืดลง · ตอนนี้ทั้งไฟล์
+      เหลือ MeshPhongMaterial ๐ ตัว
+      ★ ในอวกาศ "สภาพแวดล้อม" ไม่ใช่ท้องฟ้า แต่คือ ๓ อย่าง: อวกาศดำสนิทรอบด้าน ·
+        แสงสะท้อนจากโลก (earthshine) มาจากด้านล่าง · ดวงอาทิตย์เป็นจุดสว่างจัดจุดเดียว
+        ไล่สีแนวตั้งอย่างเดียวแบบฉากใต้น้ำจึงไม่พอ ต้องวาดจุดอาทิตย์ลงไปด้วย
+        ตำแหน่งจุดอาทิตย์วางให้ตรงกับ DirectionalLight เดิมที่ position (150,80,100)
+      ★ ไม่ใส่ดาวลงใน env — ความสว่างรวมของดาวน้อยมากเมื่อเทียบกับโลก และจุดสว่าง
+        กระจายจะกลายเป็น noise ตอน prefilter
+      ★ 64×32 พอ เพราะ PMREM เบลอหนักอยู่แล้ว (ขนาดเดียวกับฉากใต้น้ำ)
+      ★ decode sRGB เขียนตรงในบล็อกนี้ ไม่เรียก _d3srgb ข้ามบล็อก — บทเรียนจาก
+        TSCRUB-1 ที่พึ่งของข้ามบล็อกแล้วตัวเรียกมองไม่เห็นจนโค้ดไม่เคยทำงาน
+      ★ _sgStd() ประกาศเป็น function declaration ระดับบนสุด ไม่ใช่ property บน sgState
+        เพราะ hoist ได้ จึงเรียกได้แน่นอนไม่ว่าดาวเทียมจะถูกสร้างก่อนหรือหลัง init
+      วัสดุแต่ละตัวตั้งตามฟิสิกส์ของมันจริง ๆ ไม่ใช่ค่าเดียวกันหมด:
+        · เมฆ      roughness 1.00 · metal 0.00 · env 0.15 — เป็นตัวกลางกระจายแสง
+                   ไม่ใช่ผิวสะท้อน ถ้าใส่ env แรงจะเห็นเงาโลกวิ่งบนชั้นเมฆ ซึ่งผิดธรรมชาติ
+        · ดวงจันทร์ roughness 0.96 · metal 0.00 · env 0.35 — ผิวเรโกลิธด้านมาก
+        · ตัวดาวเทียม roughness 0.16 · metal 0.62 · env 0.95 — หุ้มฟอยล์กันความร้อน (MLI)
+                   เป็นโลหะมันวาว จุดที่ env map ได้ผลชัดที่สุดในฉากนี้
+        · แผงโซลาร์ roughness 0.18 · metal 0.40 · env 0.80 — กระจกสีน้ำเงินเข้ม กึ่งโลหะ
+      วัดจริง (ดึง _sgStd ออกมารันกับ THREE จำลอง ด้วยค่าจริงทั้ง ๔ ชุด):
+        shininess→roughness ตรงสูตร (4→0.577 · 60→0.180 · 80→0.156) · shininess ถูกตัดออก ·
+        ทั้ง ๔ ตัวได้ envMap ครบ · ดาวเทียมมันกว่าและเป็นโลหะมากกว่าดวงจันทร์จริง ·
+        env ยังไม่พร้อม → ไม่ใส่ field และไม่พัง · sgState ยังไม่มีเลย → ไม่ throw
+      ยังไม่ได้ทดสอบ: ภาพบนจอจริง — ต้องใช้ WebGL + Three.js ที่ environment
+        ซึ่งบล็อก CDN ทำไม่ได้
   · [v18.6.0 PBR-1] วัตถุแข็งในฉากดำน้ำ ๓๙ ชิ้น: Phong → MeshStandard + envMap
       เดิมแคปซูล UDC · อาคารสถานี · เสาอากาศ ใช้ MeshPhongMaterial ซึ่งเป็นโมเดลแสง
       ยุคเก่า (Blinn-Phong) ที่คำนวณไฮไลต์จาก "ดวงไฟ" เท่านั้น ไม่สะท้อนสภาพแวดล้อม
@@ -532,7 +560,7 @@
          ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker
          v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump
          display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.6.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.7.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   ตัวเลขนี้คือที่เดียวที่ JS อ่าน — display string อีก ๖ จุดเป็นข้อความคงที่ใน HTML
@@ -548,7 +576,7 @@
         //     ของ *ซอฟต์แวร์* ทั้งสองเดินอิสระจากกันได้ ชื่อ Model 3.0 ยังคงเดิมทุกหน้า
         //   ★ ป้าย [v17.x.x] ในคอมเมนต์ทั้งไฟล์คือหมุดประวัติ "เพิ่มมาในรุ่นไหน"
         //     ห้ามไล่แก้เป็น v18 เด็ดขาด — จะทำให้ประวัติการพัฒนาผิดทั้งไฟล์
-        const APP_VERSION = '18.6.0';
+        const APP_VERSION = '18.7.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -9310,7 +9338,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v18.6.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v18.7.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9784,7 +9812,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.6.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.7.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9803,7 +9831,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.6.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.7.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา
                  — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
@@ -10815,7 +10843,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v18.6.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v18.7.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -53311,6 +53339,53 @@ function _sgInitGlobe() {
     sgState.renderer.toneMappingExposure = 0.72;
     sgState.renderer.outputEncoding = THREE.sRGBEncoding;
 
+    /* ══════════════════════════════════════════════════════════════════
+       [v18.7.0 PBR-2] แสงรอบทิศของฉากอวกาศ (PMREM)
+       ────────────────────────────────────────────────────────────────
+       ฉากดำน้ำมี d3_envMap มาตั้งแต่ v16.2.0 แต่ฉากลูกโลกไม่เคยมี วัสดุ ๔ ตัว
+       (เมฆ · ดวงจันทร์ · ตัวดาวเทียม · แผงโซลาร์) จึงยังติดอยู่กับ Phong
+       เพราะแปลงเป็น MeshStandard ทั้งที่ไม่มีแสงรอบทิศจะยิ่งมืดลง
+       ★ ในอวกาศ "สภาพแวดล้อม" ไม่ใช่ท้องฟ้า แต่คือ ๓ อย่าง:
+         ๑) อวกาศดำสนิทรอบด้าน  ๒) แสงสะท้อนจากโลก (earthshine) มาจาก "ด้านล่าง"
+         ๓) ดวงอาทิตย์เป็นจุดสว่างจัดจุดเดียว
+         ไล่สีแนวตั้งอย่างเดียวแบบฉากใต้น้ำจึงไม่พอ ต้องมีจุดอาทิตย์ด้วย
+       ★ ดาวไม่ใส่ลงใน env map — ความสว่างรวมของดาวน้อยมากเมื่อเทียบกับโลก
+         และการใส่จุดสว่างกระจายจะกลายเป็น noise ตอน prefilter
+       ★ 64×32 พอ เพราะ PMREM เบลอหนักอยู่แล้ว ความละเอียดสูงกว่านี้เปลืองเปล่า
+         (ขนาดเดียวกับที่ฉากใต้น้ำใช้)
+       ══════════════════════════════════════════════════════════════════ */
+    if (!sgState.envMap) {
+        var ecv = document.createElement('canvas'); ecv.width = 64; ecv.height = 32;
+        var ec = ecv.getContext('2d');
+        /* แกนตั้งของ equirect: y=0 คือเหนือหัว (ห้วงอวกาศ) · y=H คือใต้เท้า (โลก) */
+        var eg = ec.createLinearGradient(0, 0, 0, 32);
+        eg.addColorStop(0.00, '#01030a');   // เหนือหัว: อวกาศลึก เกือบดำสนิท
+        eg.addColorStop(0.55, '#040a16');   // ระดับสายตา: ยังมืด
+        eg.addColorStop(0.80, '#123a63');   // เริ่มเห็นแสงสะท้อนจากโลก
+        eg.addColorStop(1.00, '#2d6ea8');   // ใต้เท้า: โลกสว่างอมฟ้า (earthshine)
+        ec.fillStyle = eg; ec.fillRect(0, 0, 64, 32);
+        /* ดวงอาทิตย์ — จุดสว่างจัดเหนือระดับสายตาเล็กน้อย ให้ตรงกับ
+           DirectionalLight ที่ตั้งไว้ position.set(150, 80, 100) คือมาจากด้านบน-ข้าง */
+        var sg = ec.createRadialGradient(46, 11, 0, 46, 11, 9);
+        sg.addColorStop(0.00, '#fffaf0');
+        sg.addColorStop(0.35, '#ffd9a0');
+        sg.addColorStop(1.00, 'rgba(255,200,140,0)');
+        ec.fillStyle = sg; ec.fillRect(37, 2, 18, 18);
+
+        var eqTex = new THREE.CanvasTexture(ecv);
+        eqTex.mapping = THREE.EquirectangularReflectionMapping;
+        /* decode sRGB ก่อนเข้า PMREM — gradient เขียนเป็น hex sRGB
+           (ทำแบบเดียวกับ _d3srgb ของฉากใต้น้ำ แต่เขียนตรงนี้เพราะอยู่คนละ
+            script block · บทเรียนจาก TSCRUB-1 ที่พึ่งข้ามบล็อกแล้วมองไม่เห็น) */
+        if (THREE.sRGBEncoding !== undefined) {
+            eqTex.encoding = THREE.sRGBEncoding; eqTex.needsUpdate = true;
+        }
+        var pm = new THREE.PMREMGenerator(sgState.renderer);
+        sgState.envMap = pm.fromEquirectangular(eqTex).texture;
+        eqTex.dispose(); pm.dispose();
+    }
+
+
     sgState.scene.add(new THREE.AmbientLight(0xffffff, 0.9));
     var sun = new THREE.DirectionalLight(0xffffff, 1.4);
     sun.position.set(150, 80, 100);
@@ -53459,9 +53534,13 @@ function _sgInitGlobe() {
 
         var pCloudTex = new THREE.CanvasTexture(canvas);
         var cloudGeo = new THREE.SphereGeometry(101.5, 64, 64);
-        var cloudMat = new THREE.MeshPhongMaterial({
+        /* [v18.7.0 PBR-2] เมฆ — roughness 1 เต็มที่ · envMapIntensity ต่ำมาก
+           เมฆเป็นตัวกลางกระจายแสง (scattering) ไม่ใช่ผิวสะท้อน ถ้าใส่ env แรง
+           จะเห็นเงาโลกวิ่งบนชั้นเมฆซึ่งผิดธรรมชาติ */
+        var cloudMat = _sgStd({
             map: pCloudTex, alphaMap: pCloudTex, transparent: true,
-            opacity: 0.82, depthWrite: false
+            opacity: 0.82, depthWrite: false,
+            roughness: 1.0, metalness: 0.0, envMapIntensity: 0.15
         });
         sgState.cloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
         sgState.cloudMesh.rotation.y = sgState.earthMesh ? sgState.earthMesh.rotation.y : 0.5;
@@ -53507,9 +53586,11 @@ function _sgInitGlobe() {
     _sgUpdateSunPos();
 
     // ดวงจันทร์ — ทรงกลมมีพื้นผิวโคจรรอบโลก (MOON)
-    var moonMat = new THREE.MeshPhongMaterial({
+    /* [v18.7.0 PBR-2] ดวงจันทร์ — ผิวเรโกลิธด้านมาก (เดิม shininess 4 = ด้านอยู่แล้ว)
+       roughness 0.96 · ไม่ใช่โลหะ · รับ earthshine จาง ๆ ได้ */
+    var moonMat = _sgStd({
         map: tl.load('https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/moonmap1k.jpg'),
-        shininess: 4
+        roughness: 0.96, metalness: 0.0, envMapIntensity: 0.35
     });
     sgState.moonMesh = new THREE.Mesh(new THREE.SphereGeometry(8, 24, 24), moonMat);
     sgState.scene.add(sgState.moonMesh);
@@ -53987,10 +54068,40 @@ function _sgBuildMilkyWaySkybox() {
 }
 
 // ── GLOBE-G: ตัวสร้างทรงดาวเทียมสามมิติแยกตามชนิด ─────────────────────────
+/* [v18.7.0 PBR-2] วัสดุมาตรฐานของฉากอวกาศ — คู่ขนานกับ _d3std() ของฉากใต้น้ำ
+   ใช้สูตร shininess → roughness เดียวกัน r = sqrt(2/(s+2))
+   ★ ประกาศเป็น function declaration ระดับบนสุด ไม่ใช่ property บน sgState
+     เพราะ hoist ได้ จึงเรียกได้แน่นอนไม่ว่าจะถูกเรียกก่อนหรือหลัง renderer init
+     (ถ้าผูกไว้กับ sgState แล้วดาวเทียมถูกสร้างก่อน init จะ throw)
+   ★ อ่าน sgState.envMap ตอนเรียก ไม่ใช่ตอนนิยาม — ถ้า env ยังไม่พร้อม
+     ก็ได้วัสดุที่ไม่มี env (ยังเห็นภาพ) แทนที่จะพัง */
+function _sgStd(o) {
+    o = o || {};
+    var p = {};
+    for (var k in o) if (k !== 'shininess') p[k] = o[k];
+    if (p.roughness == null) {
+        var sh = Number(o.shininess);
+        p.roughness = isFinite(sh) && sh > 0
+            ? Math.max(0.05, Math.min(1, Math.sqrt(2 / (sh + 2)))) : 0.7;
+    }
+    if (p.metalness == null) p.metalness = 0.0;
+    if (p.envMap == null && sgState && sgState.envMap) {
+        p.envMap = sgState.envMap;
+        if (p.envMapIntensity == null) p.envMapIntensity = 0.6;
+    }
+    return new THREE.MeshStandardMaterial(p);
+}
+
 function _sgBuildSatMesh(sat, satColor) {
     var g = new THREE.Group();
-    var bMat = new THREE.MeshPhongMaterial({color:satColor, shininess:80, transparent:true, opacity:1.0});
-    var pMat = new THREE.MeshPhongMaterial({color:0x1144cc, shininess:60});
+    /* [v18.7.0 PBR-2] ดาวเทียม — จุดที่ env map ได้ผลชัดที่สุดในฉากนี้
+       ตัวถังจริงหุ้มฟอยล์กันความร้อน (MLI) ซึ่งเป็นโลหะมันวาว จึงเป็นวัสดุ
+       ชิ้นเดียวในชุดนี้ที่ metalness สูง — สะท้อนโลกและดวงอาทิตย์จาก env ได้จริง
+       แผงโซลาร์เป็นกระจกสีน้ำเงินเข้ม: กึ่งโลหะ ผิวเรียบกว่าตัวถังเล็กน้อย */
+    var bMat = _sgStd({color:satColor, shininess:80, transparent:true, opacity:1.0,
+                               metalness:0.62, envMapIntensity:0.95});
+    var pMat = _sgStd({color:0x1144cc, shininess:60,
+                               metalness:0.40, envMapIntensity:0.80});
     var t = sat.type;
     if (t === 'SAR') {
         // เรดาร์ช่องเปิดสังเคราะห์: สายอากาศแบบเฟสอาร์เรย์แผ่นแบนกว้างบนตัวดาวเทียมสั้น
