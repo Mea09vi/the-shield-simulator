@@ -1,8 +1,41 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.8.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.9.0 · 7-Domain + AI Staff)
 
   ── รุ่นล่าสุด · รายละเอียดเต็ม (v17.40.0 ขึ้นไป) ───────────────────
+  · [v18.9.0 SYNC-1] ตารางประสานสอดคล้อง (Synchronization Matrix)
+      ตาราง "เวลา × หน้าที่การรบ" — ของคู่กายฝ่ายเสนาธิการ ใช้หาช่องว่างของแผน
+      (ห้วงเวลาที่ไม่มีใครรับผิดชอบ) และจุดที่งานชนกัน
+      หน้าที่การรบ ๖ ด้านตามหลักนิยมร่วม: อำนวยการยุทธ์ · ข่าวกรอง · ดำเนินกลยุทธ์ ·
+      การยิง · การป้องกัน · ส่งกำลังบำรุง
+      ห้วงเวลา ๕ ช่วงสัมพัทธ์กับ H-hour: ก่อน H · H+0–15 · H+15–30 · H+30–60 · H+60 ขึ้นไป
+      ใช้ scenarioStartTime ที่ระบบมีอยู่แล้วเป็นหมุด H และไฮไลต์คอลัมน์ห้วงปัจจุบัน
+      ★★ ไม่ให้กรอกมือทั้งตาราง — ดึงจากของที่ระบบรู้อยู่แล้วมาเติมก่อน:
+        ข่าวกรอง       ← พื้นที่เฝ้า (NAI) + เกณฑ์ PIR
+        อำนวยการยุทธ์  ← จุดตกลงใจ (DP) ซึ่งมี byMin เป็นเวลากำกับอยู่แล้ว
+        ดำเนินกลยุทธ์  ← กำลังที่วางจริงบนแผนที่
+        ป้องกัน/ส่งกำลัง ← เกณฑ์ FFIR แยกตามชนิดตัววัด (เชื้อเพลิง/กระสุน → ส่งกำลัง
+                        ที่เหลือ → ป้องกัน) + สถานะเรือที่ RTB/REARM
+        การยิง         ← จำนวนเรือที่กระสุนหมด = ข้อจำกัดขีดความสามารถยิงโดยตรง
+        เหตุผล: ตารางที่ต้องกรอกเองทั้งหมดจะไม่มีใครกรอก และถ้ากรอกก็จะไม่ตรงกับ
+        สถานการณ์จริงในซิมภายในไม่กี่นาที · ผู้ใช้เติมรายการของตัวเองเพิ่มได้
+      ★ ทุกรายการติดป้ายที่มา (DP · NAI · PIR · FFIR · กำลัง · สถานะ · มือ) เพราะถ้า
+        แยกไม่ออกว่าอะไรระบบเติมให้ อะไรตัวเองเขียน จะไม่กล้าเชื่อตารางทั้งใบ
+      ★ escape ทุกข้อความก่อนเข้า innerHTML — ชื่อ NAI/คำสั่ง/รายการที่เติมเองมาจาก
+        การพิมพ์ของผู้ใช้ และฉากที่เรียกคืนจากลิงก์ (SHARE-1) ก็พาชื่อจากภายนอกมาด้วย
+      ★ หน้าต่างลากย้ายได้ด้วย Pointer Events + touch-action:none ตามแนว TOUCH-1
+      [FIX] เจอตอนทดสอบ: DP ที่ byMin = 0 แปลว่า "ไม่จำกัดเวลา" (ตาม DST-1) ไม่ใช่
+        "นาทีที่ ๐" — เดิมตกไปอยู่ช่อง H+0–15 ซึ่งชวนอ่านว่าผูกกับห้วงนั้น
+        แก้ให้ไปอยู่ «ก่อน H» ในฐานะรายการเฝ้ายืน
+      วัดจริง (ดึงเครื่องยนต์ออกมารันกับ global จำลอง): ตารางว่างตอนเริ่ม ·
+        phaseOf ถูกทุกขอบเขต (−5→ก่อน H · 0,14→H+0–15 · 15→H+15–30 · 45→H+30–60 ·
+        120→H+60 · null/NaN→ก่อน H) · DP มีกรอบเวลาเข้าห้วงถูก · DP ไม่จำกัดเวลาอยู่ก่อน H
+        พร้อมป้าย [เกิดแล้ว] · NAI+PIR เข้าข่าวกรอง · กำลังเข้าดำเนินกลยุทธ์ ·
+        FFIR แยกส่งกำลัง/ป้องกันถูกตามชนิด · RTB เข้าส่งกำลัง · กระสุนหมดเข้าการยิง ·
+        ทุกรายการมีป้ายที่มาครบ · ปฏิเสธหน้าที่/ห้วงที่ไม่มีจริง · เติมมือแล้วขึ้นและลบออกได้ ·
+        escape กัน <img onerror> ได้จริง · ห้วงปัจจุบันคำนวณถูกทั้งก่อนเริ่มและที่นาทีที่ ๔๐
+      ยังไม่ได้ทดสอบ: การวาดตารางบนจอจริง — ต้องใช้ DOM ที่ init ครบ ซึ่ง environment
+        ที่บล็อก CDN ทำไม่ได้
   · [v18.8.0 CCIR-1] ข้อมูลข่าวสารสำคัญยิ่งของผู้บังคับบัญชา (CCIR)
       ช่องว่างที่วัดเจอ: ทั้งไฟล์มีคำว่า CCIR ๐ ครั้ง ทั้งที่เครื่องมือตรวจจับมีครบ
       ขาดแค่ "ชั้นเกณฑ์" ที่ให้ ผบ. ประกาศล่วงหน้าว่าอะไรที่ต้องรู้ทันที
@@ -590,7 +623,7 @@
          ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker
          v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump
          display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.8.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.9.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   ตัวเลขนี้คือที่เดียวที่ JS อ่าน — display string อีก ๖ จุดเป็นข้อความคงที่ใน HTML
@@ -606,7 +639,7 @@
         //     ของ *ซอฟต์แวร์* ทั้งสองเดินอิสระจากกันได้ ชื่อ Model 3.0 ยังคงเดิมทุกหน้า
         //   ★ ป้าย [v17.x.x] ในคอมเมนต์ทั้งไฟล์คือหมุดประวัติ "เพิ่มมาในรุ่นไหน"
         //     ห้ามไล่แก้เป็น v18 เด็ดขาด — จะทำให้ประวัติการพัฒนาผิดทั้งไฟล์
-        const APP_VERSION = '18.8.0';
+        const APP_VERSION = '18.9.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -1610,6 +1643,58 @@
         .layout-splitter.ls-left  { left:calc(var(--col-l,210px) + 3px); }
         .layout-splitter.ls-right { right:calc(var(--col-r,210px) + 3px); }
 
+        /* ══════════════════════════════════════════════════════════════
+           [v18.9.0 SYNC-1] ตารางประสานสอดคล้อง — เวลา × หน้าที่การรบ
+           ใช้โทเคนสีชุดเดิมทั้งหมด จึงตามธีมทั้ง ๘ ชุดโดยไม่ต้อง override
+           ══════════════════════════════════════════════════════════════ */
+        #sync-panel {
+            position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
+            z-index:1300; display:none;
+            width:min(96vw, 1180px); max-height:86vh;
+            background:rgb(var(--bg-dark-rgb) / .97);
+            border:1px solid var(--cyan-mid); border-radius:var(--radius-md);
+            box-shadow:0 10px 44px rgb(0 0 0 / .62);
+            font-family:var(--font-mono), monospace; color:var(--n-100);
+            flex-direction:column; overflow:hidden;
+        }
+        #sync-panel.show { display:flex; }
+        #sync-panel .sy-head {
+            display:flex; align-items:center; gap:var(--space-3); cursor:move;
+            padding:var(--space-2) var(--space-3); touch-action:none;
+            border-bottom:1px solid var(--border-dim); background:rgb(var(--cyan-rgb) / .08);
+        }
+        #sync-panel .sy-title { color:var(--cyan-hi); letter-spacing:var(--track-cap); font-size:var(--text-sm); }
+        #sync-panel .sy-sub { color:var(--n-400); font-size:var(--text-xs); }
+        #sync-panel .sy-head button {
+            margin-left:auto; background:transparent; border:1px solid var(--border-dim);
+            color:var(--n-100); border-radius:var(--radius-sm);
+            min-height:44px; min-width:44px; cursor:pointer; touch-action:manipulation;
+        }
+        #sync-panel .sy-body { overflow:auto; padding:var(--space-2); }
+        #sync-panel table { border-collapse:collapse; width:100%; font-size:var(--text-xs); }
+        #sync-panel th, #sync-panel td {
+            border:1px solid var(--border-divider); vertical-align:top;
+            padding:var(--space-1) var(--space-2); text-align:left;
+        }
+        #sync-panel thead th { background:rgb(var(--cyan-rgb) / .10); color:var(--cyan-hi); white-space:nowrap; }
+        #sync-panel tbody th { background:rgb(var(--bg-dark-rgb) / .8); color:var(--n-100);
+                               white-space:nowrap; width:1%; }
+        #sync-panel tbody th small { display:block; color:var(--n-400); font-weight:400; }
+        /* ห้วงเวลาปัจจุบัน — ไฮไลต์ให้รู้ว่าตอนนี้อยู่ตรงไหนของแผน */
+        #sync-panel .sy-now { background:rgb(var(--amber-rgb) / .13); }
+        #sync-panel thead th.sy-now { background:rgb(var(--amber-rgb) / .22); color:var(--warn-hi); }
+        #sync-panel .sy-item { display:block; margin:1px 0; }
+        /* ป้ายที่มา — ต้องแยกออกว่าอะไรระบบเติมให้ อะไรผู้ใช้เขียนเอง */
+        #sync-panel .sy-src {
+            display:inline-block; font-size:9px; padding:0 4px; margin-right:4px;
+            border-radius:var(--radius-xs); border:1px solid var(--border-dim); color:var(--n-400);
+        }
+        #sync-panel .sy-src[data-s="มือ"] { color:var(--teal); border-color:var(--teal); }
+        #sync-panel .sy-empty { color:var(--n-500); }
+        @media (max-width: 860px) {
+            #sync-panel { width:98vw; }
+            #sync-panel table { font-size:9px; }
+        }
         /* ══════════════════════════════════════════════════════════════
            [v18.3.0 TSCRUB-1] แถบย้อนเวลา — ลอยอยู่ก้นจอแผนที่
            ใช้โทเคนสีชุดเดิมทั้งหมด จึงเปลี่ยนตามธีมทั้ง ๘ ชุดโดยไม่ต้อง override
@@ -9322,10 +9407,33 @@ window.udcIco = udcIco;
                 <span class="label" id="ccir-count-lbl">เกณฑ์ CCIR (0)</span>
                 <span class="bf-dp-arrow">›</span>
             </div>
+            <!-- [v18.9.0 SYNC-1] -->
+            <div class="bf-dp-row" data-bf-cmd="sync-open"
+                 title="ตาราง เวลา × หน้าที่การรบ — เติมจาก DP · NAI · CCIR · กำลังที่วางจริง">
+                <span class="bf-dp-ico"><svg class="ico" aria-hidden="true"><use href="#i-bar-chart-3"/></svg></span>
+                <span class="label">ตารางประสานสอดคล้อง</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+            <div class="bf-dp-row" data-bf-cmd="sync-add"
+                 title="เติมรายการของตัวเองลงตาราง">
+                <span class="bf-dp-ico"><svg class="ico" aria-hidden="true"><use href="#i-pencil-ruler"/></svg></span>
+                <span class="label">เติมรายการในตาราง</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
         </div>
     </div>
 </div>
 <div id="bf-handle-right" title="แสดง Blue Force Operations">◀</div>
+
+<!-- [v18.9.0 SYNC-1] ตารางประสานสอดคล้อง -->
+<div id="sync-panel" role="dialog" aria-label="ตารางประสานสอดคล้อง">
+    <div class="sy-head" id="sync-head">
+        <span class="sy-title">⊞ ตารางประสานสอดคล้อง</span>
+        <span class="sy-sub" id="sync-sub">—</span>
+        <button type="button" id="sync-close" title="ปิด">✕</button>
+    </div>
+    <div class="sy-body" id="sync-body"></div>
+</div>
 
 <!-- [v18.3.0 TSCRUB-1] แถบย้อนเวลา — ซ่อนไว้ เปิดจากแผงวางกำลัง หมวดสถานการณ์ -->
 <div id="ts-bar" role="group" aria-label="ย้อนเวลา">
@@ -9381,7 +9489,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v18.8.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v18.9.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9855,7 +9963,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.8.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.9.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9874,7 +9982,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.8.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.9.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา
                  — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
@@ -10886,7 +10994,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v18.8.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v18.9.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -19833,6 +19941,244 @@ function dstEvaluate() {
         if (typeof _dstSyncUI === 'function') _dstSyncUI();
     });
 }
+
+// ═══════════════════════════════════════════════════════════════════════
+//  [v18.9.0 SYNC-1] ตารางประสานสอดคล้อง (Synchronization Matrix)
+//  ─────────────────────────────────────────────────────────────────────
+//  ตาราง "เวลา × หน้าที่การรบ" — ของคู่กายฝ่ายเสนาธิการ ใช้ตรวจว่าแผนที่วางไว้
+//  มีช่องว่างตรงไหน (ห้วงเวลาที่ไม่มีใครรับผิดชอบ) และมีการชนกันตรงไหน
+//
+//  ★ ไม่ให้กรอกมือทั้งตาราง — ดึงจากของที่ระบบรู้อยู่แล้วมาเติมให้ก่อน:
+//      ข่าวกรอง        ← เกณฑ์ PIR + พื้นที่เฝ้า (NAI)
+//      อำนวยการยุทธ์   ← จุดตกลงใจ (DP) ซึ่งมีเวลากำกับอยู่แล้ว (byMin)
+//      ดำเนินกลยุทธ์   ← กำลังที่วางจริงบนแผนที่
+//      ป้องกัน/ส่งกำลัง ← เกณฑ์ FFIR (เชื้อเพลิง · กระสุน · ความพร้อม)
+//    แล้วผู้ใช้เติมรายการของตัวเองเพิ่มได้
+//    เหตุผล: ตารางที่ต้องกรอกเองทั้งหมดจะไม่มีใครกรอก และถ้ากรอกก็จะไม่ตรง
+//    กับสถานการณ์จริงในซิมภายในไม่กี่นาที
+//
+//  ★ หมุดเวลาใช้ scenarioStartTime (= H-hour) ที่ระบบมีอยู่แล้ว
+//    ถ้ายังไม่เริ่มสถานการณ์ ทุกอย่างจะไปกองอยู่ห้วง "ก่อน H" ซึ่งถูกต้อง
+// ═══════════════════════════════════════════════════════════════════════
+/* หน้าที่การรบ ๖ ด้าน (ตามหลักนิยมร่วม) */
+const SYNC_FUNCS = [
+    { id:'c2',    label:'อำนวยการยุทธ์',   en:'Command & Control' },
+    { id:'intel', label:'ข่าวกรอง',        en:'Intelligence' },
+    { id:'mvr',   label:'ดำเนินกลยุทธ์',   en:'Movement & Maneuver' },
+    { id:'fires', label:'การยิง',          en:'Fires' },
+    { id:'prot',  label:'การป้องกัน',      en:'Protection' },
+    { id:'sust',  label:'ส่งกำลังบำรุง',   en:'Sustainment' },
+];
+/* ห้วงเวลาสัมพัทธ์กับ H-hour · from/to เป็นนาที (null = ไม่จำกัด) */
+const SYNC_PHASES = [
+    { id:'p0', label:'ก่อน H',    from:null, to:0   },
+    { id:'p1', label:'H+0–15',    from:0,    to:15  },
+    { id:'p2', label:'H+15–30',   from:15,   to:30  },
+    { id:'p3', label:'H+30–60',   from:30,   to:60  },
+    { id:'p4', label:'H+60 ขึ้นไป', from:60,  to:null },
+];
+let syncManual = [];      // รายการที่ผู้ใช้เติมเอง [{id,fn,phase,text}]
+let _syncSeq = 0;
+
+function syncPhaseOf(min) {
+    if (min == null || !isFinite(min)) return 'p0';
+    for (let i = 0; i < SYNC_PHASES.length; i++) {
+        const ph = SYNC_PHASES[i];
+        if ((ph.from === null || min >= ph.from) && (ph.to === null || min < ph.to)) return ph.id;
+    }
+    return 'p4';
+}
+function syncAdd(fn, phase, text) {
+    if (!SYNC_FUNCS.some(f => f.id === fn) || !SYNC_PHASES.some(p => p.id === phase)) return null;
+    const id = 'SY-' + (++_syncSeq);
+    syncManual.push({ id, fn, phase, text:String(text || '').slice(0,120) });
+    if (typeof _syncSyncUI === 'function') _syncSyncUI();
+    return id;
+}
+function syncRemove(id) {
+    syncManual = syncManual.filter(x => x.id !== id);
+    if (typeof _syncSyncUI === 'function') _syncSyncUI();
+}
+function syncClearManual() { syncManual = []; if (typeof _syncSyncUI === 'function') _syncSyncUI(); }
+
+/* ประกอบตาราง — คืน { [fnId]: { [phaseId]: [ {text,src}, … ] } }
+   ★ ทุกรายการติดป้ายที่มา (src) เพื่อให้ผู้ใช้แยกออกว่าอะไรระบบเติมให้
+     อะไรที่ตัวเองเขียน — ถ้าแยกไม่ออก จะไม่กล้าเชื่อตารางทั้งใบ */
+function syncBuild() {
+    const grid = {};
+    SYNC_FUNCS.forEach(f => { grid[f.id] = {}; SYNC_PHASES.forEach(p => grid[f.id][p.id] = []); });
+    const put = (fn, phase, text, src) => {
+        if (grid[fn] && grid[fn][phase]) grid[fn][phase].push({ text, src });
+    };
+
+    /* อำนวยการยุทธ์ ← จุดตกลงใจ (มีเวลากำกับใน byMin อยู่แล้ว) */
+    try {
+        dpList.forEach(d => {
+            const n = naiList.find(x => x.id === d.naiId);
+            /* byMin = 0 คือ "ไม่จำกัดเวลา" (ดู DST-1) ไม่ใช่ "นาทีที่ ๐"
+               จึงต้องไปอยู่ห้วง «ก่อน H» ในฐานะรายการเฝ้ายืน ไม่ใช่ช่อง H+0–15
+               ซึ่งจะชวนให้อ่านว่าผูกกับห้วงนั้น — เจอตอนทดสอบ */
+            put('c2', d.byMin > 0 ? syncPhaseOf(d.byMin) : 'p0',
+                d.id + ': ' + (d.action || 'ตกลงใจ') + (n ? ' @' + n.name : '') +
+                (d.fired ? ' [เกิดแล้ว]' : ''), 'DP');
+        });
+    } catch (_) {}
+    /* ข่าวกรอง ← พื้นที่เฝ้า + เกณฑ์ PIR */
+    try { naiList.forEach(n => put('intel', 'p0', 'เฝ้า ' + n.name + ' (รัศมี ' + n.rNm + ' nm)', 'NAI')); } catch (_) {}
+    try {
+        ccirList.filter(c => c.kind === 'PIR').forEach(c => {
+            const m = CCIR_METRICS[c.metric];
+            put('intel', 'p0', c.id + ': ' + (m ? m.label : c.metric) + ' ' + c.op + ' ' + c.value +
+                (c.met ? ' [เข้าเกณฑ์]' : ''), 'PIR');
+        });
+    } catch (_) {}
+    /* ดำเนินกลยุทธ์ ← กำลังที่วางจริง */
+    try {
+        const pv = patrolVessels.filter(v => v && v.userPlaced).length;
+        const gu = guardianUUVs.filter(g => g && g.userPlaced).length;
+        if (pv) put('mvr', 'p0', 'เรือตรวจการณ์ประจำสถานี ' + pv + ' ลำ', 'กำลัง');
+        if (gu) put('mvr', 'p0', 'ยานใต้น้ำประจำสถานี ' + gu + ' ลำ', 'กำลัง');
+        patrolVessels.forEach(v => {
+            if (v && v.state === 'RTB')   put('sust', 'p0', (v.label||'เรือ') + ' กลับฐาน', 'สถานะ');
+            if (v && v.state === 'REARM') put('sust', 'p0', (v.label||'เรือ') + ' เติมกระสุน', 'สถานะ');
+        });
+    } catch (_) {}
+    /* ป้องกัน + ส่งกำลังบำรุง ← เกณฑ์ FFIR (แยกตามชนิดตัววัด) */
+    try {
+        ccirList.filter(c => c.kind === 'FFIR').forEach(c => {
+            const m = CCIR_METRICS[c.metric];
+            const isSust = (c.metric === 'pv_min_fuel' || c.metric === 'pv_winchester');
+            put(isSust ? 'sust' : 'prot', 'p0',
+                c.id + ': ' + (m ? m.label : c.metric) + ' ' + c.op + ' ' + c.value +
+                (c.met ? ' [เข้าเกณฑ์]' : ''), 'FFIR');
+        });
+    } catch (_) {}
+    /* การยิง ← เรือที่กระสุนหมดคือข้อจำกัดของการยิงโดยตรง */
+    try {
+        const w = patrolVessels.filter(v => v && v.winchester).length;
+        if (w) put('fires', 'p0', 'เรือที่กระสุนหมด ' + w + ' ลำ — จำกัดขีดความสามารถยิง', 'สถานะ');
+    } catch (_) {}
+    /* รายการที่ผู้ใช้เติมเอง */
+    syncManual.forEach(x => put(x.fn, x.phase, x.text, 'มือ'));
+    return grid;
+}
+/* ห้วงเวลาปัจจุบันของสถานการณ์ — ใช้ไฮไลต์คอลัมน์ */
+function syncNowPhase() {
+    try {
+        if (typeof scenarioStartTime !== 'number' || !scenarioStartTime) return 'p0';
+        return syncPhaseOf((Date.now() - scenarioStartTime) / 60000);
+    } catch (_) { return 'p0'; }
+}
+/* ── หน้าปัด ─────────────────────────────────────────────────── */
+function _syEsc(t) {
+    return String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+/* วาดตารางใหม่ทั้งใบ — เรียกตอนเปิดและทุกครั้งที่ข้อมูลเปลี่ยน
+   ★ escape ทุกข้อความก่อนยัดเข้า innerHTML เพราะชื่อ NAI/คำสั่ง/รายการที่เติมเอง
+     มาจากการพิมพ์ของผู้ใช้ และฉากที่เรียกคืนจากลิงก์ (SHARE-1) ก็พาชื่อมาด้วย */
+function _syncRender() {
+    const body = document.getElementById('sync-body'); if (!body) return;
+    const grid = syncBuild();
+    const now  = syncNowPhase();
+    let html = '<table><thead><tr><th>หน้าที่การรบ</th>';
+    SYNC_PHASES.forEach(p => {
+        html += '<th class="' + (p.id === now ? 'sy-now' : '') + '">' + _syEsc(p.label) + '</th>';
+    });
+    html += '</tr></thead><tbody>';
+    SYNC_FUNCS.forEach(f => {
+        html += '<tr><th>' + _syEsc(f.label) + '<small>' + _syEsc(f.en) + '</small></th>';
+        SYNC_PHASES.forEach(p => {
+            const cell = grid[f.id][p.id];
+            html += '<td class="' + (p.id === now ? 'sy-now' : '') + '">';
+            if (!cell.length) html += '<span class="sy-empty">—</span>';
+            else cell.forEach(it => {
+                html += '<span class="sy-item"><span class="sy-src" data-s="' + _syEsc(it.src) + '">' +
+                        _syEsc(it.src) + '</span>' + _syEsc(it.text) + '</span>';
+            });
+            html += '</td>';
+        });
+        html += '</tr>';
+    });
+    html += '</tbody></table>';
+    body.innerHTML = html;
+    const sub = document.getElementById('sync-sub');
+    if (sub) {
+        let total = 0;
+        SYNC_FUNCS.forEach(f => SYNC_PHASES.forEach(p => { total += grid[f.id][p.id].length; }));
+        const ph = SYNC_PHASES.find(x => x.id === now);
+        sub.textContent = total + ' รายการ · ห้วงปัจจุบัน: ' + (ph ? ph.label : '—') +
+                          (syncManual.length ? ' · เติมเอง ' + syncManual.length : '');
+    }
+}
+function _syncSyncUI() {
+    const pn = document.getElementById('sync-panel');
+    if (pn && pn.classList.contains('show')) _syncRender();
+}
+function _syncToggle() {
+    const pn = document.getElementById('sync-panel'); if (!pn) return;
+    const show = !pn.classList.contains('show');
+    pn.classList.toggle('show', show);
+    if (show) _syncRender();
+}
+function _syncPromptAdd() {
+    const fl = SYNC_FUNCS.map((f, i) => '  ' + (i+1) + '. ' + f.label).join('\n');
+    const fp = window.prompt('หน้าที่การรบ (พิมพ์หมายเลข)\n' + fl, '1');
+    if (fp === null) return;
+    const f = SYNC_FUNCS[Number(fp) - 1];
+    if (!f) { if (typeof toast === 'function') toast('⚠️ หมายเลขไม่ถูกต้อง'); return; }
+    const pl = SYNC_PHASES.map((x, i) => '  ' + (i+1) + '. ' + x.label).join('\n');
+    const pp = window.prompt('ห้วงเวลา (พิมพ์หมายเลข)\n' + pl, '1');
+    if (pp === null) return;
+    const ph = SYNC_PHASES[Number(pp) - 1];
+    if (!ph) { if (typeof toast === 'function') toast('⚠️ หมายเลขไม่ถูกต้อง'); return; }
+    const tx = window.prompt('รายการ — ' + f.label + ' · ' + ph.label, '');
+    if (tx === null || !String(tx).trim()) return;
+    syncAdd(f.id, ph.id, tx);
+    if (typeof addLog === 'function') addLog('⊞ เติมตารางประสาน: ' + f.label + ' · ' + ph.label);
+    if (typeof toast === 'function') toast('⊞ เติมรายการแล้ว');
+    _syncSyncUI();
+}
+(function _syncWire() {
+    function wire() {
+        const pn = document.getElementById('sync-panel'); if (!pn || pn._wired) return;
+        pn._wired = true;
+        document.getElementById('sync-close')?.addEventListener('click', () => _syncToggle());
+        /* ลากย้ายหน้าต่างด้วย Pointer Events ตามแนว TOUCH-1 (v17.53.0) */
+        const hd = document.getElementById('sync-head'); if (!hd) return;
+        let sx = 0, sy = 0, ox = 0, oy = 0, on = false;
+        const mv = e => {
+            if (!on) return;
+            pn.style.left = Math.max(0, Math.min(window.innerWidth  - 80, ox + e.clientX - sx)) + 'px';
+            pn.style.top  = Math.max(0, Math.min(window.innerHeight - 40, oy + e.clientY - sy)) + 'px';
+        };
+        const up = () => {
+            on = false;
+            document.removeEventListener('pointermove', mv);
+            document.removeEventListener('pointerup', up);
+            document.removeEventListener('pointercancel', up);
+        };
+        hd.addEventListener('pointerdown', e => {
+            if (e.target.id === 'sync-close') return;
+            const r = pn.getBoundingClientRect();
+            pn.style.transform = 'none'; pn.style.left = r.left + 'px'; pn.style.top = r.top + 'px';
+            sx = e.clientX; sy = e.clientY; ox = r.left; oy = r.top; on = true;
+            document.addEventListener('pointermove', mv);
+            document.addEventListener('pointerup', up);
+            document.addEventListener('pointercancel', up);
+            e.preventDefault();
+        });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire);
+    else wire();
+})();
+window._syncToggle = _syncToggle;
+window._syncPromptAdd = _syncPromptAdd;
+window._syncSyncUI = _syncSyncUI;
+
+window.udcSync = { funcs:SYNC_FUNCS, phases:SYNC_PHASES, build:syncBuild,
+                   add:syncAdd, remove:syncRemove, clearManual:syncClearManual,
+                   phaseOf:syncPhaseOf, nowPhase:syncNowPhase,
+                   get manual(){ return syncManual; } };
 
 // ═══════════════════════════════════════════════════════════════════════
 //  [v18.8.0 CCIR-1] ข้อมูลข่าวสารสำคัญยิ่งของผู้บังคับบัญชา (CCIR)
@@ -41352,6 +41698,12 @@ window.toggleSat3D = toggleSat3D;
                             return;
                         } else if (cmd === 'ccir-list' && typeof _ccirShowList === 'function') {
                             _ccirShowList();
+                            return;
+                        } else if (cmd === 'sync-open' && typeof _syncToggle === 'function') {
+                            _syncToggle();
+                            return;
+                        } else if (cmd === 'sync-add' && typeof _syncPromptAdd === 'function') {
+                            _syncPromptAdd();
                             return;
                         } else if (cmd === 'dst-reset' && window.udcDST) {
                             window.udcDST.dstReset();
