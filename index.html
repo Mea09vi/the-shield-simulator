@@ -1,8 +1,38 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.9.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.10.0 · 7-Domain + AI Staff)
 
   ── รุ่นล่าสุด · รายละเอียดเต็ม (v17.40.0 ขึ้นไป) ───────────────────
+  · [v18.10.0 ECOA-1] หนทางปฏิบัติของข้าศึก (ECOA) หลายชุด + เทียบผล
+      ช่องว่างที่วัดเจอ: ทั้งไฟล์มีคำว่า "red team" ๐ ครั้ง และฝ่ายแดงใน wargame
+      ถูกฮาร์ดโค้ดไว้ ๓ หน่วยตำแหน่งเดียวตายตัว — ซ้อมกี่รอบข้าศึกก็มาทางเดิม
+      ซึ่งขัดกับหลักนิยม: ฝ่ายเสนาธิการต้องประเมิน ECOA "หลายชุด" แล้วดูว่าแผนเรา
+      ทนกับชุดไหนไม่ไหว ไม่ใช่ปรับแผนให้ชนะข้าศึกแบบเดียว
+      ★★ ECOA-1 คือชุดเดิมทุกพิกัดเป๊ะ ๆ — ไม่เลือกอะไร พฤติกรรมเหมือน v18.9.0
+        ทุกประการ · ของใหม่เป็น "ตัวเลือกเพิ่ม" ไม่ใช่การเปลี่ยนค่าเดิม
+        (ทดสอบเทียบ JSON กับชุดฮาร์ดโค้ดเดิมแล้วตรงทุกฟิลด์)
+      ๓ ชุด แต่ละชุดมีแกนเข้าและเจตนาต่างกันจริง ไม่ใช่แค่ย้ายพิกัด:
+        ECOA-1 « แทรกซึมเงียบ » ๓ หน่วย · ตะวันออกเฉียงใต้ · ยานใต้น้ำนำ ลดโอกาสถูกพบ
+        ECOA-2 « จู่โจมตรง »   ๕ หน่วย · ทิศใต้ · กำลังมากกว่า เริ่มใกล้กว่า
+                                ยอมถูกตรวจพบแลกความเร็ว
+        ECOA-3 « ลวงแล้วเลี่ยง » ๔ หน่วย · ฮ. ลวงทางตะวันออก · ยานใต้น้ำเข้าจริงทางตะวันตก
+      เก็บผลทุกรอบที่จบ (ring buffer ๔๐ รอบ): ECOA · กำลังฝ่ายเราที่เหลือ ·
+        หน่วยเราที่รอด · ข้าศึกที่ถูกทำลาย · จำนวนการตรวจพบ · เวลา · เหตุที่จบ
+      ★ นับหน่วยที่รอด/ถูกทำลายจาก wgState.units จริง ไม่ใช่จาก blueHealth อย่างเดียว
+        เพราะ blueHealth เป็นคะแนนรวม บอกไม่ได้ว่าเสียหน่วยไหนไปกี่หน่วย
+      ★ บันทึกผลทำเป็นบรรทัดแรกของ _wgEnd() เพราะต้องอ่าน units ตอนที่ยังไม่ถูกล้าง
+      ตารางเทียบสรุป "รายชุด" ไม่ใช่รายรอบ เพราะคำถามของฝ่ายเสนาธิการคือ
+        "แผนเราทนชุดไหนไม่ไหว" ไม่ใช่ "รอบที่ ๗ เป็นอย่างไร" · ปิดท้ายด้วยข้อสรุป
+        ว่าแผนปัจจุบันอ่อนที่สุดต่อ ECOA ชุดใด (เรียงตามกำลังฝ่ายเราที่เหลือเฉลี่ย)
+      วัดจริง (ดึงเครื่องยนต์ออกมารันกับ global จำลอง ๑๖ กรณี ผ่านหมด):
+        ECOA-1 ตรงกับชุดฮาร์ดโค้ดเดิมทุกฟิลด์ · ค่าปริยายคือ ECOA-1 ·
+        ทุกชุดมีชื่อ/แกนเข้า/คำอธิบายครบ · ชนิดหน่วยถูกต้องทุกตัว (sub/sdv/helo) ·
+        พิกัดและป้ายครบ · id ไม่ซ้ำภายในชุด (กัน marker ทับกัน) ·
+        เลือกชุดที่มีจริงได้ ชุดที่ไม่มีถูกปฏิเสธและไม่เปลี่ยนค่าเดิม ·
+        บันทึกผลนับจาก units จริง (แดงตาย ๒/๓ · น้ำเงินรอด ๑/๒) ไม่ใช่เดาจาก health ·
+        หลายรอบเก็บครบ · ล้างได้ · เพดาน ๔๐ รอบทิ้งอันเก่าสุดถูกต้อง
+      ยังไม่ได้ทดสอบ: การเดิน wargame จริงกับ ECOA ใหม่ — ต้องใช้ init ที่ครบ
+        ซึ่ง environment ที่บล็อก CDN ทำไม่ได้
   · [v18.9.0 SYNC-1] ตารางประสานสอดคล้อง (Synchronization Matrix)
       ตาราง "เวลา × หน้าที่การรบ" — ของคู่กายฝ่ายเสนาธิการ ใช้หาช่องว่างของแผน
       (ห้วงเวลาที่ไม่มีใครรับผิดชอบ) และจุดที่งานชนกัน
@@ -623,7 +653,7 @@
          ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker
          v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump
          display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.9.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.10.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   ตัวเลขนี้คือที่เดียวที่ JS อ่าน — display string อีก ๖ จุดเป็นข้อความคงที่ใน HTML
@@ -639,7 +669,7 @@
         //     ของ *ซอฟต์แวร์* ทั้งสองเดินอิสระจากกันได้ ชื่อ Model 3.0 ยังคงเดิมทุกหน้า
         //   ★ ป้าย [v17.x.x] ในคอมเมนต์ทั้งไฟล์คือหมุดประวัติ "เพิ่มมาในรุ่นไหน"
         //     ห้ามไล่แก้เป็น v18 เด็ดขาด — จะทำให้ประวัติการพัฒนาผิดทั้งไฟล์
-        const APP_VERSION = '18.9.0';
+        const APP_VERSION = '18.10.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -9420,6 +9450,19 @@ window.udcIco = udcIco;
                 <span class="label">เติมรายการในตาราง</span>
                 <span class="bf-dp-arrow">›</span>
             </div>
+            <!-- [v18.10.0 ECOA-1] หนทางปฏิบัติของข้าศึก -->
+            <div class="bf-dp-row" data-bf-cmd="ecoa-pick"
+                 title="เลือกหนทางปฏิบัติของข้าศึกที่จะใช้ใน wargame">
+                <span class="bf-dp-ico"><svg class="ico" aria-hidden="true"><use href="#i-swords"/></svg></span>
+                <span class="label" id="ecoa-lbl">ECOA ข้าศึก: ECOA-1</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
+            <div class="bf-dp-row" data-bf-cmd="ecoa-results"
+                 title="เทียบผลการซ้อมข้าม ECOA — ดูว่าแผนอ่อนต่อชุดไหน">
+                <span class="bf-dp-ico"><svg class="ico" aria-hidden="true"><use href="#i-scale"/></svg></span>
+                <span class="label">เทียบผลข้าม ECOA</span>
+                <span class="bf-dp-arrow">›</span>
+            </div>
         </div>
     </div>
 </div>
@@ -9489,7 +9532,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v18.9.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v18.10.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9963,7 +10006,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.9.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.10.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -9982,7 +10025,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.9.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.10.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา
                  — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
@@ -10994,7 +11037,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v18.9.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v18.10.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -41705,6 +41748,12 @@ window.toggleSat3D = toggleSat3D;
                         } else if (cmd === 'sync-add' && typeof _syncPromptAdd === 'function') {
                             _syncPromptAdd();
                             return;
+                        } else if (cmd === 'ecoa-pick' && typeof _ecoaPromptPick === 'function') {
+                            _ecoaPromptPick();
+                            return;
+                        } else if (cmd === 'ecoa-results' && typeof _ecoaShowResults === 'function') {
+                            _ecoaShowResults();
+                            return;
                         } else if (cmd === 'dst-reset' && window.udcDST) {
                             window.udcDST.dstReset();
                             if (typeof toast === 'function') toast('◎ รีเซ็ตสถานะจุดตกลงใจแล้ว');
@@ -44201,6 +44250,154 @@ function _wgMkUnit(id, type, lat, lng, extra) {
         orbitAngle: Math.random() * Math.PI * 2 }, extra, { _t: t });
 }
 
+// ═══════════════════════════════════════════════════════════════════════
+//  [v18.10.0 ECOA-1] หนทางปฏิบัติของข้าศึก (ECOA) หลายชุด + เทียบผล
+//  ─────────────────────────────────────────────────────────────────────
+//  ช่องว่างที่วัดเจอ: ทั้งไฟล์มีคำว่า "red team" ๐ ครั้ง และฝ่ายแดงใน wargame
+//  ถูกฮาร์ดโค้ดไว้ ๓ หน่วยตำแหน่งเดียวตายตัว — ซ้อมกี่รอบข้าศึกก็มาทางเดิม
+//  ซึ่งขัดกับหลักนิยม: ฝ่ายเสนาธิการต้องประเมิน ECOA "หลายชุด" แล้วดูว่าแผนเรา
+//  ทนทานกับชุดไหนบ้าง ไม่ใช่ปรับแผนให้ชนะข้าศึกแบบเดียว
+//
+//  ★ ECOA-1 คือชุดเดิมทุกพิกัดเป๊ะ ๆ — เปิดโปรแกรมมาไม่เลือกอะไร พฤติกรรม
+//    เหมือน v18.9.0 ทุกประการ ของใหม่เป็น "ตัวเลือกเพิ่ม" ไม่ใช่การเปลี่ยนค่าเดิม
+//
+//  ★ เก็บผลทุกรอบที่จบ (ECOA · กำลังฝ่ายเราที่เหลือ · ข้าศึกที่ถูกทำลาย ·
+//    จำนวนการตรวจพบ · เวลาที่ใช้ · เหตุที่จบ) เพื่อเทียบข้าม ECOA
+//    นี่คือผลผลิตจริงของการ wargame: ไม่ใช่ "ชนะไหม" แต่ "แผนนี้ทนชุดไหนไม่ไหว"
+// ═══════════════════════════════════════════════════════════════════════
+const WG_ECOA = [
+    { id:'ECOA-1', name:'แทรกซึมเงียบ', axis:'ทิศตะวันออกเฉียงใต้',
+      desc:'เข้าจากนอกเขตด้านตะวันออกเฉียงใต้ ใช้ยานใต้น้ำนำ ลดโอกาสถูกตรวจพบ',
+      units:[ /* ★ ชุดเดิมของ v18.9.0 ทุกพิกัด ห้ามแก้ — เป็นฐานเปรียบเทียบ */
+        { id:'sub1',  type:'sub',  lat:12.38, lng:101.00, label:'RED SUB-1'  },
+        { id:'sdv1',  type:'sdv',  lat:12.42, lng:101.05, label:'RED SDV-1'  },
+        { id:'helo1', type:'helo', lat:12.35, lng:100.95, label:'RED HELO-1' } ] },
+
+    { id:'ECOA-2', name:'จู่โจมตรง', axis:'ทิศใต้',
+      desc:'เข้าตรงจากทิศใต้ด้วยกำลังมากกว่าและระยะเริ่มใกล้กว่า ยอมถูกตรวจพบเพื่อความเร็ว',
+      units:[
+        { id:'sub1',  type:'sub',  lat:12.46, lng:100.94, label:'RED SUB-1'  },
+        { id:'sub2',  type:'sub',  lat:12.44, lng:100.88, label:'RED SUB-2'  },
+        { id:'sdv1',  type:'sdv',  lat:12.48, lng:100.91, label:'RED SDV-1'  },
+        { id:'helo1', type:'helo', lat:12.43, lng:100.97, label:'RED HELO-1' },
+        { id:'helo2', type:'helo', lat:12.41, lng:100.85, label:'RED HELO-2' } ] },
+
+    { id:'ECOA-3', name:'ลวงแล้วเลี่ยง', axis:'ลวงทิศตะวันออก · เข้าจริงทิศตะวันตก',
+      desc:'ส่ง ฮ. ให้เห็นชัดทางตะวันออกดึงความสนใจ แล้วให้ยานใต้น้ำเข้าเงียบทางตะวันตก',
+      units:[
+        { id:'helo1', type:'helo', lat:12.40, lng:101.12, label:'RED HELO-1 (ลวง)' },
+        { id:'helo2', type:'helo', lat:12.36, lng:101.16, label:'RED HELO-2 (ลวง)' },
+        { id:'sdv1',  type:'sdv',  lat:12.52, lng:100.72, label:'RED SDV-1 (เข้าจริง)' },
+        { id:'sub1',  type:'sub',  lat:12.56, lng:100.68, label:'RED SUB-1 (เข้าจริง)' } ] },
+];
+let wgEcoaId      = 'ECOA-1';     // ชุดที่ใช้อยู่ — ปริยายคือชุดเดิม
+let wgEcoaResults = [];           // ผลทุกรอบที่จบ
+
+function wgSetEcoa(id) {
+    if (!WG_ECOA.some(e => e.id === id)) return false;
+    wgEcoaId = id;
+    const e = WG_ECOA.find(x => x.id === id);
+    try { if (typeof addLog === 'function')
+        addLog('⚔ เลือก ' + e.id + ' « ' + e.name + ' » — ' + e.axis + ' · ' +
+               e.units.length + ' หน่วย'); } catch (_) {}
+    if (typeof _ecoaSyncUI === 'function') _ecoaSyncUI();
+    return true;
+}
+function wgActiveEcoa() { return WG_ECOA.find(e => e.id === wgEcoaId) || WG_ECOA[0]; }
+
+/* บันทึกผลรอบที่เพิ่งจบ — เรียกจาก _wgEnd()
+   ★ นับ "กำลังฝ่ายเราที่รอด" จาก units จริง ไม่ใช่จาก blueHealth อย่างเดียว
+     เพราะ blueHealth เป็นคะแนนรวม บอกไม่ได้ว่าเสียหน่วยไหนไปกี่หน่วย */
+function wgRecordResult(reason) {
+    try {
+        const e = wgActiveEcoa();
+        const us = Array.isArray(wgState.units) ? wgState.units : [];
+        const isRed = u => u && u._t && u._t.side === 'red';
+        const redTotal = us.filter(isRed).length;
+        const redAlive = us.filter(u => isRed(u) && u.active).length;
+        const blueTotal = us.filter(u => u && !isRed(u)).length;
+        const blueAlive = us.filter(u => u && !isRed(u) && u.active).length;
+        wgEcoaResults.push({
+            ecoa: e.id, ecoaName: e.name, reason: reason || 'TIME',
+            blueHealth: Math.round(wgState.blueHealth),
+            blueAlive, blueTotal, redKilled: redTotal - redAlive, redTotal,
+            contacts: wgState.contactCount | 0,
+            simTime: Math.round(wgState.simTime * 10) / 10,
+            at: Date.now()
+        });
+        if (wgEcoaResults.length > 40) wgEcoaResults.shift();
+        if (typeof _ecoaSyncUI === 'function') _ecoaSyncUI();
+    } catch (_) {}
+}
+function wgClearResults() { wgEcoaResults = []; if (typeof _ecoaSyncUI === 'function') _ecoaSyncUI(); }
+/* ── หน้าปัด ─────────────────────────────────────────────────── */
+function _ecoaSyncUI() {
+    const el = document.getElementById('ecoa-lbl');
+    if (el) el.textContent = 'ECOA ข้าศึก: ' + wgEcoaId +
+        (wgEcoaResults.length ? ' · ผล ' + wgEcoaResults.length + ' รอบ' : '');
+}
+function _ecoaPromptPick() {
+    const menu = WG_ECOA.map((e, i) =>
+        '  ' + (i+1) + '. ' + e.id + ' « ' + e.name + ' »  [' + e.units.length + ' หน่วย]\n' +
+        '       แกนเข้า: ' + e.axis + '\n' +
+        '       ' + e.desc).join('\n\n');
+    const cur = WG_ECOA.findIndex(e => e.id === wgEcoaId) + 1;
+    const pick = window.prompt(
+        'เลือกหนทางปฏิบัติของข้าศึก (พิมพ์หมายเลข)\n' +
+        'ใช้อยู่: ' + wgEcoaId + '\n\n' + menu, String(cur || 1));
+    if (pick === null) return;
+    const e = WG_ECOA[Number(pick) - 1];
+    if (!e) { if (typeof toast === 'function') toast('⚠️ หมายเลขไม่ถูกต้อง'); return; }
+    wgSetEcoa(e.id);
+    if (typeof toast === 'function') toast('⚔ ' + e.id + ' « ' + e.name + ' »');
+}
+/* ตารางเทียบผลข้าม ECOA — สรุปรายชุด ไม่ใช่รายรอบ เพราะคำถามของฝ่ายเสนาธิการ
+   คือ "แผนเราทนชุดไหนไม่ไหว" ไม่ใช่ "รอบที่ ๗ เป็นอย่างไร" */
+function _ecoaShowResults() {
+    if (!wgEcoaResults.length) {
+        if (typeof toast === 'function') toast('⚔ ยังไม่มีผล — เดิน wargame ให้จบสักรอบก่อน');
+        return;
+    }
+    const lines = ['── เทียบผลข้าม ECOA ──', ''];
+    WG_ECOA.forEach(e => {
+        const rs = wgEcoaResults.filter(r => r.ecoa === e.id);
+        lines.push(e.id + ' « ' + e.name + ' »  — ' + (rs.length ? rs.length + ' รอบ' : 'ยังไม่ได้ซ้อม'));
+        if (!rs.length) { lines.push(''); return; }
+        const avg = k => Math.round(rs.reduce((a, r) => a + r[k], 0) / rs.length * 10) / 10;
+        const worst = rs.reduce((a, r) => (r.blueHealth < a.blueHealth ? r : a), rs[0]);
+        lines.push('   กำลังฝ่ายเราเฉลี่ย : ' + avg('blueHealth') + '%  (แย่สุด ' + worst.blueHealth + '%)');
+        lines.push('   หน่วยเราที่รอดเฉลี่ย: ' + avg('blueAlive') + ' / ' + rs[0].blueTotal);
+        lines.push('   ข้าศึกถูกทำลายเฉลี่ย: ' + avg('redKilled') + ' / ' + rs[0].redTotal);
+        lines.push('   การตรวจพบเฉลี่ย     : ' + avg('contacts') + ' ครั้ง');
+        const byReason = {};
+        rs.forEach(r => { byReason[r.reason] = (byReason[r.reason] || 0) + 1; });
+        lines.push('   ผลการรบ             : ' +
+            Object.keys(byReason).map(k => k + ' ×' + byReason[k]).join(' · '));
+        lines.push('');
+    });
+    /* ข้อสรุปที่ใช้งานได้จริง: ชุดไหนทำให้เราเสียหายหนักสุด = จุดที่แผนอ่อนที่สุด */
+    const done = WG_ECOA.map(e => {
+        const rs = wgEcoaResults.filter(r => r.ecoa === e.id);
+        if (!rs.length) return null;
+        return { e, avg: rs.reduce((a, r) => a + r.blueHealth, 0) / rs.length };
+    }).filter(Boolean);
+    if (done.length > 1) {
+        done.sort((a, b) => a.avg - b.avg);
+        lines.push('★ แผนปัจจุบันอ่อนที่สุดต่อ ' + done[0].e.id + ' « ' + done[0].e.name + ' »');
+        lines.push('  (กำลังฝ่ายเราเหลือเฉลี่ย ' + Math.round(done[0].avg) + '%)');
+    } else if (done.length === 1) {
+        lines.push('ซ้อมแล้วชุดเดียว — ลองชุดอื่นเพื่อเทียบว่าแผนอ่อนตรงไหน');
+    }
+    window.alert(lines.join('\n'));
+}
+window._ecoaPromptPick = _ecoaPromptPick;
+window._ecoaShowResults = _ecoaShowResults;
+window._ecoaSyncUI = _ecoaSyncUI;
+
+window.udcECOA = { list:WG_ECOA, set:wgSetEcoa, active:wgActiveEcoa,
+                   record:wgRecordResult, clear:wgClearResults,
+                   get id(){ return wgEcoaId; }, get results(){ return wgEcoaResults; } };
+
 // ── ตั้งหน่วยกำลังเริ่มต้น: จากภาพสถานการณ์ → จากแผน → ค่าสำรอง ───────────
 function _wgInitUnits() {
     const units = [];
@@ -44228,9 +44425,11 @@ function _wgInitUnits() {
 
     // ภัยคุกคามฝ่ายตรงข้าม — เริ่มนอกพื้นที่วางกำลัง (ละติจูดต่ำกว่า 12.477) ในอ่าวเปิด
     // เพื่อไม่ให้ทับกับทุ่นระเบิดหรือเซนเซอร์ที่ผู้ใช้วางไว้จากแผนก่อนหน้า
-    units.push(_wgMkUnit('sub1',  'sub',  12.38, 101.00, { label:'RED SUB-1' }));
-    units.push(_wgMkUnit('sdv1',  'sdv',  12.42, 101.05, { label:'RED SDV-1' }));
-    units.push(_wgMkUnit('helo1', 'helo', 12.35, 100.95, { label:'RED HELO-1' }));
+    /* [v18.10.0 ECOA-1] ฝ่ายแดงมาจากชุด ECOA ที่เลือกไว้ แทนพิกัดตายตัวเดิม
+       ค่าปริยาย ECOA-1 = ชุดเดิมทุกพิกัด จึงไม่เปลี่ยนพฤติกรรมถ้าไม่ได้เลือกอะไร */
+    (wgActiveEcoa().units || []).forEach(u => {
+        units.push(_wgMkUnit(u.id, u.type, u.lat, u.lng, { label: u.label }));
+    });
     return units;
 }
 
@@ -44612,6 +44811,9 @@ function _wgCheckEnd() {
 
 function _wgEnd(reason) {
     wgState.running = false;
+    /* [v18.10.0 ECOA-1] เก็บผลรอบนี้ไว้เทียบข้าม ECOA — ทำก่อนอย่างอื่น
+       เพราะต้องอ่าน wgState.units ตอนที่ยังไม่ถูกล้าง */
+    try { wgRecordResult(reason); } catch (_) {}
     if (wgState.rafId) cancelAnimationFrame(wgState.rafId);
     const msgs = {
         TIME:    ['🕐 [END] เวลาจำลองสิ้นสุด — UDC Defended', '#38bdf8'],
