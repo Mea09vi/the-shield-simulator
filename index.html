@@ -1,8 +1,49 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.10.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.11.0 · 7-Domain + AI Staff)
 
   ── รุ่นล่าสุด · รายละเอียดเต็ม (v17.40.0 ขึ้นไป) ───────────────────
+  · [v18.11.0 SIG-1] คุณลักษณะเป้า — ขอบฟ้าเรดาร์ · คลื่นบังเป้าเล็ก · wargame คิดชนิดเป้า
+      ปัญหาเดิมมีรากเดียวกัน คือ "การตรวจจับไม่ดูว่าเป้าคืออะไร" ขณะที่โซนาร์ในไฟล์เดียวกัน
+      คิด TL · SVP · Wenz · วง Pd 10/50/90% และสภาพทะเล ๒๒ จุด แต่เรดาร์เป็นวงกลม
+      ระยะคงที่ และในบล็อกตรวจจับเรดาร์ไม่มีการอ้างถึงสภาพทะเลเลย
+      ตาราง TGT_SIG ชุดเดียว: ความสูงพ้นน้ำ (h) · เป้าเล็กที่คลื่นบังได้ (small) ·
+        ตัวคูณขนาด (rcs) · ตัวคูณการตรวจพบใน wargame (wg)
+        surface 3 ม. · sub 1 ม. (กล้องตาเรือ) · sdv 0.5 ม. (ปริ่มน้ำ) · helo 150 ม. ·
+        drone 50 ม. · uuv null (ใต้น้ำ เรดาร์มองไม่เห็น)
+      ขอบฟ้าเรดาร์ d[nm] = 2.23(√h_เสา + √h_เป้า) บรรยากาศมาตรฐาน รัศมีโลก 4/3
+      ความสูงเสาเรดาร์ในแคตตาล็อก: Naresuan 25 · Krabi 18 · Khamronsin 14 · Chon Buri 12 ·
+        Sattahip 10 ม. · เรดาร์ชายฝั่ง LANZA 3D 60 · SCANTER 5202 40 · เขาคลองถูป 150 ม.
+        ★★ ทั้งหมดเป็นค่าประมาณตามขนาดเรือ/ที่ตั้ง ยังไม่ใช่ค่าจริง — ผู้พัฒนาอนุมัติ
+        ให้ใช้ค่าประมาณไปก่อน ควรแทนด้วยค่าจริงของแต่ละชั้นเรือเมื่อมีข้อมูล
+      SS_MODS.radarClutter [1.00,1.00,0.90,0.72,0.55] ใช้กับเป้า small เท่านั้น
+        อากาศยานอยู่เหนือชั้นคลื่นไม่ได้รับผล · รูปทรงตามแนว hydroRange เดิม
+      แก้ ๕ จุดให้ใช้หลักเดียวกันทั้งระบบ (ถ้าแก้ไม่ครบ ระบบจะขัดกันเอง):
+        ๑) แจ้งเตือนเป้าผิวน้ำ — เดิม pvDistNm <= pv.radarNm
+        ๒) คุณภาพ track ระดับ DETECT จากเรดาร์ตรวจการณ์ — ประตูปล่อยอาวุธ
+           ถ้าไม่แก้ด้วย จะแจ้งว่ามองไม่เห็นแต่ track บอกว่าจับได้
+        ๓) เรดาร์ควบคุมการยิง — คง tqSizeFactor เดิมทุกค่า แล้วตัดด้วยขอบฟ้าอีกชั้น
+        ๔) เรดาร์ชายฝั่ง ๓ สถานี — ติดขอบฟ้าเช่นกัน แต่ตั้งบนที่สูงจึงเห็นไกลกว่าเรือมาก
+        ๕) wargame ๒ จุด — detectNm × ตัวคูณชนิดเป้า
+      ★ บันทึกเดิมใน TQ-1 ระบุว่า "ไม่มีแบบจำลอง RCS (ตกลงกันไว้ว่าไม่ทำ)" — รุ่นนี้ยังคง
+        หลักนั้น: rcs ใน TGT_SIG เป็นค่าประมาณ "ตามชนิดเป้า" แบบเดียวกับ tqSizeFactor
+        ไม่ใช่แบบจำลอง RCS · ของใหม่คือขอบฟ้าเรดาร์ซึ่งเป็นเรขาคณิตล้วน · ได้ต่อท้าย
+        บันทึกเดิมให้ตรงกับของจริงแล้ว
+      ★ ชนิดเป้าที่ไม่อยู่ในตาราง = คงพฤติกรรมเดิมทุกประการ ไม่เดาค่า
+      ผลที่วัดได้ (Naresuan 24 nm ทะเลสงบ): sdv 24→7.2 · sub 24→10.8 · เรือผิวน้ำ 24→15.0
+        (ขอบฟ้าเป็นตัวจำกัด) · ฮ. 24 คงเดิม · drone 24→13.2 · ทะเลระดับ ๔: sdv 4.0 ·
+        เรือผิวน้ำ 8.3 · ฮ. 24 คงเดิม · เรือผิวน้ำเทียบรายชั้น Naresuan 15.0 ·
+        Krabi 13.3 · Sattahip 10.9 · หมายเหตุ: สำหรับ sdv และ sub ตัวจำกัดคือตัวคูณขนาด
+        ไม่ใช่ขอบฟ้า
+      wargame (เรือตรวจการณ์ detectNm 6): ฮ. 9.6 · sub 4.2 · sdv 2.7 nm (เดิม 6 เท่ากันหมด)
+        → ECOA-3 «ลวงแล้วเลี่ยง» ฮ.ลวงถูกเห็นไกลกว่า SDV ที่เข้าจริง 3.56 เท่า
+        กลไกการลวงจึงมีผลจริงในแบบจำลองเป็นครั้งแรก
+      วัดจริง (ดึงโค้ดออกมารันแยก): ขอบฟ้า 25 ม.→1 ม. = 13.4 nm ตรงสูตร ·
+        ลำดับความยากถูก ฮ. ≥ เรือผิวน้ำ > sub > sdv · คลื่นลดเฉพาะเป้าเล็ก · เรือเสาต่ำ
+        เห็นใกล้กว่า · เรือที่ไม่มีในแคตตาล็อกประมาณเสาจาก radarNm · ชนิดไม่รู้จัก
+        คงค่าเดิม · ไม่มีเรดาร์ = null · seaState ผิดช่วงไม่พัง · uuv = null ·
+        wargame ไม่มีตาราง/ตัวคูณ ๐/หน่วย null → ตัวคูณ 1 คงพฤติกรรมเดิม
+      ยังไม่ได้ทดสอบ: การทำงานร่วมกับซิมจริง ต้องใช้ init ที่ครบ
   · [v18.10.0 ECOA-1] หนทางปฏิบัติของข้าศึก (ECOA) หลายชุด + เทียบผล
       ช่องว่างที่วัดเจอ: ทั้งไฟล์มีคำว่า "red team" ๐ ครั้ง และฝ่ายแดงใน wargame
       ถูกฮาร์ดโค้ดไว้ ๓ หน่วยตำแหน่งเดียวตายตัว — ซ้อมกี่รอบข้าศึกก็มาทางเดิม
@@ -653,7 +694,7 @@
          ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker
          v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump
          display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.10.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.11.0 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   ตัวเลขนี้คือที่เดียวที่ JS อ่าน — display string อีก ๖ จุดเป็นข้อความคงที่ใน HTML
@@ -669,7 +710,7 @@
         //     ของ *ซอฟต์แวร์* ทั้งสองเดินอิสระจากกันได้ ชื่อ Model 3.0 ยังคงเดิมทุกหน้า
         //   ★ ป้าย [v17.x.x] ในคอมเมนต์ทั้งไฟล์คือหมุดประวัติ "เพิ่มมาในรุ่นไหน"
         //     ห้ามไล่แก้เป็น v18 เด็ดขาด — จะทำให้ประวัติการพัฒนาผิดทั้งไฟล์
-        const APP_VERSION = '18.10.0';
+        const APP_VERSION = '18.11.0';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -9532,7 +9573,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v18.10.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v18.11.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -10006,7 +10047,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.10.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.11.0 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -10025,7 +10066,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.10.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.11.0 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา
                  — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
@@ -11037,7 +11078,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v18.10.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v18.11.0 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -13351,7 +13392,7 @@ const PV_SHIP_CATALOG = {
         // [v17.22.0 TQ-1] fcNm = ระยะที่ "เรดาร์ควบคุมการยิง/ผู้ชี้เป้า" จับ track คุณภาพยิงได้
         //   นเรศวร: 2× Saab CEROS 200 director — จำกัดด้วยขอบฟ้าเรดาร์เป็นหลัก
         //   สังเกต fcNm 14 < Harpoon 19.0 โดยตั้งใจ (ดูหมายเหตุที่ TQ_SIZE)
-        speed:0.00267, radarNm:24, flirNm:7, fcNm:14,
+        speed:0.00267, radarNm:24, flirNm:7, fcNm:14, antH:25,   /* [v18.11.0 SIG-1] ความสูงเสาเรดาร์เหนือน้ำ (ม.) — ค่าประมาณตามขนาดเรือ ยังไม่ใช่ค่าจริง */
         sonarType:'Atlas DSQS-21 (hull)', sonarNm:8, hasASW:true,
         color:'#64ffda',
         weapons:{
@@ -13371,7 +13412,7 @@ const PV_SHIP_CATALOG = {
         name:'Krabi-class OPV', nameLocal:'เรือตรวจการณ์ไกลฝั่ง ชั้นกระบี่',
         example:'ร.ล.กระบี่ (OPV-551)',
         // Jane's: 2,540t · 90.5m · 25kn · range 3,500nm@15kt
-        speed:0.00208, radarNm:20, flirNm:6, fcNm:11,   // [v17.22.0 TQ-1] CEROS 200 director ๑ ชุด
+        speed:0.00208, radarNm:20, flirNm:6, fcNm:11, antH:18,   /* [v18.11.0 SIG-1] ความสูงเสาเรดาร์เหนือน้ำ (ม.) — ค่าประมาณตามขนาดเรือ ยังไม่ใช่ค่าจริง */   // [v17.22.0 TQ-1] CEROS 200 director ๑ ชุด
         sonarType:null, sonarNm:0, hasASW:false,
         color:'#f59e0b',
         weapons:{
@@ -13386,7 +13427,7 @@ const PV_SHIP_CATALOG = {
         name:'Khamronsin-class corvette', nameLocal:'เรือคอร์เวต ชั้นคำรณสินธุ์',
         example:'ร.ล.คำรณสินธุ์ (FS-531)',
         // Jane's: 640t · 62m · 25kn · 6× Sting Ray torpedo · DSQS-21C sonar
-        speed:0.00208, radarNm:14, flirNm:4, fcNm:9,    // [v17.22.0 TQ-1] director รุ่นเก่า + ศูนย์เล็งทัศนศาสตร์
+        speed:0.00208, radarNm:14, flirNm:4, fcNm:9, antH:14,   /* [v18.11.0 SIG-1] ความสูงเสาเรดาร์เหนือน้ำ (ม.) — ค่าประมาณตามขนาดเรือ ยังไม่ใช่ค่าจริง */    // [v17.22.0 TQ-1] director รุ่นเก่า + ศูนย์เล็งทัศนศาสตร์
         sonarType:'Atlas DSQS-21C (hull)', sonarNm:6, hasASW:true,
         color:'#00d4ff',
         weapons:{
@@ -13402,7 +13443,7 @@ const PV_SHIP_CATALOG = {
         name:'Chon Buri-class FAC', nameLocal:'เรือเร็วโจมตีปืน ชั้นชลบุรี',
         example:'ร.ล.ชลบุรี (FACG-331)',
         // Jane's: 457t · 60.4m · 30kn · 2×76mm + 2×40mm · 3 shafts
-        speed:0.00250, radarNm:14, flirNm:4, fcNm:9,    // [v17.22.0 TQ-1] director ปืน 76mm
+        speed:0.00250, radarNm:14, flirNm:4, fcNm:9, antH:12,   /* [v18.11.0 SIG-1] ความสูงเสาเรดาร์เหนือน้ำ (ม.) — ค่าประมาณตามขนาดเรือ ยังไม่ใช่ค่าจริง */    // [v17.22.0 TQ-1] director ปืน 76mm
         sonarType:null, sonarNm:0, hasASW:false,
         color:'#ef4444',
         weapons:{
@@ -13417,7 +13458,7 @@ const PV_SHIP_CATALOG = {
         name:'Sattahip-class PG', nameLocal:'เรือตรวจการณ์ปืน ชั้นสัตหีบ',
         example:'ร.ล.สัตหีบ (PG-521)',
         // Jane's: 305t · 50.1m · 22kn · ประจำการ ฐานทัพเรือสัตหีบ
-        speed:0.00183, radarNm:12, flirNm:4, fcNm:7,    // [v17.22.0 TQ-1] เล็งเฉพาะที่ (local control) เป็นหลัก
+        speed:0.00183, radarNm:12, flirNm:4, fcNm:7, antH:10,   /* [v18.11.0 SIG-1] ความสูงเสาเรดาร์เหนือน้ำ (ม.) — ค่าประมาณตามขนาดเรือ ยังไม่ใช่ค่าจริง */    // [v17.22.0 TQ-1] เล็งเฉพาะที่ (local control) เป็นหลัก
         sonarType:null, sonarNm:0, hasASW:false,
         color:'#fbbf24',
         weapons:{
@@ -18099,6 +18140,10 @@ const SS_MODS = {
     guuvSpeedMod: [1.00, 1.00, 0.99, 0.96, 0.92],
     // อัตราการแจ้งเตือนผิดพลาดของระบบตรวจจับตามสายเคเบิล (พลังงานคลื่นส่งผ่านเข้าสาย)
     dasFAR:       [0.002,0.005,0.015,0.050,0.120],
+    /* [v18.11.0 SIG-1] เรดาร์เจอเป้าเล็กที่ต่ำได้ใกล้ลงเมื่อทะเลคลื่นจัด (sea clutter)
+       ใช้กับเป้าที่ small:true เท่านั้น — ฮ./อากาศยานอยู่เหนือชั้นคลื่นไม่ได้รับผล
+       รูปทรงตามแนว hydroRange เดิมของไฟล์ · เป็นค่าประมาณเชิงคุณภาพ ไม่ใช่ผลคำนวณ */
+    radarClutter: [1.00, 1.00, 0.90, 0.72, 0.55],
     // ระดับเสียงรบกวนพื้นหลัง หน่วยเดซิเบล อ้างอิง 1 ไมโครปาสคาล (เส้นโค้งเวนซ์ ย่าน 100 เฮิรตซ์–10 กิโลเฮิรตซ์)
     noisedB:      [55,   60,   65,   72,   78  ],
 };
@@ -18111,6 +18156,72 @@ const TIDE_PERIOD_S2  = 3600;   // frames (slightly different for spring/neap mo
 
 let tideLevel   = TIDE_MEAN;   // m — current simulated tide level
 let detMod      = 1.00;        // Tide A+B detection modifier
+// ═══════════════════════════════════════════════════════════════════════
+//  [v18.11.0 SIG-1] คุณลักษณะเป้า (target signature) — ชุดเดียวใช้ร่วมสองเครื่องยนต์
+//  ─────────────────────────────────────────────────────────────────────
+//  ปัญหาเดิม ๒ จุดที่มีรากเดียวกัน คือ "การตรวจจับไม่ดูว่าเป้าคืออะไร":
+//   ๑) ซิมหลัก: เรดาร์เป็นวงกลมระยะคงที่ `pvDistNm <= pv.radarNm`
+//      SDV ที่ลอยปริ่มน้ำถูกเห็นที่ 24 nm ทั้งที่ขอบฟ้าเรดาร์จริงราว 13 nm
+//      (เกินจริง ~79%) และสภาพทะเลไม่มีผลเลย ขณะที่โซนาร์ของไฟล์เดียวกัน
+//      คิด TL · SVP · Wenz · วง Pd 10/50/90% และสภาพทะเล ๒๒ จุด
+//   ๒) wargame: `d < b._t.detectNm` ดูแค่ระยะของผู้ตรวจจับ ฮ. กับ SDV
+//      ถูกเห็นระยะเท่ากัน ECOA-3 «ลวงแล้วเลี่ยง» จึงไม่มีทางได้ผลในแบบจำลอง
+//      (ฮ.ลวงกับยานใต้น้ำที่เข้าจริงถูกเห็นง่ายเท่ากัน) · redStealth ที่มีอยู่
+//      เป็นแค่แถบคะแนนความเสียหาย ไม่ได้ใช้ในการตรวจจับ
+//
+//  h     = ความสูงส่วนที่พ้นน้ำ (ม.) ใช้คำนวณขอบฟ้าเรดาร์ · null = เรดาร์มองไม่เห็น
+//  small = เป้าเล็กและต่ำ ถูกคลื่นบังได้ (sea clutter) ตาม SS_MODS.radarClutter
+//  rcs   = ตัวคูณระยะที่เรดาร์ "จับได้" จากขนาดเป้า (ขอบบนก่อนชนขอบฟ้า)
+//  wg    = ตัวคูณระยะตรวจพบใน wargame (ฝ่ายเราเห็นเป้าชนิดนี้ไกล/ใกล้กว่าปกติกี่เท่า)
+//
+//  ★ ทุกค่าเป็นค่าประมาณเชิงคุณภาพเพื่อให้ "ลำดับความยากง่าย" ถูก
+//    (ฮ. เห็นง่ายสุด → เรือผิวน้ำ → กล้องตาเรือดำน้ำ → SDV) ไม่ใช่ค่าจากเอกสารจริง
+//  ★ uuv ใส่ไว้เป็น h:null (เรดาร์มองไม่เห็น) แม้ทุกจุดเรียกจะกัน t.type === 'uuv'
+//    ไว้ก่อนแล้ว — เพราะถ้าไม่อยู่ในตาราง ฟังก์ชันจะตกไป "คงพฤติกรรมเดิม" แล้วคืน
+//    ระยะเรดาร์เต็ม (24 nm) ให้ยานใต้น้ำ ซึ่งเป็นกับดักถ้าวันหน้ามีจุดเรียกใหม่ที่ลืมกัน
+// ═══════════════════════════════════════════════════════════════════════
+const TGT_SIG = {
+    surface: { h:3.0,  small:true,  rcs:1.00, wg:1.00, label:'เรือผิวน้ำขนาดเล็ก' },
+    sub:     { h:1.0,  small:true,  rcs:0.45, wg:0.70, label:'เรือดำน้ำ (กล้องตาเรือ/ท่อหายใจ)' },
+    sdv:     { h:0.5,  small:true,  rcs:0.30, wg:0.45, label:'ยานพาหนะนักดำน้ำ (ปริ่มน้ำ)' },
+    helo:    { h:150,  small:false, rcs:1.00, wg:1.60, label:'เฮลิคอปเตอร์' },
+    drone:   { h:50,   small:false, rcs:0.55, wg:1.00, label:'อากาศยานไร้คนขับ' },
+    uuv:     { h:null, small:false, rcs:0,    wg:1.00, label:'ยานใต้น้ำไร้คนขับ (ใต้น้ำ)' },
+};
+window.UDC_TGT_SIG = TGT_SIG;           // wargame อยู่คนละ script block จึงอ่านผ่าน window
+
+/* ระยะขอบฟ้าเรดาร์ (บรรยากาศมาตรฐาน · รัศมีโลกเทียบ 4/3)
+   d[nm] = 2.23 (√h_เสา + √h_เป้า) · h เป็นเมตร */
+function radarHorizonNm(antH, tgtH) {
+    return 2.23 * (Math.sqrt(Math.max(0, antH)) + Math.sqrt(Math.max(0, tgtH)));
+}
+/* ความสูงเสาเรดาร์ของเรือลำนี้ — อ่านจากแคตตาล็อกตามชั้นเรือ
+   เรือที่ไม่ได้มาจากแคตตาล็อก (ไม่มี shipType) ประมาณจาก radarNm: เรดาร์ยิ่งไกล
+   มักติดบนเรือใหญ่เสายิ่งสูง */
+function pvAntennaH(v) {
+    try {
+        const c = v && v.shipType && PV_SHIP_CATALOG[v.shipType];
+        if (c && isFinite(c.antH)) return c.antH;
+    } catch (_) {}
+    const r = (v && v.radarNm) || 14;
+    return Math.max(8, Math.min(28, r));
+}
+/* ระยะที่เรดาร์ของเรือ v ตรวจพบเป้า t ได้จริง (nm) · null = มองไม่เห็นเลย
+   = min(ระยะเครื่องมือ × ขนาดเป้า, ขอบฟ้าเรดาร์) × ผลของคลื่น (เฉพาะเป้าเล็ก) */
+function radarDetectNm(v, t) {
+    if (!v || !t || !(v.radarNm > 0)) return null;
+    const key = t.type === 'drone' ? 'drone' : t.type;
+    const sig = TGT_SIG[key];
+    if (!sig) return v.radarNm;             // ชนิดที่ไม่รู้จัก = คงพฤติกรรมเดิม ไม่เดา
+    if (sig.h === null) return null;
+    let nm = Math.min(v.radarNm * sig.rcs, radarHorizonNm(pvAntennaH(v), sig.h));
+    if (sig.small) {
+        const ss = Math.max(0, Math.min(4, (typeof seaState === 'number' ? seaState : 1) | 0));
+        nm *= SS_MODS.radarClutter[ss];
+    }
+    return nm;
+}
+
 let seaState    = 1;           // Sea State 0–4 (Douglas scale), default SS1 dry season
 let shippingDensity = 4;       // Shipping density (0-7), default 4 (medium)
 let ssMod       = 1.00;        // Current Sea State hydrophone modifier
@@ -20699,6 +20810,9 @@ function kcSummaryText() {
 //
 //  ⚠ ความซื่อสัตย์ของซิม: ซิมนี้**ไม่มี**แบบจำลอง RCS (ตกลงกันไว้ว่าไม่ทำ) ตัวคูณขนาดเป้า
 //    จึงแยกตาม "ชนิดเป้า" เท่านั้น ไม่ใช่ค่าพื้นที่สะท้อนจริง — เป็นค่าประมาณเชิงเกม
+//    [v18.11.0 SIG-1] ยังคงหลักนี้: ตัวคูณ rcs ใน TGT_SIG ก็แยก "ตามชนิดเป้า" เป็นค่าประมาณ
+//    เชิงเกมแบบเดียวกับ tqSizeFactor ไม่ใช่แบบจำลอง RCS · ที่เพิ่มเข้ามาคือ "ขอบฟ้าเรดาร์"
+//    ซึ่งเป็นเรขาคณิตล้วน (ความสูงเสา + ความสูงเป้า) และผลของคลื่นต่อเป้าเล็ก
 //    และระดับ ๑ ยังผูกกับ spawn อยู่ (ดูหมายเหตุ DETECT ในบล็อก kill chain ข้างบน):
 //    เป้าที่เกิดแล้วถือว่าอยู่ในภาพเสมอ ที่เพิ่มเข้ามาคือ "ตอนนี้มีเซ็นเซอร์จับอยู่จริงไหม"
 //    ซึ่งแสดงเป็นสถานะ COASTING เมื่อไม่มีใครจับ — ไม่ลบ track ทิ้งเพื่อไม่ให้ฉากที่มีอยู่พัง
@@ -20719,15 +20833,22 @@ let cecEnabled = true;
 /** สถานีเรดาร์ชายฝั่ง — ชุดเดียวกับ buildTerrainShadowLayer()
  *  ให้ได้แค่ระดับ DETECT: เป็นเรดาร์ตรวจการณ์ ไม่ใช่เรดาร์ควบคุมการยิง */
 const TQ_COAST_RADAR = [
-    { lat:12.661, lng:100.894, nm:50, name:'LANZA 3D' },
-    { lat:12.748, lng:100.779, nm:45, name:'SCANTER 5202' },
-    { lat:12.617, lng:100.958, nm:25, name:'เขาคลองถูป' },
+    /* [v18.11.0 SIG-1] antH = ความสูงสายอากาศเหนือระดับน้ำทะเล (ม.) รวมความสูงที่ตั้ง
+       ★ ค่าประมาณ ยังไม่ใช่ค่าจริงของสถานี — เรดาร์ชายฝั่งมักตั้งบนที่สูงจึงเห็นไกลกว่าเรือมาก */
+    { lat:12.661, lng:100.894, nm:50, name:'LANZA 3D',     antH:60  },
+    { lat:12.748, lng:100.779, nm:45, name:'SCANTER 5202', antH:40  },
+    { lat:12.617, lng:100.958, nm:25, name:'เขาคลองถูป',   antH:150 },
 ];
 
 /** ระยะจับ FC ของเรือลำหนึ่งต่อเป้าหนึ่ง (nm) — 0 = จับไม่ได้เลย */
 function pvFcRangeNm(v, t) {
     if (t.type === 'uuv') return v.hasASW ? (v.sonarNm || 0) : 0;   // ใต้น้ำใช้โซนาร์ ไม่ใช่ director
-    return (v.fcNm || 0) * tqSizeFactor(t);
+    /* [v18.11.0 SIG-1] เรดาร์ควบคุมการยิงติดบนเสาเดียวกัน จึงมองข้ามขอบฟ้าไม่ได้เช่นกัน
+       คงตัวคูณ tqSizeFactor เดิมไว้ทุกค่า แล้วตัดด้วยขอบฟ้าอีกชั้น */
+    const fc = (v.fcNm || 0) * tqSizeFactor(t);
+    const sig = TGT_SIG[t.type === 'drone' ? 'drone' : t.type];
+    if (!sig || sig.h === null) return fc;
+    return Math.min(fc, radarHorizonNm(pvAntennaH(v), sig.h));
 }
 
 function _tqNm(aLat, aLng, t) {
@@ -20754,7 +20875,11 @@ function updateTrackQuality() {
         patrolVessels.forEach(v => {
             if (pvOffStation(v)) return;                       // กลับฐาน/เติมกระสุน = ไม่ได้เฝ้าตรวจ
             const d = _tqNm(nyToLat(v.ny), nxToLng(v.nx), t);
-            const searchNm = t.type === 'uuv' ? (v.hasASW ? v.sonarNm || 0 : 0) : (v.radarNm || 0);
+            /* [v18.11.0 SIG-1] เรดาร์ตรวจการณ์ใช้ radarDetectNm ชุดเดียวกับการแจ้งเตือน
+               เป้าผิวน้ำ — ถ้าใช้คนละเกณฑ์ ระบบจะขัดกันเอง (แจ้งว่ามองไม่เห็น แต่ track
+               บอกว่าจับได้ ซึ่งเป็นประตูปล่อยอาวุธ) */
+            const searchNm = t.type === 'uuv' ? (v.hasASW ? v.sonarNm || 0 : 0)
+                                              : (radarDetectNm(v, t) || 0);
             if (d <= searchNm) held = true;
             const fcNm = pvFcRangeNm(v, t);
             if (fcNm > 0 && d <= fcNm) { held = true; fcSet[v.label] = true; if (!fcBy) fcBy = v.label; }
@@ -20786,7 +20911,14 @@ function updateTrackQuality() {
         // ── เรดาร์ชายฝั่ง — DETECT อย่างเดียว (เรดาร์ตรวจการณ์ ไม่ใช่ผู้ชี้เป้า) ──
         if (!held && t.type !== 'uuv') {
             for (const s of TQ_COAST_RADAR) {
-                if (_tqNm(s.lat, s.lng, t) <= s.nm) { held = true; break; }
+                /* [v18.11.0 SIG-1] เรดาร์ชายฝั่งก็ติดขอบฟ้า — ใช้หลักเดียวกับเรดาร์เรือ */
+                let crNm = s.nm;
+                const csig = TGT_SIG[t.type === 'drone' ? 'drone' : t.type];
+                if (csig && csig.h !== null) {
+                    crNm = Math.min(s.nm * csig.rcs, radarHorizonNm(s.antH || 30, csig.h));
+                    if (csig.small) crNm *= SS_MODS.radarClutter[Math.max(0, Math.min(4, seaState | 0))];
+                } else if (csig && csig.h === null) crNm = 0;
+                if (_tqNm(s.lat, s.lng, t) <= crNm) { held = true; break; }
             }
         }
 
@@ -29893,7 +30025,10 @@ function animate() {
                                              nyToLat(t.ny),  nxToLng(t.nx));
                 const udcDistNm = haversineNm(nyToLat(t.ny), nxToLng(t.nx), UDC_LAT, UDC_LNG);
                 // เงื่อนไขแจ้งเตือน: อยู่ในระยะเรดาร์เรือตรวจการณ์ และห่าง UDC ไม่เกิน 10 ไมล์ทะเล
-                if (pvDistNm <= pv.radarNm && udcDistNm <= 10.0) {
+                /* [v18.11.0 SIG-1] เดิม pvDistNm <= pv.radarNm (วงกลมตายตัว) — ตอนนี้คิด
+                   ขอบฟ้าเรดาร์ ขนาดเป้า และคลื่นบังเป้าเล็ก · null = เรดาร์มองไม่เห็นเป้านี้ */
+                const rdrNm = radarDetectNm(pv, t);
+                if (rdrNm !== null && pvDistNm <= rdrNm && udcDistNm <= 10.0) {
                     t.scAlerted = true;
                     showSurfaceContactAlert(pv, t, pvDistNm, udcDistNm);
                 }
@@ -44498,6 +44633,16 @@ function _wgLog(msg, color) {
     log.scrollTop = log.scrollHeight;
 }
 
+/* [v18.11.0 SIG-1] ตัวคูณระยะตรวจพบตามชนิดเป้า — อ่านจากตาราง TGT_SIG ของซิมหลัก
+   (อยู่คนละ script block จึงอ่านผ่าน window) · ไม่มีตาราง/ไม่รู้จักชนิด = 1
+   คือคงพฤติกรรมเดิมทุกประการ ไม่เดาค่า */
+function _wgSigMul(r) {
+    try {
+        const t = window.UDC_TGT_SIG && r && window.UDC_TGT_SIG[r.type];
+        return (t && isFinite(t.wg) && t.wg > 0) ? t.wg : 1;
+    } catch (_) { return 1; }
+}
+
 // ── การตรวจจับเป้าและการเข้าปะทะ ───────────────────────────────────────────
 function _wgScanContacts() {
     const blues = wgState.units.filter(u => u.active && u._t && u._t.side === 'blue');
@@ -44526,7 +44671,7 @@ function _wgScanContacts() {
             }
 
             // การตรวจจับด้วยเซนเซอร์
-            if (b.type === 'sensor' && d < b._t.detectNm) {
+            if (b.type === 'sensor' && d < b._t.detectNm * _wgSigMul(r)) {   // [v18.11.0 SIG-1] คิดชนิดเป้า
                 if (!wgState.detectedPairs['sns|' + key]) {
                     wgState.detectedPairs['sns|' + key] = true;
                     if (!wgState.contactSerials[r.id]) {
@@ -44541,7 +44686,7 @@ function _wgScanContacts() {
             }
 
             // หน่วยฝ่ายเราตรวจพบฝ่ายตรงข้าม
-            if (b._t.detectNm > 0 && d < b._t.detectNm) {
+            if (b._t.detectNm > 0 && d < b._t.detectNm * _wgSigMul(r)) {   // [v18.11.0 SIG-1] คิดชนิดเป้า
                 if (!wgState.detectedPairs[key]) {
                     wgState.detectedPairs[key] = true;
                     if (!wgState.contactSerials[r.id]) {
