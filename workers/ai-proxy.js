@@ -27,12 +27,11 @@
      [Cloudflare Workers AI · env.AI binding]
      • @cf/meta/llama-3.3-70b-instruct-fp8-fast  (default WAI · ดีสำหรับไทย)
      • @cf/deepseek-ai/deepseek-r1-distill-qwen-32b (มี reasoning)
-     • @cf/meta/llama-3.1-8b-instruct (เร็วสุด)
+     • (v15.7.0 ถอด llama-3.1-8b + qwen1.5-* — Cloudflare deprecated)
 
      [Google Gemini · generativelanguage.googleapis.com]
-     • gemini-2.5-flash  (default Gemini · ฟรี ~10 RPM)
-     • gemini-2.5-pro    (best quality · limited)
-     • gemini-2.0-flash  ⚠ ต้องผูก billing (free_tier_requests = 0 ตั้งแต่ 2025)
+     • gemini-2.5-flash  (ฟรี ~10 RPM · ไม่ใช่ default ตั้งแต่ v15.7.0)
+     • (v15.7.0 ถอด gemini-2.5-pro + gemini-2.0-flash — Google ปิดแล้ว)
      ดู models: https://ai.google.dev/gemini-api/docs/models
 
    Security
@@ -53,8 +52,8 @@
      5. คัดลอก URL (xxx.workers.dev) → UDC Simulator ผ่านปุ่ม ⚙
    ════════════════════════════════════════════════════════════════════ */
 
-const VERSION = '15.6.3';   // v15.6.3 — ถอด qwen3.6-35b-a3b ออกจาก THAILLM_MODELS: reasoning MoE กิน ~5k token กับ CoT ที่ strip ทิ้ง → คำตอบชนเพดาน 8192 ถูกตัดกลางประโยค + ช้า ~41s (มติผู้ใช้ 24 ก.ค.). คง strip กำพร้า </think> ไว้เป็นตาข่ายกันเหนียวให้โมเดล *-think ที่เหลือ · v15.6.2 — callThaiLLM: strip reasoning preamble กำพร้า (ปล่อย "Here's a thinking process:…" แล้วปิดด้วย </think> เดี่ยว ๆ ไม่มี <think> เปิด → regex คู่จับไม่ได้) โดยตัดถึง </think> ตัวสุดท้าย · v15.6.1 — callThaiLLM: retry อัตโนมัติ 1 ครั้งเมื่อ gateway ThaiLLM ล่มชั่วขณะ (CF คืน "error code: 502" แบบ non-JSON ต่อ replica เป็นครั้งคราว) · retry เฉพาะ error เด้งเร็ว (429/500/502/503/504/non-JSON) ไม่ retry ตอน timeout · v15.6.0 — เพิ่ม provider ThaiLLM (BDI): 5 โมเดล (OpenThaiGPT/Typhoon-S/Pathumma/THaLLE + qwen3.6-35b-a3b) ผ่าน OpenAI-compatible endpoint https://thaillm.or.th/api/v1 (callThaiLLM · Bearer THAILLM_API_KEY · strip <think>) · v15.5.4 — แก้ /gdelt: multi-source RSS fallback (Diplomat→USNI→NavalNews) แทน GDELT/GNews ที่ block CF IPs · v15.5.3 — แก้ /gdelt: pivot Google News RSS (GDELT silent-blocks CF IPs) + parse RSS XML + cache 5 min · v15.5.2 — แก้ /gdelt: Cloudflare Cache API 5 min + soft-fail 200 เมื่อ 429/timeout + simplify query · v15.5.1 — แก้ /cve: เพิ่ม pubEndDate (NVD บังคับ), format +00:00, ขยาย 90d, แยก SCADA/ICS keyword (AND→OR) · v15.5.0 — เพิ่ม GET /gdelt proxy (bypass CORS ฝั่ง Worker) + GET /cve proxy (NVD ICS/SCADA HIGH/CRITICAL 30d) + เพิ่ม CVE context ใน buildUserPrompt · v15.4.3 — แก้ ZAI_ENDPOINT: /api/openai/v1/ คืน 404 NOT_FOUND → เปลี่ยนเป็น path ทางการ /api/paas/v4/chat/completions (docs.z.ai · curl ตัวอย่างใช้ paas/v4 + glm-5.2) · v15.4.2 — callZai: ดักซอง Zhipu native {code,msg,success} (แม้ HTTP 200) + ดัมพ์ raw body ใน detail · v15.4.1 — surface error จริงจาก Z.AI (Zhipu คืน HTTP 200+body error) + อ่าน raw body · v15.4 — เพิ่ม provider Z.AI (Zhipu GLM): glm-5.2/glm-4.6 ผ่าน OpenAI-compatible endpoint (callZai) · v15.3 — [JP 3-04] prompt upgrade: A1 ข้อเท็จจริง/ตีความ+สมมติฐานสุจริต+หลักฐานหักล้าง · A2 feed-trust+confidence รายโดเมน · A5 ผล/กลไก/อำนาจ/เสี่ยง/ผลลำดับสอง · A6 บทสรุปเรื่องเล่า 4 ส่วน+6 informational aspects · v15.3.1 — แก้ Gemini 2.5 โดนตัดที่ MAX_TOKENS (thinking กิน budget ร่วมกับคำตอบ)
-const DEFAULT_MODEL = 'gemini-2.5-flash';  // v14.0.7 — Google ย้าย 2.0-flash ไป paid tier · 2.5-flash ยังฟรี
+const VERSION = '15.7.0';   // v15.7.0 [MODEL-1] — default gemini-2.5-flash → @cf/meta/llama-3.3-70b-instruct-fp8-fast (ทดสอบจริง 16 ต.ค. 69: Gemini คืน 400 "User location is not supported" จาก egress ของ Worker + 503 high demand เป็นระยะ · Llama 3.3 70B ตอบ 200 ใน ~18s) · ถอดโมเดลที่ provider ปิดแล้ว: @cf/meta/llama-3.1-8b-instruct (deprecated 2026-05-30), @cf/qwen/qwen1.5-14b-chat-awq + qwen1.5-7b-chat-awq (deprecated 2025-10-01), gemini-2.5-pro (404 no longer available to new users), gemini-2.0-flash (404 no longer available) · v15.6.3 — ถอด qwen3.6-35b-a3b ออกจาก THAILLM_MODELS: reasoning MoE กิน ~5k token กับ CoT ที่ strip ทิ้ง → คำตอบชนเพดาน 8192 ถูกตัดกลางประโยค + ช้า ~41s (มติผู้ใช้ 24 ก.ค.). คง strip กำพร้า </think> ไว้เป็นตาข่ายกันเหนียวให้โมเดล *-think ที่เหลือ · v15.6.2 — callThaiLLM: strip reasoning preamble กำพร้า (ปล่อย "Here's a thinking process:…" แล้วปิดด้วย </think> เดี่ยว ๆ ไม่มี <think> เปิด → regex คู่จับไม่ได้) โดยตัดถึง </think> ตัวสุดท้าย · v15.6.1 — callThaiLLM: retry อัตโนมัติ 1 ครั้งเมื่อ gateway ThaiLLM ล่มชั่วขณะ (CF คืน "error code: 502" แบบ non-JSON ต่อ replica เป็นครั้งคราว) · retry เฉพาะ error เด้งเร็ว (429/500/502/503/504/non-JSON) ไม่ retry ตอน timeout · v15.6.0 — เพิ่ม provider ThaiLLM (BDI): 5 โมเดล (OpenThaiGPT/Typhoon-S/Pathumma/THaLLE + qwen3.6-35b-a3b) ผ่าน OpenAI-compatible endpoint https://thaillm.or.th/api/v1 (callThaiLLM · Bearer THAILLM_API_KEY · strip <think>) · v15.5.4 — แก้ /gdelt: multi-source RSS fallback (Diplomat→USNI→NavalNews) แทน GDELT/GNews ที่ block CF IPs · v15.5.3 — แก้ /gdelt: pivot Google News RSS (GDELT silent-blocks CF IPs) + parse RSS XML + cache 5 min · v15.5.2 — แก้ /gdelt: Cloudflare Cache API 5 min + soft-fail 200 เมื่อ 429/timeout + simplify query · v15.5.1 — แก้ /cve: เพิ่ม pubEndDate (NVD บังคับ), format +00:00, ขยาย 90d, แยก SCADA/ICS keyword (AND→OR) · v15.5.0 — เพิ่ม GET /gdelt proxy (bypass CORS ฝั่ง Worker) + GET /cve proxy (NVD ICS/SCADA HIGH/CRITICAL 30d) + เพิ่ม CVE context ใน buildUserPrompt · v15.4.3 — แก้ ZAI_ENDPOINT: /api/openai/v1/ คืน 404 NOT_FOUND → เปลี่ยนเป็น path ทางการ /api/paas/v4/chat/completions (docs.z.ai · curl ตัวอย่างใช้ paas/v4 + glm-5.2) · v15.4.2 — callZai: ดักซอง Zhipu native {code,msg,success} (แม้ HTTP 200) + ดัมพ์ raw body ใน detail · v15.4.1 — surface error จริงจาก Z.AI (Zhipu คืน HTTP 200+body error) + อ่าน raw body · v15.4 — เพิ่ม provider Z.AI (Zhipu GLM): glm-5.2/glm-4.6 ผ่าน OpenAI-compatible endpoint (callZai) · v15.3 — [JP 3-04] prompt upgrade: A1 ข้อเท็จจริง/ตีความ+สมมติฐานสุจริต+หลักฐานหักล้าง · A2 feed-trust+confidence รายโดเมน · A5 ผล/กลไก/อำนาจ/เสี่ยง/ผลลำดับสอง · A6 บทสรุปเรื่องเล่า 4 ส่วน+6 informational aspects · v15.3.1 — แก้ Gemini 2.5 โดนตัดที่ MAX_TOKENS (thinking กิน budget ร่วมกับคำตอบ)
+const DEFAULT_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';  // [v15.7.0 MODEL-1] Gemini ใช้ไม่ได้จาก egress ของ Worker (location not supported) · เดิม 'gemini-2.5-flash' · v14.0.7 — Google ย้าย 2.0-flash ไป paid tier · 2.5-flash ยังฟรี
 const MAX_TOKENS = 4096;                    // v15.3.1 — Workers AI cap (3000→4096) เผื่อ template v15.3 ที่ยาวขึ้น
 const MAX_TOKENS_GEMINI = 8192;             // v15.3.1 — Gemini 2.5 เป็น thinking model: การคิดภายใน (~2-3k tok ที่วัดจริง) นับรวมใน maxOutputTokens → ค่า 3000 เดิมเหลือที่ให้คำตอบ ~100 tok แล้วโดนตัดกลางประโยค
 const GEMINI_THINKING_BUDGET = 2048;        // v15.3.1 — จำกัด thinking ให้เหลือพื้นที่คำตอบ ≥6k tok · ใช้เฉพาะ gemini-2.5-* (2.5-pro ขั้นต่ำ 128 ปิด 0 ไม่ได้ · 2.0-flash ไม่รองรับ field นี้)
@@ -64,18 +63,16 @@ const GEMINI_TIMEOUT_MS = 45_000;           // v14.0.9 — output ยาวข�
 const WORKERS_AI_MODELS = new Set([
     '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
     '@cf/meta/llama-3.1-70b-instruct',
-    '@cf/meta/llama-3.1-8b-instruct',
+    // [v15.7.0 MODEL-1] ถอด '@cf/meta/llama-3.1-8b-instruct' — Cloudflare 5028 deprecated 2026-05-30
     '@cf/deepseek-ai/deepseek-r1-distill-qwen-32b',
     '@cf/qwen/qwen2.5-coder-32b-instruct',
-    '@cf/qwen/qwen1.5-14b-chat-awq',
-    '@cf/qwen/qwen1.5-7b-chat-awq',
+    // [v15.7.0 MODEL-1] ถอด '@cf/qwen/qwen1.5-14b-chat-awq' + '@cf/qwen/qwen1.5-7b-chat-awq' — 5028 deprecated 2025-10-01
     '@cf/mistralai/mistral-small-3.1-24b-instruct',
 ]);
 
 const GEMINI_MODELS = new Set([
-    'gemini-2.5-flash',   // default · free tier
-    'gemini-2.5-pro',     // higher quality · limited quota
-    'gemini-2.0-flash',   // ⚠ ต้องผูก billing — free_tier_requests = 0 ตั้งแต่ 2025
+    'gemini-2.5-flash',   // free tier · [v15.7.0 MODEL-1] ไม่ใช่ default แล้ว (400 location not supported จาก egress ของ Worker)
+    // [v15.7.0 MODEL-1] ถอด 'gemini-2.5-pro' (404 no longer available to new users) + 'gemini-2.0-flash' (404 no longer available)
     // 'gemini-1.5-*' deprecated จาก v1beta · ถอดออกตั้งแต่ v14.0.7
 ]);
 

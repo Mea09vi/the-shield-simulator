@@ -1,8 +1,11 @@
 <!--
 ════════════════════════════════════════════════════════════════════
-  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.11.0 · 7-Domain + AI Staff)
+  THE SHIELD 3.0 — UDC Multi-Domain Awareness Defense Simulator  (v18.11.1 · 7-Domain + AI Staff)
 
   ── รุ่นล่าสุด · รายละเอียดเต็ม (v17.40.0 ขึ้นไป) ───────────────────
+  · [v18.11.1 MODEL-1] ตัวเลือก LLM — default เป็น Llama 3.3 70B (Workers AI) แทน Gemini 2.5 Flash
+      ที่คืน 400 "User location is not supported" จาก Worker · ถอดโมเดลที่ provider ปิดแล้ว ๕ ตัว
+      (Llama 3.1 8B · Qwen 1.5 14B/7B · Gemini 2.5 Pro · Gemini 2.0 Flash) ออกจาก dropdown + allow-list
   · [v18.11.0 SIG-1] คุณลักษณะเป้า — ขอบฟ้าเรดาร์ · คลื่นบังเป้าเล็ก · wargame คิดชนิดเป้า
       ปัญหาเดิมมีรากเดียวกัน คือ "การตรวจจับไม่ดูว่าเป้าคืออะไร" ขณะที่โซนาร์ในไฟล์เดียวกัน
       คิด TL · SVP · Wenz · วง Pd 10/50/90% และสภาพทะเล ๒๒ จุด แต่เรดาร์เป็นวงกลม
@@ -694,7 +697,7 @@
          ต่อท้าย 🐉 GLM-5.2 + 🐲 GLM-4.6 — บัญชี Z.AI ยังไม่มีเครดิต (error 1113) · worker
          v15.4.3 endpoint/key/model ถูกต้องแล้ว รอเติมเครดิตจึงใช้งานได้ + version bump
          display string 7 จุด + ป้ายเวอร์ชันส่วนหัวไฟล์ (บรรทัด 3) → v17.5.4 กันป้ายค้าง -->
-    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.11.0 · 7-Domain + AI Staff</title>
+    <title>THE SHIELD 3.0 | UDC Multi-Domain Awareness Simulator v18.11.1 · 7-Domain + AI Staff</title>
     <script>
         // [v17.11.0 VER-1] แหล่งความจริงเดียวของเลข version ที่แสดงผล (single source of truth)
         //   ตัวเลขนี้คือที่เดียวที่ JS อ่าน — display string อีก ๖ จุดเป็นข้อความคงที่ใน HTML
@@ -710,7 +713,7 @@
         //     ของ *ซอฟต์แวร์* ทั้งสองเดินอิสระจากกันได้ ชื่อ Model 3.0 ยังคงเดิมทุกหน้า
         //   ★ ป้าย [v17.x.x] ในคอมเมนต์ทั้งไฟล์คือหมุดประวัติ "เพิ่มมาในรุ่นไหน"
         //     ห้ามไล่แก้เป็น v18 เด็ดขาด — จะทำให้ประวัติการพัฒนาผิดทั้งไฟล์
-        const APP_VERSION = '18.11.0';
+        const APP_VERSION = '18.11.1';
     </script>
     <!--
       ── ไลบรารีภายนอก (External Libraries) ──────────────────────
@@ -9573,7 +9576,7 @@ window.udcIco = udcIco;
         <div class="mda-ai-title">
             <span class="mda-ai-dot"></span>
             <span><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> AI DECISION-SUPPORT</span>
-            <span class="mda-ai-sub">v18.11.0 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
+            <span class="mda-ai-sub">v18.11.1 · 7-Domain · HITL · multi-LLM · ฝ่ายเสนาธิการ AI · JP 5-0 · COA Planner + Confirm&amp;Deploy</span>
         </div>
         <button class="mda-ai-close" id="mda-ai-close" title="ปิด modal · ESC"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
@@ -9589,10 +9592,13 @@ window.udcIco = udcIco;
         <span class="mda-ai-mode-pill off"   id="mda-ai-settings-btn" title="ตั้งค่า Cloudflare Worker proxy URL"><svg class="ico" aria-hidden="true"><use href="#i-settings"/></svg> Settings</span>
         <span style="color:var(--n-300);margin-left:var(--space-2);">MODEL:</span>
         <select id="mda-ai-model-select" class="mda-ai-model-select" title="เลือก LLM model (Workers AI / Gemini) · บันทึกใน localStorage">
+            <!-- [v18.11.1 MODEL-1] default ย้ายเป็น Llama 3.3 70B (Workers AI) ไว้บนสุด · ถอด Gemini 2.5 Pro / 2.0 Flash (Google ปิดแล้ว · 404) -->
+            <optgroup label="── Cloudflare Workers AI ──">
+                <option value="@cf/meta/llama-3.3-70b-instruct-fp8-fast"><svg class="ico" aria-hidden="true"><use href="#i-zap"/></svg> Llama 3.3 70B (default · fast+smart)</option>
+                <option value="@cf/deepseek-ai/deepseek-r1-distill-qwen-32b"><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> DeepSeek R1 32B (reasoning)</option>
+            </optgroup>
             <optgroup label="── Google Gemini ──">
-                <option value="gemini-2.5-flash"><svg class="ico" aria-hidden="true"><use href="#i-diamond"/></svg> Gemini 2.5 Flash (default · free ~10 RPM)</option>
-                <option value="gemini-2.5-pro">🔮 Gemini 2.5 Pro (best · limited)</option>
-                <option value="gemini-2.0-flash"><svg class="ico" aria-hidden="true"><use href="#i-gem"/></svg> Gemini 2.0 Flash (<svg class="ico" aria-hidden="true"><use href="#i-triangle-alert"/></svg> ต้องผูก billing)</option>
+                <option value="gemini-2.5-flash"><svg class="ico" aria-hidden="true"><use href="#i-diamond"/></svg> Gemini 2.5 Flash (free ~10 RPM · อาจไม่รองรับพื้นที่)</option>
             </optgroup>
             <optgroup label="── ThaiLLM (BDI · โมเดลภาษาไทย) ──">
                 <option value="OpenThaiGPT-ThaiLLM-8B-Instruct-v7.2">🇹🇭 OpenThaiGPT 8B (AIEAT · ทั่วไป)</option>
@@ -9604,15 +9610,9 @@ window.udcIco = udcIco;
                 <option value="glm-5.2">🐉 GLM-5.2 (flagship · 1M context) (ยังไม่มีเครดิต)</option>
                 <option value="glm-4.6">🐲 GLM-4.6 (stable) (ยังไม่มีเครดิต)</option>
             </optgroup>
-            <optgroup label="── Cloudflare Workers AI ──">
-                <option value="@cf/meta/llama-3.3-70b-instruct-fp8-fast"><svg class="ico" aria-hidden="true"><use href="#i-zap"/></svg> Llama 3.3 70B (fast+smart)</option>
-                <option value="@cf/deepseek-ai/deepseek-r1-distill-qwen-32b"><svg class="ico" aria-hidden="true"><use href="#i-brain"/></svg> DeepSeek R1 32B (reasoning)</option>
-                <option value="@cf/meta/llama-3.1-8b-instruct"><svg class="ico" aria-hidden="true"><use href="#i-rocket"/></svg> Llama 3.1 8B (fastest)</option>
-            </optgroup>
+            <!-- [v18.11.1 MODEL-1] ถอด Llama 3.1 8B (CF deprecated 2026-05-30) + Qwen 1.5 14B/7B (CF deprecated 2025-10-01) -->
             <optgroup label="── Alibaba Qwen (via Workers AI) ──">
                 <option value="@cf/qwen/qwen2.5-coder-32b-instruct">🐼 Qwen 2.5 Coder 32B (high-performance)</option>
-                <option value="@cf/qwen/qwen1.5-14b-chat-awq">🐼 Qwen 1.5 14B Chat (balanced · requires deploy)</option>
-                <option value="@cf/qwen/qwen1.5-7b-chat-awq">🐼 Qwen 1.5 7B Chat (lightweight · requires deploy)</option>
             </optgroup>
         </select>
         <span class="mda-ai-toolbar-spacer"></span>
@@ -10047,7 +10047,7 @@ window.udcIco = udcIco;
     </div>
     <div class="boot-textbox">
         <div class="boot-title">THE SHIELD 3.0</div>
-        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.11.0 AI STAFF PLANNER EDITION</div>
+        <div class="boot-subtitle">UDC TACTICAL SIMULATOR · v18.11.1 AI STAFF PLANNER EDITION</div>
         <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBar"></div></div>
         <div class="boot-foot">รร.สธ.ทร. · UNDERWATER DATA CENTRE DEFENCE RESEARCH · 2026</div>
     </div>
@@ -10066,7 +10066,7 @@ window.udcIco = udcIco;
         <!-- [v15] ตราสัญลักษณ์กองทัพเรือ — โคลน data-URI เดียวกับ boot screen ผ่าน JS (#appCrest) -->
         <div class="app-crest"><img id="appCrest" alt="ตราสัญลักษณ์กองทัพเรือ" /></div>
         <div>
-            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.11.0 · MDA</span></div>
+            <div class="title">THE SHIELD 3.0 — UDC Multi-Domain Awareness Simulator <span style="color:var(--purple);font-size:var(--text-md);">v18.11.1 · MDA</span></div>
             <!-- [v17.7.1 BOOT-3] ย่อ tagline ที่ยาวเกินไปสำหรับการนำเสนอผู้บังคับบัญชา
                  — ย้ายรายละเอียดฟีเจอร์ไปไว้ใน title tooltip แทน -->
             <div class="subtitle" title="ASW + Air Defence · Leaflet GIS · DAS Tripwire · PSR Sonar Model · AIS Live Global">Real-Time Undersea Domain Awareness — Sattahip UDC</div>
@@ -11078,7 +11078,7 @@ window.udcHdrAnchor = udcHdrAnchor;
             <div class="panel-sub" style="color:var(--purple);">กองเรือยุทธการ / ศปก.ทร. — C2 Centralized Control</div>
             <div class="domain-readiness-bar"><div class="bar-fill" id="bar-command" style="background:var(--purple);"></div></div>
             <div id="statusBox">
-                [SYSTEM] THE SHIELD 3.0 v18.11.0 Online...<br>
+                [SYSTEM] THE SHIELD 3.0 v18.11.1 Online...<br>
                 [GIS] Leaflet Map · Tide + Sea State Active<br>
                 [DAS] Fiber Tripwire Armed · AIS Live Ready.
             </div>
@@ -38522,7 +38522,7 @@ window.toggleSat3D = toggleSat3D;
     MDA.cfg.aiMockMode  = true;     // true = ใช้ rule-engine + canned briefing
     MDA.cfg.aiTickMs    = 18_000;   // mock alert tick (~18s)
     MDA.cfg.aiMaxAlerts = 30;       // เก็บ alert ล่าสุดสูงสุด
-    MDA.cfg.aiModel     = 'gemini-2.5-flash';  // v14.0.7 — default LLM (2.0 ถูกย้ายไป paid · 2.5 ยังฟรี)
+    MDA.cfg.aiModel     = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';  // [v18.11.1 MODEL-1] Gemini คืน 400 "location not supported" จาก Worker → default Llama 3.3 70B · v14.0.7 — default LLM (2.0 ถูกย้ายไป paid · 2.5 ยังฟรี)
     // ▼▼▼ [v17.9.1] วาง URL ของ Cloudflare Worker (ThreatFox
     // relay) ตรงนี้จุดเดียว — ว่าง = ยังไม่เปิด (จะขึ้น N/A)
     MDA.cfg.threatfoxProxy = 'https://udc-threatfox.rey-mysawa.workers.dev';    // v17.9.1 · Cloudflare Worker (ThreatFox relay) → เลเยอร์ ภัยจารกรรม (ThreatFox)
@@ -39885,7 +39885,7 @@ window.toggleSat3D = toggleSat3D;
 
             const proxy = MDA.cfg.aiProxyUrl;
             const wantReal = (state.mode === 'llm') && !!proxy && !MDA.cfg.aiMockMode;
-            const selectedModel = MDA.cfg.aiModel || 'gemini-2.5-flash';
+            const selectedModel = MDA.cfg.aiModel || '@cf/meta/llama-3.3-70b-instruct-fp8-fast';   // [v18.11.1 MODEL-1]
             const provider = _providerOf(selectedModel);
             const providerLabel = provider === 'google-gemini'
                 ? 'Google Gemini'
@@ -40542,7 +40542,7 @@ window.toggleSat3D = toggleSat3D;
             try {
                 const proxy    = MDA.cfg.aiProxyUrl;
                 const wantReal = (state.mode === 'llm') && !!proxy && !MDA.cfg.aiMockMode;
-                const model    = MDA.cfg.aiModel || 'gemini-2.5-flash';
+                const model    = MDA.cfg.aiModel || '@cf/meta/llama-3.3-70b-instruct-fp8-fast';   // [v18.11.1 MODEL-1]
                 const ws       = _buildWorldState();
                 if (deployStatus) deployStatus.dataset.locked = '0';
                 _setDeployStatus(wantReal ? `🎯 กำลังวางแผน COA ด้วย ${model} …` : '🎯 LLM offline — ใช้ rule engine วางแผน …', '#c4b5fd');
@@ -40664,9 +40664,8 @@ window.toggleSat3D = toggleSat3D;
         const LS_KEY_MODEL = 'shield_ai_model';
         const ALLOWED_MODELS = [
             // แบบจำลองของ Google Gemini
-            'gemini-2.0-flash',
+            // [v18.11.1 MODEL-1] ถอด 'gemini-2.0-flash' + 'gemini-2.5-pro' (Google ปิดแล้ว · 404)
             'gemini-2.5-flash',
-            'gemini-2.5-pro',
             // แบบจำลองของ Z.AI (Zhipu GLM)
             'glm-5.2',
             'glm-4.6',
@@ -40680,11 +40679,10 @@ window.toggleSat3D = toggleSat3D;
             // แบบจำลองของ Cloudflare Workers AI
             '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
             '@cf/deepseek-ai/deepseek-r1-distill-qwen-32b',
-            '@cf/meta/llama-3.1-8b-instruct',
+            // [v18.11.1 MODEL-1] ถอด '@cf/meta/llama-3.1-8b-instruct' (CF deprecated 2026-05-30)
             // แบบจำลองของ Alibaba Qwen (ผ่าน Cloudflare Workers AI)
-            '@cf/qwen/qwen2.5-coder-32b-instruct',
-            '@cf/qwen/qwen1.5-7b-chat-awq',
-            '@cf/qwen/qwen1.5-14b-chat-awq'
+            '@cf/qwen/qwen2.5-coder-32b-instruct'
+            // [v18.11.1 MODEL-1] ถอด '@cf/qwen/qwen1.5-7b-chat-awq' + '@cf/qwen/qwen1.5-14b-chat-awq' (CF deprecated 2025-10-01)
         ];
 
         function _shortProxy(u) {

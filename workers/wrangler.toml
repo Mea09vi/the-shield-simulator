@@ -36,7 +36,8 @@ binding = "AI"
 
 # ตัวแปรไม่ลับ — ปรับค่าได้ตรงนี้
 [vars]
-DEFAULT_MODEL = "gemini-2.5-flash"
+# [v15.7.0 MODEL-1] เดิม "gemini-2.5-flash" · หมายเหตุ: โค้ดอ่านค่าคงที่ DEFAULT_MODEL ใน ai-proxy.js ไม่ได้อ่าน env นี้ — แก้ให้ตรงกันกันสับสน
+DEFAULT_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
 
 # ─── Secrets (DO NOT commit ค่าจริง — ใช้ wrangler secret put) ───────
 # GEMINI_API_KEY  → จาก https://aistudio.google.com/apikey
